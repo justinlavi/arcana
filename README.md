@@ -79,7 +79,7 @@ This clones Arcana and selected grimoires to `~/grimoire/`, sets up the local ca
 
 **Easiest way** - just have a conversation:
 
-1. Tell your AI: `/grm-create-grimoire`
+1. Tell your AI: `/grm-domain-create-grimoire`
 2. Answer questions about your domain and goals
 3. AI suggests relevant chapters
 4. AI creates everything automatically

@@ -174,7 +174,7 @@ For detailed phase-by-phase workflow, continue below:
     ```
 
 11. **AI analyzes semantics intelligently** (contextual, adaptive):
-    - Cast `/grm-analyze-semantics --arcana` invocation
+    - Cast `/grm-domain-analyze-semantics --arcana` invocation
     - AI reads extracted terminology data
     - AI reads docs/reference.md (single source of truth)
     - AI analyzes all Arcana files **with context understanding**:
@@ -312,7 +312,7 @@ This invocation audits only Arcana itself.
 - `GRIMOIRE_ARCANA/docs/quickstart.md` - Reference Arcana from anywhere
 - `GRIMOIRE_{DOMAIN}/chapters/build_system/INDEX.md` - Reference domain's own grimoire
 
-**NOT in scope**: Domain grimoires (use `/grm-improve` for those)
+**NOT in scope**: Domain grimoires (use `/grm-domain-improve` for those)
 
 **Anti-drift principles**:
 - No static file trees or lists (use dynamic discovery)
@@ -389,7 +389,7 @@ Before running this invocation:
 
 After running this invocation:
 - [ ] Review audit report thoroughly
-- [ ] Test invocation invocations (/grm-create-grimoire, /grm-help, /grm-improve)
+- [ ] Test invocation invocations (/grm-domain-create-grimoire, /grm-meta-help, /grm-domain-improve)
 - [ ] Verify formulae/grimoire creates working grimoires
 - [ ] Update CHANGELOG.md if significant changes
 - [ ] Announce to domains if breaking changes
@@ -447,7 +447,7 @@ Arcana must maintain:
 
 ## Related Invocations
 
-- Improve a domain grimoire: `/grm-improve` (run from grimoire directory)
+- Improve a domain grimoire: `/grm-domain-improve` (run from grimoire directory)
 - Create new invocation: Manually craft in `invocations/grimoire/` or `invocations/arcana/` and update INDEX.md
 - Run all validations: `python3 rites/validate.py`
 - Individual validations: See [rites/](../../rites/) directory

@@ -147,7 +147,7 @@ done
 sed -n '/^## Core Concepts/,/^---$/p' docs/reference.md > /tmp/terminology.txt
 
 # ✅ GOOD: AI analyzes using that data
-/grm-analyze-semantics
+/grm-domain-analyze-semantics
 # AI reads reference, understands context, suggests improvements intelligently
 ```
 

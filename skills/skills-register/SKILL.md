@@ -1,5 +1,5 @@
 ---
-name: grm-register-skills
+name: grm-skills-register
 description: Register all Grimoire skills from Arcana and domain grimoires into supported agent skill directories
 user-invocable: true
 allowed-tools: Bash Read
@@ -12,7 +12,7 @@ You are registering all Grimoire skills from Arcana and every installed domain g
 - Claude Code: `~/.claude/skills/`
 - Codex/ChatGPT: `~/.codex/skills/`
 
-This cleans each namespace (e.g., `grm-*`, `olympus-*`) and re-registers fresh copies, ensuring the agent skill directories always match the latest source. Codex/ChatGPT registrations are pointer-only and copy only `SKILL.md`; the real instructions remain in Arcana invocations or rites.
+This cleans each namespace (e.g., `grm-*`, `jpn-*`) and re-registers fresh copies, ensuring the agent skill directories always match the latest source. Domain namespaces come from `skill_namespace` in `~/grimoire/catalog.json`. Codex/ChatGPT registrations are pointer-only and copy only `SKILL.md`; the real instructions remain in Arcana invocations, rites, or domain guides.
 
 ## Steps
 

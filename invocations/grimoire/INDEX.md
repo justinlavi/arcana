@@ -8,7 +8,7 @@
 
 **This catalog is a THIN ROUTER** - invocation files are the single source of truth.
 
-For dynamic invocation catalog with full details, use: **`/grm-help`**
+For dynamic invocation catalog with full details, use: **`/grm-meta-help`**
 
 For detailed documentation, read the invocation file directly.
 
@@ -36,21 +36,21 @@ For detailed documentation, read the invocation file directly.
 
 | Name | Command | Purpose |
 |------|---------|---------|
-| create-grimoire | `/grm-create-grimoire` | Create new domain grimoire |
-| create-chapter | `/grm-create-chapter [topic]` | Add knowledge chapter |
-| improve-grimoire | `/grm-improve` | Comprehensive optimization |
-| analyze-semantics | `/grm-analyze-semantics` | Naming quality audit |
-| validate-structure | `/grm-arcana-validate` | Formula compliance check |
+| create-grimoire | `/grm-domain-create-grimoire` | Create new domain grimoire |
+| create-chapter | `/grm-domain-create-chapter [topic]` | Add knowledge chapter |
+| improve-grimoire | `/grm-domain-improve` | Comprehensive optimization |
+| analyze-semantics | `/grm-domain-analyze-semantics` | Naming quality audit |
+| validate-structure | `/grm-domain-validate-structure` | Formula compliance check |
 
 ---
 
 ## How to Use
 
-**For invocation catalog**: Invoke `/grm-help` (dynamically generated)
+**For invocation catalog**: Invoke `/grm-meta-help` (dynamically generated)
 
 **For invocation details**: Read individual invocation .md files
 
-**For new invocations**: Add invocation .md file to this directory - automatically discovered by `/grm-help`
+**For new invocations**: Add invocation .md file to this directory - automatically discovered by `/grm-meta-help`
 
 ---
 
@@ -58,27 +58,27 @@ For detailed documentation, read the invocation file directly.
 
 ### Comprehensive Improvement Flow
 ```
-/grm-improve
+/grm-domain-improve
   ├── Automatically invokes: analyze-semantics
   ├── Automatically invokes: validate-boundaries
   └── Automatically invokes: validate-structure
 ```
 
 ### Standalone Analysis
-- `/grm-analyze-semantics` - Just semantic analysis
-- `/grm-arcana-validate` - Just structure validation
+- `/grm-domain-analyze-semantics` - Just semantic analysis
+- `/grm-domain-validate-structure` - Just structure validation
 - `/grm-arcana-validate-boundaries` - Just boundary validation (Arcana invocation)
 
 ### Creation Flow
-1. `/grm-create-grimoire` - Create grimoire first
-2. `/grm-create-chapter [topic]` - Add chapters
-3. `/grm-improve` - Optimize periodically
+1. `/grm-domain-create-grimoire` - Create grimoire first
+2. `/grm-domain-create-chapter [topic]` - Add chapters
+3. `/grm-domain-improve` - Optimize periodically
 
 ---
 
 ## Related Documentation
 
-- **Invocation execution help**: `/grm-help`
+- **Invocation execution help**: `/grm-meta-help`
 - **Arcana invocations** (maintainer): `GRIMOIRE_ARCANA/invocations/arcana/INDEX.md`
 - **Meta invocations**: `../meta/INDEX.md`
 - **Operating model**: `../../docs/operating_model.md`
@@ -98,7 +98,7 @@ For detailed documentation, read the invocation file directly.
 - ~~Update invocation count~~ (auto-calculated)
 - ~~Update help.md~~ (dynamic generation)
 
-**Validation**: Run `/grm-arcana-validate` to verify
+**Validation**: Run `/grm-domain-validate-structure` to verify
 
 ---
 

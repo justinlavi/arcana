@@ -10,7 +10,7 @@
 
 **This catalog is a THIN ROUTER** - invocation files are the single source of truth.
 
-For dynamic invocation catalog with full details, use: **`/grm-help`**
+For dynamic invocation catalog with full details, use: **`/grm-meta-help`**
 
 For detailed documentation, read the invocation file directly.
 
@@ -54,7 +54,7 @@ See [quality/INDEX.md](quality/INDEX.md) for details.
 |------|---------|---------|
 | improve-arcana | `/grm-arcana-improve` | Evolve Arcana |
 | validate-boundaries | `/grm-arcana-validate-boundaries` | Magical boundary enforcement |
-| validate-structure | `/grm-arcana-validate` | Directory/file integrity checks |
+| validate-structure | `/grm-domain-validate-structure` | Directory/file integrity checks |
 | validate-semantics | `/grm-arcana-improve` | Reference-driven terminology validation |
 | validate-naming | `/grm-arcana-improve` | Snake_case naming enforcement |
 | validate-format | `/grm-arcana-improve` | Invocation/formula schema compliance |
@@ -91,7 +91,7 @@ See [quality/INDEX.md](quality/INDEX.md) for details.
 
 If you're not the Arcana maintainer, you want **grimoire invocations**:
 
-→ Use `/grm-help` to list all available invocations
+→ Use `/grm-meta-help` to list all available invocations
 → See `../grimoire/INDEX.md` for domain operations
 
 ---
@@ -112,7 +112,7 @@ If you're not the Arcana maintainer, you want **grimoire invocations**:
 - After modifying invocations/formulae
 
 **Validator invocations**:
-- Run individually for targeted checks: `/grm-arcana-validate`
+- Run individually for targeted checks: `/grm-domain-validate-structure`
 - Run all at once: `python3 rites/validate.py`
 - Integrated into improve-arcana workflow
 
@@ -131,7 +131,7 @@ If you're not the Arcana maintainer, you want **grimoire invocations**:
 - ~~Update invocation count~~ (auto-calculated)
 - ~~Update help.md~~ (dynamic generation)
 
-**Validation**: Run `/grm-arcana-validate` to verify
+**Validation**: Run `/grm-domain-validate-structure` to verify
 
 ---
 

@@ -29,6 +29,10 @@ Historical notes from earlier private GitLab iterations were intentionally remov
 - `rites/summon.sh` is the single supported bootstrap entry point.
 - Public setup documentation now describes the release-first binary workflow and source fallback.
 - Summoning Rite GUI dependency handling now uses a Grimoire-managed dependency cache when source fallback is needed.
+- Skill registration now uses explicit namespace roots plus functional subcommands:
+  - Arcana commands use `grm-<area>-<action>`.
+  - Domain grimoire commands use `skill_namespace` from the catalog, such as `jpn-travel-create-trip`.
+  - Registration validates that source `SKILL.md` frontmatter names match the final command name.
 
 ### Removed
 - `rites/summon.bat`; Windows users can use Git Bash or WSL for the shell bootstrap, and Windows release binaries are still produced.

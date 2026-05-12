@@ -56,13 +56,13 @@ GRIMOIRE_BLOCK = """\
 
 **Arcana key**: `GRIMOIRE_ARCANA` — resolved from catalog or defaults to `~/grimoire/arcana/`
 
-**Skills**: Grimoire operations are available as `/grm-*` skills (e.g., `/grm-help`, `/grm-improve`).
+**Skills**: Arcana operations are available as `/grm-*` skills (e.g., `/grm-meta-help`, `/grm-domain-improve`). Domain grimoire skills use each catalog entry's `skill_namespace`.
 
 **Routing**:
 1. Determine the active grimoire from working directory or project context; look up its `local_path` in the catalog.
 2. Read `{active grimoire}/INDEX.md` first; route deterministically: `INDEX.md` > chapter `INDEX.md` > 1-2 page docs.
 3. For Grimoire meta-knowledge: read `GRIMOIRE_ARCANA/INDEX.md`.
-4. Do not modify Grimoire files unless a `/grm-*` skill or explicit instruction asks for it.
+4. Do not modify Grimoire files unless a `/grm-*` skill, a domain skill, or explicit instruction asks for it.
 """
 
 # ---------------------------------------------------------------------------
@@ -560,10 +560,13 @@ def update_local_catalog(installed_keys, catalog, log):
 
     for key in installed_keys:
         entry = catalog.get("grimoires", {}).get(key, {})
-        local["grimoires"][key] = {
+        local_entry = {
             "local_path": f"$HOME/grimoire/{key}",
             "online_path": entry.get("online_path", ""),
         }
+        if entry.get("skill_namespace"):
+            local_entry["skill_namespace"] = entry["skill_namespace"]
+        local["grimoires"][key] = local_entry
 
     with open(LOCAL_CATALOG, "w") as f:
         json.dump(local, f, indent=2)
@@ -783,7 +786,7 @@ def run_cli(args):
     print()
     print("  Next steps:")
     print("    1. Open a new Claude Code or Codex/ChatGPT session")
-    print("    2. Try: /grm-help")
+    print("    2. Try: /grm-meta-help")
     print()
 
 
@@ -982,7 +985,7 @@ def run_gui(args):
                 f"Installed {len(installed)} grimoire(s).\n\n"
                 "Next steps:\n"
                 "1. Open a new Claude Code or Codex/ChatGPT session\n"
-                "2. Try: /grm-help",
+                "2. Try: /grm-meta-help",
                 close_app=True,
             )
         finally:

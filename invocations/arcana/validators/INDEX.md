@@ -34,7 +34,7 @@ python3 rites/validate_structure.py
 
 **Invoke** (AI-guided):
 ```
-/grm-arcana-validate
+/grm-domain-validate-structure
 /grm-arcana-improve
 /grm-arcana-improve
 /grm-arcana-improve

@@ -54,7 +54,7 @@ Arcana is not a grimoire. This invocation never operates on Arcana and never sug
 From your domain grimoire's root directory, cast:
 
 ```
-/grm-improve
+/grm-domain-improve
 ```
 
 The AI will audit your grimoire and apply improvements automatically.
@@ -175,7 +175,7 @@ This invocation is **grimoire-contextual**. It operates on the grimoire in your 
 **To improve a different grimoire**:
 ```bash
 cd grimoire-{other-domain}/
-/grm-improve
+/grm-domain-improve
 ```
 
 ---
@@ -328,9 +328,9 @@ Your grimoire needs improvement when:
 - `validate-boundaries` - Magical boundary validation (Phase 3.5)
 
 **Other invocations:**
-- Create chapter: `/grm-create-chapter [topic]`
+- Create chapter: `/grm-domain-create-chapter [topic]`
 - Improve Arcana: `/grm-arcana-improve` (maintainer only)
-- Standalone semantic analysis: `/grm-analyze-semantics`
+- Standalone semantic analysis: `/grm-domain-analyze-semantics`
 - Standalone boundary check: `/grm-arcana-validate-boundaries`
 
 ---

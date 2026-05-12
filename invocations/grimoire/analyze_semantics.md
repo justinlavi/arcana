@@ -46,13 +46,13 @@ Before executing, verify the current working directory is a registered domain gr
 From your grimoire directory (e.g., `olympus-grimoire/`), cast:
 
 ```
-/grm-analyze-semantics
+/grm-domain-analyze-semantics
 ```
 
 Or for Arcana:
 
 ```
-/grm-analyze-semantics --arcana
+/grm-domain-analyze-semantics --arcana
 ```
 
 ---
@@ -323,14 +323,14 @@ chapters/cpp_patterns/smart_pointers.md
 
 This invocation is automatically invoked by:
 
-- `/grm-improve` - Includes semantic analysis in Phase 2.5
+- `/grm-domain-improve` - Includes semantic analysis in Phase 2.5
 - `/grm-arcana-improve` - Analyzes formula templates and invocation names
 
 Can be run standalone for deeper analysis:
 
-- `/grm-analyze-semantics` - Full semantic audit
-- `/grm-analyze-semantics --quick` - Quick wins only
-- `/grm-analyze-semantics --chapter=build_system` - Single chapter
+- `/grm-domain-analyze-semantics` - Full semantic audit
+- `/grm-domain-analyze-semantics --quick` - Quick wins only
+- `/grm-domain-analyze-semantics --chapter=build_system` - Single chapter
 
 ---
 
@@ -388,7 +388,7 @@ Before publishing semantic recommendations:
 ## Related Invocations
 
 - Validate quality gates: `/grm-arcana-validate-boundaries`
-- Apply structure changes: `/grm-improve`
-- Optimize routing: `/grm-improve`
-- Full grimoire improvement: `/grm-improve`
+- Apply structure changes: `/grm-domain-improve`
+- Optimize routing: `/grm-domain-improve`
+- Full grimoire improvement: `/grm-domain-improve`
 

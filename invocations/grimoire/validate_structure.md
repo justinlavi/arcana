@@ -30,14 +30,14 @@ Before executing, verify the current working directory is a registered domain gr
 From your grimoire directory, cast:
 
 ```
-/grm-arcana-validate
+/grm-domain-validate-structure
 ```
 
 Optional scopes:
 
 ```
-/grm-arcana-validate --chapter=<chapter_name>
-/grm-arcana-validate --arcana
+/grm-domain-validate-structure --chapter=<chapter_name>
+/grm-domain-validate-structure --arcana
 ```
 
 ---

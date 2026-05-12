@@ -115,7 +115,7 @@ AI should route: INDEX.md → chapters/test/INDEX.md → chapters/test/hello.md
 ## Next Steps
 
 **Create chapters** for frequently asked topics:
-- Use `/grm-create-chapter [topic]`
+- Use `/grm-domain-create-chapter [topic]`
 - See [invocations/grimoire/create_chapter.md](../invocations/grimoire/create_chapter.md)
 
 **Learn routing model**:

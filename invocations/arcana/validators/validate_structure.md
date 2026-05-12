@@ -11,7 +11,7 @@ Verify Arcana directory structure, required files, and organizational integrity.
 ## Invocation
 
 ```
-/grm-arcana-validate
+/grm-domain-validate-structure
 ```
 
 ## When to Cast

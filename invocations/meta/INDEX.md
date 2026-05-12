@@ -10,7 +10,7 @@ These invocations provide information about Grimoire — they don't modify grimo
 
 **This catalog is a THIN ROUTER** - invocation files are the single source of truth.
 
-For dynamic invocation catalog with full details, use: **`/grm-help`**
+For dynamic invocation catalog with full details, use: **`/grm-meta-help`**
 
 For detailed documentation, read the invocation file directly.
 
@@ -32,8 +32,8 @@ For detailed documentation, read the invocation file directly.
 
 | Name | Command | Purpose |
 |------|---------|---------|
-| help | `/grm-help` | Show dynamically-generated invocation catalog |
-| base-invocation | `/grm-help` | Generic invocation execution framework |
+| help | `/grm-meta-help` | Show dynamically-generated invocation catalog |
+| base-invocation | `/grm-meta-help` | Generic invocation execution framework |
 
 ---
 
@@ -41,7 +41,7 @@ For detailed documentation, read the invocation file directly.
 
 ### help - Dynamic Catalog Generation
 ```
-User: /grm-help
+User: /grm-meta-help
 Claude:
   1. Scans invocations/grimoire/*.md, invocations/arcana/*.md, invocations/meta/*.md
   2. Extracts Purpose, Invocation from each invocation
@@ -54,7 +54,7 @@ Zero duplication ✅
 
 ### base-invocation - Generic Request Routing
 ```
-User: /grm-help
+User: /grm-meta-help
 Claude:
   1. Parses request to determine intent
   2. Routes to appropriate invocation OR
@@ -90,10 +90,10 @@ Claude:
 
 **Most common use cases**:
 
-→ **Need help?** Invoke `/grm-help` (shows all invocations)
-→ **Create grimoire?** Invoke `/grm-create-grimoire` (grimoire invocation)
-→ **Improve grimoire?** Invoke `/grm-improve` (grimoire invocation)
-→ **Need something else?** Use `/grm-help` to see all available skills
+→ **Need help?** Invoke `/grm-meta-help` (shows all invocations)
+→ **Create grimoire?** Invoke `/grm-domain-create-grimoire` (grimoire invocation)
+→ **Improve grimoire?** Invoke `/grm-domain-improve` (grimoire invocation)
+→ **Need something else?** Use `/grm-meta-help` to see all available skills
 
 See `../grimoire/INDEX.md` for domain operations.
 
@@ -112,13 +112,13 @@ See `../grimoire/INDEX.md` for domain operations.
 - ~~Update invocation count~~ (auto-calculated)
 - ~~Update help.md~~ (it's the invocation, not a catalog!)
 
-**Validation**: Run `/grm-arcana-validate` to verify
+**Validation**: Run `/grm-domain-validate-structure` to verify
 
 ---
 
 ## Related
 
-- **Full invocation list**: Invoke `/grm-help`
+- **Full invocation list**: Invoke `/grm-meta-help`
 - **Grimoire invocations**: `../grimoire/INDEX.md`
 - **Arcana invocations**: `../arcana/INDEX.md`
 

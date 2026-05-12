@@ -12,7 +12,7 @@ This invocation walks the user through creating their domain's grimoire by havin
 
 ## Invocation
 
-Trigger with: `/grm-create-grimoire` or `/grm-create-grimoire`
+Trigger with: `/grm-domain-create-grimoire` or `/grm-domain-create-grimoire`
 
 ## When to Cast
 
@@ -102,6 +102,7 @@ grimoire_info:
   name: "Knowledge Domain"  # Full name
   directory: "grimoire_domain_a"  # Filesystem name
   token: "Domain"  # All caps token
+  skill_namespace: "dom"  # Short lowercase root for domain skills
   purpose: "domain-specific knowledge and resources"
   purpose_detailed: "employee onboarding, company policies, benefits information, and performance review processes"
   chapter: "Domain"  # Category
@@ -210,6 +211,7 @@ Create the grimoire directory with customized files.
    - `{{GRIMOIRE_PURPOSE}}` → "domain-specific knowledge and resources"
    - `{{GRIMOIRE_PURPOSE_DETAILED}}` → "employee onboarding, company policies, benefits information, and performance review processes"
    - `{{GRIMOIRE_DIRECTORY}}` → "grimoire_domain_a"
+   - `{{SKILL_NAMESPACE}}` → "dom"
    - `{{EXAMPLE_DOMAIN}}` → "onboarding"
    - `{{DOMAIN_CHANNEL}}` → domain channel
    - `{{CHAPTER_LIST}}` → Generate from selected_chapters:
@@ -301,20 +303,23 @@ Add the new grimoire to the user's local catalog so agents can resolve it.
 
 2. **Entry to add**:
    ```json
-   "GRIMOIRE_{{token}}": {
+   "{{grimoire_directory}}": {
      "local_path": "$HOME/path/to/{{grimoire_directory}}",
-     "online_path": null
+     "online_path": null,
+     "skill_namespace": "{{skill_namespace}}"
    }
    ```
    Replace `$HOME/path/to/{{grimoire_directory}}` with the actual absolute path used in Step 3.
+   Replace `{{skill_namespace}}` with a short lowercase root slug for this domain's skills, such as `jpn` for Japan. Skill commands register as `{{skill_namespace}}-<area>-<verb>-<object>`.
 
 3. **If creating from scratch**:
    ```json
    {
      "grimoires": {
-       "GRIMOIRE_{{token}}": {
+       "{{grimoire_directory}}": {
          "local_path": "$HOME/path/to/{{grimoire_directory}}",
-         "online_path": null
+         "online_path": null,
+         "skill_namespace": "{{skill_namespace}}"
        }
      }
    }
@@ -328,18 +333,18 @@ Add the new grimoire to the user's local catalog so agents can resolve it.
 
 📋 Next Steps:
 
-1. Catalog updated: ~/grimoire/catalog.json now includes GRIMOIRE_{{token}}
+1. Catalog updated: ~/grimoire/catalog.json now includes {{grimoire_directory}} with skill namespace {{skill_namespace}}
 
 2. If this is your first grimoire, add the Grimoire section to your agent instruction files
    (see GRIMOIRE_ARCANA/docs/agent_configuration.md for the block to paste)
 
 3. Test your grimoire:
    - Ask me: "What domains exist in {{grimoire_name}}?"
-   - Ask me: `/grm-create-chapter [new topic]`
+   - Ask me: `/grm-domain-create-chapter [new topic]`
 
 4. Populate your chapters:
    - Each chapter currently has an INDEX.md
-   - Use `/grm-create-chapter [specific topic]` to add more
+   - Use `/grm-domain-create-chapter [specific topic]` to add more
    - Or manually add leaf docs using templates from GRIMOIRE_ARCANA/formulae/
 
 Your grimoire is ready to use! 🚀
@@ -427,9 +432,9 @@ fi
 ⚠️ Failed to create chapter: {{domain_name}}
    Continuing with remaining domains...
 
-   You can create it later with: /grm-create-chapter {{domain_name}}
+   You can create it later with: /grm-domain-create-chapter {{domain_name}}
 ```
 
 ---
 
-After all steps complete, run `/grm-arcana-validate` to confirm the grimoire passes structural checks.
+After all steps complete, run `/grm-domain-validate-structure` to confirm the grimoire passes structural checks.

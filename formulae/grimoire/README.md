@@ -15,7 +15,7 @@ Universal assets (invocations, formulae, rites, docs) live in Arcana (`~/grimoir
 3. Read the minimal page docs needed for your task
 
 ### Creating New Chapters
-Use `/grm-create-chapter [topic]` or read [create_chapter.md](GRIMOIRE_ARCANA/invocations/grimoire/create_chapter.md).
+Use `/grm-domain-create-chapter [topic]` or read [create_chapter.md](GRIMOIRE_ARCANA/invocations/grimoire/create_chapter.md).
 
 ## Repository Layout
 
@@ -47,7 +47,8 @@ Registered in `~/grimoire/catalog.json`:
 ```json
 "{{GRIMOIRE_DIRECTORY}}": {
   "local_path": "$HOME/grimoire/{{GRIMOIRE_DIRECTORY}}",
-  "online_path": null
+  "online_path": null,
+  "skill_namespace": "{{SKILL_NAMESPACE}}"
 }
 ```
 
@@ -56,5 +57,5 @@ The summoning rite (`GRIMOIRE_ARCANA/rites/summon.sh`) handles registration auto
 ## Getting Help
 
 - **Domain content**: Ask in #{{DOMAIN_CHANNEL}} domain channel
-- **Grimoire commands**: Use `/grm-help` to list all available invocations
+- **Grimoire commands**: Use `/grm-meta-help` to list all available invocations
 - **Arcana docs**: See `GRIMOIRE_ARCANA/README.md` and `GRIMOIRE_ARCANA/docs/`

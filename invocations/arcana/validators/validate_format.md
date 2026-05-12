@@ -64,7 +64,7 @@ Validates INDEX.md files are **thin routers**:
 **Example of thick router** (❌ wrong):
 ```markdown
 ### create_grimoire.md
-**Invocation**: /grm-create-grimoire
+**Invocation**: /grm-domain-create-grimoire
 **Purpose**: Long description here...
 **What it does**: Detailed workflow...
 [This duplicates invocation file content - violation]
@@ -135,7 +135,7 @@ For each format violation:
 
 ## Invocation
 ```
-/grm-help
+/grm-meta-help
 ```
 
 ## When to Cast

@@ -23,12 +23,12 @@ Guide you through creating a well-structured knowledge chapter in your domain's 
 ## Invocation
 
 ```
-/grm-create-chapter
+/grm-domain-create-chapter
 ```
 
 Or provide a topic directly:
 ```
-/grm-create-chapter for [topic]
+/grm-domain-create-chapter for [topic]
 ```
 
 ## When to Use

@@ -1,5 +1,5 @@
 ---
-name: grm-create-grimoire
+name: grm-domain-create-grimoire
 description: Create a new domain grimoire with full scaffolding and catalog registration
 argument-hint: [grimoire-name]
 arguments: [name]

@@ -1,13 +1,17 @@
 ---
-name: grm-improve
-description: Comprehensive grimoire improvement — audit, normalize, and optimize the active domain grimoire
+name: grm-domain-create-chapter
+description: Create a new knowledge chapter in the active domain grimoire
+argument-hint: [chapter-topic]
+arguments: [topic]
 user-invocable: true
 allowed-tools: Bash Read Write Edit
 ---
 
-# Improve Grimoire
+# Create Chapter
 
-You are performing a comprehensive improvement on the active domain grimoire. Follow the invocation guide below exactly.
+You are creating a new knowledge chapter in the active domain grimoire. Follow the invocation guide below exactly.
+
+If the user provided a topic, use it: **$topic**
 
 ## Precondition: Grimoire Directory Guard
 
@@ -21,12 +25,14 @@ You are performing a comprehensive improvement on the active domain grimoire. Fo
 - Display a clear error: "This skill operates on domain grimoires. Your current directory is not a registered grimoire."
 - List available grimoires from the catalog with their paths
 - Tell the user to `cd` to a grimoire directory and re-run
-- **Stop.** Do not proceed with any phases.
+- **Stop.** Do not proceed.
 
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
+- **Chapter formula**: `{{ARCANA_PATH}}/formulae/chapter_index.formula.md`
+- **Page formula**: `{{ARCANA_PATH}}/formulae/page.formula.md`
 
 ## Invocation
 
-!`cat {{ARCANA_PATH}}/invocations/grimoire/improve_grimoire.md`
+!`cat {{ARCANA_PATH}}/invocations/grimoire/create_chapter.md`

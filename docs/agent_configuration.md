@@ -37,7 +37,7 @@ The summoning rite:
 7. Injects the Grimoire routing block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
 8. Registers Grimoire skills to `~/.claude/skills/` and `~/.codex/skills/`
 
-After summoning, open a new Claude Code or Codex/ChatGPT session and try `/grm-help`.
+After summoning, open a new Claude Code or Codex/ChatGPT session and try `/grm-meta-help`.
 
 Dear PyGui is bundled into release binaries. In source fallback mode, it is installed into a Grimoire-managed Python dependency cache, not into the Arcana repository. On Arch-based systems, the source fallback may install `python-pip` with `pacman` first if the system Python does not include pip.
 
@@ -122,7 +122,8 @@ Grimoire uses two catalog files:
     "olympus-grimoire": {
       "name": "Olympus",
       "description": "Olympus domain grimoire",
-      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git"
+      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git",
+      "skill_namespace": "oly"
     }
   }
 }
@@ -134,6 +135,7 @@ Grimoire uses two catalog files:
 - `name` — display name for the summoning menu.
 - `description` — short description shown during selection.
 - `online_path` — git clone URL (any git-compatible host).
+- `skill_namespace` — short lowercase root for this grimoire's skills, required if the grimoire has a `skills/` directory.
 
 ### Local Catalog (Per-User)
 
@@ -144,7 +146,8 @@ Grimoire uses two catalog files:
   "grimoires": {
     "olympus-grimoire": {
       "local_path": "$HOME/grimoire/olympus-grimoire",
-      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git"
+      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git",
+      "skill_namespace": "oly"
     }
   }
 }
@@ -157,11 +160,13 @@ Grimoire uses two catalog files:
   "grimoires": {
     "olympus-grimoire": {
       "local_path": "$HOME/grimoire/olympus-grimoire",
-      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git"
+      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git",
+      "skill_namespace": "oly"
     },
     "bd-grimoire": {
       "local_path": "$HOME/grimoire/bd-grimoire",
-      "online_path": "https://git.example.com/grimoire/bd-grimoire.git"
+      "online_path": "https://git.example.com/grimoire/bd-grimoire.git",
+      "skill_namespace": "bd"
     }
   }
 }
@@ -170,6 +175,7 @@ Grimoire uses two catalog files:
 **Fields**:
 - `local_path` — absolute filesystem path to the domain grimoire root (supports `$HOME`).
 - `online_path` — git clone URL; set to `null` if not applicable.
+- `skill_namespace` — short lowercase root for this grimoire's skills, required if the grimoire has a `skills/` directory.
 
 ---
 
@@ -184,13 +190,13 @@ The summoning rite adds this block to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS
 
 **Arcana key**: `GRIMOIRE_ARCANA` — resolved from catalog or defaults to `~/grimoire/arcana/`
 
-**Skills**: Grimoire operations are available as `/grm-*` skills (e.g., `/grm-help`, `/grm-improve`).
+**Skills**: Arcana operations are available as `/grm-*` skills (e.g., `/grm-meta-help`, `/grm-domain-improve`). Domain grimoire skills use each catalog entry's `skill_namespace`.
 
 **Routing**:
 1. Determine the active grimoire from working directory or project context; look up its `local_path` in the catalog.
 2. Read `{active grimoire}/INDEX.md` first; route deterministically: `INDEX.md` > chapter `INDEX.md` > 1-2 page docs.
 3. For Grimoire meta-knowledge: read `GRIMOIRE_ARCANA/INDEX.md`.
-4. Do not modify Grimoire files unless a `/grm-*` skill or explicit instruction asks for it.
+4. Do not modify Grimoire files unless a `/grm-*` skill, a domain skill, or explicit instruction asks for it.
 ```
 
 ---
@@ -233,7 +239,7 @@ Add to `.github/copilot_instructions.md`:
 Catalog: `~/grimoire/catalog.json`
 Arcana: `~/grimoire/arcana/`
 Routing: read `{active grimoire}/INDEX.md` first, route deterministically.
-Skills: `/grm-*` skills are available globally (e.g., `/grm-help`, `/grm-improve`).
+Skills: `/grm-*` skills are available globally (e.g., `/grm-meta-help`, `/grm-domain-improve`).
 ```
 
 ---
@@ -257,11 +263,13 @@ For Codex/ChatGPT, the registered skill directory must contain only `SKILL.md`. 
 - **Invocation-backed**: skill loads a markdown guide via `!`cat {{ARCANA_PATH}}/invocations/...`` — the AI follows the instructions
 - **Rite-backed**: skill tells the AI to run a Python script via `python3 {{ARCANA_PATH}}/rites/...` — the script does the work
 
-Skills are namespaced by source:
-- Arcana skills: `grm-*` (e.g., `/grm-improve`, `/grm-help`)
-- Domain grimoire skills: `{domain}-*` (e.g., `/olympus-show-chapters`)
+Skills are namespaced by explicit root slug plus functional subnamespace:
+- Arcana skills: `grm-*` (e.g., `/grm-domain-improve`, `/grm-meta-help`)
+- Domain grimoire skills: `{skill_namespace}-*` from `~/grimoire/catalog.json` (e.g., `/jpn-travel-create-trip`)
 
-The summoning rite registers skills automatically. To re-register after updates, use `/grm-register-skills` or run:
+Skill source folders provide the subcommand after the root namespace. For example, a catalog entry with `"skill_namespace": "jpn"` and a source folder at `skills/travel-create-trip/` registers `/jpn-travel-create-trip`. The source `SKILL.md` frontmatter `name` must match the final registered command name.
+
+The summoning rite registers skills automatically. To re-register after updates, use `/grm-skills-register` or run:
 
 ```bash
 python3 ~/grimoire/arcana/rites/register_skills.py
@@ -278,26 +286,26 @@ python3 ~/grimoire/arcana/rites/register_skills.py --agent codex
 
 | Skill | Description |
 |---|---|
-| `/grm-create-grimoire` | Create a new domain grimoire |
-| `/grm-create-chapter` | Create a new knowledge chapter |
-| `/grm-improve` | Comprehensive grimoire improvement |
-| `/grm-arcana-validate` | Validate structure compliance |
-| `/grm-analyze-semantics` | Semantic naming analysis |
+| `/grm-domain-create-grimoire` | Create a new domain grimoire |
+| `/grm-domain-create-chapter` | Create a new knowledge chapter |
+| `/grm-domain-improve` | Comprehensive grimoire improvement |
+| `/grm-domain-validate-structure` | Validate structure compliance |
+| `/grm-domain-analyze-semantics` | Semantic naming analysis |
 | `/grm-arcana-validate-boundaries` | Magical boundary validation |
 | `/grm-arcana-improve` | Improve Arcana (maintainer) |
-| `/grm-help` | Show skill catalog and usage guide |
+| `/grm-meta-help` | Show skill catalog and usage guide |
 | `/grm-arcana-clean` | Remove temporary rite artifacts |
-| `/grm-register-skills` | Re-register all skills from Arcana and grimoires |
+| `/grm-skills-register` | Re-register all skills from Arcana and grimoires |
 
 ### Domain Grimoire Skills
 
-Domain grimoires contribute skills via their own `skills/` directory. The registration rite auto-discovers them and applies the namespace prefix derived from the catalog key (`olympus-grimoire` → `olympus-*`).
+Domain grimoires contribute skills via their own `skills/` directory. The registration rite auto-discovers them and applies the explicit `skill_namespace` from the grimoire's catalog entry.
 
-Place skills in `<grimoire>/skills/<skill-name>/SKILL.md`. Each SKILL.md should be a thin pointer that delegates to an invocation or rite — never embed logic in the skill file itself. Use `{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` as path placeholders — the registration rite resolves them to absolute paths.
+Place skills in `<grimoire>/skills/<area>-<verb>-<object>/SKILL.md` where the folder name is the subcommand after the namespace root. Each SKILL.md should be a thin pointer that delegates to a guide or script — never embed implementation logic directly. Use `{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` as path placeholders — the registration rite resolves them to absolute paths.
 
 If a domain grimoire includes extra files beside `SKILL.md`, Claude Code registration may copy them for compatibility with existing skills, but Codex/ChatGPT registration intentionally ignores them.
 
-To register new or updated skills, run `/grm-register-skills`.
+To register new or updated skills, run `/grm-skills-register`.
 
 ---
 
@@ -308,7 +316,7 @@ To register new or updated skills, run `/grm-register-skills`.
 - Verify `local_path` resolves correctly on the filesystem
 
 **Agent doesn't find new invocations**
-- Run `/grm-help` to refresh the dynamically-generated catalog
+- Run `/grm-meta-help` to refresh the dynamically-generated catalog
 
 **Summoning fails to clone**
 - Ensure network access to your git host (VPN if required)
@@ -316,6 +324,6 @@ To register new or updated skills, run `/grm-register-skills`.
 - Try `git ls-remote <url>` to test access
 
 **Skills not appearing after update**
-- Run `/grm-register-skills` to re-register all skills
+- Run `/grm-skills-register` to re-register all skills
 
 ---

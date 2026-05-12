@@ -20,7 +20,7 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 **Grimoire Invocations** (Domain Operations):
 - **[invocations/grimoire/create_grimoire.md](invocations/grimoire/create_grimoire.md)** - Create new grimoire (AI-guided)
 - **[invocations/grimoire/create_chapter.md](invocations/grimoire/create_chapter.md)** - Create new knowledge chapter
-- **[invocations/grimoire/improve_grimoire.md](invocations/grimoire/improve_grimoire.md)** - Improve your domain grimoire (/grm-improve)
+- **[invocations/grimoire/improve_grimoire.md](invocations/grimoire/improve_grimoire.md)** - Improve your domain grimoire (/grm-domain-improve)
 - **[invocations/grimoire/analyze_semantics.md](invocations/grimoire/analyze_semantics.md)** - Semantic clarity and naming analysis ✨
 
 **Arcana Invocations** (Maintainer Only):
@@ -28,7 +28,7 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 - **[invocations/arcana/validate_boundaries.md](invocations/arcana/validate_boundaries.md)** - Magical boundary enforcement ✨
 
 **Meta Invocations** (System Documentation):
-- **[invocations/meta/help.md](invocations/meta/help.md)** - Show invocation catalog and usage guide (/grm-help) 🔮
+- **[invocations/meta/help.md](invocations/meta/help.md)** - Show invocation catalog and usage guide (/grm-meta-help) 🔮
 - **[invocations/meta/base_invocation.md](invocations/meta/base_invocation.md)** - Generic invocation execution template
 
 ### Formulae (Blueprints)
@@ -39,15 +39,15 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 
 ### Skills (User-Facing Operations)
 - **[skills/](skills/)** - Skill source directory (registered to agent skill roots via `rites/register_skills.py`)
-- `/grm-create-grimoire` — Create new domain grimoire
-- `/grm-create-chapter` — Create new knowledge chapter
-- `/grm-improve` — Comprehensive grimoire improvement
-- `/grm-arcana-validate` — Validate structure compliance
-- `/grm-analyze-semantics` — Semantic naming analysis
+- `/grm-domain-create-grimoire` — Create new domain grimoire
+- `/grm-domain-create-chapter` — Create new knowledge chapter
+- `/grm-domain-improve` — Comprehensive grimoire improvement
+- `/grm-domain-validate-structure` — Validate structure compliance
+- `/grm-domain-analyze-semantics` — Semantic naming analysis
 - `/grm-arcana-validate-boundaries` — Magical boundary validation
 - `/grm-arcana-improve` — Improve Arcana (maintainer)
-- `/grm-help` — Show skill catalog and usage guide
-- `/grm-register-skills` — Re-register all skills from Arcana and domain grimoires
+- `/grm-meta-help` — Show skill catalog and usage guide
+- `/grm-skills-register` — Re-register all skills from Arcana and domain grimoires
 
 ### Summoning & Catalog
 - **[rites/summon.sh](rites/summon.sh)** - Grimoire summoning rite (one-command setup)

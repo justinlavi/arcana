@@ -71,7 +71,7 @@ Magical terms should NOT appear in chapter docs or leaf pages:
 - "Perform the rite" → "Run the script"
 
 **Exception**: References to Arcana itself are allowed:
-- ✅ "Use `/grm-improve` to optimize the grimoire"
+- ✅ "Use `/grm-domain-improve` to optimize the grimoire"
 - ✅ "See Arcana for universal invocations"
 
 ---
@@ -293,7 +293,7 @@ and upload documentation to the shared document repository.
 
 To configure your build, run the cmake-configure invocation:
 
-`/grm-help`
+`/grm-meta-help`
 ```
 
 **After**:
@@ -304,7 +304,7 @@ To configure your build, run the configuration command:
 
 `cmake -B build -S .`
 
-(Or use `/grm-help` for available Grimoire skills)
+(Or use `/grm-meta-help` for available Grimoire skills)
 ```
 
 ---
@@ -344,9 +344,9 @@ To configure your build, run the configuration command:
 
 This invocation is automatically invoked by:
 
-- `/grm-improve` - Validates boundaries in Phase 3.5
+- `/grm-domain-improve` - Validates boundaries in Phase 3.5
 - `/grm-arcana-improve` - Ensures Arcana universality
-- `/grm-create-grimoire` - Validates new grimoires at creation
+- `/grm-domain-create-grimoire` - Validates new grimoires at creation
 
 Can be run standalone:
 
@@ -365,9 +365,9 @@ Can be run standalone:
 
 ## Related Invocations
 
-- Semantic clarity check: `/grm-analyze-semantics`
-- Structure validation: `/grm-improve`
-- Full grimoire improvement: `/grm-improve`
+- Semantic clarity check: `/grm-domain-analyze-semantics`
+- Structure validation: `/grm-domain-improve`
+- Full grimoire improvement: `/grm-domain-improve`
 - Arcana evolution: `/grm-arcana-improve` (maintainer)
 
 ---

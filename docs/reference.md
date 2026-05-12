@@ -66,14 +66,14 @@ Page template: `GRIMOIRE_ARCANA/formulae/page.formula.md`
 
 | Action | Skill |
 |--------|-------|
-| Create new grimoire | `/grm-create-grimoire` |
-| Create new chapter | `/grm-create-chapter [topic]` |
-| Improve domain grimoire | `/grm-improve` |
-| Validate structure | `/grm-arcana-validate` |
-| Semantic analysis | `/grm-analyze-semantics` |
+| Create new grimoire | `/grm-domain-create-grimoire` |
+| Create new chapter | `/grm-domain-create-chapter [topic]` |
+| Improve domain grimoire | `/grm-domain-improve` |
+| Validate structure | `/grm-domain-validate-structure` |
+| Semantic analysis | `/grm-domain-analyze-semantics` |
 | Boundary validation | `/grm-arcana-validate-boundaries` |
 | Improve Arcana | `/grm-arcana-improve` |
-| Show help | `/grm-help` |
+| Show help | `/grm-meta-help` |
 
 Skills are registered to supported agent skill roots:
 
@@ -81,6 +81,12 @@ Skills are registered to supported agent skill roots:
 - Codex/ChatGPT: `~/.codex/skills/`
 
 Codex/ChatGPT registrations are pointer-only `SKILL.md` copies that resolve to Arcana or grimoire invocations and rites.
+
+Skill command names use explicit namespace roots:
+- Arcana: `grm-*`
+- Domain grimoires: `{skill_namespace}-*`, configured in `~/grimoire/catalog.json`
+
+Domain skill folders provide the subcommand after the namespace root. For example, catalog `"skill_namespace": "jpn"` plus `skills/travel-create-trip/` registers `/jpn-travel-create-trip`.
 
 ---
 

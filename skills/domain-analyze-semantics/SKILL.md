@@ -1,13 +1,13 @@
 ---
-name: grm-arcana-validate
-description: Validate grimoire structure compliance against Arcana formulae
+name: grm-domain-analyze-semantics
+description: Deep semantic analysis of naming and organization for discoverability and token efficiency
 user-invocable: true
-allowed-tools: Bash Read
+allowed-tools: Bash Read Write Edit
 ---
 
-# Validate Structure
+# Analyze Semantics
 
-You are validating grimoire structure compliance. Follow the invocation guide below.
+You are performing a deep semantic analysis on the active domain grimoire. Follow the invocation guide below.
 
 ## Precondition: Grimoire Directory Guard
 
@@ -26,9 +26,8 @@ You are validating grimoire structure compliance. Follow the invocation guide be
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
-- **Chapter formula**: `{{ARCANA_PATH}}/formulae/chapter_index.formula.md`
-- **Page formula**: `{{ARCANA_PATH}}/formulae/page.formula.md`
+- **Reference**: `{{ARCANA_PATH}}/docs/reference.md`
 
 ## Invocation
 
-!`cat {{ARCANA_PATH}}/invocations/grimoire/validate_structure.md`
+!`cat {{ARCANA_PATH}}/invocations/grimoire/analyze_semantics.md`

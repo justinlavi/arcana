@@ -134,7 +134,7 @@ Scans invocations/ directories and extracts metadata from invocation files
 Links to invocation files, doesn't duplicate their metadata
 
 <!-- improve_arcana.md - references -->
-"For invocation catalog, use /grm-help"
+"For invocation catalog, use /grm-meta-help"
 ```
 
 ### Step 4: Apply DRY Fixes
@@ -184,7 +184,7 @@ Ensure fixes prevent future drift:
 ✅ GOOD: "See formulae/ for templates"
 ❌ BAD: [Copy entire template into doc]
 
-✅ GOOD: "Run /grm-help for current invocation list"
+✅ GOOD: "Run /grm-meta-help for current invocation list"
 ❌ BAD: [Hardcoded invocation catalog]
 ```
 

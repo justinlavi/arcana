@@ -11,13 +11,13 @@ Display available Grimoire invocations dynamically by reading invocation files -
 ## Invocation
 
 ```
-/grm-help
+/grm-meta-help
 ```
 
 Or:
 
 ```
-/grm-help
+/grm-meta-help
 ```
 
 ---
@@ -26,14 +26,14 @@ Or:
 
 ### Single Source of Truth Architecture
 
-Unlike static documentation, `/grm-help` generates the invocation catalog **dynamically** by reading invocation files. This ensures:
+Unlike static documentation, `/grm-meta-help` generates the invocation catalog **dynamically** by reading invocation files. This ensures:
 - ✅ **Zero duplication** - invocation .md files are the only source
 - ✅ **Always current** - new invocations automatically appear
 - ✅ **Self-maintaining** - no manual catalog updates needed
 
 ### Execution Algorithm
 
-When a user casts `/grm-help`, execute this workflow:
+When a user casts `/grm-meta-help`, execute this workflow:
 
 #### Step 1: Scan Invocation Directories
 
@@ -154,17 +154,17 @@ Invocation                    | Invocation                        | Category
 💡 COMMON WORKFLOWS
 
 First time using Grimoire?
-  1. /grm-help (read this guide)
-  2. /grm-create-grimoire (create your domain grimoire)
-  3. /grm-create-chapter [topic] (add chapters)
-  4. /grm-improve (optimize periodically)
+  1. /grm-meta-help (read this guide)
+  2. /grm-domain-create-grimoire (create your domain grimoire)
+  3. /grm-domain-create-chapter [topic] (add chapters)
+  4. /grm-domain-improve (optimize periodically)
 
 Improving existing grimoire?
-  1. /grm-improve (comprehensive improvement)
+  1. /grm-domain-improve (comprehensive improvement)
      OR
-  2. /grm-analyze-semantics (just naming analysis)
+  2. /grm-domain-analyze-semantics (just naming analysis)
   3. /grm-arcana-validate-boundaries (just boundary check)
-  4. /grm-arcana-validate (just structure check)
+  4. /grm-domain-validate-structure (just structure check)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -182,7 +182,7 @@ Invocation catalogs (thin routers):
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**Cast `/grm-help` anytime for this dynamically-generated catalog!** 🔮
+**Cast `/grm-meta-help` anytime for this dynamically-generated catalog!** 🔮
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -207,7 +207,7 @@ No manual counting needed! ✅
 
 ### User Input
 ```
-/grm-help
+/grm-meta-help
 ```
 
 ### Claude's Process
@@ -236,7 +236,7 @@ display(catalog)
 🎨 CREATION INVOCATIONS
 
 🪄 create-grimoire
-   Invocation: /grm-create-grimoire
+   Invocation: /grm-domain-create-grimoire
    Purpose: Create new grimoire for your domain
    When: Starting new knowledge base, new department/team
 
@@ -247,7 +247,7 @@ display(catalog)
 
 ## Invocation File Requirements
 
-For `/grm-help` to extract properly, invocation files must have:
+For `/grm-meta-help` to extract properly, invocation files must have:
 - `# ` title heading (first line or near top)
 - `## Purpose` section
 - `## Invocation` section

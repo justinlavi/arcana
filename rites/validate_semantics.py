@@ -56,7 +56,7 @@ def main():
     print(f"Reference: {REFERENCE}")
     print()
     print("Note: This rite extracts data only.")
-    print("For intelligent semantic analysis, use: /grm-analyze-semantics")
+    print("For intelligent semantic analysis, use: /grm-domain-analyze-semantics")
     print()
 
     if not REFERENCE.is_file():
@@ -126,7 +126,7 @@ def main():
         print("No mechanical pattern violations")
         print()
         print("For intelligent semantic analysis:")
-        print("   /grm-analyze-semantics")
+        print("   /grm-domain-analyze-semantics")
         print()
         return 0
     else:
