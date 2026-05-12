@@ -2,8 +2,8 @@
 # rites/summon.sh
 # Grimoire Summoning Rite — Bootstrap (Linux/Mac)
 #
-# Ensures Python 3 is available, optionally prepares GUI dependencies,
-# then launches the cross-platform summoning script.
+# Prefers a GitHub Release binary when run from the public curl command,
+# then falls back to the Python source bootstrap when needed.
 #
 # One-liner entry point:
 #   curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash

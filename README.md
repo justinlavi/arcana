@@ -59,10 +59,18 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 
 This downloads the public summoning rite from GitHub, installs Arcana to `~/grimoire/arcana/`, and then uses the interactive flow to discover or select grimoires.
 
+When run from the public curl command, the summoning rite first tries to download the latest GitHub Release binary for your platform, verifies its checksum, and runs it. If no matching binary is available, it falls back to the Python source bootstrap.
+
 For forks or private mirrors, pass the Arcana repository URL explicitly:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_ARCANA_URL=https://github.com/your-org/arcana.git bash
+```
+
+To pin a specific release instead of the latest published release:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0 bash
 ```
 
 This clones Arcana and selected grimoires to `~/grimoire/`, sets up the local catalog, registers skills, and configures CLAUDE.md automatically.

@@ -20,8 +20,15 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 
 The script installs from the public Arcana GitHub repository by default. When run from a cloned Arcana checkout, it still detects the checkout's git origin automatically.
 
+When run from the public curl command, the summoning rite is release-first:
+1. Detects the current OS and architecture.
+2. Downloads the matching `grimoire-summon-*` asset from the latest GitHub Release.
+3. Verifies the `.sha256` checksum.
+4. Runs the binary.
+5. Falls back to the Python source bootstrap if the release asset is unavailable.
+
 The summoning rite:
-1. Checks dependencies (`git`, Python 3, and Dear PyGui for app mode)
+1. Checks runtime dependencies (`git`; Python 3 and Dear PyGui only if source fallback is needed)
 2. Installs Arcana to `~/grimoire/arcana/` (clone or pull)
 3. Discovers grimoires via git host API (GitLab/GitHub), falls back to static catalog
 4. Presents an interactive menu — pick which grimoires to install
@@ -32,7 +39,7 @@ The summoning rite:
 
 After summoning, open a new Claude Code session and try `/grm-help`.
 
-Dear PyGui is installed into a Grimoire-managed Python dependency cache for app mode, not into the Arcana repository. On Arch-based systems, the script may install `python-pip` with `pacman` first if the system Python does not include pip.
+Dear PyGui is bundled into release binaries. In source fallback mode, it is installed into a Grimoire-managed Python dependency cache, not into the Arcana repository. On Arch-based systems, the source fallback may install `python-pip` with `pacman` first if the system Python does not include pip.
 
 ### Dynamic Grimoire Discovery
 
@@ -56,6 +63,12 @@ export GRIMOIRE_SCOPE="https://gitlab.company.com/my-team"
 
 # Via the one-liner
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash -s -- --scope https://github.com/my-org
+```
+
+To pin a specific release asset instead of using GitHub's latest published release:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0 bash
 ```
 
 If no scope is provided, the script prompts interactively:

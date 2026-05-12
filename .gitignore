@@ -1,87 +1,45 @@
-# IDE and Editor
-.vscode/*
-!.vscode/tasks.json
-!.vscode/launch.json
-.github/copilot-instructions.md
-.cache/
-*.codex
-.claude/
-*.swp
-*.swo
-*~
+# OS and editor noise
 .DS_Store
 Thumbs.db
 desktop.ini
+*~
+*.swp
+*.swo
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
 
-# Build Artifacts, CMake, and Object Files
-CMakeUserPresets.json
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-install_manifest.txt
-CTestTestfile.cmake
-Testing/
-*.ninja
-*.ninja_deps
-*.ninja_log
-**/bin/
-**/build/
-dist/
-**/docs/latex/
-*.user
-*.cache
-*.o
-*.obj
-*.a
-*.lib
-*.so
-*.so.*
-*.dll
-*.dylib
-*.exe
+# Local agent and tool state
+.cache/
+.claude/
+*.codex
+agent/
 
-# Package Managers
-.conan/
-conan.lock
-conaninfo.txt
-conanbuildinfo.*
-vcpkg_installed/
-_deps/
-
-# Python
+# Python runtime and local environments
 __pycache__/
-.venv/
-*.pyc
-*.pyo
+*.py[cod]
 *.pyd
+.python-version
+.venv/
+venv/
+env/
 .pytest_cache/
 
-# Testing and Coverage
+# Build and release output
+build/
+dist/
+*.spec
+
+# Validation and generated reports
+.artifacts/
 **/reports/
-cobertura**
 **/coverage/
-*.gcda
-*.gcno
-*.gcov
-*.profdata
-*.profraw
-lcov.info
 coverage.info
+lcov.info
 
-# Debugging and Logs
-core.*
-*.dSYM/
-*.pdb
+# Logs and temporary files
 *.log
-
-# Temporary Files
 *.tmp
 *.temp
 *.bak
 *.orig
-
-# Rite Artifacts (validation logs, generated reports)
-.artifacts/
-
-# Local Development
-agent/

@@ -18,6 +18,8 @@ Expected assets:
 
 Actual architecture labels are produced by the build runner.
 
+`rites/summon.sh` is the single bootstrap entry point. Windows users can run it from Git Bash or WSL; the release workflow still produces a Windows binary for direct download and future Windows-specific bootstrap improvements.
+
 ---
 
 ## Local Build
@@ -67,9 +69,16 @@ Draft releases are useful for private review, but they are not useful for unauth
 
 ---
 
-## Bootstrap Strategy
+## Bootstrap Behavior
 
 `rites/summon.sh` prefers release assets when run through the public curl pipe. Running it from a local checkout keeps using local source by default, which is better for Arcana development.
+
+Public curl flow:
+1. Detect OS and architecture.
+2. Download `grimoire-summon-{platform}.tar.gz` from GitHub Releases.
+3. Download and verify `grimoire-summon-{platform}.tar.gz.sha256`.
+4. Extract and run the `grimoire-summon` binary.
+5. Fall back to the Python source bootstrap if any release step fails.
 
 Binary controls:
 - `GRIMOIRE_SUMMON_BINARY=auto` — default. Piped scripts try release binaries; local scripts use source.
