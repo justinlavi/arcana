@@ -12,26 +12,26 @@ The following principles apply whether you're using Grimoire for various domains
 
 ## How To Route (7 Steps)
 1) Start at `INDEX.md`.
-2) Classify request type and scope (Shared vs Project-specific).
+2) Classify the request: which chapter does it fall into? Is it shared or scoped to a particular project / use case?
 3) Follow one explicit route to `chapters/<chapter>/INDEX.md`.
-4) Read one primary leaf doc (+ one related leaf only when router says so).
-5) For code generation edits, apply `chapters/code/INDEX.md`; for documentation generation edits, apply `chapters/documentation/INDEX.md`.
-6) For project overrides, route through `chapters/projects/INDEX.md` then one project router.
+4) Read one primary leaf doc (+ one related leaf only when the router says so).
+5) For subject-specific work, follow the subject's chapter router (e.g. `chapters/recipes/INDEX.md` in a cooking grimoire, `chapters/onboarding/INDEX.md` in an HR grimoire).
+6) For project / scope-specific overrides, route through `chapters/projects/INDEX.md` (or whatever the grimoire calls its scope folder) then the specific scope router.
 7) When adding knowledge, update routers with explicit pointers; no exploratory wording.
 
 ## Scope Rules
-- Shared chapters (`repo_structure`, `build_system`, `workflows`, `code`, `documentation`, `glossary`, `shared`, `grimoire`) store cross-project rules.
-- `chapters/projects/<project>/` stores project-only overrides and values.
-- Never place project-specific knobs in shared chapters.
-- Never duplicate shared invariants in project docs.
+- **Shared chapters** store rules that apply across all scopes the grimoire covers (e.g. company-wide policies in an HR grimoire, kitchen-wide techniques in a cooking grimoire).
+- **Scope-specific chapters** (often under a `projects/`, `clients/`, `teams/`, or similar folder) store overrides and values that only apply to one scope.
+- Never place scope-specific values in shared chapters.
+- Never duplicate shared invariants in scope-specific docs — link to the shared canonical page instead.
 
 ## Templates And Snippets
 - Chapter-local assets live with their chapter:
-  - `chapters/<chapter>/formulae/`
+  - `chapters/<chapter>/templates/`
   - `chapters/<chapter>/snippets/`
-- Use `chapters/shared/formulae/` only for cross-chapter reusable assets.
+- Use `chapters/shared/templates/` only for cross-chapter reusable assets.
 - Routers should point to concrete files (not "search" instructions).
-- **Templates are prescriptive standards**: They define how code should be structured across Olympus projects (not drift sources).
+- **Templates are prescriptive standards**: they define how content should be structured across the grimoire (not drift sources).
 
 ## Content Types And Drift Management
 

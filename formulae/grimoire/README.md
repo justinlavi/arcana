@@ -67,6 +67,6 @@ The summoning rite (`GRIMOIRE_ARCANA/rites/summon.sh`) handles registration auto
 
 ## Getting Help
 
-- **Domain content**: Ask in #{{DOMAIN_CHANNEL}} domain channel
-- **Grimoire commands**: Use `/grm-meta-help` to list all available invocations
-- **Arcana docs**: See `GRIMOIRE_ARCANA/README.md` and `GRIMOIRE_ARCANA/docs/`
+- **Grimoire commands**: Use `/grm-meta-help` to list all available skills.
+- **Arcana docs**: See `GRIMOIRE_ARCANA/README.md` and `GRIMOIRE_ARCANA/docs/`.
+- **About this grimoire's content**: see the maintainer or wherever this project's contributors coordinate.

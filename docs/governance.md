@@ -1,372 +1,156 @@
 # Arcana Governance
----
 
 ## Purpose
 
-This document defines how **Arcana** is maintained, versioned, and updated to ensure consistency and prevent drift across all domain grimoires.
+Defines how **Arcana** itself is maintained, versioned, and updated to keep all installed grimoires in sync.
+
+This is for the *Arcana maintainer* — the person who owns the Arcana fork your domain grimoires reference. If you are only writing chapters in a domain grimoire, you don't need this document.
+
+---
 
 ## Core Principle
 
-**Arcana is the single source of truth for all domains.**
+**Arcana is the single source of truth for the system.** Domain grimoires *reference* Arcana — they don't copy from it.
 
-- All domains **reference** Arcana (not copy)
-- The Arcana maintainer maintains universal content
-- Updates propagate to all domains via the shared installation
-- Breaking changes follow strict announcement protocol
+Updates to Arcana propagate to every grimoire that points at the same installation. Breaking changes follow a deprecation protocol so downstream grimoires can adapt.
 
 ---
 
 ## Arcana Maintainer
 
-### Role Definition
-
-**The Arcana maintainer** is the singular owner and maintainer of Arcana.
-
-**Current maintainer**: [Your Name]
+The Arcana maintainer is whoever owns the Arcana fork others reference. For a personal install that's you; for a shared fork it's whoever the contributors agreed on.
 
 **Responsibilities**:
-- Maintain universal invocations, formulae, rites, and documentation
-- Review and approve changes to Arcana
-- Version releases and maintain CHANGELOG.md
-- Announce updates to all domains
-- Provide migration guides for breaking changes
-- Monitor domain feedback and incorporate improvements
+- Maintain universal invocations, formulae, rites, and documentation.
+- Review and approve changes to Arcana.
+- Cut versioned releases and maintain `CHANGELOG.md`.
+- Provide migration guides for breaking changes (see [Deprecation](#deprecation-policy)).
+- Triage feedback from grimoire authors and incorporate improvements.
 
-The Arcana maintainer role can be delegated or transferred as needed; announce transitions to all domains.
+The role is transferable — record handovers in the CHANGELOG.
 
 ---
 
 ## What Belongs in Arcana
 
-### ✅ Arcana Content (Universal)
+### ✅ Universal content (Arcana)
 
-**Include in Arcana** if it applies to ALL departments:
+Include in Arcana if it applies to **every** grimoire that references it:
 
-- **Documentation**: README, quickstart.md, operating_model.md
-- **Invocations**: base-formula, create-chapter, improve
-- **Formulae**: chapter-index, knowledge-doc, invocation formulae
-- **Rites**: Validation and automation scripts
-- **Resources**: Branding assets (icon, logos)
-- **Governance**: This file, CHANGELOG.md
+- **Documentation**: README, installation, quickstart, operating model, reference, governance.
+- **Invocations**: domain operations (create-grimoire, create-chapter, improve), Arcana maintenance (validators, quality), meta (help).
+- **Formulae**: chapter-index, page, invocation, grimoire scaffolding.
+- **Rites**: validation, registration, library sync, etc.
+- **Resources**: branding assets.
 
-### ❌ Domain-Specific Content
+### ❌ Domain-specific content
 
-**DO NOT include in Arcana**:
+Do **not** include in Arcana:
 
-- Domain-specific chapters (build_system, onboarding, etc.)
-- Project-specific knowledge (Olympus, gcs_foundation, etc.)
-- Domain-specific invocations or formulae
-- Custom rites that only one domain uses
+- Chapters specific to one subject area (recipes, HR policies, codebase structure, …).
+- Skills specific to one domain (those live under `<grimoire>/skills/`, namespaced by the grimoire's manifest).
+- Custom rites only one grimoire uses.
+- Real-world data: company names, project names, employee data, customer data, credentials.
 
-**Where it belongs**: `grimoire_{domain}/chapters/`
-
----
-
-## Change Management
-
-### Types of Changes
-
-#### 1. Patch Updates (v1.0.0 → v1.0.1)
-**Definition**: Bug fixes, typo corrections, documentation clarifications
-
-**Process**:
-- Fix the issue
-- Update CHANGELOG.md
-- Commit with message: `fix: [description]`
-- Push to production (no announcement needed)
-
-**Examples**:
-- Fix typo in README
-- Correct broken link in quickstart.md
-- Bug fix in validation scripts
-
-#### 2. Minor Updates (v1.0.0 → v1.1.0)
-**Definition**: New features, new formulae, improvements (backward compatible)
-
-**Process**:
-1. Propose change (issue tracker, domain discussion, or doc)
-2. The Arcana maintainer reviews (1-2 business days)
-3. Approve and merge
-4. Update CHANGELOG.md
-5. Commit with message: `feat: [description]`
-6. Announce in domain communication channel
-
-**Examples**:
-- Add new formula (api-endpoint.formula.md)
-- Improve base_invocation.md with new section
-- Add new invocation (refactor_chapter.md)
-
-#### 3. Major Updates (v1.0.0 → v2.0.0)
-**Definition**: Breaking changes that require domain action
-
-**Process**:
-1. Propose change with detailed justification
-2. The Arcana maintainer + domain champions review (1 week)
-3. Create migration guide (MIGRATION.md)
-4. Announce 2 weeks in advance with migration path
-5. Approve and merge
-6. Update CHANGELOG.md
-7. Commit with message: `BREAKING: [description]`
-8. Monitor domain migrations, offer support
-
-**Examples**:
-- Change invocation formula structure (requires domains to update usage)
-- Rename Arcana files (breaks existing references)
-- Change router format (requires INDEX.md updates)
-
-### Review Process
-
-#### Patch & Minor Updates
-- **Reviewer**: The Arcana maintainer
-- **Timeline**: 1-2 business days
-- **Approval**: Arcana maintainer approval required
-
-#### Major Updates
-- **Reviewers**: The Arcana maintainer + domain champions
-- **Timeline**: 1 week discussion period
-- **Approval**: Arcana maintainer approval + no blocking objections from domains
-- **Migration Guide**: Required before approval
+**Where these belong**: in the relevant `<grimoire>-grimoire/chapters/` or `<grimoire>-grimoire/skills/`.
 
 ---
 
 ## Versioning
 
-### Semantic Versioning
+Arcana follows [Semantic Versioning 2.0.0](https://semver.org/) — `MAJOR.MINOR.PATCH`.
 
-Arcana follows [Semantic Versioning 2.0.0](https://semver.org/):
+| Bump | Trigger | Examples |
+|---|---|---|
+| **PATCH** (`v1.0.0 → v1.0.1`) | Bug fixes, typo corrections, doc clarifications | Fix a typo, repair a broken link, fix a rite that errors on edge cases |
+| **MINOR** (`v1.0.0 → v1.1.0`) | New features, additions, improvements (backward compatible) | New formula, new validator, new optional skill |
+| **MAJOR** (`v1.0.0 → v2.0.0`) | Breaking changes — downstream grimoires must adapt | Renamed file, restructured router, removed skill, changed manifest schema |
 
-**Format**: `MAJOR.MINOR.PATCH`
-
-- **MAJOR** (v2.0.0): Breaking changes
-- **MINOR** (v1.1.0): New features (backward compatible)
-- **PATCH** (v1.0.1): Bug fixes
-
-### Version Storage
-
-**Current Version**: Tracked in:
+The current version lives in three places:
 - `VERSION` (single source of truth)
-- `CHANGELOG.md`
-- Git tags
+- `CHANGELOG.md` (entry per release)
+- Git tags (`v1.x.y`)
 
 ---
 
-## Update Announcements
+## Change Workflow
 
-- **Patch**: No announcement needed
-- **Minor**: Post in domain communication channel — what's new, no action required
-- **Major (Breaking)**: Domain communication channel + email to domain champions, 2-week advance notice with migration guide in CHANGELOG.md
+### Patch / Minor
 
----
+1. Make changes; run `/grm-arcana-validate-all` (or `python3 rites/validate.py`).
+2. Add a `CHANGELOG.md` entry under `[Unreleased]`.
+3. Commit (`fix:` for patch, `feat:` for minor).
+4. Tag and push.
 
-## Domain Responsibilities
+### Major (Breaking)
 
-### What Departments Own
+1. Document the proposed change and the migration path *before* implementing.
+2. Mark anything being removed as deprecated for at least one minor release first (see [Deprecation](#deprecation-policy)).
+3. Implement the change. Run the full validator suite.
+4. Add a `CHANGELOG.md` entry. Use the `### Removed (breaking)` heading and write a migration recipe inline.
+5. If the change requires user-side action (e.g. running a migration rite), state the command explicitly.
+6. Commit (`BREAKING:` prefix), tag, push.
 
-Each domain (`grimoire_{domain}/`) is responsible for:
-
-1. **Creating chapters**: Using Arcana's create-chapter invocation
-2. **Maintaining chapters**: Keeping knowledge fresh
-3. **Validating content**: Reviewing pages for freshness regularly
-4. **Reporting issues**: Bugs in Arcana invocations, formulae, or rites
-5. **Providing feedback**: Suggestions for Arcana improvements
-
-### What Departments Should NOT Do
-
-❌ **Copy Arcana files** to their grimoire (reference instead)
-❌ **Modify Arcana files** directly (propose changes via the Arcana maintainer)
-❌ **Create duplicate invocations/formulae** (use Arcana's or propose additions)
-❌ **Ignore Arcana updates** (at least review quarterly)
-
----
-
-## Contribution Guidelines
-
-### Proposing Arcana Improvements
-
-Anyone can propose improvements to Arcana:
-
-**Step 1**: Identify the need
-- Does this benefit multiple domains?
-- Is it universal enough for Arcana?
-- Or is it domain-specific? (then add to your grimoire)
-
-**Step 2**: Propose via one of:
-- issue tracker 
-- domain communication channel thread
-- Direct message to the Arcana maintainer
-- Document in `proposals/` (for complex proposals)
-
-**Step 3**: Discussion
-- The Arcana maintainer reviews
-- Domain champions provide feedback
-- Iterate on proposal
-
-**Step 4**: Implementation
-- The Arcana maintainer implements (or contributor with supervision)
-- Review and approval
-- Merge and version bump
-
-### Contribution Types
-
-**Documentation**:
-- Clarifications, examples, better explanations
-- No approval needed for typos/small fixes
-- Larger rewrites require review
-
-**Formulae**:
-- New formulae for common chapter types
-- Improvements to existing formulae
-- Requires review (ensure universality)
-
-**Invocations**:
-- New automated workflows
-- Improvements to existing invocations
-- Requires thorough review (invocations execute code)
-
-**Rites**:
-- Validation, automation, utilities
-- Requires code review + testing
-
----
-
-## Arcana Update Workflow
-
-### 1. Make Changes
-
-```bash
-cd ~/grimoires/arcana
-
-# Create branch
-git checkout -b improve/better-formula
-
-# Make changes
-vim formulae/page.formula.md
-
-# Test changes (if applicable)
-```
-
-### 2. Update CHANGELOG.md
-
-```markdown
-## [1.1.0] - 2026-03-25
-
-### Added
-- New section in page.formula.md for "Common Mistakes"
-
-### Changed
-- Improved base_invocation.md error handling section
-
-### Fixed
-- Typo in quickstart.md step 3
-```
-
-### 3. Update Version
-
-```markdown
-# In README.md
-**Version**: 1.1.0
-```
-
-### 4. Commit
-
-```bash
-git add .
-git commit -m "feat: improve knowledge-doc formula with common mistakes section"
-```
-
-### 5. Review (if needed)
-
-- Patch: Self-review OK
-- Minor: 1 Arcana maintainer review
-- Major: Arcana maintainer + domain champions
-
-### 6. Merge & Tag
-
-```bash
-git tag v1.1.0
-git push origin main --tags
-```
-
-### 7. Announce (if needed)
-
-- Patch: No announcement
-- Minor: domain communication channel
-- Major: domain communication + email, 2 weeks advance notice
-
----
-
-## Quality Standards
-
-### Arcana Files Must
-
-✅ **Be universal**: Apply to all domains
-✅ **Be tested**: Manually tested or validated before release
-✅ **Be documented**: Include clear instructions, examples
-✅ **Be versioned**: Track changes in CHANGELOG.md
-✅ **Be maintained**: No stale content, update as needed
-
-### Arcana Files Must NOT
-
-❌ **Contain hardcoded paths**: Use relative paths only
-❌ **Reference domain-specific content**: Keep generic
-❌ **Include secrets or credentials**: Never commit sensitive data
-❌ **Duplicate external implementation details**: Link to source of truth instead
-❌ **Break existing domain grimoires**: Maintain backward compatibility
+For an example of a clean breaking-change entry, see the `~/grimoire/` → `~/grimoires/` rename in `CHANGELOG.md`.
 
 ---
 
 ## Deprecation Policy
 
-### Deprecating Arcana Content
-
 When removing or replacing Arcana content:
 
-**Step 1**: Mark as deprecated (1 version before removal)
-```markdown
-## Deprecated: old_spell.md
+1. **Mark deprecated** in a minor release. Add a note at the top of the file (or a `Deprecated:` row in the relevant table) stating the replacement and the planned removal version.
+2. **Announce** in the `CHANGELOG.md` entry under `### Deprecated`. Include the migration path.
+3. **Remove** in a major release. Delete the deprecated content; update every reference; document the removal under `### Removed (breaking)`.
 
-**Status**: Deprecated in v1.5.0, will be removed in v2.0.0
-**Replacement**: Use new_spell.md instead
-**Migration Guide**: See CHANGELOG.md for migration details
-```
-
-**Step 2**: Announce deprecation
-- Include in version announcement
-- Explain why and what to use instead
-
-**Step 3**: Remove in major version
-- Delete deprecated content
-- Update all references
-- Document in CHANGELOG.md
-
-**Minimum Deprecation Period**: 1 minor version (or 3 months, whichever is longer)
+**Minimum window**: at least one minor release between deprecation and removal.
 
 ---
 
-## Security & Access Control
+## Quality Standards
 
-### Arcana Repository Access
+Arcana files must:
 
-**Read Access**: All employees (public within company)
-**Write Access**: Arcana maintainer only
+- ✅ Apply universally — no domain-specific content (see [What Belongs in Arcana](#what-belongs-in-arcana)).
+- ✅ Use generic example names (`cooking-grimoire`, `hr-grimoire`, `Domain A`, `Project Alpha`, `Alice/Bob`). Real product/company/person names appear only when documenting an actual integration.
+- ✅ Use relative paths inside the repo. Use `{{ARCANA_PATH}}` / `{{GRIMOIRE_PATH}}` placeholders in skill files; the registration rite resolves them.
+- ✅ Pass the full validator suite (`/grm-arcana-validate-all`) before commit.
 
-**File Sharing Permissions**:
-- Arcana repo: Read-only for all domains, write for the Arcana maintainer
-- Domain grimoire root: Read/Write for domain, Read-only for others (optional)
+Arcana files must **not**:
 
-### Secrets Management
-
-❌ **NEVER** commit to the Arcana repo:
-- API keys, passwords, tokens
-- Employee names, emails, PII
-- Proprietary algorithms or trade secrets
-- Customer data
-
-✅ **DO** reference where secrets live:
-```markdown
-## Primary Sources
-- API keys: HashiCorp Vault → path/to/secrets
-- Employee data: HRIS system (login required)
-```
+- ❌ Contain hardcoded user paths or machine-specific values.
+- ❌ Reference real grimoire content (chapter contents, real policy text, real recipes).
+- ❌ Include secrets, credentials, PII, or proprietary data.
+- ❌ Break existing grimoires without a deprecation cycle.
 
 ---
+
+## Domain Grimoire Responsibilities
+
+Each domain grimoire is responsible for:
+
+1. **Its own content**: chapters, skills, manifest. Use Arcana's `/grm-domain-create-chapter` and the page formula for new pages.
+2. **Staying in step with Arcana**: pull updates periodically; run `/grm-domain-validate-structure` after pulling.
+3. **Reporting issues** in Arcana itself (broken invocations, formula bugs, validator false positives).
+
+Domain grimoires must **not**:
+
+- ❌ Copy Arcana files into their own repo (reference instead).
+- ❌ Modify Arcana files directly. Propose changes to the maintainer of the Arcana fork they use.
+- ❌ Create chapters / formulae / rites in Arcana folder names (`invocations/`, `formulae/`, `rites/`) inside their own grimoire — those folder names are reserved for Arcana.
+- ❌ Ignore breaking-change announcements. Re-run `/grm-domain-validate-structure` after a major Arcana version bump.
+
+---
+
+## Security
+
+Arcana is meant to be public-friendly. Whether a fork lives on github.com, a private GitLab, or a corporate-internal git host, the same rules apply:
+
+- ❌ Never commit credentials, tokens, API keys, PII, customer data, or proprietary information to Arcana.
+- ✅ When pages need to reference where sensitive data lives, point to the external system *by name and location*, never with the data inline:
+  ```markdown
+  ## Primary Sources
+  - Production credentials: secrets manager → path/to/secret (auth required)
+  - User contact data: CRM / identity provider (auth required)
+  ```
+- Read/write access to the Arcana repo is whatever your fork's git host enforces. The maintainer decides who can merge.

@@ -16,13 +16,13 @@ When **using** or **talking about** Grimoire itself:
 
 ### 📝 The Content = Practical
 When **creating knowledge** inside chapters:
-- Use natural, domain-specific terminology
+- Use natural, subject-specific terminology
+- Personal / hobby: `recipes/`, `techniques/`, `equipment/`, `notes/`
+- Operations / HR: `policies/`, `guides/`, `checklists/`, `forms/`
 - Engineering: `templates/`, `scripts/`, `snippets/`, `configs/`
-- Operations: `policies/`, `guides/`, `checklists/`
-- Business: `playbooks/`, `frameworks/`, `worksheets/`
 - **Never** create `invocations/`, `formulae/`, or `rites/` in domain grimoires
 
-**Why?** Discoverability and clarity. Engineers search for "CMake template" not "build formula".
+**Why?** Discoverability and clarity. A cook searches for "sourdough recipe" not "bread formula".
 
 ### AI Agents
 - **Magical language** for Grimoire operations: "performing invocation", "consulting grimoire", "routing to chapter", `/grm-*` skills
@@ -80,7 +80,7 @@ Skill command names use explicit namespace roots:
 - Arcana: `grm-*` (declared in `arcana/grimoire.json`)
 - Domain grimoires: `{namespace}-*`, declared in each grimoire's `grimoire.json`
 
-Domain skill folders provide the subcommand after the namespace root. For example, a grimoire with `"namespace": "jpn"` in its `grimoire.json` plus `skills/travel-create-trip/` registers `/jpn-travel-create-trip`. Source `SKILL.md` files use `name: {{NAMESPACE}}-<slug>` and the registration rite substitutes the namespace at install time.
+Domain skill folders provide the subcommand after the namespace root. For example, a grimoire with `"namespace": "cook"` in its `grimoire.json` plus `skills/recipe-add/` registers `/cook-recipe-add`. Source `SKILL.md` files use `name: {{NAMESPACE}}-<slug>` and the registration rite substitutes the namespace at install time.
 
 ---
 
@@ -90,15 +90,20 @@ Grimoire uses two library files. The library is a **pure registry** — it recor
 
 ### Global library (Arcana repo)
 
-`library.json` at the Arcana repo root. Lists grimoires available for the summoning rite to install. Each deployment populates it with its own grimoires and URLs.
+`library.json` at the Arcana repo root. Lists grimoires available for the summoning rite to install. Each deployment of Arcana populates it with the grimoires that fork distributes.
 
 ```json
 {
   "grimoires": {
-    "olympus-grimoire": {
-      "name": "Olympus",
-      "description": "Olympus domain grimoire",
-      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git"
+    "cooking-grimoire": {
+      "name": "Cooking",
+      "description": "Personal cooking knowledge: recipes, techniques, equipment",
+      "online_path": "https://git.example.com/you/cooking-grimoire.git"
+    },
+    "hr-grimoire": {
+      "name": "HR",
+      "description": "Onboarding, policies, benefits, performance reviews",
+      "online_path": "https://git.example.com/your-team/hr-grimoire.git"
     }
   }
 }
@@ -116,9 +121,13 @@ Fields:
 ```json
 {
   "grimoires": {
-    "olympus-grimoire": {
-      "local_path": "$HOME/grimoires/olympus-grimoire",
-      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git"
+    "cooking-grimoire": {
+      "local_path": "$HOME/grimoires/cooking-grimoire",
+      "online_path": "https://git.example.com/you/cooking-grimoire.git"
+    },
+    "hr-grimoire": {
+      "local_path": "$HOME/grimoires/hr-grimoire",
+      "online_path": "https://git.example.com/your-team/hr-grimoire.git"
     }
   }
 }
@@ -138,9 +147,9 @@ Every grimoire (and Arcana itself) declares its identity in a `grimoire.json` fi
 
 ```json
 {
-  "name": "olympus-grimoire",
-  "namespace": "oly",
-  "description": "Olympus engineering domain grimoire"
+  "name": "cooking-grimoire",
+  "namespace": "cook",
+  "description": "Personal cooking knowledge: recipes, techniques, equipment"
 }
 ```
 
@@ -162,9 +171,9 @@ When creating a new grimoire, `/grm-domain-create-grimoire` prompts for the name
 | Key | Purpose | Example |
 |-----|---------|---------|
 | `GRIMOIRE_ARCANA` | Reference Arcana from anywhere | `GRIMOIRE_ARCANA/docs/quickstart.md` |
-| `{domain}-grimoire` | Reference a specific domain grimoire | `olympus-grimoire/chapters/build_system/INDEX.md` |
+| `{domain}-grimoire` | Reference a specific domain grimoire | `cooking-grimoire/chapters/breads/sourdough.md` |
 
-**Why?** Library keys match the actual folder slug. `olympus-grimoire` resolves to `~/grimoires/olympus-grimoire/`. `GRIMOIRE_ARCANA` is the exception — Arcana is the engine, not a domain grimoire.
+**Why?** Library keys match the actual folder slug. `cooking-grimoire` resolves to `~/grimoires/cooking-grimoire/`. `GRIMOIRE_ARCANA` is the exception — Arcana is the engine, not a domain grimoire.
 
 **In `CLAUDE.md` and `AGENTS.md`**, the library maps keys to actual filesystem paths:
 ```markdown
@@ -179,20 +188,20 @@ When creating a new grimoire, `/grm-domain-create-grimoire` prompts for the name
 
 When creating new grimoires, use these placeholders in formula templates:
 
-| Placeholder | Description |
-|-------------|-------------|
-| `{{GRIMOIRE_NAME}}` | Full grimoire name (e.g., "Knowledge Domain") |
-| `{{GRIMOIRE_TOKEN}}` | All caps token (e.g., "DOMAIN") |
-| `{{GRIMOIRE_DOMAIN}}` | Domain category (e.g., "engineering") |
-| `{{GRIMOIRE_PURPOSE}}` | One-line purpose |
-| `{{GRIMOIRE_PURPOSE_DETAILED}}` | Detailed purpose |
-| `{{GRIMOIRE_DIRECTORY}}` | Filesystem name (e.g., "grimoire_domain_a") |
-| `{{CHAPTER_ROUTES}}` | Generated routing pointers |
-| `{{CHAPTER_LIST}}` | List of chapters with descriptions |
-| `{{CHAPTER_TREE}}` | Directory tree of chapters |
-| `{{EXAMPLE_CHAPTER}}` | Example chapter name |
-| `{{OWNER_DOMAIN}}` | Domain that owns the grimoire |
-| `{{DOMAIN_CHANNEL}}` | Domain's communication channel |
-| `{{CREATION_DATE}}` | Date the grimoire was created |
+| Placeholder | Description | Example value |
+|-------------|-------------|---------------|
+| `{{GRIMOIRE_NAME}}` | Display name | `Cooking`, `HR` |
+| `{{GRIMOIRE_TOKEN}}` | All-caps token | `COOKING`, `HR` |
+| `{{GRIMOIRE_DOMAIN}}` | Subject area / category | `cooking`, `human resources` |
+| `{{GRIMOIRE_PURPOSE}}` | One-line purpose | `personal cooking knowledge` |
+| `{{GRIMOIRE_PURPOSE_DETAILED}}` | Detailed purpose | `recipes, techniques, equipment, and ingredient inventories` |
+| `{{GRIMOIRE_DIRECTORY}}` | Filesystem name | `cooking-grimoire`, `hr-grimoire` |
+| `{{SKILL_NAMESPACE}}` | Short slug for skill prefix | `cook`, `hr` |
+| `{{CHAPTER_ROUTES}}` | Generated routing pointers (filled by create_grimoire) | — |
+| `{{CHAPTER_LIST}}` | List of chapters with descriptions | — |
+| `{{CHAPTER_TREE}}` | Directory tree of chapters | — |
+| `{{EXAMPLE_CHAPTER}}` | One example chapter name | `recipes`, `onboarding` |
+| `{{OWNER_DOMAIN}}` | Who maintains this grimoire | `Personal`, `People Ops` |
+| `{{CREATION_DATE}}` | ISO date the grimoire was created | `2026-05-12` |
 
 ---

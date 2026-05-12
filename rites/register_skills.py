@@ -10,14 +10,14 @@ Each grimoire (and Arcana) declares its namespace in `grimoire.json` at the
 grimoire root:
 
     {
-      "name": "olympus-grimoire",
-      "namespace": "oly",
+      "name": "cooking-grimoire",
+      "namespace": "cook",
       "description": "..."
     }
 
 Domain skill source folders provide the subcommand path after the namespace.
-For example, namespace "oly" plus skills/gui-create-plugin registers
-as /oly-gui-create-plugin.
+For example, namespace "cook" plus skills/recipe-add registers as
+/cook-recipe-add.
 
 Source SKILL.md files use `{{NAMESPACE}}-<slug>` in their `name:` frontmatter
 field; the rite substitutes the placeholder during registration.

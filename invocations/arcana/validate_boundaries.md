@@ -23,11 +23,11 @@ Also runs as part of `/grm-domain-improve` and `/grm-arcana-improve`.
 
 ## Rules enforced
 
-1. **No magical directories in domain grimoires.** `invocations/`, `formulae/`, `rites/` exist only inside Arcana. Domain equivalents: `templates/`, `scripts/`, `snippets/`, `configs/`, `policies/`, `guides/`.
+1. **No magical directories in domain grimoires.** `invocations/`, `formulae/`, `rites/` exist only inside Arcana. Domain equivalents: `templates/`, `scripts/`, `snippets/`, `configs/`, `policies/`, `guides/`, `recipes/`, `playbooks/` — whatever fits the subject.
 2. **No magical terminology in chapter prose.** Phrases like "perform the invocation" or "consult the formula" belong in Arcana docs only. Referencing Arcana by name (e.g. "run `/grm-domain-improve`") is fine.
 3. **No platform-specific assumptions in shared content.** Slack, SharePoint, Confluence, Teams, Jira, GitHub etc. should be generic ("communication channel", "document repository", "issue tracker") unless documenting an actual integration.
-4. **No team/department buzzwords in shared content.** HR, Marketing, Legal, Sales, Finance etc. become "domain", "knowledge area", "your team".
-5. **Generic example names.** Use `Domain A`, `Project Alpha`, `Alice/Bob`, `{Your Project}`. Real company / product / person names only when documenting actual integrations.
+4. **No prescriptive team/department buzzwords in shared chapters.** Don't write "the HR team owns this" in shared content unless the grimoire is itself an HR grimoire (in which case department naming is the subject and is fine). Words like HR, Marketing, Legal, Sales, Finance get scrubbed when they're acting as scope assumptions about the *reader*, not the *content*.
+5. **Generic example names in Arcana.** When Arcana shows examples, use the canonical pair `cooking-grimoire` (personal) and `hr-grimoire` (workplace). For sub-examples use `Alice/Bob`, `Project Alpha`, `{your-grimoire}`. Real company/product/person names only when documenting an actual integration. (Domain grimoires may use whatever real names their subject requires.)
 6. **Arcana is universal.** When `--arcana` is set, rules 1–5 apply at zero tolerance. No specific domains, platforms, hardcoded paths, or environment assumptions anywhere.
 
 ## Where the rules relax
@@ -52,19 +52,19 @@ grep -rniE 'invoke .*invocation|consult .*formula|perform .*rite|cast .*spell' c
 
 Skip references to Arcana itself (`/grm-*` skill names, "see Arcana", etc.). Rewrite the rest in practical voice.
 
-### 3. Platform / department language in shared content
+### 3. Platform / scope-assumption language in shared content
 
 ```bash
 # Platforms
 grep -rniE '\b(Slack|Teams|Discord|SharePoint|Confluence|Google Drive|Jira|Bitbucket)\b' chapters/ \
   | grep -v chapters/projects/
 
-# Departments / roles
+# Scope-assumption words (only flag when the grimoire's subject isn't itself one of these)
 grep -rniE '\b(HR|Legal|Marketing|Sales|Finance)\b|\b(VP|Director|Manager) of\b' chapters/ \
   | grep -v chapters/projects/
 ```
 
-Hits outside `chapters/projects/` should be rewritten generically (see `docs/reference.md` for the mapping table). Hits inside `chapters/projects/` are allowed.
+Hits outside `chapters/projects/` should be reviewed: if the grimoire's subject *is* HR / Sales / etc., these terms are fine; otherwise rewrite generically. Hits inside `chapters/projects/` are always allowed.
 
 ### 4. Example names
 
@@ -90,7 +90,7 @@ Magical Boundary Compliance: PASS | FAIL
 For each violation, report file, line, offending text, and suggested fix. Group by severity:
 
 - **Critical**: magical directories in a domain; any violation in Arcana
-- **Warning**: magical terminology or platform/department language in shared chapters
+- **Warning**: magical terminology or unwarranted platform / scope-assumption language in shared chapters
 - **Info**: example names that work but could be more generic
 
 ## Enforcement levels

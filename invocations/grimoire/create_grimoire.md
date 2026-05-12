@@ -25,13 +25,13 @@ AI-guided conversational setup that scaffolds a complete grimoire from the formu
 
 Have a conversation, not a form. Ask one question at a time and probe for specifics:
 
-- What domain is this for?
+- What subject area is this grimoire for? (Personal hobby? Team / project knowledge base? Something else?)
 - What questions should the grimoire answer?
-- What documents/processes/knowledge does the domain handle?
-- Who are the primary users?
-- What 2–4 letter slug should prefix this grimoire's skills? Must match `^[a-z][a-z0-9]*$` (e.g. `oly` yields `/oly-area-verb-object`).
+- What documents, processes, or knowledge does it cover?
+- Who are the primary users — just you, a team, public?
+- What 2–4 letter slug should prefix this grimoire's skills? Must match `^[a-z][a-z0-9]*$` (e.g. `cook` for a cooking grimoire yields `/cook-recipe-add`; `hr` for an HR grimoire yields `/hr-onboarding-checklist`).
 
-Capture: `name`, `directory` (snake_case), `token` (all-caps), `skill_namespace`, `purpose` (one sentence), `purpose_detailed`, `chapter_category`, `owner_team`, `team_channel`, `creation_date` (today).
+Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `token` (all-caps), `skill_namespace`, `purpose` (one sentence), `purpose_detailed`, `owner` (whoever maintains it — a person, team, or "personal"), `creation_date` (today).
 
 ---
 
@@ -41,8 +41,13 @@ Propose 5–10 chapters grounded in what the user described. Recommend they star
 
 Chapter naming:
 - `snake_case`, lowercase
-- Specific (`pto_policies`, not `hr_stuff`)
-- Topic or action
+- Specific (`sourdough` not `breads_stuff`; `pto_policies` not `hr_stuff`)
+- Topic or action — typically nouns
+
+Examples by grimoire flavor:
+- Cooking grimoire: `recipes`, `techniques`, `equipment`, `ingredients`, `meal_plans`
+- HR grimoire: `onboarding`, `policies`, `benefits`, `performance_reviews`, `offboarding`
+- Engineering grimoire: `repo_structure`, `build_system`, `runbooks`, `code_standards`
 
 Let the user select, rename, drop, or add chapters and provide a one-line description for each.
 
@@ -84,7 +89,7 @@ Replace placeholders in the three copied files. Confirm `skill_namespace` with t
 - `{{GRIMOIRE_NAME}}`, `{{CREATION_DATE}}`, `{{OWNER_DOMAIN}}`, `{{GRIMOIRE_DOMAIN}}`
 - `{{GRIMOIRE_PURPOSE}}`, `{{GRIMOIRE_PURPOSE_DETAILED}}`
 - `{{GRIMOIRE_DIRECTORY}}`, `{{SKILL_NAMESPACE}}`
-- `{{EXAMPLE_DOMAIN}}`, `{{DOMAIN_CHANNEL}}`
+- `{{EXAMPLE_CHAPTER}}` — pick one chapter from the user's selection
 - `{{CHAPTER_LIST}}` — bulleted `**name** - description` per chapter
 - `{{CHAPTER_TREE}}` — ASCII tree of `chapters/<name>/`
 

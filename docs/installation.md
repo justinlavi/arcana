@@ -50,7 +50,7 @@ The summoning rite can discover grimoires by querying the git host API. This rem
 Arcana and grimoires don't need to live in the same place. Arcana might be cloned from a public GitHub repo, while your grimoires are in a private company GitLab or a different GitHub org. The script asks where to look.
 
 Discovery supports two URL shapes:
-- Direct repository URLs, such as `https://github.com/you/japan`, are trusted explicitly and do not need a `-grimoire` slug.
+- Direct repository URLs, such as `https://github.com/you/cooking-grimoire`, are trusted explicitly. The `-grimoire` slug is conventional but not required when the URL points to a single repository.
 - Namespace URLs, such as `https://github.com/you` or `https://gitlab.company.com/team`, scan available repositories/projects and select likely grimoires by `-grimoire` naming, `grimoire` topic/tag, or description metadata.
 
 **Providing a scope** — tell the script where your grimoires live:

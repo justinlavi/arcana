@@ -104,7 +104,7 @@ If the pass produced user-visible changes:
 
 1. **Universal only** — no domain-specific content in Arcana.
 2. **Backward compatible** — don't break existing domain grimoires.
-3. **Generic examples** — Domain A, Knowledge Domain; no platform names (Slack, GitHub), no industry terms.
+3. **Canonical examples only** — `cooking-grimoire` (personal), `hr-grimoire` (workplace); plus `Alice/Bob`, `Project Alpha`, `{your-grimoire}` for sub-examples. No real product/company names, no industry-narrowing assumptions.
 4. **Magical boundary** — invocations, formulae, rites live ONLY in Arcana.
 5. **Semantic versioning** — strict; reflected in `CHANGELOG.md`.
 6. **Path conventions** — cross-grimoire references use root placeholders (`GRIMOIRE_ARCANA/`, `GRIMOIRE_{DOMAIN}/`), never `../`.

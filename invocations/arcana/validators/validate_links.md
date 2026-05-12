@@ -118,7 +118,7 @@ When fixing links, check for related cross-references:
 
 **Arcana → Domain**:
 ```markdown
-[chapter](olympus-grimoire/chapters/build_system/INDEX.md)
+[chapter](cooking-grimoire/chapters/breads/sourdough.md)
 ```
 
 ### Include File Extensions

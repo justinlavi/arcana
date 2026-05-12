@@ -7,9 +7,10 @@
 All 20 skills shipped by Arcana itself, namespaced `grm-*`.
 Each entry links to the source `SKILL.md` — that file is canonical.
 
-Domain grimoire skills (e.g. `oly-*`, `jpn-*`) are not listed here —
-they're declared in each grimoire's own `skills/` directory and use the
-namespace from that grimoire's `grimoire.json`. To enumerate all skills
+Domain grimoire skills (e.g. `cook-*` for a cooking grimoire,
+`hr-*` for an HR grimoire) are not listed here — they're declared
+in each grimoire's own `skills/` directory and use the namespace
+from that grimoire's `grimoire.json`. To enumerate every skill
 currently installed for an agent (Arcana + every domain grimoire),
 invoke `/grm-meta-help`.
 

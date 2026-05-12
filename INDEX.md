@@ -49,7 +49,7 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 - **[rites/sync_library.py](rites/sync_library.py)** - Library sync rite (reconcile library with disk)
 - **[rites/sync_docs.py](rites/sync_docs.py)** - Docs sync rite (regenerate `docs/skills.md` from sources)
 - **[rites/adopt_grimoire.py](rites/adopt_grimoire.py)** - Adopt an unmanaged directory by writing its `grimoire.json`
-- **[library.json](library.json)** - Company-wide grimoire library
+- **[library.json](library.json)** - Top-level grimoire library shipped with Arcana (lists discoverable domain grimoires for the summoning rite)
 
 ### Tools
 - **[resources/](resources/)** - Branding assets (icon, etc.)

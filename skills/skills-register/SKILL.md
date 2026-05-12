@@ -13,7 +13,7 @@ You are registering all Grimoire skills from Arcana and every installed domain g
 - Claude Code: `~/.claude/skills/`
 - Codex/ChatGPT: `~/.codex/skills/`
 
-This cleans each namespace (e.g., `grm-*`, `jpn-*`) and re-registers fresh copies, ensuring the agent skill directories always match the latest source. Each namespace is read from the `namespace` field of the grimoire's own `grimoire.json` (Arcana included). Codex/ChatGPT registrations are pointer-only and copy only `SKILL.md`; the real instructions remain in Arcana invocations, rites, or domain guides.
+This cleans each namespace (e.g., `grm-*` for Arcana, `cook-*` for a cooking grimoire, `hr-*` for an HR grimoire) and re-registers fresh copies, ensuring the agent skill directories always match the latest source. Each namespace is read from the `namespace` field of the grimoire's own `grimoire.json` (Arcana included). Codex/ChatGPT registrations are pointer-only and copy only `SKILL.md`; the real instructions remain in Arcana invocations, rites, or domain guides.
 
 ## Steps
 
