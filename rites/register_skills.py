@@ -1,17 +1,26 @@
 #!/usr/bin/env python3
 """Grimoire Skill Registration — cross-platform skill installer.
 
-Discovers skills from Arcana and all installed grimoires,
-cleans stale skills by namespace prefix, templates path placeholders,
-and installs pointer skills to supported agent skill directories.
+Discovers skills from Arcana and all installed grimoires, cleans stale skills
+by namespace prefix, substitutes the {{NAMESPACE}} placeholder with the
+grimoire's declared namespace, and installs pointer skills to supported agent
+skill directories.
 
-Each source gets an explicit namespace root:
-    Arcana: grm-
-    Domain grimoires: catalog entry skill_namespace + "-"
+Each grimoire (and Arcana) declares its namespace in `grimoire.json` at the
+grimoire root:
+
+    {
+      "name": "olympus-grimoire",
+      "namespace": "oly",
+      "description": "..."
+    }
 
 Domain skill source folders provide the subcommand path after the namespace.
-For example, skill_namespace "jpn" plus skills/travel-create-trip registers
-as /jpn-travel-create-trip.
+For example, namespace "oly" plus skills/gui-create-plugin registers
+as /oly-gui-create-plugin.
+
+Source SKILL.md files use `{{NAMESPACE}}-<slug>` in their `name:` frontmatter
+field; the rite substitutes the placeholder during registration.
 
 Usage:
     python3 register_skills.py [--agent all|claude|codex] [--dry-run]
@@ -32,6 +41,7 @@ GRIMOIRE_HOME = Path.home() / "grimoire"
 LOCAL_CATALOG = GRIMOIRE_HOME / "catalog.json"
 NAMESPACE_RE = re.compile(r"^[a-z][a-z0-9]*$")
 SKILL_SLUG_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
+NAMESPACE_PLACEHOLDER = "{{NAMESPACE}}"
 SKILL_TARGETS = {
     "claude": {
         "label": "Claude Code",
@@ -72,13 +82,42 @@ def err(msg):
 
 
 def is_valid_namespace(namespace):
-    """Return True when namespace is a compact lowercase slug like grm or jpn."""
+    """Return True when namespace is a compact lowercase slug like grm or oly."""
     return bool(NAMESPACE_RE.fullmatch(namespace))
 
 
 def is_valid_skill_slug(slug):
     """Return True when a skill slug uses lowercase hyphenated command syntax."""
     return bool(SKILL_SLUG_RE.fullmatch(slug))
+
+
+def load_grimoire_metadata(grimoire_root, label):
+    """Load grimoire.json from a grimoire (or Arcana) root.
+
+    Returns (metadata_dict, namespace_str) on success, or (None, None) on
+    failure with a warning logged.
+    """
+    metadata_file = grimoire_root / "grimoire.json"
+    if not metadata_file.is_file():
+        warn(f"{label}: missing grimoire.json at {metadata_file} (skipping)")
+        return None, None
+
+    try:
+        with open(metadata_file) as f:
+            metadata = json.load(f)
+    except (json.JSONDecodeError, OSError) as exc:
+        warn(f"{label}: could not read grimoire.json ({exc}) (skipping)")
+        return None, None
+
+    namespace = metadata.get("namespace", "")
+    if not namespace:
+        warn(f"{label}: grimoire.json missing 'namespace' field (skipping)")
+        return None, None
+    if not is_valid_namespace(namespace):
+        warn(f"{label}: invalid namespace '{namespace}' in grimoire.json (skipping)")
+        return None, None
+
+    return metadata, namespace
 
 
 def read_frontmatter_name(skill_file):
@@ -116,7 +155,7 @@ def clean_prefix(skills_target, prefix, dry_run=False):
 def register_skill(
     source_dir,
     skills_target,
-    registered_name,
+    namespace,
     arcana_path,
     grimoire_path="",
     source_label="Arcana",
@@ -130,19 +169,23 @@ def register_skill(
         warn(f"No SKILL.md found in {source_dir} (skipping)")
         return False
 
-    declared_name = read_frontmatter_name(source_file)
-    if declared_name != registered_name:
+    slug = source_dir.name
+    expected_name = f"{namespace}-{slug}"
+
+    declared_name_template = read_frontmatter_name(source_file)
+    expected_template = f"{NAMESPACE_PLACEHOLDER}-{slug}"
+    if declared_name_template != expected_template:
         warn(
-            f"{source_dir}: SKILL.md name must be '{registered_name}' "
-            f"(found '{declared_name or '<missing>'}')"
+            f"{source_dir}: SKILL.md name must be '{expected_template}' "
+            f"(found '{declared_name_template or '<missing>'}')"
         )
         return False
 
     if dry_run:
-        info(f"Would register: /{registered_name} ({source_label})")
+        info(f"Would register: /{expected_name} ({source_label})")
         return True
 
-    target_dir = skills_target / registered_name
+    target_dir = skills_target / expected_name
     target_dir.mkdir(parents=True, exist_ok=True)
 
     # Template files in the skill directory. Codex/ChatGPT registrations are
@@ -153,6 +196,7 @@ def register_skill(
         if pointer_only and source.name != "SKILL.md":
             continue
         content = source.read_text(encoding="utf-8")
+        content = content.replace(NAMESPACE_PLACEHOLDER, namespace)
         content = content.replace("{{ARCANA_PATH}}", str(arcana_path))
         if grimoire_path:
             content = content.replace("{{GRIMOIRE_PATH}}", str(grimoire_path))
@@ -170,24 +214,27 @@ def register_skill(
 
         (target_dir / source.name).write_text(content, encoding="utf-8")
 
-    ok(f"Registered: /{registered_name} ({source_label})")
+    ok(f"Registered: /{expected_name} ({source_label})")
     return True
 
 
-def register_arcana_skills(skills_target, dry_run=False, pointer_only=False):
-    """Register all Arcana skills (grm-* prefix)."""
-    skills_dir = ARCANA_PATH / "skills"
-    namespace = "grm"
+def register_source_skills(
+    source_root,
+    skills_dir,
+    namespace,
+    source_label,
+    skills_target,
+    grimoire_path,
+    dry_run,
+    pointer_only,
+):
+    """Clean a namespace and register every well-formed skill folder under it."""
     prefix = f"{namespace}-"
-
-    if not skills_dir.is_dir():
-        warn(f"No skills directory in Arcana at {skills_dir}")
-        return 0, 0
 
     info(f"Cleaning {prefix}* namespace...")
     cleaned = clean_prefix(skills_target, prefix, dry_run)
 
-    info("Scanning Arcana skills...")
+    info(f"Scanning {source_label} skills...")
     registered = 0
 
     for skill_dir in sorted(skills_dir.iterdir()):
@@ -196,12 +243,13 @@ def register_arcana_skills(skills_target, dry_run=False, pointer_only=False):
         if not is_valid_skill_slug(skill_dir.name):
             warn(f"{skill_dir}: invalid skill directory slug (skipping)")
             continue
-        name = f"{prefix}{skill_dir.name}"
         if register_skill(
             skill_dir,
             skills_target,
-            name,
+            namespace,
             ARCANA_PATH,
+            grimoire_path=grimoire_path,
+            source_label=source_label,
             dry_run=dry_run,
             pointer_only=pointer_only,
         ):
@@ -210,8 +258,35 @@ def register_arcana_skills(skills_target, dry_run=False, pointer_only=False):
     return registered, cleaned
 
 
+def register_arcana_skills(skills_target, dry_run=False, pointer_only=False):
+    """Register all Arcana skills using namespace declared in arcana/grimoire.json."""
+    skills_dir = ARCANA_PATH / "skills"
+    if not skills_dir.is_dir():
+        warn(f"No skills directory in Arcana at {skills_dir}")
+        return 0, 0
+
+    _, namespace = load_grimoire_metadata(ARCANA_PATH, "Arcana")
+    if not namespace:
+        return 0, 0
+
+    return register_source_skills(
+        ARCANA_PATH,
+        skills_dir,
+        namespace,
+        "Arcana",
+        skills_target,
+        grimoire_path="",
+        dry_run=dry_run,
+        pointer_only=pointer_only,
+    )
+
+
 def register_grimoire_skills(skills_target, dry_run=False, pointer_only=False):
-    """Register skills from all installed domain grimoires."""
+    """Register skills from all installed domain grimoires.
+
+    Each grimoire's namespace is read from its own grimoire.json. The catalog
+    is consulted only to discover where grimoires live on disk.
+    """
     if not LOCAL_CATALOG.is_file():
         info(f"No local catalog at {LOCAL_CATALOG} — skipping domain skills")
         return 0, 0
@@ -242,40 +317,22 @@ def register_grimoire_skills(skills_target, dry_run=False, pointer_only=False):
             info(f"{key}: no skills/ directory (skipping)")
             continue
 
-        namespace = entry.get("skill_namespace", "")
+        _, namespace = load_grimoire_metadata(local_path, key)
         if not namespace:
-            warn(f"{key}: missing skill_namespace in catalog (skipping skills)")
-            continue
-        if not is_valid_namespace(namespace):
-            warn(f"{key}: invalid skill_namespace '{namespace}' (skipping skills)")
             continue
 
-        prefix = f"{namespace}-"
-
-        info(f"Cleaning {prefix}* namespace...")
-        cleaned = clean_prefix(skills_target, prefix, dry_run)
+        registered, cleaned = register_source_skills(
+            local_path,
+            skills_dir,
+            namespace,
+            key,
+            skills_target,
+            grimoire_path=str(local_path),
+            dry_run=dry_run,
+            pointer_only=pointer_only,
+        )
+        total_registered += registered
         total_cleaned += cleaned
-
-        info(f"Scanning {key} skills...")
-
-        for skill_dir in sorted(skills_dir.iterdir()):
-            if not skill_dir.is_dir():
-                continue
-            if not is_valid_skill_slug(skill_dir.name):
-                warn(f"{skill_dir}: invalid skill directory slug (skipping)")
-                continue
-            name = f"{prefix}{skill_dir.name}"
-            if register_skill(
-                skill_dir,
-                skills_target,
-                name,
-                ARCANA_PATH,
-                str(local_path),
-                key,
-                dry_run,
-                pointer_only,
-            ):
-                total_registered += 1
 
     return total_registered, total_cleaned
 

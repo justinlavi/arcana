@@ -56,7 +56,7 @@ GRIMOIRE_BLOCK = """\
 
 **Arcana key**: `GRIMOIRE_ARCANA` — resolved from catalog or defaults to `~/grimoire/arcana/`
 
-**Skills**: Arcana operations are available as `/grm-*` skills (e.g., `/grm-meta-help`, `/grm-domain-improve`). Domain grimoire skills use each catalog entry's `skill_namespace`.
+**Skills**: Arcana operations are available as `/grm-*` skills (e.g., `/grm-meta-help`, `/grm-domain-improve`). Domain grimoire skills use the namespace declared in each grimoire's `grimoire.json`.
 
 **Routing**:
 1. Determine the active grimoire from working directory or project context; look up its `local_path` in the catalog.
@@ -564,8 +564,6 @@ def update_local_catalog(installed_keys, catalog, log):
             "local_path": f"$HOME/grimoire/{key}",
             "online_path": entry.get("online_path", ""),
         }
-        if entry.get("skill_namespace"):
-            local_entry["skill_namespace"] = entry["skill_namespace"]
         local["grimoires"][key] = local_entry
 
     with open(LOCAL_CATALOG, "w") as f:

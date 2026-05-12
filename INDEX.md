@@ -48,10 +48,12 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 - `/grm-arcana-improve` — Improve Arcana (maintainer)
 - `/grm-meta-help` — Show skill catalog and usage guide
 - `/grm-skills-register` — Re-register all skills from Arcana and domain grimoires
+- `/grm-catalog-sync` — Scan ~/grimoire/ and reconcile against the local catalog
 
 ### Summoning & Catalog
 - **[rites/summon.sh](rites/summon.sh)** - Grimoire summoning rite (one-command setup)
 - **[rites/register_skills.py](rites/register_skills.py)** - Skill registration rite
+- **[rites/sync_catalog.py](rites/sync_catalog.py)** - Catalog sync rite (reconcile catalog with disk)
 - **[catalog.json](catalog.json)** - Company-wide grimoire catalog
 
 ### Tools

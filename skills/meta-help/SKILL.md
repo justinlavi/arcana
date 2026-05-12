@@ -1,5 +1,5 @@
 ---
-name: grm-meta-help
+name: {{NAMESPACE}}-meta-help
 description: Display the Grimoire skill catalog and usage guide
 user-invocable: true
 allowed-tools: Bash Read

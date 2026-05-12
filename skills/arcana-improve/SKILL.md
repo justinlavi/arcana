@@ -1,5 +1,5 @@
 ---
-name: grm-arcana-improve
+name: {{NAMESPACE}}-arcana-improve
 description: Improve Arcana itself — maintainer only
 user-invocable: true
 allowed-tools: Bash Read Write Edit

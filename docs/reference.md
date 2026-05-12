@@ -37,6 +37,7 @@ When **creating knowledge** inside chapters:
 |---------|--------------|----------------|
 | Universal foundation | **Arcana** | Standalone at `~/grimoire/arcana/`, referenced via `GRIMOIRE_ARCANA` |
 | Domain knowledge base | **Grimoire** | domain grimoire repository root |
+| Grimoire identity | **Manifest** | `grimoire.json` at grimoire root (declares name, namespace, description) |
 | Knowledge category | **Chapter** | `chapters/` |
 | Sub-category | **Sub-chapter** | `chapters/{name}/{sub}/` |
 | Knowledge document | **Page** | `*.md` files |
@@ -73,6 +74,8 @@ Page template: `GRIMOIRE_ARCANA/formulae/page.formula.md`
 | Semantic analysis | `/grm-domain-analyze-semantics` |
 | Boundary validation | `/grm-arcana-validate-boundaries` |
 | Improve Arcana | `/grm-arcana-improve` |
+| Sync catalog with disk | `/grm-catalog-sync` |
+| Re-register all skills | `/grm-skills-register` |
 | Show help | `/grm-meta-help` |
 
 Skills are registered to supported agent skill roots:
@@ -83,10 +86,10 @@ Skills are registered to supported agent skill roots:
 Codex/ChatGPT registrations are pointer-only `SKILL.md` copies that resolve to Arcana or grimoire invocations and rites.
 
 Skill command names use explicit namespace roots:
-- Arcana: `grm-*`
-- Domain grimoires: `{skill_namespace}-*`, configured in `~/grimoire/catalog.json`
+- Arcana: `grm-*` (declared in `arcana/grimoire.json`)
+- Domain grimoires: `{namespace}-*`, declared in each grimoire's `grimoire.json`
 
-Domain skill folders provide the subcommand after the namespace root. For example, catalog `"skill_namespace": "jpn"` plus `skills/travel-create-trip/` registers `/jpn-travel-create-trip`.
+Domain skill folders provide the subcommand after the namespace root. For example, a grimoire with `"namespace": "jpn"` in its `grimoire.json` plus `skills/travel-create-trip/` registers `/jpn-travel-create-trip`. Source `SKILL.md` files use `name: {{NAMESPACE}}-<slug>` and the registration rite substitutes the namespace at install time.
 
 ---
 

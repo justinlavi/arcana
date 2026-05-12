@@ -1,5 +1,5 @@
 ---
-name: grm-domain-improve
+name: {{NAMESPACE}}-domain-improve
 description: Comprehensive grimoire improvement — audit, normalize, and optimize the active domain grimoire
 user-invocable: true
 allowed-tools: Bash Read Write Edit

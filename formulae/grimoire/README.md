@@ -47,10 +47,21 @@ Registered in `~/grimoire/catalog.json`:
 ```json
 "{{GRIMOIRE_DIRECTORY}}": {
   "local_path": "$HOME/grimoire/{{GRIMOIRE_DIRECTORY}}",
-  "online_path": null,
-  "skill_namespace": "{{SKILL_NAMESPACE}}"
+  "online_path": null
 }
 ```
+
+This grimoire's identity (name, namespace, description) is declared in `grimoire.json` at the repository root:
+
+```json
+{
+  "name": "{{GRIMOIRE_DIRECTORY}}",
+  "namespace": "{{SKILL_NAMESPACE}}",
+  "description": "{{GRIMOIRE_PURPOSE}}"
+}
+```
+
+Skills under `skills/` register as `/{{SKILL_NAMESPACE}}-<area>-<verb>-<object>` (the registration rite reads `namespace` from `grimoire.json` and substitutes it into each `SKILL.md`'s `{{NAMESPACE}}-<slug>` placeholder).
 
 The summoning rite (`GRIMOIRE_ARCANA/rites/summon.sh`) handles registration automatically.
 

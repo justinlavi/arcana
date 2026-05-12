@@ -1,5 +1,5 @@
 ---
-name: grm-domain-create-chapter
+name: {{NAMESPACE}}-domain-create-chapter
 description: Create a new knowledge chapter in the active domain grimoire
 argument-hint: [chapter-topic]
 arguments: [topic]

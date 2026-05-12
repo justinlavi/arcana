@@ -1,5 +1,5 @@
 ---
-name: grm-domain-validate-structure
+name: {{NAMESPACE}}-domain-validate-structure
 description: Validate grimoire structure compliance against Arcana formulae
 user-invocable: true
 allowed-tools: Bash Read

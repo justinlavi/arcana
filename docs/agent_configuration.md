@@ -122,8 +122,7 @@ Grimoire uses two catalog files:
     "olympus-grimoire": {
       "name": "Olympus",
       "description": "Olympus domain grimoire",
-      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git",
-      "skill_namespace": "oly"
+      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git"
     }
   }
 }
@@ -135,7 +134,8 @@ Grimoire uses two catalog files:
 - `name` — display name for the summoning menu.
 - `description` — short description shown during selection.
 - `online_path` — git clone URL (any git-compatible host).
-- `skill_namespace` — short lowercase root for this grimoire's skills, required if the grimoire has a `skills/` directory.
+
+**Note**: Skill namespace is not a catalog field. Each grimoire declares its own namespace in `grimoire.json` at its repository root (see [Grimoire Manifest](#grimoire-manifest) below). The catalog only records *where* grimoires live.
 
 ### Local Catalog (Per-User)
 
@@ -146,8 +146,7 @@ Grimoire uses two catalog files:
   "grimoires": {
     "olympus-grimoire": {
       "local_path": "$HOME/grimoire/olympus-grimoire",
-      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git",
-      "skill_namespace": "oly"
+      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git"
     }
   }
 }
@@ -155,18 +154,18 @@ Grimoire uses two catalog files:
 
 **Adding a grimoire manually**: add one entry to the `grimoires` object. No other files change.
 
+**Keeping the catalog in sync**: after cloning, moving, or removing grimoires by hand, run `/grm-catalog-sync` (or `python3 ~/grimoire/arcana/rites/sync_catalog.py`) to detect drift and reconcile.
+
 ```json
 {
   "grimoires": {
     "olympus-grimoire": {
       "local_path": "$HOME/grimoire/olympus-grimoire",
-      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git",
-      "skill_namespace": "oly"
+      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git"
     },
     "bd-grimoire": {
       "local_path": "$HOME/grimoire/bd-grimoire",
-      "online_path": "https://git.example.com/grimoire/bd-grimoire.git",
-      "skill_namespace": "bd"
+      "online_path": "https://git.example.com/grimoire/bd-grimoire.git"
     }
   }
 }
@@ -175,7 +174,31 @@ Grimoire uses two catalog files:
 **Fields**:
 - `local_path` — absolute filesystem path to the domain grimoire root (supports `$HOME`).
 - `online_path` — git clone URL; set to `null` if not applicable.
-- `skill_namespace` — short lowercase root for this grimoire's skills, required if the grimoire has a `skills/` directory.
+
+The catalog is a pure registry. A grimoire's namespace, name, and description live inside the grimoire itself (see below).
+
+---
+
+## Grimoire Manifest
+
+Every grimoire (and Arcana itself) declares its identity in a `grimoire.json` file at its repository root:
+
+```json
+{
+  "name": "olympus-grimoire",
+  "namespace": "oly",
+  "description": "Olympus engineering domain grimoire"
+}
+```
+
+**Fields**:
+- `name` — canonical grimoire name; should match the catalog key.
+- `namespace` — short lowercase slug (`^[a-z][a-z0-9]*$`) used as the skill prefix. Required if the grimoire has a `skills/` directory.
+- `description` — one-line description.
+
+**Why not in the catalog?** The grimoire owns its own identity. A cloned grimoire knows its namespace without needing a catalog entry, the registration rite cleans skills by reading the namespace from the grimoire itself, and there is no way for the catalog and the grimoire to drift out of sync.
+
+When creating a new grimoire, `/grm-domain-create-grimoire` prompts for the namespace and writes `grimoire.json` as part of scaffolding.
 
 ---
 
@@ -190,7 +213,7 @@ The summoning rite adds this block to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS
 
 **Arcana key**: `GRIMOIRE_ARCANA` — resolved from catalog or defaults to `~/grimoire/arcana/`
 
-**Skills**: Arcana operations are available as `/grm-*` skills (e.g., `/grm-meta-help`, `/grm-domain-improve`). Domain grimoire skills use each catalog entry's `skill_namespace`.
+**Skills**: Arcana operations are available as `/grm-*` skills (e.g., `/grm-meta-help`, `/grm-domain-improve`). Domain grimoire skills use the namespace declared in each grimoire's `grimoire.json`.
 
 **Routing**:
 1. Determine the active grimoire from working directory or project context; look up its `local_path` in the catalog.
@@ -264,10 +287,10 @@ For Codex/ChatGPT, the registered skill directory must contain only `SKILL.md`. 
 - **Rite-backed**: skill tells the AI to run a Python script via `python3 {{ARCANA_PATH}}/rites/...` — the script does the work
 
 Skills are namespaced by explicit root slug plus functional subnamespace:
-- Arcana skills: `grm-*` (e.g., `/grm-domain-improve`, `/grm-meta-help`)
-- Domain grimoire skills: `{skill_namespace}-*` from `~/grimoire/catalog.json` (e.g., `/jpn-travel-create-trip`)
+- Arcana skills: `grm-*` (e.g., `/grm-domain-improve`, `/grm-meta-help`) — namespace declared in `arcana/grimoire.json`
+- Domain grimoire skills: `{namespace}-*` declared in each grimoire's `grimoire.json` (e.g., `/jpn-travel-create-trip`)
 
-Skill source folders provide the subcommand after the root namespace. For example, a catalog entry with `"skill_namespace": "jpn"` and a source folder at `skills/travel-create-trip/` registers `/jpn-travel-create-trip`. The source `SKILL.md` frontmatter `name` must match the final registered command name.
+Skill source folders provide the subcommand after the root namespace. For example, a grimoire with `"namespace": "jpn"` in its `grimoire.json` and a source folder at `skills/travel-create-trip/` registers `/jpn-travel-create-trip`. Source `SKILL.md` files use `name: {{NAMESPACE}}-<slug>` in their frontmatter; the registration rite substitutes `{{NAMESPACE}}` with the namespace from `grimoire.json`.
 
 The summoning rite registers skills automatically. To re-register after updates, use `/grm-skills-register` or run:
 
@@ -296,12 +319,13 @@ python3 ~/grimoire/arcana/rites/register_skills.py --agent codex
 | `/grm-meta-help` | Show skill catalog and usage guide |
 | `/grm-arcana-clean` | Remove temporary rite artifacts |
 | `/grm-skills-register` | Re-register all skills from Arcana and grimoires |
+| `/grm-catalog-sync` | Reconcile `~/grimoire/catalog.json` against the actual contents of `~/grimoire/` |
 
 ### Domain Grimoire Skills
 
-Domain grimoires contribute skills via their own `skills/` directory. The registration rite auto-discovers them and applies the explicit `skill_namespace` from the grimoire's catalog entry.
+Domain grimoires contribute skills via their own `skills/` directory. The registration rite auto-discovers them and applies the namespace from the grimoire's `grimoire.json` manifest.
 
-Place skills in `<grimoire>/skills/<area>-<verb>-<object>/SKILL.md` where the folder name is the subcommand after the namespace root. Each SKILL.md should be a thin pointer that delegates to a guide or script — never embed implementation logic directly. Use `{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` as path placeholders — the registration rite resolves them to absolute paths.
+Place skills in `<grimoire>/skills/<area>-<verb>-<object>/SKILL.md` where the folder name is the subcommand after the namespace root. Each SKILL.md should be a thin pointer that delegates to a guide or script — never embed implementation logic directly. Use `{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` as path placeholders — the registration rite resolves them to absolute paths. Use `{{NAMESPACE}}` in the SKILL.md `name:` field — it is substituted with the grimoire's declared namespace at registration time.
 
 If a domain grimoire includes extra files beside `SKILL.md`, Claude Code registration may copy them for compatibility with existing skills, but Codex/ChatGPT registration intentionally ignores them.
 

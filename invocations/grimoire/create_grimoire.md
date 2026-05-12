@@ -92,6 +92,7 @@ Gather information through natural conversation, not forms.
    - **Chapter**: General category (e.g., "Domain A", "Domain B", etc.)
    - **Owner Domain**: Who maintains this (e.g., "Domain A", "Domain B")
    - **Domain Channel**: Domain's communication channel (e.g., "domain-specific channel")
+   - **Skill Namespace**: Short lowercase root slug for this grimoire's skills (e.g., `oly` for Olympus, `dom` for a domain grimoire). Must match `^[a-z][a-z0-9]*$`. Ask the user explicitly: "What 2–4 letter slug should prefix this grimoire's skills? (e.g. `oly` would yield `/oly-area-verb-object` commands)"
 
 ### Output Format (Internal - Don't Show to User)
 
@@ -183,8 +184,14 @@ Create the grimoire directory with customized files.
    git init
    cp ~/grimoire/arcana/formulae/grimoire/INDEX.md .
    cp ~/grimoire/arcana/formulae/grimoire/README.md .
-   mkdir chapters
+   cp ~/grimoire/arcana/formulae/grimoire/grimoire.json .
+   mkdir chapters skills
    ```
+
+   The `grimoire.json` file is the grimoire's self-declared identity (name,
+   namespace, description) — it's the canonical source for the skill namespace
+   used by `/grm-skills-register`. The `skills/` directory is created empty;
+   skills are added later as the grimoire grows.
 
 2. **Customize INDEX.md**:
    Replace placeholders in `{{grimoire_directory}}/INDEX.md`:
@@ -226,6 +233,16 @@ Create the grimoire directory with customized files.
      ├── policies/
      └── benefits/
      ```
+
+3a. **Customize grimoire.json**:
+   Replace placeholders in `{{grimoire_directory}}/grimoire.json`:
+   - `{{GRIMOIRE_DIRECTORY}}` → "grimoire_domain_a"
+   - `{{SKILL_NAMESPACE}}` → "dom" (short lowercase root, must match `^[a-z][a-z0-9]*$`)
+   - `{{GRIMOIRE_PURPOSE}}` → "domain-specific knowledge and resources"
+
+   The namespace becomes the prefix for all skills this grimoire ships
+   (e.g. `dom-area-verb-object`). It must be unique across grimoires you
+   plan to install side-by-side.
 
 4. **Clean up template artifacts**:
    ```bash
@@ -305,12 +322,15 @@ Add the new grimoire to the user's local catalog so agents can resolve it.
    ```json
    "{{grimoire_directory}}": {
      "local_path": "$HOME/path/to/{{grimoire_directory}}",
-     "online_path": null,
-     "skill_namespace": "{{skill_namespace}}"
+     "online_path": null
    }
    ```
    Replace `$HOME/path/to/{{grimoire_directory}}` with the actual absolute path used in Step 3.
-   Replace `{{skill_namespace}}` with a short lowercase root slug for this domain's skills, such as `jpn` for Japan. Skill commands register as `{{skill_namespace}}-<area>-<verb>-<object>`.
+
+   **Note**: The catalog only records *where* grimoires live. The skill
+   namespace is declared inside each grimoire's `grimoire.json` (set in Step 3a)
+   and is read directly by the registration rite — it does not belong in the
+   catalog.
 
 3. **If creating from scratch**:
    ```json
@@ -318,8 +338,7 @@ Add the new grimoire to the user's local catalog so agents can resolve it.
      "grimoires": {
        "{{grimoire_directory}}": {
          "local_path": "$HOME/path/to/{{grimoire_directory}}",
-         "online_path": null,
-         "skill_namespace": "{{skill_namespace}}"
+         "online_path": null
        }
      }
    }
@@ -333,7 +352,7 @@ Add the new grimoire to the user's local catalog so agents can resolve it.
 
 📋 Next Steps:
 
-1. Catalog updated: ~/grimoire/catalog.json now includes {{grimoire_directory}} with skill namespace {{skill_namespace}}
+1. Catalog updated: ~/grimoire/catalog.json now includes {{grimoire_directory}} (namespace `{{skill_namespace}}` declared in {{grimoire_directory}}/grimoire.json)
 
 2. If this is your first grimoire, add the Grimoire section to your agent instruction files
    (see GRIMOIRE_ARCANA/docs/agent_configuration.md for the block to paste)

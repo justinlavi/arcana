@@ -1,5 +1,5 @@
 ---
-name: grm-domain-analyze-semantics
+name: {{NAMESPACE}}-domain-analyze-semantics
 description: Deep semantic analysis of naming and organization for discoverability and token efficiency
 user-invocable: true
 allowed-tools: Bash Read Write Edit

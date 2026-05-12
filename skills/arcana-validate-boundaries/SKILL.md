@@ -1,5 +1,5 @@
 ---
-name: grm-arcana-validate-boundaries
+name: {{NAMESPACE}}-arcana-validate-boundaries
 description: Validate magical boundary compliance between system and content layers
 user-invocable: true
 allowed-tools: Bash Read Write Edit
