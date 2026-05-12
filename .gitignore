@@ -1,0 +1,85 @@
+# IDE and Editor
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+.github/copilot-instructions.md
+.cache/
+*.codex
+.claude/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build Artifacts, CMake, and Object Files
+CMakeUserPresets.json
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+Testing/
+*.ninja
+*.ninja_deps
+*.ninja_log
+**/bin/
+**/build/
+**/docs/latex/
+*.user
+*.cache
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dll
+*.dylib
+*.exe
+
+# Package Managers
+.conan/
+conan.lock
+conaninfo.txt
+conanbuildinfo.*
+vcpkg_installed/
+_deps/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Testing and Coverage
+**/reports/
+cobertura**
+**/coverage/
+*.gcda
+*.gcno
+*.gcov
+*.profdata
+*.profraw
+lcov.info
+coverage.info
+
+# Debugging and Logs
+core.*
+*.dSYM/
+*.pdb
+*.log
+
+# Temporary Files
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# Rite Artifacts (validation logs, generated reports)
+.artifacts/
+
+# Local Development
+agent/
