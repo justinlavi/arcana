@@ -10,6 +10,7 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 - **[docs/operating_model.md](docs/operating_model.md)** - Core principles and routing model
 - **[docs/agent_configuration.md](docs/agent_configuration.md)** - AI agent setup (Claude, GPT, Cursor) 🤖
 - **[docs/governance.md](docs/governance.md)** - Maintenance policies and versioning
+- **[docs/release.md](docs/release.md)** - Release workflow for Summoning Rite binaries
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history
 - **[docs/reference.md](docs/reference.md)** - Reference (terminology, conventions, path keys)
 - **[docs/script_vs_ai.md](docs/script_vs_ai.md)** - Architectural principle: When to use scripts vs AI ⭐
@@ -55,4 +56,3 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 
 ### Tools
 - **[resources/](resources/)** - Branding assets (icon, etc.)
-

@@ -26,6 +26,7 @@ Testing/
 *.ninja_log
 **/bin/
 **/build/
+dist/
 **/docs/latex/
 *.user
 *.cache
@@ -49,6 +50,7 @@ _deps/
 
 # Python
 __pycache__/
+.venv/
 *.pyc
 *.pyo
 *.pyd

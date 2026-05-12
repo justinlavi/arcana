@@ -16,6 +16,8 @@ DEFAULT_ARCANA_REF="main"
 : "${GRIMOIRE_ARCANA_URL:=$DEFAULT_ARCANA_URL}"
 : "${GRIMOIRE_ARCANA_REF:=$DEFAULT_ARCANA_REF}"
 : "${GRIMOIRE_SUMMON_PY_DEPS:=${XDG_CACHE_HOME:-$HOME/.cache}/grimoire/summon-python}"
+: "${GRIMOIRE_SUMMON_BINARY:=auto}"
+: "${GRIMOIRE_SUMMON_RELEASE_TAG:=latest}"
 export GRIMOIRE_ARCANA_URL
 export GRIMOIRE_SUMMON_PY_DEPS
 
@@ -49,9 +51,145 @@ download_file() {
     fi
 }
 
+repo_http_base() {
+    local repo_url="$1"
+
+    if [[ "$repo_url" =~ ^https://github.com/([^/]+)/([^/.]+)(\.git)?$ ]]; then
+        echo "https://github.com/${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
+    else
+        echo "https://github.com/justinlavi/arcana"
+    fi
+}
+
+summon_platform() {
+    local os
+    local arch
+
+    os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+    arch="$(uname -m | tr '[:upper:]' '[:lower:]')"
+
+    case "$os" in
+        linux) os="linux" ;;
+        darwin) os="macos" ;;
+        *) return 1 ;;
+    esac
+
+    case "$arch" in
+        x86_64|amd64) arch="x86_64" ;;
+        aarch64|arm64) arch="arm64" ;;
+        *) return 1 ;;
+    esac
+
+    echo "$os-$arch"
+}
+
+release_download_base() {
+    local repo_base="$1"
+    local tag="$2"
+
+    if [[ "$tag" == "latest" ]]; then
+        echo "$repo_base/releases/latest/download"
+    else
+        echo "$repo_base/releases/download/$tag"
+    fi
+}
+
+verify_checksum() {
+    local checksum="$1"
+
+    if command -v sha256sum &>/dev/null; then
+        sha256sum -c "$checksum"
+    elif command -v shasum &>/dev/null; then
+        shasum -a 256 -c "$checksum"
+    else
+        echo "  [WARN]  sha256sum/shasum not found — skipping checksum verification"
+        return 0
+    fi
+}
+
+should_try_binary() {
+    if [[ "$GRIMOIRE_SUMMON_BINARY" == "never" ]]; then
+        return 1
+    fi
+    if [[ "$GRIMOIRE_SUMMON_BINARY" == "always" ]]; then
+        return 0
+    fi
+    [[ ! -f "$SCRIPT_SOURCE" ]]
+}
+
+try_release_binary() {
+    local platform
+    local repo_base
+    local download_base
+    local asset
+    local checksum
+    local binary_temp
+    local bin_dir
+    local binary
+
+    if ! platform="$(summon_platform)"; then
+        echo "  [INFO]  No release binary available for this platform"
+        return 1
+    fi
+
+    repo_base="$(repo_http_base "$GRIMOIRE_ARCANA_URL")"
+    download_base="$(release_download_base "$repo_base" "$GRIMOIRE_SUMMON_RELEASE_TAG")"
+    asset="grimoire-summon-$platform.tar.gz"
+    checksum="$asset.sha256"
+
+    binary_temp="$(mktemp -d "${TMPDIR:-/tmp}/grimoire-summon.XXXXXX")"
+    bin_dir="$binary_temp/bin"
+    mkdir -p "$bin_dir"
+
+    echo "  [INFO]  Trying release binary: $asset"
+    if ! download_file "$download_base/$asset" "$binary_temp/$asset"; then
+        echo "  [INFO]  Release binary unavailable — falling back to Python source"
+        rm -rf "$binary_temp"
+        return 1
+    fi
+
+    if download_file "$download_base/$checksum" "$binary_temp/$checksum"; then
+        if ! (cd "$binary_temp" && verify_checksum "$checksum"); then
+            echo "  [WARN]  Release binary checksum failed — falling back to Python source"
+            rm -rf "$binary_temp"
+            return 1
+        fi
+    else
+        echo "  [WARN]  Release checksum unavailable — falling back to Python source"
+        rm -rf "$binary_temp"
+        return 1
+    fi
+
+    if ! tar -xzf "$binary_temp/$asset" -C "$bin_dir"; then
+        echo "  [WARN]  Could not extract release binary — falling back to Python source"
+        rm -rf "$binary_temp"
+        return 1
+    fi
+
+    binary="$bin_dir/grimoire-summon"
+    if [[ ! -x "$binary" ]]; then
+        chmod +x "$binary" 2>/dev/null || true
+    fi
+    if [[ ! -x "$binary" ]]; then
+        echo "  [WARN]  Release binary is not executable — falling back to Python source"
+        rm -rf "$binary_temp"
+        return 1
+    fi
+
+    echo "  [OK]    Running release binary"
+    TEMP_DIR="$binary_temp"
+    exec "$binary" "$@"
+}
+
 if [[ -f "$SCRIPT_SOURCE" ]]; then
     SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" && pwd)"
+    if [[ "$GRIMOIRE_SUMMON_BINARY" == "always" ]]; then
+        try_release_binary "$@" || true
+    fi
 else
+    if should_try_binary; then
+        try_release_binary "$@" || true
+    fi
     TEMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/grimoire-summon.XXXXXX")"
     SCRIPT_DIR="$TEMP_DIR/rites"
     mkdir -p "$SCRIPT_DIR"

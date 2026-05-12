@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v1.0.0
 ## [Unreleased]
 
 ### Added
+- Release infrastructure for Summoning Rite binaries: PyInstaller build rite, GitHub Actions workflow, and release documentation
+- `rites/summon.sh` can prefer GitHub Release binaries when run through the public curl bootstrap, with source fallback
 - `rites/summon.sh` — one-command grimoire summoning rite (clone, catalog, CLAUDE.md config)
 - `catalog.json` — company-wide grimoire catalog
 - Dual catalog system: global catalog (company-wide) + local catalog (per-user installs)
