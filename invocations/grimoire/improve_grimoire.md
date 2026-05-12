@@ -1,346 +1,144 @@
-# 🪄 Invocation: Improve Your Grimoire
+# Invocation: Improve Domain Grimoire
 
-## ⚡ Purpose
+## Purpose
 
-Continuously improve your domain's grimoire for maximum token-efficiency and deterministic routing:
-`INDEX.md` → `chapter INDEX.md` → `1–2 canonical leaf docs`
+Audit and improve the *active* domain grimoire for token-efficient, deterministic routing: `INDEX.md` → chapter `INDEX.md` → 1–2 canonical leaf docs. Combines mechanical validators with judgment-based passes. Safe to rerun.
 
-**This invocation is safe to rerun at any time.**
-
----
-
----
-
-## ⚡ The Magical Boundary ⚡
-
-**This invocation operates within the magical boundary:**
-
-### Magical Language for System Operations
-- I'll use wizardly language to describe Grimoire operations: "audit your grimoire", "wire routers", "canonicalize knowledge"
-- The audit process itself is magical (how Grimoire knowledge is organized)
-
-### Practical Assessment of Content
-- I'll examine your PRACTICAL domain content: `templates/`, `scripts/`, `snippets/`, `policies/`
-- Recommendations stay domain-appropriate and searchable
-- No magical folder names (`invocations/`, `formulae/`, `rites/`) will be created in your grimoire
-
-**This invocation improves the SYSTEM (routing, organization) while respecting the CONTENT (practical knowledge).**
-
----
-
-## Preconditions
-
-Before executing any phase, verify:
-
-1. **The current directory is a registered domain grimoire.** Check `~/grimoire/catalog.json` — the working directory must match a grimoire's `local_path`.
-2. **If it does not match**: display an error listing available grimoires from the catalog, tell the user to `cd` to one, and **stop**. Do not proceed.
-
-Arcana is not a grimoire. This invocation never operates on Arcana and never suggests `/grm-arcana-improve` as a fallback — they are unrelated operations.
-
----
-
-## When to Cast
-
-- Your grimoire has grown and feels cluttered
-- Routing is taking too many hops to reach knowledge
-- You've accumulated orphan docs or broken links
-- AI agents are reading more files than necessary
-- Content feels duplicated across multiple docs
-
----
+This is the domain-grimoire counterpart to `/grm-arcana-improve` (which targets Arcana itself). The two are unrelated — never fall back from one to the other.
 
 ## Invocation
 
-From your domain grimoire's root directory, cast:
+From a registered domain grimoire's root:
 
 ```
 /grm-domain-improve
 ```
 
-The AI will audit your grimoire and apply improvements automatically.
+## Preconditions
 
----
+1. The current working directory must match a `local_path` in `~/grimoire/catalog.json`.
+2. If it does not match, list available grimoires from the catalog, instruct the user to `cd` into one, and **stop**.
+3. Arcana is not a domain grimoire — refuse if `cwd` is the Arcana root.
 
-## What This Invocation Does
+## When to cast
 
-### Phase 1: Inventory & Health Check
-1. Enumerate all routers (INDEX.md files)
-2. Enumerate all leaf docs and classify as wired or orphaned
-3. Validate all pointers (detect broken links)
-4. Detect non-deterministic routing language ("search", "look around")
-5. Identify token bloat in routers
-6. Find duplicate content and deprecated docs
+- Routing takes >3 hops to reach common knowledge
+- Orphan docs or broken links have accumulated
+- Routers feel bloated or duplicated
+- Quarterly hygiene pass, or after adding 5+ new docs
 
-**Checkpoint**: Reports findings before making any changes
+## Workflow
 
-### Phase 2: Router Normalization
-7. Normalize all router structures (keep them short)
-8. Trim router bloat (move prose to leaf docs)
-9. Enforce router limits (root → chapter → 1-2 leaves)
+### Phase 1: Mechanical validation
 
-### Phase 2.5: Semantic Analysis ✨
+Invoke and collect output from:
 
-**AI-Powered Analysis** (see [docs/script_vs_ai.md](../../docs/script_vs_ai.md)):
+- `/grm-domain-validate-structure` — directory layout, required `INDEX.md` files, naming
+- `/grm-arcana-validate-links` — internal markdown links resolve
+- `/grm-arcana-validate-boundaries` — magical/practical boundary compliance
 
-This phase uses **AI intelligence** to understand context and meaning, not just pattern matching:
+Stop and report if any validator returns hard errors that would invalidate later phases (e.g. missing root `INDEX.md`).
 
-10. Run semantic clarity analysis on all chapters **with contextual understanding**
-11. Score naming quality based on **judgment**, not just rules
-12. Detect terminology inconsistencies **in context** (config vs configuration - which is better here?)
-13. Measure discoverability and searchability **for your domain**
-14. Generate renaming recommendations **with reasoning** and impact analysis
-15. Identify quick wins (high impact, low effort improvements **specific to your grimoire**)
+### Phase 2: Inventory
 
-**Why AI, not scripts?**
-- Scripts can count files and find patterns
-- Only AI can judge "Is this name clear enough?" "Would users find this?"
-- AI adapts to your domain's domain and evolves with AI capabilities
+- Enumerate routers (every `INDEX.md`) and leaf docs.
+- Classify leaves as wired (reachable from a router) or orphaned.
+- Flag absolute paths, `search`/`look around` instructions, and prose >150 words inside routers.
+- Identify duplicate or near-duplicate leaf content.
 
-**Checkpoint**: Report semantic issues and prioritized improvements
+### Phase 3: Semantic analysis
 
-### Phase 3: Canonicalization
-16. Choose ONE canonical doc for duplicate topics
-17. Split oversized docs only if it reduces total reads
-18. Wire or remove orphan docs
+Run `/grm-domain-analyze-semantics` and incorporate its output:
 
-### Phase 3.5: Boundary Validation ✨ NEW
-19. Validate magical boundary compliance
-20. Detect platform-specific language (Slack → domain communication)
-21. Find team/department buzzwords (HR → policy domain)
-22. Verify generic examples only
-23. Check for magical contamination (no invocations/formulae/rites in grimoire)
-24. Ensure practical terminology in chapter content
+- Naming clarity scores per chapter
+- Terminology drift (`config` vs `configuration`, etc.)
+- Discoverability gaps (queries that take >3 hops)
+- Quick wins (high impact, <30 min effort)
 
-**Checkpoint**: Report boundary violations (critical vs warnings)
+### Phase 4: Judgment passes
 
-### Phase 4: Validation
-25. Define minimal-read paths for representative requests
-26. Run integrity checks (all pointers resolve)
-27. Grep checks (no absolute paths, no "search" instructions)
-28. Scope hygiene (no scope leakage)
+Apply the following heuristics to the inventory and semantic output. Each is human-judgment work — explain the reason for every change in the final report.
 
-### Phase 5: Freshness Check
-29. Review pages for outdated content (stale snapshot values, broken file references)
-30. Prioritize freshness remediation
-31. Include freshness status in audit report
+**Router normalization**
+- Routers are pointer lists. Move prose into leaf docs.
+- Each router entry: one line, one destination, query-shaped phrasing (`CMake config → cmake_overrides.md`).
+- Root `INDEX.md` points only to chapter `INDEX.md` files; chapter `INDEX.md` points to 1–2 leaves per topic.
 
-### Phase 6: Quality Scoring ✨ NEW
-33. Calculate overall grimoire quality grade (A-F)
-34. Generate accessibility score (how discoverable is knowledge?)
-35. Measure discoverability metrics (search term coverage)
-36. Compute routing efficiency score (avg hops, token cost)
-37. Compare against best practice benchmarks
-38. Compare against previous run (if available in git history)
-39. Generate improvement roadmap prioritized by impact
+**Canonicalization**
+- For duplicate topics, pick one canonical leaf and replace the others with redirects or links.
+- Split a leaf only when splitting reduces total reads for a typical query.
+- Wire orphans into the nearest sensible router or delete them.
 
----
+**Boundary hygiene**
+- No magical folder names (`invocations/`, `formulae/`, `rites/`) inside the grimoire.
+- No platform/team buzzwords leaking into generic content; no proprietary names in examples.
+- Chapter content uses practical domain terminology, not Grimoire system jargon.
 
-## Non-Negotiable Rules
+**Freshness**
+- Flag leaves not touched in >90 days for revalidation.
+- Flag references to files or SHAs that no longer exist.
+- Do not auto-rewrite stale technical content — surface it as a TODO.
 
-1. **Do NOT invent new conventions** - Only restructure based on what exists
-2. **Deterministic routing only** - Explicit file pointers, no "search/look around"
-3. **Grimoires are maps** - Don't duplicate implementation details
-4. **No absolute paths** - Use relative repo paths only
-5. **Preserve meaning** - Refactors are structural, not changing technical intent
-6. **Stay in grimoire scope** - This invocation improves YOUR grimoire only, not Arcana
+### Phase 5: Apply fixes
 
----
+Edit files directly:
+
+- Rewrite bloated routers
+- Fix broken links
+- Merge duplicates into the canonical leaf
+- Delete or wire orphans
+- Apply terminology standardizations from Phase 3
+- Apply rename quick wins (update incoming links in the same pass)
+
+Defer anything that touches >10 files or rewrites stable chapter names — surface as TODOs instead.
+
+### Phase 6: Re-validate
+
+Re-run the Phase 1 validators. All must pass. Re-run `/grm-domain-analyze-semantics` if Phase 5 made significant renames; confirm scores improved.
+
+## Non-negotiable rules
+
+1. Do not invent new conventions — restructure within what exists.
+2. Deterministic routing only — explicit pointers, no `search`/`look around`.
+3. Grimoires are maps — do not duplicate implementation detail from source.
+4. Relative repo paths only.
+5. Refactors preserve technical meaning.
+6. Stay in the active grimoire's directory tree.
 
 ## Scope
 
-This invocation audits only your domain's grimoire:
+Operates on the active grimoire only:
 
 ```
-grimoire-{your-domain}/
-├── INDEX.md                  ← Root router
-├── README.md                 ← Domain documentation
-└── chapters/                 ← All chapter routers and leaves
-    ├── **/INDEX.md           ← Chapter routers
-    ├── **/*.md               ← Leaf docs
-    ├── **/templates/         ← Templates (not formulae!)
-    ├── **/scripts/           ← Scripts (not rites!)
-    └── **/snippets/          ← Snippets
+grimoire-{domain}/
+├── INDEX.md
+├── README.md
+└── chapters/
+    ├── **/INDEX.md
+    ├── **/*.md
+    ├── **/templates/
+    ├── **/scripts/
+    └── **/snippets/
 ```
 
-**NOT in scope**: Arcana itself (use `/grm-arcana-improve` for that)
+Out of scope: Arcana, other registered grimoires, source repos referenced by the grimoire.
 
----
+## Report
 
-## Working Directory Context
+Surface in chat (do not write report files):
 
-This invocation is **grimoire-contextual**. It operates on the grimoire in your current working directory.
+- Quality grade before/after (A–F)
+- Validator pass/fail summary (Phase 1, Phase 6)
+- Inventory counts (routers, leaves, orphans, duplicates)
+- Fixes applied, grouped by phase
+- Semantic improvements (renames, terminology standardizations)
+- Boundary violations fixed
+- Freshness TODOs requiring human judgment
+- Remaining manual work, prioritized
 
-**Example**: If you run this from `olympus-grimoire/`, it improves only the Olympus grimoire.
+## Related
 
-**To improve a different grimoire**:
-```bash
-cd grimoire-{other-domain}/
-/grm-domain-improve
-```
-
----
-
-## Deliverables
-
-### 1. Fixes Applied Directly
-All improvements applied directly to grimoire files:
-- Routers normalized
-- Broken pointers fixed
-- Duplicate content merged
-- Orphan docs wired or removed
-- Bloat trimmed
-- Semantic clarity issues corrected
-- Magical boundary violations fixed
-
-### 2. Comprehensive Summary Output
-Display to user (not saved to file):
-- Quality grade (A-F) and score (0-100)
-- Component inventory
-- Issues found and fixed
-- Semantic analysis results
-- Boundary validation status
-- Freshness check results
-- Quick wins applied
-- Remaining TODOs for manual review
-
-**No chronicle files created** - keeps grimoires lean and focused on actual knowledge, not audit history.
-
----
-
-## Example Output
-
-```
-✅ Grimoire Improvement Complete - Olympus Engineering Domain
-
-Quality Grade: B+ → A- (+8 points) 🌟
-
-Changes Applied:
-- Normalized 8 chapter routers (trimmed bloat)
-- Fixed 3 broken pointers (chapters/build_system/INDEX.md)
-- Merged 2 duplicate CMake docs → cmake_overrides.md (canonical)
-- Removed 1 orphan doc (chapters/deprecated/old_build.md)
-- Reduced average read path from 4 hops to 2.5 hops
-
-Semantic Analysis:
-- Renamed chapters/misc → chapters/utilities (+36 quality points)
-- Standardized "config" vs "configuration" → "config" (17 files)
-- Terminology consistency: 78% → 95%
-- 3 quick wins applied (<30 min total)
-
-Boundary Validation:
-- ✅ No magical contamination (no invocations/formulae in grimoire)
-- ✅ No platform assumptions detected
-- ⚠️  Fixed 2 team buzzwords (Engineering → domain)
-- ✅ All examples use generic names
-
-Freshness:
-- 42 docs healthy (validated <90 days)
-- 6 docs stale (>90 days, need revalidation)
-- 2 docs with SHA mismatch (sources changed)
-
-Quality Metrics:
-- Naming Clarity:        85/100 (A)
-- Routing Efficiency:    92/100 (A)
-- Discoverability:       88/100 (A)
-- Boundary Compliance:   100/100 (A+)
-- Freshness:            86/100 (A)
-- Overall Grade:        A- (90/100)
-
-Trending: ↑ +8 points from last audit (B+ → A-)
-
-TODOs:
-- Consider splitting chapters/code (12 sub-chapters)
-- Revalidate chapters/build_system/deps/cmake_first.md (185 days old)
-- Update chapters/platform/ops_boundaries.md (source SHA mismatch)
-
-Next Steps:
-1. Review changes with git diff
-2. Test routing (ask AI to navigate to a chapter)
-3. Apply any remaining TODOs manually
-4. Commit improvements
-```
-
----
-
-## Common Improvements
-
-### Router Bloat Reduction
-**Before**:
-```markdown
-# Build System Chapter
-
-This chapter contains all the information about our build system,
-including CMake configuration, toolchain setup, dependency management,
-CI/CD integration, and much more. The build system is complex...
-[200 more words of prose]
-
-## Routes
-- For CMake → cmake_overrides.md
-- For toolchains → toolchains/compiler_baseline.md
-```
-
-**After**:
-```markdown
-# Build System Chapter
-
-## Routes
-- CMake configuration → cmake_overrides.md
-- Toolchain setup → toolchains/compiler_baseline.md
-- Dependency management → deps/cmake_first_policy.md
-- CI/CD integration → ci/gitlab_shell_ci.md
-```
-
-### Canonicalization
-**Before**: 3 docs about CMake overrides (scattered, duplicated)
-**After**: 1 canonical doc with all knowledge consolidated
-
-### Broken Pointer Fix
-**Before**: `chapters/old_name/INDEX.md` (404)
-**After**: `chapters/current_name/INDEX.md` (resolves)
-
----
-
-## Tips
-
-### Run Regularly
-- **Monthly**: Quick improvement pass
-- **Quarterly**: Full audit with freshness validation
-- **After major changes**: Whenever you add 5+ new docs
-
-### Watch for Signs
-Your grimoire needs improvement when:
-- AI reads >3 files to answer simple questions
-- You have >5 orphan docs
-- Routers have >200 words of prose
-- Domain members report "can't find X" despite it existing
-
-### Before Running
-- Commit current state (if using Git)
-- Review the audit report before accepting all changes
-- Test routing after improvements
-
----
-
-## Related Invocations
-
-**This invocation automatically invokes:**
-- `analyze-semantics` - Semantic clarity analysis (Phase 2.5)
-- `validate-boundaries` - Magical boundary validation (Phase 3.5)
-
-**Other invocations:**
-- Create chapter: `/grm-domain-create-chapter [topic]`
-- Improve Arcana: `/grm-arcana-improve` (maintainer only)
-- Standalone semantic analysis: `/grm-domain-analyze-semantics`
-- Standalone boundary check: `/grm-arcana-validate-boundaries`
-
----
-
-## Questions?
-
-- Domain communication channel
-- Operating model: `../../docs/operating_model.md`
-- The Arcana maintainer: For guidance on complex improvements
-
----
-
-**Cast this invocation regularly to keep your grimoire sharp and efficient!** 🪄
+- Mechanical: `/grm-domain-validate-structure`, `/grm-arcana-validate-links`, `/grm-arcana-validate-boundaries`
+- Semantic: `/grm-domain-analyze-semantics`
+- Authoring: `/grm-domain-create-chapter`
+- Arcana counterpart (maintainer only): `/grm-arcana-improve`

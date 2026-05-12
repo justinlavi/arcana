@@ -1,6 +1,7 @@
 ---
 name: {{NAMESPACE}}-domain-analyze-semantics
 description: Deep semantic analysis of naming and organization for discoverability and token efficiency
+when_to_use: User asks about naming quality, discoverability, or organization of a grimoire; user mentions chapter or page names feel awkward, redundant, or hard to find; user wants a judgment-based audit (not the mechanical /grm-arcana-validate-semantics check). Operates on the active domain grimoire.
 user-invocable: true
 allowed-tools: Bash Read Write Edit
 ---

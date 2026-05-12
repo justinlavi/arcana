@@ -1,374 +1,110 @@
-# 🔍 Invocation: Validate Magical Boundaries
+# Invocation: Validate Magical Boundaries
 
-## ⚡ Purpose
+## Purpose
 
-Enforce the magical boundary between Grimoire's system (magical) and content (practical) to maintain clarity and prevent confusion.
+Judgment-based scan that enforces the magical/practical boundary: magical terminology (Invocation, Formula, Rite, Grimoire, `/grm-*`) is reserved for Arcana's system layer; domain grimoires use practical terminology (templates, scripts, snippets, guides).
 
-This invocation validates:
-- Magical terms stay in system operations only
-- No `invocations/`, `formulae/`, `rites/` in domain grimoires
-- No platform-specific language (Slack, SharePoint, Teams)
-- No team/department buzzwords (HR, Marketing, Legal, Sales)
-- Examples use generic names only
-- Arcana remains universally applicable
-
-**This invocation is safe to rerun at any time.**
-
----
-
-## When to Invoke
-
-- Before publishing grimoire to other domains
-- After adding new chapters or content
-- During code review of Grimoire updates
-- Quarterly as part of quality validation
-- Before releasing Arcana updates (maintainer)
-
----
+Canonical definition and full term mapping: [`docs/reference.md`](../../docs/reference.md) § "The Magical Boundary". Do not redefine the rules here — read that section first, then apply it.
 
 ## Invocation
 
-From your domain grimoire's root directory, invoke:
-
 ```
-/grm-arcana-validate-boundaries
-```
-
-Or for Arcana:
-
-```
-/grm-arcana-validate-boundaries --arcana
+/grm-arcana-validate-boundaries          # validate domain grimoire (cwd)
+/grm-arcana-validate-boundaries --arcana # validate Arcana itself (strictest)
 ```
 
----
+Also runs as part of `/grm-domain-improve` and `/grm-arcana-improve`.
 
-## What This Invocation Does
+## When to cast
 
-### Phase 1: Magical Contamination Check
+- Before publishing or releasing a grimoire
+- After adding or restructuring chapters
+- During code review of Grimoire updates
 
-**Detects magical terminology in practical content:**
+## Rules enforced
 
-#### ❌ Forbidden Magical Directories in Domain Grimoires
+1. **No magical directories in domain grimoires.** `invocations/`, `formulae/`, `rites/` exist only inside Arcana. Domain equivalents: `templates/`, `scripts/`, `snippets/`, `configs/`, `policies/`, `guides/`.
+2. **No magical terminology in chapter prose.** Phrases like "perform the invocation" or "consult the formula" belong in Arcana docs only. Referencing Arcana by name (e.g. "run `/grm-domain-improve`") is fine.
+3. **No platform-specific assumptions in shared content.** Slack, SharePoint, Confluence, Teams, Jira, GitHub etc. should be generic ("communication channel", "document repository", "issue tracker") unless documenting an actual integration.
+4. **No team/department buzzwords in shared content.** HR, Marketing, Legal, Sales, Finance etc. become "domain", "knowledge area", "your team".
+5. **Generic example names.** Use `Domain A`, `Project Alpha`, `Alice/Bob`, `{Your Project}`. Real company / product / person names only when documenting actual integrations.
+6. **Arcana is universal.** When `--arcana` is set, rules 1–5 apply at zero tolerance. No specific domains, platforms, hardcoded paths, or environment assumptions anywhere.
 
-Domain grimoires must NOT contain:
-- `invocations/` (only in Arcana)
-- `formulae/` (only in Arcana)
-- `rites/` (only in Arcana)
+## Where the rules relax
 
-**Allowed practical alternatives:**
-- `templates/` ✅ (not formulae)
-- `scripts/` ✅ (not rites)
-- `snippets/` ✅
-- `configs/` ✅
-- `policies/` ✅
-- `guides/` ✅
+`chapters/projects/` (project-specific overrides) may name actual platforms, teams, products, and people. Shared chapters and Arcana may not.
 
-#### ❌ Magical Terms in Chapter Content
+## Workflow
 
-Magical terms should NOT appear in chapter docs or leaf pages:
-- "Perform the invocation" → "Execute the command"
-- "Consult the formula" → "Reference the template"
-- "Perform the rite" → "Run the script"
-
-**Exception**: References to Arcana itself are allowed:
-- ✅ "Use `/grm-domain-improve` to optimize the grimoire"
-- ✅ "See Arcana for universal invocations"
-
----
-
-### Phase 2: Platform Assumption Check
-
-**Detects platform-specific language that should be generic:**
-
-Scans for platform-specific terms across three categories:
-
-- **Communication**: Slack, Teams, Discord, etc. -> "domain communication channel"
-- **Storage**: SharePoint, Confluence, Google Drive, etc. -> "document repository", "cloud storage"
-- **Development**: GitHub, Jira, Bitbucket, etc. -> "version control system", "issue tracker"
-
-> Full terminology mapping: `GRIMOIRE_ARCANA/docs/reference.md` (Magical Boundary section)
-
-#### ✅ Allowed Platform References
-
-Platform names ARE allowed when:
-- Documenting actual integration (e.g., "GitLab CI configuration")
-- In project-specific chapters (not shared chapters)
-- As one example among multiple: "e.g., Slack, Teams, or Discord"
-
----
-
-### Phase 3: Team Buzzword Check
-
-**Detects team/department names that should be generic:**
-
-Scans for department names and role titles that should be generic:
-
-- **Departments**: HR, Legal, Marketing, Sales, Finance, IT, etc. -> "Domain A", "Knowledge Domain", "your domain"
-- **Roles**: "HR Manager", "VP of Engineering", etc. -> "domain lead", "contributor", "knowledge owner"
-
-> Full terminology mapping: `GRIMOIRE_ARCANA/docs/reference.md` (Magical Boundary section)
-
-#### ✅ Allowed in Project-Specific Content
-
-Department names ARE allowed in:
-- `chapters/projects/` (project-specific overrides)
-- Project router documentation
-- When documenting actual organizational structure
-
----
-
-### Phase 4: Example Name Check
-
-**Validates that examples use generic, non-identifying names:**
-
-#### ❌ Real Company/Product Names
-
-**Forbidden**: Real company names, product names, person names, or project codenames (unless documenting actual integration or tool-specific documentation).
-
-#### ✅ Generic Example Names
-
-Use placeholder patterns: `Domain A`, `Project Alpha`, `Alice/Bob`, `System A`, or `{Your Domain}` / `{Your Project}` / `{Your System}`.
-
----
-
-### Phase 5: Arcana Universality Check
-
-**Ensures Arcana contains ZERO domain-specific content.** Applies Phases 1-4 at the strictest level: no specific domains, no platform assumptions, no hardcoded paths, no environment assumptions.
-
-> For full Arcana improvement workflows, see `/grm-arcana-improve`.
-
-#### ❌ Common Arcana Violations:
-
-- "Deploy to SharePoint" -> "Deploy to cloud storage"
-- "Share in #engineering" -> "Share in domain channel"
-- "For HR teams" -> "For knowledge management domains"
-- "VP approval required" -> "Domain lead approval required"
-
----
-
-## Deliverables
-
-### 1. Boundary Validation Report
-
-Contains:
-
-#### Overall Status
-```
-Magical Boundary Compliance: PASS ✅ | FAIL ❌
-
-- Magical contamination:    N violations
-- Platform assumptions:     N violations
-- Team buzzwords:           N violations
-- Example genericity:       PASS/FAIL
-- Arcana universality:   PASS/FAIL
-```
-
-#### Example Violations (one per severity)
-
-```
-🔴 CRITICAL: Magical directories in domain grimoire
-
-File: olympus-grimoire/invocations/custom_build.md
-Issue: Domain grimoire contains "invocations/" directory
-Fix: Rename to "scripts/" or move to Arcana
-```
-
-```
-🟡 WARNING: Magical terminology in practical content
-
-File: chapters/build_system/cmake.md:156
-Text: "Invoke this to configure CMake"
-Fix: "Run this command to configure CMake"
-```
-
-```
-🟢 INFO: Generic example could be clearer
-
-File: chapters/projects/atlas.md:12
-Text: "Project Alpha uses this pattern"
-Suggestion: "{Your Project} uses this pattern"
-```
-
-### 2. Quick Fix Script (auto-generated)
-
-When run with `--fix`, the invocation generates a `sed`-based shell script to apply simple text replacements. Review before executing.
-
----
-
-## Detection Patterns
-
-### Pattern: Magical Directory Detection
+### 1. Magical directories
 
 ```bash
-# Scan for forbidden directories in domain grimoires
-find GRIMOIRE_{DOMAIN}/ -type d -name "invocations" -o -name "formulae" -o -name "rites"
+find . -type d \( -name invocations -o -name formulae -o -name rites \) -not -path './.git/*'
 ```
 
-### Pattern: Platform Language Detection
+Inside a domain grimoire, any hit is a critical violation. Rename to the practical equivalent (rule 1) or, if it's genuine system-layer logic, move it to Arcana.
+
+### 2. Magical terminology in prose
 
 ```bash
-# Search for platform-specific terms
-grep -r "Slack\|SharePoint\|Confluence\|Teams\|Discord" chapters/
+grep -rniE 'invoke .*invocation|consult .*formula|perform .*rite|cast .*spell' chapters/ templates/ scripts/ 2>/dev/null
 ```
 
-### Pattern: Team Buzzword Detection
+Skip references to Arcana itself (`/grm-*` skill names, "see Arcana", etc.). Rewrite the rest in practical voice.
+
+### 3. Platform / department language in shared content
 
 ```bash
-# Search for department/role names
-grep -ri "\bHR\b\|Legal\|Marketing\|Sales\|Finance" chapters/
+# Platforms
+grep -rniE '\b(Slack|Teams|Discord|SharePoint|Confluence|Google Drive|Jira|Bitbucket)\b' chapters/ \
+  | grep -v chapters/projects/
+
+# Departments / roles
+grep -rniE '\b(HR|Legal|Marketing|Sales|Finance)\b|\b(VP|Director|Manager) of\b' chapters/ \
+  | grep -v chapters/projects/
 ```
 
-### Pattern: Magical Term in Content
+Hits outside `chapters/projects/` should be rewritten generically (see `docs/reference.md` for the mapping table). Hits inside `chapters/projects/` are allowed.
 
-```bash
-# Find magical language in practical content
-grep -r "invoke.*invocation\|consult.*formula\|perform.*rite" chapters/
+### 4. Example names
+
+Skim the same files for real company / product / person names used as examples. Replace with the generic placeholders listed in rule 5.
+
+### 5. Arcana mode (`--arcana`)
+
+Run all of the above against Arcana itself (`~/grimoire/arcana/`). Any violation is critical — Arcana must work for every domain, so it cannot mention any specific one.
+
+## Report format
+
+```
+Magical Boundary Compliance: PASS | FAIL
+
+- Magical directories:    N
+- Magical terminology:    N
+- Platform assumptions:   N
+- Team buzzwords:         N
+- Example genericity:     PASS/FAIL
+- Arcana universality:    PASS/FAIL  (--arcana only)
 ```
 
----
+For each violation, report file, line, offending text, and suggested fix. Group by severity:
 
-## Common Boundary Violations
+- **Critical**: magical directories in a domain; any violation in Arcana
+- **Warning**: magical terminology or platform/department language in shared chapters
+- **Info**: example names that work but could be more generic
 
-### Violation: Magical Folders in Domain Grimoire
+## Enforcement levels
 
-**Before**:
-```
-GRIMOIRE_MYTEAM/
-├── chapters/
-├── invocations/              ❌ Wrong!
-│   └── deploy.md
-└── formulae/             ❌ Wrong!
-    └── k8s-template.yml
-```
+| Scope | Tolerance |
+|---|---|
+| Arcana | Zero — every violation is critical |
+| Shared chapters in a domain grimoire | Strict — critical or warning |
+| `chapters/projects/` | Relaxed — warning or info, real names allowed |
 
-**After**:
-```
-GRIMOIRE_MYTEAM/
-├── chapters/
-├── scripts/             ✅ Correct
-│   └── deploy.sh
-└── templates/           ✅ Correct
-    └── k8s-template.yml
-```
+## Related
 
----
-
-### Violation: Platform Assumptions
-
-**Before**:
-```markdown
-Share your changes in the #engineering-team Slack channel
-and upload documentation to the SharePoint site.
-```
-
-**After**:
-```markdown
-Share your changes in the engineering domain communication channel
-and upload documentation to the shared document repository.
-```
-
----
-
-### Violation: Team Buzzwords in Universal Content
-
-**Before** (in Arcana):
-```markdown
-- **HR Teams**: Onboarding policies, employee handbooks
-- **Marketing**: Brand guidelines, campaign templates
-```
-
-**After**:
-```markdown
-- **Policy Domains**: Onboarding guides, organizational handbooks
-- **Brand Domains**: Visual standards, campaign frameworks
-```
-
----
-
-### Violation: Magical Language in Chapter Content
-
-**Before**:
-```markdown
-# CMake Configuration
-
-To configure your build, run the cmake-configure invocation:
-
-`/grm-meta-help`
-```
-
-**After**:
-```markdown
-# CMake Configuration
-
-To configure your build, run the configuration command:
-
-`cmake -B build -S .`
-
-(Or use `/grm-meta-help` for available Grimoire skills)
-```
-
----
-
-## Boundary Enforcement Levels
-
-### Level 1: Arcana (Strictest)
-
-**Arcana must be:**
-- ✅ 100% generic (no specific domains/platforms)
-- ✅ 100% universal (works anywhere)
-- ✅ 0 violations allowed
-
-**Violations in Arcana are ALWAYS critical.**
-
-### Level 2: Domain Grimoires - Shared Chapters (Strict)
-
-**Shared chapters (not in `chapters/projects/`) must:**
-- ✅ Use generic examples
-- ✅ Avoid platform-specific language where possible
-- ✅ Use magical terminology correctly
-
-**Violations in shared chapters are critical or warnings.**
-
-### Level 3: Domain Grimoires - Project Chapters (Relaxed)
-
-**Project-specific chapters (`chapters/projects/`) can:**
-- ✅ Mention specific platforms if project uses them
-- ✅ Reference actual teams/departments
-- ✅ Use real project names
-
-**Violations in project chapters are warnings or info.**
-
----
-
-## Integration with Other Invocations
-
-This invocation is automatically invoked by:
-
-- `/grm-domain-improve` - Validates boundaries in Phase 3.5
-- `/grm-arcana-improve` - Ensures Arcana universality
-- `/grm-domain-create-grimoire` - Validates new grimoires at creation
-
-Can be run standalone:
-
-- `/grm-arcana-validate-boundaries` - Full validation
-- `/grm-arcana-validate-boundaries --fix` - Apply automated fixes
-- `/grm-arcana-validate-boundaries --strict` - Zero tolerance mode
-
----
-
-## Tips
-
-- **Magical language**: only when talking ABOUT Arcana, invocations, formulae, rites, or `/grm-*` skills. Never in chapter content, templates, or code examples.
-- **Generic names**: always in Arcana and shared chapters. Specific names only in `chapters/projects/`, actual configs, and integration docs.
-
----
-
-## Related Invocations
-
-- Semantic clarity check: `/grm-domain-analyze-semantics`
-- Structure validation: `/grm-domain-improve`
-- Full grimoire improvement: `/grm-domain-improve`
-- Arcana evolution: `/grm-arcana-improve` (maintainer)
-
----
-
+- **Reference**: [`docs/reference.md`](../../docs/reference.md) § "The Magical Boundary" (canonical rules and term mapping)
+- **Operating model**: [`docs/operating_model.md`](../../docs/operating_model.md) (why the boundary exists)
+- **Semantic naming**: `/grm-domain-analyze-semantics` (judgment-based naming review)
+- **Orchestrator (Arcana)**: `/grm-arcana-improve`
+- **Orchestrator (domain)**: `/grm-domain-improve`

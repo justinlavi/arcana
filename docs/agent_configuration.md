@@ -55,6 +55,37 @@ A skill is a **thin pointer**. It delegates to one of:
 
 Skills must never embed implementation logic directly. This separation keeps them portable across agent platforms.
 
+For when to choose rite-backed vs invocation-backed (and the anti-patterns to avoid), see [`script_vs_ai.md` § Applying this to skills](script_vs_ai.md#applying-this-to-skills).
+
+---
+
+## SKILL.md Frontmatter Reference
+
+Every `SKILL.md` declares its skill in YAML frontmatter. Required fields are minimal; optional fields tune how the agent presents and auto-invokes the skill.
+
+| Field | Required | Used by | Notes |
+|---|---|---|---|
+| `name` | Yes | Both | Final registered command name. Source files use `{{NAMESPACE}}-<slug>`; the registration rite substitutes `{{NAMESPACE}}` with the grimoire's namespace at install time. |
+| `description` | Yes | Both | One-line summary. Codex/ChatGPT renders it next to the command in the picker UI. Claude Code loads it into the model's reasoning context (see "Auto-invocation" below). |
+| `argument-hint` | No | Both | Bracketed hint shown during `/` autocomplete (e.g. `[topic]`, `[directory-name]`). |
+| `arguments` | No | Both | Comma-separated argument names available as `$name` in the SKILL.md body. |
+| `allowed-tools` | No | Both | Space-separated list of tools the skill needs (e.g. `Bash Read Write`). |
+| `user-invocable` | No | Both | `true` = appears in the `/` picker. Default depends on agent. |
+| `when_to_use` | No | **Claude Code** | Helps Claude auto-invoke the skill without the user typing `/`. Phrase as natural-language scenarios ("User asks X", "User mentions Y"). Codex/ChatGPT ignores this field. |
+| `disable-model-invocation` | No | **Claude Code** | `true` prevents Claude from ever auto-invoking the skill — only user-typed slash commands trigger it. Use for destructive ops (deletions, irreversible changes). Codex/ChatGPT ignores this field. |
+
+Cross-agent safety: any field Codex/ChatGPT doesn't recognize is silently ignored. The same source `SKILL.md` works for both targets — no per-agent compilation needed.
+
+### Auto-invocation policy in this Arcana
+
+Adding `when_to_use` makes a skill discoverable by intent in Claude Code (the user describes a problem; Claude routes to the right skill). The current Arcana settings:
+
+- **All user-facing operations** (`/grm-domain-*`, `/grm-catalog-*`, `/grm-skills-register`, `/grm-meta-help`, `/grm-arcana-validate-all`) declare `when_to_use` so Claude can auto-suggest them.
+- **One destructive skill** (`/grm-arcana-clean`) declares `disable-model-invocation: true` because it deletes artifacts; users must invoke it explicitly.
+- **Individual validators** (`/grm-arcana-validate-format`, `-links`, etc.) and the heavy maintainer orchestrator (`/grm-arcana-improve`) deliberately omit `when_to_use` — the orchestrator (`/grm-arcana-validate-all` or `/grm-arcana-improve`) is the right entry point for normal flows; auto-invoking individual validators would over-activate.
+
+When adding a new skill, decide: does the user describe a *problem* that maps to this skill? If yes, give it a `when_to_use`. If the skill is destructive or maintainer-only, set `disable-model-invocation: true`.
+
 Skills are namespaced by their grimoire's manifest:
 - Arcana skills: `grm-*` (declared in `arcana/grimoire.json`).
 - Domain grimoire skills: `{namespace}-*` (declared in each grimoire's `grimoire.json`).

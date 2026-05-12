@@ -1,85 +1,33 @@
-# Core Arcana Validation Invocations
+# Arcana Validators
 
-These invocations provide modular, focused validation of Arcana components.
+Mechanical, deterministic checks against the Arcana repository. Each validator has its own dedicated skill, and all of them run together via the orchestrator.
 
-## Purpose
+## Available
 
-Validator invocations can be run independently or orchestrated through [improve_arcana.md](../improve_arcana.md). Each invocation wraps a corresponding validation rite.
+| Validator | Skill | What it checks |
+|---|---|---|
+| [validate_structure.md](validate_structure.md) | `/grm-arcana-validate-structure` | Required directories and files exist; layout matches conventions |
+| [validate_naming.md](validate_naming.md) | `/grm-arcana-validate-naming` | snake_case for paths; kebab-case for skills |
+| [validate_format.md](validate_format.md) | `/grm-arcana-validate-format` | Invocation/formula schema compliance |
+| [validate_semantics.md](validate_semantics.md) | `/grm-arcana-validate-semantics` | Deprecated terms (from `rites/data/deprecated_terms.txt`) and hyphenated path examples |
+| [validate_links.md](validate_links.md) | `/grm-arcana-validate-links` | Internal markdown links resolve |
+| [validate_security.md](validate_security.md) | `/grm-arcana-validate-security` | Credential patterns and unsafe Python constructs in rites |
 
-## Available Invocations
+Plus a non-validator skill that runs the same scan over `/grm-*` references in prose: `/grm-arcana-validate-skill-refs`.
 
-### Structure & Organization
-- **[validate_structure.md](validate_structure.md)** - Directory/file integrity validation
-- **[validate_naming.md](validate_naming.md)** - Snake_case naming enforcement
-- **[validate_format.md](validate_format.md)** - Invocation/formula schema compliance
+## Run them all
 
-### Content Quality
-- **[validate_semantics.md](validate_semantics.md)** - Reference-driven terminology validation
-- **[validate_links.md](validate_links.md)** - Broken reference detection
-
-### Security
-- **[validate_security.md](validate_security.md)** - Credential scanning and bash safety
-
-## Quick Start
-
-**Run all validations**:
 ```bash
-python3 rites/validate.py
+python3 ../../../rites/validate.py            # sequential, default
+python3 ../../../rites/validate.py --parallel  # concurrent
+python3 ../../../rites/validate.py --smart     # only validators relevant to git changes
+python3 ../../../rites/validate.py --auto      # smart + execute
 ```
 
-**Run individual validation**:
-```bash
-python3 rites/validate_structure.py
-```
-
-**Invoke** (AI-guided):
-```
-/grm-domain-validate-structure
-/grm-arcana-improve
-/grm-arcana-improve
-/grm-arcana-improve
-/grm-arcana-improve
-/grm-arcana-improve
-```
-
-## Architecture
-
-Each validation invocation follows this pattern:
-
-1. **Invocation file** (`validate_*.md`) - User-facing documentation, workflow guidance
-2. **Rite script** (`rites/validate_*.py`) - Automated validation logic
-3. **Reference** (`docs/reference.md`) - Canonical definitions (for semantic validation)
-
-**Benefits**:
-- Invocations provide context and guidance
-- Rites provide automation and speed
-- Reference provides single source of truth
-
-## Usage Patterns
-
-### During Development
-Invoke individual validations for specific changes:
-```
-/grm-arcana-improve    # After renaming files
-/grm-arcana-improve   # After creating new invocation
-/grm-arcana-improve # Before committing
-```
-
-### Before Release
-Run comprehensive validation:
-```bash
-python3 rites/validate.py
-```
-
-### In CI/CD
-Integrate into pipeline:
-```yaml
-- name: Validate Arcana
-  run: python3 rites/validate.py
-```
+Or invoke `/grm-arcana-validate-all`.
 
 ## Related
 
-- **Orchestrator**: [improve_arcana.md](../improve_arcana.md)
-- **Rites**: [rites/](../../../rites/)
-- **Reference**: [docs/reference.md](../../../docs/reference.md)
+- Orchestrator invocation: [`../improve_arcana.md`](../improve_arcana.md)
+- Rite scripts: [`../../../rites/`](../../../rites/)
+- Canonical terminology: [`../../../docs/reference.md`](../../../docs/reference.md)

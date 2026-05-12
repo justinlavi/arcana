@@ -7,6 +7,19 @@ Historical notes from earlier private GitLab iterations were intentionally remov
 ## [Unreleased]
 
 ### Added
+- Auto-invocation hints for Claude Code:
+  - 10 user-facing skills now declare `when_to_use` so Claude can route to them by intent without the user typing the slash command. Targets: `/grm-domain-{create-grimoire,create-chapter,improve,validate-structure,analyze-semantics}`, `/grm-catalog-{sync,adopt}`, `/grm-skills-register`, `/grm-meta-help`, `/grm-arcana-validate-all`.
+  - `/grm-arcana-clean` declares `disable-model-invocation: true` (destructive — must be user-initiated).
+  - Individual validators and the heavy maintainer orchestrator (`/grm-arcana-improve`) deliberately omit `when_to_use` to avoid over-activation; the orchestrator is the right entry for normal flows.
+  - Codex/ChatGPT silently ignores both fields. Same single-source `SKILL.md` works for both targets — no per-agent compilation. Documented in `docs/agent_configuration.md` § "SKILL.md Frontmatter Reference".
+- Arcana audit cleanup, Tier 3 + Tier 4:
+  - **Skill-references validator**: new `rites/validate_skill_refs.py` and `/grm-arcana-validate-skill-refs` skill — scans every Arcana markdown file for `/grm-*` references and flags any that don't resolve to a real `skills/<slug>/SKILL.md`. Caught a regression introduced by the slimming pass (a fictional `/grm-arcana-validate-rites` reference) within the same session it was added. Wired into `validate.py` orchestrator.
+  - **Catalog-adopt workflow**: new `rites/adopt_grimoire.py` and `/grm-catalog-adopt` skill — interactively adopts an unmanaged directory under `~/grimoire/` by writing its `grimoire.json` manifest. Refuses to overwrite existing manifests and refuses on namespace collision. After adoption, `/grm-catalog-sync --apply` registers the new grimoire.
+  - **Skill delegation pattern documented**: new "Applying this to skills" section in `docs/script_vs_ai.md` makes the rite-backed-vs-invocation-backed decision explicit, with anti-patterns to avoid. `agent_configuration.md` cross-links it.
+- Slimmed heavyweight invocations: 8 of the largest `.md` files in `invocations/` cut from 2,948 to 1,018 total lines (~65% reduction). Targeted `create_grimoire.md`, `improve_arcana.md`, `analyze_semantics.md`, `validate_boundaries.md`, `validate_rites.md`, `improve_grimoire.md`, `create_chapter.md`, `meta/help.md`. Cuts focused on pedagogical fluff, repeated examples, decorative chrome, and stale skill references; procedural content preserved.
+- Slimmed thin INDEX routers: `meta/INDEX.md` (129→15 lines), `validators/INDEX.md` (85→32 lines), `grimoire/INDEX.md` (107→25 lines). Each was carrying boilerplate disproportionate to the few items it routed.
+
+### Added
 - Comprehensive Arcana audit cleanup (Tier 1 + Tier 2):
   - **Single-source skill catalog**: new `rites/sync_docs.py` generator emits `docs/skills.md` from each `skills/<slug>/SKILL.md` frontmatter. INDEX.md, README.md, agent_configuration.md, and reference.md no longer enumerate skills — they all link to the canonical catalog.
   - **Single-source instruction block**: the canonical Grimoire instruction text now lives at `rites/templates/grimoire_block.md`. `summon.py` reads it at runtime instead of embedding it; `agent_configuration.md` references it instead of inlining.

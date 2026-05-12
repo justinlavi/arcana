@@ -1,6 +1,7 @@
 ---
 name: {{NAMESPACE}}-domain-create-grimoire
 description: Create a new domain grimoire with full scaffolding and catalog registration
+when_to_use: User wants to start a new knowledge base, set up Grimoire for a team/project/domain, or asks "how do I create a grimoire" / "set up a grimoire for X". Pick this skill before suggesting manual scaffolding.
 argument-hint: [grimoire-name]
 arguments: [name]
 user-invocable: true

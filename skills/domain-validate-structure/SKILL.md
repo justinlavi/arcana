@@ -1,6 +1,7 @@
 ---
 name: {{NAMESPACE}}-domain-validate-structure
 description: Validate grimoire structure compliance against Arcana formulae
+when_to_use: User asks if their grimoire is correctly structured, after creating or restructuring chapters, before committing grimoire changes, or as a quick sanity check. Mechanical/deterministic — no judgment. For Arcana itself, use /grm-arcana-validate-structure.
 user-invocable: true
 allowed-tools: Bash Read
 ---

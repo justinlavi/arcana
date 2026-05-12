@@ -22,11 +22,14 @@ from pathlib import Path
 ARCANA_ROOT = Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent))
 DEPRECATED_TERMS_FILE = ARCANA_ROOT / "rites" / "data" / "deprecated_terms.txt"
 
-# Files exempt from deprecated-term scanning (the rite/data files themselves
-# need to mention the terms in order to flag them).
+# Files exempt from scanning. These either *define* the patterns the rite
+# checks (and so necessarily mention them) or are docs whose explicit purpose
+# is to discuss the patterns as illustrative examples.
 SKIP_FILES = {
-    "validate_semantics.md",
-    "deprecated_terms.txt",
+    "validate_semantics.md",  # describes the rite, names the patterns it scans
+    "deprecated_terms.txt",   # the data file
+    "validate_naming.md",     # documents naming-violation examples
+    "script_vs_ai.md",        # demos validator behavior, quotes AI naming a deprecated term
 }
 
 SKIP_DIRS = {

@@ -1,12 +1,8 @@
-# 🔮 Invocation: Grimoire Help
+# Invocation: Grimoire Help
 
-## ⚡ Purpose
+## Purpose
 
-Display available Grimoire invocations dynamically by reading invocation files - ensures always-current catalog with zero duplication.
-
-**This invocation is safe to run anytime.**
-
----
+Show the user every Grimoire skill currently installed: Arcana's `grm-*` catalog plus the skills shipped by each domain grimoire registered in `~/grimoire/catalog.json`. The Arcana list lives in [`docs/skills.md`](../../docs/skills.md) (auto-generated); domain skills must be enumerated live since no equivalent static catalog exists across grimoires.
 
 ## Invocation
 
@@ -14,248 +10,44 @@ Display available Grimoire invocations dynamically by reading invocation files -
 /grm-meta-help
 ```
 
-Or:
+## Workflow
+
+### 1. Show Arcana skills
+
+Read [`GRIMOIRE_ARCANA/docs/skills.md`](../../docs/skills.md) and present its tables to the user as-is. It is the canonical, sync-generated list. Do not re-derive it by scanning `skills/<slug>/SKILL.md` unless `docs/skills.md` is missing — in that case fall back to the scan and warn the user it should be regenerated with `python3 rites/sync_docs.py --apply`.
+
+### 2. Enumerate domain grimoire skills
+
+Read `~/grimoire/catalog.json`. For each entry under `grimoires`:
+
+1. Resolve `local_path` (expand `$HOME`).
+2. Read `<local_path>/grimoire.json` to get the grimoire's `name` and `skill_namespace`.
+3. List `<local_path>/skills/*/SKILL.md`. For each, parse the YAML frontmatter and capture `name` and `description`.
+4. Skip the grimoire (with a one-line note) if `grimoire.json` is missing, `skills/` is absent, or no `SKILL.md` files exist.
+
+### 3. Present the catalog
+
+Group by source. For each group, render a simple table — skill on the left, description on the right. Keep it terse; no ASCII boxes, no decorative separators.
 
 ```
-/grm-meta-help
+Arcana skills (grm-*) — N skills
+<table from docs/skills.md, or summary linking to it>
+
+<Grimoire Name> skills (<namespace>-*) — N skills
+| Skill | Description |
+|---|---|
+| /<namespace>-... | ... |
 ```
 
----
+If only Arcana is installed, say so and point the user at `/grm-domain-create-grimoire` to start a domain grimoire.
 
-## How This Invocation Works (Dynamic Generation)
+### 4. Counts
 
-### Single Source of Truth Architecture
+End with a one-line total: `Total: N skills across M grimoires (Arcana + <list>)`.
 
-Unlike static documentation, `/grm-meta-help` generates the invocation catalog **dynamically** by reading invocation files. This ensures:
-- ✅ **Zero duplication** - invocation .md files are the only source
-- ✅ **Always current** - new invocations automatically appear
-- ✅ **Self-maintaining** - no manual catalog updates needed
+## Related
 
-### Execution Algorithm
-
-When a user casts `/grm-meta-help`, execute this workflow:
-
-#### Step 1: Scan Invocation Directories
-
-Read all invocation files from:
-```bash
-GRIMOIRE_ARCANA/invocations/grimoire/*.md
-GRIMOIRE_ARCANA/invocations/arcana/*.md
-GRIMOIRE_ARCANA/invocations/meta/*.md
-```
-
-Exclude INDEX.md files (routers only).
-
----
-
-#### Step 2: Extract Metadata from Each Invocation
-
-For each invocation .md file, extract:
-
-**Required Sections** (read from markdown):
-- **Invocation Title**: First `# ` heading (e.g., "# 📐 Invocation: Validate Structure")
-- **Purpose**: Content under `## Purpose` or `## ⚡ Purpose` heading
-- **Invocation**: Content under `## Invocation` heading
-- **Category**: Infer from directory:
-  - `invocations/grimoire/` → Grimoire Invocation
-  - `invocations/arcana/` → Arcana Invocation
-  - `invocations/meta/` → Meta Invocation
-
-**Optional Sections**:
-- **When to Use**: Content under `## When to Cast` or `## When to Use`
-- **Related Invocations**: Content under `## Related Invocations`
-
----
-
-#### Step 3: Categorize Invocations
-
-Group invocations by type and category:
-
-**Grimoire Invocations** (from `invocations/grimoire/`):
-- 🎨 **Creation**: Invocations that create new grimoires/chapters
-- 🔧 **Improvement**: Invocations that enhance existing grimoires
-- 📊 **Analysis**: Invocations that audit/validate grimoires
-
-**Arcana Invocations** (from `invocations/arcana/`):
-- 🧙‍♂️ **Arcana Operations**: Invocations that modify Arcana itself
-- 🔍 **Validation**: Invocations that enforce Arcana quality gates
-
-**Meta Invocations** (from `invocations/meta/`):
-- 🔮 **Documentation**: Invocations that provide information
-- ⚙️ **Arcana**: Invocation execution templates
-
-**Category Detection**:
-Infer category from invocation content or file patterns:
-- Contains "create" → Creation
-- Contains "improve" → Improvement
-- Contains "analyze" or "validate" → Analysis
-- File: help.md, base_invocation.md → Meta
-
----
-
-#### Step 4: Generate Formatted Catalog
-
-Display invocation catalog using this template:
-
-```
-╔═══════════════════════════════════════════════════════════════╗
-║                  🔮 GRIMOIRE INVOCATION CATALOG                    ║
-╚═══════════════════════════════════════════════════════════════╝
-
-📚 GRIMOIRE INVOCATIONS (Domain Operations)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎨 CREATION INVOCATIONS
-
-🪄 [invocation-name]
-   Invocation: [invocation syntax]
-   Purpose: [purpose summary]
-   When: [when to use - if available]
-
-[Repeat for all creation invocations]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔧 IMPROVEMENT INVOCATIONS
-
-[... similar format ...]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📊 ANALYSIS INVOCATIONS
-
-[... similar format ...]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🧙‍♂️ ARCANA INVOCATIONS (Maintainer Only)
-
-[... similar format ...]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔮 META INVOCATIONS
-
-[... similar format ...]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📖 QUICK REFERENCE
-
-Invocation                    | Invocation                        | Category
-------------------------|-----------------------------------|-------------
-[invocation-1]                | [invocation-1]                   | [category-1]
-[invocation-2]                | [invocation-2]                   | [category-2]
-[...]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💡 COMMON WORKFLOWS
-
-First time using Grimoire?
-  1. /grm-meta-help (read this guide)
-  2. /grm-domain-create-grimoire (create your domain grimoire)
-  3. /grm-domain-create-chapter [topic] (add chapters)
-  4. /grm-domain-improve (optimize periodically)
-
-Improving existing grimoire?
-  1. /grm-domain-improve (comprehensive improvement)
-     OR
-  2. /grm-domain-analyze-semantics (just naming analysis)
-  3. /grm-arcana-validate-boundaries (just boundary check)
-  4. /grm-domain-validate-structure (just structure check)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📚 DETAILED DOCUMENTATION
-
-For detailed documentation on each invocation, read the invocation file directly:
-  - Grimoire invocations: GRIMOIRE_ARCANA/invocations/grimoire/[invocation-name].md
-  - Arcana invocations: GRIMOIRE_ARCANA/invocations/arcana/[invocation-name].md
-  - Meta invocations: GRIMOIRE_ARCANA/invocations/meta/[invocation-name].md
-
-Invocation catalogs (thin routers):
-  - invocations/grimoire/INDEX.md
-  - invocations/arcana/INDEX.md
-  - invocations/meta/INDEX.md
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-**Cast `/grm-meta-help` anytime for this dynamically-generated catalog!** 🔮
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
----
-
-#### Step 5: Auto-Count Invocations
-
-Display invocation counts dynamically:
-```
-Total Invocations: [count all .md files]
-  - Grimoire Invocations: [count invocations/grimoire/*.md]
-  - Arcana Invocations: [count invocations/arcana/*.md]
-  - Meta Invocations: [count invocations/meta/*.md]
-```
-
-No manual counting needed! ✅
-
----
-
-## Example Execution
-
-### User Input
-```
-/grm-meta-help
-```
-
-### Claude's Process
-```python
-# Pseudo-code for clarity
-grimoire_invocations = scan_directory("invocations/grimoire/")
-arcana_invocations = scan_directory("invocations/arcana/")
-meta_invocations = scan_directory("invocations/meta/")
-
-for invocation in all_invocations:
-    metadata = extract_metadata(invocation)
-    categorize(metadata)
-
-catalog = generate_formatted_catalog(categorized_invocations)
-display(catalog)
-```
-
-### User Sees
-```
-╔═══════════════════════════════════════════════════════════════╗
-║                  🔮 GRIMOIRE INVOCATION CATALOG                    ║
-╚═══════════════════════════════════════════════════════════════╝
-
-📚 GRIMOIRE INVOCATIONS (Domain Operations)
-
-🎨 CREATION INVOCATIONS
-
-🪄 create-grimoire
-   Invocation: /grm-domain-create-grimoire
-   Purpose: Create new grimoire for your domain
-   When: Starting new knowledge base, new department/team
-
-[... dynamic catalog continues ...]
-```
-
----
-
-## Invocation File Requirements
-
-For `/grm-meta-help` to extract properly, invocation files must have:
-- `# ` title heading (first line or near top)
-- `## Purpose` section
-- `## Invocation` section
-
-Optional: `## When to Cast`, `## Category`, `## Related Invocations`
-
----
-
-## Related Invocations
-
-- **base-invocation**: Generic invocation execution template
+- **Arcana skill catalog (canonical)**: [`docs/skills.md`](../../docs/skills.md)
+- **Skill registration**: `/grm-skills-register`
+- **Catalog reconciliation**: `/grm-catalog-sync`
+- **Skill system mechanics**: [`docs/agent_configuration.md`](../../docs/agent_configuration.md)

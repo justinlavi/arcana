@@ -323,5 +323,29 @@ Ask: "Does this require understanding context and meaning?"
 
 ---
 
+## Applying this to skills
+
+Every Arcana skill delegates to one of two backing implementations:
+
+- **Rite-backed**: `SKILL.md` body says `python3 {{ARCANA_PATH}}/rites/<name>.py`. The AI reads the skill, runs the rite, reports the rite's output. No judgment in between.
+- **Invocation-backed**: `SKILL.md` body says `` `!cat {{ARCANA_PATH}}/invocations/<area>/<name>.md` ``. The AI loads the invocation guide and follows its workflow, applying judgment.
+
+Pick by the same rule that applies to rites vs invocations themselves:
+
+| If the skill's job is… | Pick this backing | Examples |
+|---|---|---|
+| Mechanical, deterministic, no judgment required | Rite-backed | `/grm-skills-register`, `/grm-catalog-sync`, `/grm-arcana-clean`, every `/grm-arcana-validate-*` |
+| Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/grm-domain-create-grimoire`, `/grm-domain-improve`, `/grm-arcana-improve`, `/grm-meta-help` |
+| Both — the rite gathers data, the AI interprets | **Both, in that order**: skill body runs the rite first, then loads an invocation that reads the rite's output | `/grm-arcana-validate-semantics` could evolve into this if/when the analysis judgment grows beyond the rite's pattern check |
+
+Two anti-patterns to avoid:
+
+- A rite-backed skill whose body has prose instructions for the AI to interpret. If you find yourself writing "and then decide whether…" in a SKILL.md, the skill is judgment work — make it invocation-backed.
+- An invocation-backed skill whose invocation just `!cat`s a script's help output. If the work is "run a thing and report the result," skip the invocation and have the skill call the rite directly.
+
+When a skill grows beyond a thin pointer, the right response is almost always to push the new logic *down* into a rite or invocation, not *up* into the SKILL.md body. The skill stays portable across agent platforms; the invocation/rite is where complexity lives.
+
+---
+
 
 **This principle is foundational to Grimoire's architecture and should guide all future development.**

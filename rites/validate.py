@@ -28,6 +28,7 @@ RITES = [
     "validate_semantics.py",
     "validate_format.py",
     "validate_links.py",
+    "validate_skill_refs.py",
     "validate_security.py",
 ]
 
@@ -85,10 +86,17 @@ def determine_smart_rites():
 
         if f.endswith(".md"):
             try:
-                if "](" in path.read_text(errors="replace"):
+                content = path.read_text(errors="replace")
+                if "](" in content:
                     needed.add("validate_links.py")
+                if "/grm-" in content:
+                    needed.add("validate_skill_refs.py")
             except OSError:
                 pass
+
+        # Adding or removing a skill changes which references are valid.
+        if f.startswith("skills/"):
+            needed.add("validate_skill_refs.py")
 
     return [r for r in RITES if r in needed] if needed else list(RITES)
 

@@ -48,6 +48,7 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 - **[rites/register_skills.py](rites/register_skills.py)** - Skill registration rite
 - **[rites/sync_catalog.py](rites/sync_catalog.py)** - Catalog sync rite (reconcile catalog with disk)
 - **[rites/sync_docs.py](rites/sync_docs.py)** - Docs sync rite (regenerate `docs/skills.md` from sources)
+- **[rites/adopt_grimoire.py](rites/adopt_grimoire.py)** - Adopt an unmanaged directory by writing its `grimoire.json`
 - **[catalog.json](catalog.json)** - Company-wide grimoire catalog
 
 ### Tools

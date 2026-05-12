@@ -1,6 +1,7 @@
 ---
 name: {{NAMESPACE}}-domain-improve
 description: Comprehensive grimoire improvement — audit, normalize, and optimize the active domain grimoire
+when_to_use: User asks to audit, polish, improve, or review a domain grimoire; user is preparing for a release; user mentions tech debt, drift, or stale content in their grimoire. Operates on the *active* grimoire (must be cd'd into a registered grimoire). For Arcana itself, use /grm-arcana-improve instead.
 user-invocable: true
 allowed-tools: Bash Read Write Edit
 ---

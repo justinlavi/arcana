@@ -1,6 +1,7 @@
 ---
 name: {{NAMESPACE}}-domain-create-chapter
 description: Create a new knowledge chapter in the active domain grimoire
+when_to_use: User wants to add a chapter, document a topic in their grimoire, or has knowledge that doesn't fit any existing chapter. Phrases like "add a chapter for X", "document Y in this grimoire", "where should I put info about Z" are all good triggers. Requires being in a registered domain grimoire directory.
 argument-hint: [chapter-topic]
 arguments: [topic]
 user-invocable: true

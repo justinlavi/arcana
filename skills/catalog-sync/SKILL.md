@@ -1,6 +1,7 @@
 ---
 name: {{NAMESPACE}}-catalog-sync
 description: Scan ~/grimoire/ for valid grimoires and reconcile against the local catalog (detect missing, stale, mismatched, and unmanaged entries)
+when_to_use: User cloned, moved, or removed a grimoire by hand; agent can't find a grimoire that should be installed; catalog mentions a grimoire that doesn't exist on disk; user mentions "catalog drift", "missing grimoire", "unmanaged directory", or "after manual git changes in ~/grimoire/". Defaults to a dry-run report; only writes when --apply is passed.
 user-invocable: true
 allowed-tools: Bash Read
 ---

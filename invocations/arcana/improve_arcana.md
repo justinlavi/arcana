@@ -1,463 +1,159 @@
-# 🪄 Invocation: Improve Arcana
+# Invocation: Improve Arcana
 
-## ⚡ Purpose
+## Purpose
 
-**For the Arcana maintainer only** - Continuously improve Arcana to ensure it remains the universal foundation for all grimoires.
+Maintainer-only orchestrator for Arcana itself. Sequences the validator suite, the rite quality check, and the documentation quality pass — applies fixes, re-validates, and reports.
 
-This invocation maintains the quality of:
-- Universal invocations
-- Universal formulae
-- Universal rites
-- Reference documentation
-- The grimoire template
-
-**This invocation is safe to rerun at any time.**
-
----
-
-## ⚡ The Magical Boundary ⚡
-
-**This invocation maintains Arcana's magical integrity:**
-
-### Magical Language Throughout
-- This invocation operates entirely within the magical realm of Arcana
-- All improvements maintain wizardly language and thematic consistency
-- Invocations, formulae, and rites are ONLY in Arcana (never in domain grimoires)
-
-### Quality Standards for Universal Magic
-- Ensures all invocations have proper magical boundary sections
-- Validates that examples use generic names (Domain A, Knowledge Domain)
-- Confirms no platform assumptions (Slack → domain communication)
-- Maintains the magical/practical boundary in all documentation
-
----
-
-## When to Cast
-
-- Arcana documentation feels cluttered
-- Invocations have accumulated technical debt
-- Formulae need updating for new patterns
-- Reference docs are out of sync
-- Major version update is being prepared
-
----
+For domain grimoires use `/grm-domain-improve`. This invocation only audits Arcana.
 
 ## Invocation
-
-From the Arcana directory, cast:
 
 ```
 /grm-arcana-improve
 ```
 
-Only the Arcana maintainer should run this invocation.
+Run from the Arcana directory. Safe to rerun at any time.
 
----
+## When to cast
 
-## What This Invocation Does
+- Before an Arcana release or version bump
+- After bulk doc/feature changes
+- When something feels stale, repetitive, or out of sync
 
-**Quick Start - Run All Validations**:
+## Workflow
+
+### Phase 1: Run the validator suite
+
+Use the orchestrator rite — do **not** invoke each `/grm-arcana-validate-*` skill one at a time:
+
 ```bash
-python3 rites/validate.py              # sequential (default)
-python3 rites/validate.py --parallel   # parallel execution
+python3 rites/validate.py              # sequential
+python3 rites/validate.py --parallel   # faster
 python3 rites/validate.py --summary    # summary-only output
 ```
 
-For detailed phase-by-phase workflow, continue below:
+Equivalent skill: `/grm-arcana-validate-all`.
 
----
+This runs every validator (structure, naming, format, links, security, semantics, skill-refs, boundaries) and aggregates results. Individual skills exist for targeted reruns; the orchestrator is the default entry point.
 
-### Phase 1: Inventory & Health Check
-1. Enumerate all Arcana components:
-   - INDEX.md, README.md (entry points)
-   - invocations/grimoire/*.md, invocations/arcana/*.md (universal workflows)
-   - formulae/*.md (universal templates)
-   - rites/*.py (universal automation)
-   - docs/*.md (reference docs)
-   - formulae/grimoire/ (the master template)
-   - resources/ (branding assets)
+### Phase 2: Triage violations
 
-2. Validate internal consistency:
-   - All invocations reference correct paths (invocations/grimoire/, invocations/arcana/)
-   - All formulae use current placeholder convention
-   - All reference docs are cross-referenced properly
-   - Grimoire-template matches latest best practices
-   - Documentation structure matches actual file system
+Review the aggregated output:
 
-3. Detect documentation drift:
-   - **Critical**: README.md directory structure vs actual filesystem
-   - **Critical**: INDEX.md invocation paths match actual subdirectories
-   - Broken internal links
-   - Outdated examples in invocations (old paths, old structure)
-   - Invocation references without subdirectories (invocations/*.md → invocations/grimoire/*.md)
-   - Chronicle references to flat structure (*.md → YYYY-MM-DD/*.md)
-   - Placeholder drift in formulae
-   - Version number inconsistencies
-   - Date mismatches (Last Updated fields)
-   - Missing cross-references
+- **Mechanical fixes** (broken link, snake_case path, missing heading, deprecated term): apply directly.
+- **Structural issues** (missing INDEX, misplaced file): fix the structure, then re-run the offending validator.
+- **Security hits**: treat as blocking. Investigate every credential pattern and unsafe construct before continuing.
+- **Boundary violations**: invocations / formulae / rites belong in Arcana only. Move violators or rewrite.
 
-3a. **Detect semantic clarity issues**:
-   - **Critical**: Redundant phrasing (Grimoire Grimoire, grimoire grimoire, grimoire of Grimoire)
-   - **Critical**: Old terminology still present (tome/tomes when should be grimoire/grimoires)
-   - **Critical**: Ambiguous "Grimoire" references (should specify "Arcana" or "grimoire")
-   - Directory names in docs that don't match actual structure
-   - Unclear ownership phrasing (needs "domain's grimoire" not "grimoire of Grimoire")
-   - Confusing headers (avoid redundancy like "Grimoire - X Grimoire")
+Re-run `python3 rites/validate.py` after fixes until clean.
 
-**Automation**: Run `validate_structure.py` and `validate_naming.py` (via `validate.py`).
+### Phase 3: Rite quality
 
-**Manual review**: Review output for structural issues, verify required files exist, check naming compliance.
+Follow the rite-specific quality check at [`quality/validate_rites.md`](quality/validate_rites.md). It's a judgment-based invocation (no dedicated skill — it runs as part of this orchestrator) that inspects rite scripts for style, error handling, exit codes, and idempotency. Apply fixes and re-run the validator suite from Phase 1.
 
-**Checkpoint**: Reports findings before making any changes
+### Phase 4: Documentation quality
 
-### Phase 2: Invocation Quality Review
-4. Review each invocation for:
-   - Clear invocation instructions
-   - Up-to-date workflow steps
-   - Correct file paths and references
-   - Magical boundary compliance
-   - Examples that match current structure
+Cast the documentation improvement invocation:
 
-5. Ensure invocation consistency:
-   - All invocations follow the same format
-   - Common sections across all invocations
-   - Consistent magical language usage
+- [`quality/improve_documentation.md`](quality/improve_documentation.md)
 
-**Automation**: Run `validate_format.py` (via `validate.py`).
+This single invocation now covers both **duplication** (same fact in two places, copy-pasted file trees, drifting lists) and **clarity** (jargon, unclear antecedents, structural overload). It is judgment-based — no slash command — and is intended to run as part of this orchestrator.
 
-**Manual review**: Review invocation sections for completeness, check magical boundary compliance, verify workflow clarity.
+Apply the fixes it surfaces. Prefer:
 
-### Phase 3: Formula & Template Updates
-6. Review formulae for:
-   - Current placeholder naming ({{DOMAIN_*}}, {{GRIMOIRE_*}})
-   - Magical boundary compliance
-   - Practical folder name examples
+- A single canonical home for any fact, with links from elsewhere.
+- Generated views over hand-maintained lists (see `rites/sync_docs.py` for the pattern).
+- Splitting overloaded docs; deleting docs nothing else needs.
 
-7. Audit formulae/grimoire:
-   - Matches latest best practices
-   - All placeholders defined
-   - README and INDEX are exemplary
-   - chapters/ structure is clean
+### Phase 5: Re-validate
 
-**Automation**: Run `validate_format.py` (via `validate.py`).
+After applying documentation fixes, run the validator suite once more:
 
-**Manual review**: Check placeholder consistency, verify formula templates are up-to-date, ensure formulae/grimoire matches current patterns.
+```bash
+python3 rites/validate.py
+```
 
-### Phase 4: Documentation Coherence
-8. Review reference docs:
-   - quickstart.md is accurate for new users
-   - agent_configuration.md reflects current setup patterns
-   - operating_model.md reflects current routing patterns
-   - governance.md matches actual practices
-   - reference.md has all current terminology and conventions
-   - CHANGELOG.md (at root) is up to date
+Link anchors, skill references, and structure checks are the most likely to break from a documentation reshuffle.
 
-9. Ensure cross-references:
-   - INDEX.md points to all major sections
-   - README.md provides clear navigation
-   - All docs link to related content correctly
+### Phase 6: Sync generated docs
 
-**Automation**: Run `validate_links.py` (via `validate.py`).
+If anything that feeds an auto-generated index changed (skills, invocation catalog, chapters):
 
-**Manual review**: Check for broken internal references, verify cross-document navigation, ensure reference doc cross-links are correct.
+```bash
+python3 rites/sync_docs.py --apply
+```
 
-### Phase 5: Semantic Analysis ✨
+Then re-run validators a final time.
 
-**Following Script vs AI Intelligence Principle** (see [docs/script_vs_ai.md](../../docs/script_vs_ai.md)):
+### Phase 7: Version & changelog
 
-10. **Rite extracts data** (simple, fast):
-    ```bash
-    python3 rites/validate_semantics.py
-    # Extracts canonical terminology from reference.md
-    # Reports mechanical pattern violations
-    # Creates: rites/completed/canonical_terminology.txt
-    ```
+If the pass produced user-visible changes:
 
-11. **AI analyzes semantics intelligently** (contextual, adaptive):
-    - Cast `/grm-domain-analyze-semantics --arcana` invocation
-    - AI reads extracted terminology data
-    - AI reads docs/reference.md (single source of truth)
-    - AI analyzes all Arcana files **with context understanding**:
-      - Is this term used appropriately in this context?
-      - Does this phrasing align with reference definitions?
-      - Are placeholders used correctly for this use case?
-      - Is the magical/practical boundary respected here?
-    - AI makes **judgment calls** scripts can't:
-      - Should this be renamed? (not just "is it wrong")
-      - Is this clear enough? (not just "does it match pattern")
-      - Would consolidation improve quality? (not just "is it duplicate")
-    - AI suggests specific improvements with reasoning
+- Update `CHANGELOG.md` at the Arcana root.
+- Confirm version numbers are consistent across files.
+- For breaking changes: document the migration path and announce to domain leads.
 
-12. **Why this split?**
-    - **Scripts extract facts**: Find terms, count usage, check patterns
-    - **AI understands meaning**: Analyze context, suggest improvements, explain why
-    - **Scripts stay simple forever**: Find, count, extract
-    - **AI gets smarter over time**: As AI evolves, this analysis improves automatically
+## Phase dependencies
 
-**Manual review**:
-- Review AI's semantic analysis and suggestions
-- Apply improvements that make sense for Arcana
-- Document any new patterns discovered
+- Phase 2 depends on Phase 1 output.
+- Phase 4 should happen after Phase 1 is clean — judgment work is wasted if mechanical issues are still masking real problems.
+- Phase 5 must run after Phase 4 (link anchors drift when docs move).
+- Phase 6 must run before Phase 5's final clean check if generated indexes changed.
 
-**Checkpoint**: Report semantic analysis findings and improvements applied
+## Non-negotiable rules
 
-### Phase 6: Duplication Detection & DRY Enforcement ✨
-12. Scan for duplicate information across Arcana:
-    - **Critical**: Detect duplicate file trees/directory structures in multiple docs
-    - **Critical**: Find duplicated explanations of same concepts
-    - **Critical**: Identify redundant lists (invocation catalogs, file lists, capability lists)
-    - Detect copy-pasted code examples that should be in one canonical location
-    - Find duplicated configuration examples
-    - Identify repeated section content across multiple files
-
-13. Apply DRY (Don't Repeat Yourself) fixes:
-    - **Remove static file trees** - Replace with dynamic discovery or single reference
-    - **Consolidate duplicate explanations** - Keep in one canonical location, reference elsewhere
-    - **Eliminate duplicate lists** - Generate dynamically or maintain single source
-    - **Replace with references** - Use links to canonical source instead of copying
-    - **Document canonical locations** - Make clear where authoritative content lives
-    - **Prefer composition over duplication** - Link to existing docs rather than repeating
-
-14. Validate anti-drift measures:
-    - Ensure no hardcoded file/directory lists that will become stale
-    - Verify documentation references dynamic discovery where possible
-    - Confirm invocation catalogs are generated from actual invocation files
-    - Check that examples reference actual templates/formulae rather than duplicating them
-
-**Checkpoint**: Report duplications found and DRY fixes applied
-
-### Phase 7: Path Reference Validation ✨
-15. Scan for improper path references:
-    - **Critical**: Detect relative cross-grimoire paths (`../arcana/`, `../olympus-grimoire/`)
-    - **Critical**: Find stale doc references (old paths)
-    - Find absolute filesystem paths that should be placeholders
-    - Identify hardcoded deployment-specific paths
-
-16. Apply path reference fixes:
-    - **Replace relative cross-grimoire paths** - Use `GRIMOIRE_ARCANA/` and `GRIMOIRE_{DOMAIN}/`
-    - **Update doc references to use docs/ paths
-    - **Convert hardcoded paths to placeholders** - Make deployment-agnostic
-    - **Document path conventions** - Ensure `docs/reference.md` documents the system
-
-17. Validate path reference standards:
-    - Ensure no relative paths (`../`) crossing grimoire boundaries
-    - Verify all docs/ files are correctly named
-    - Confirm all cross-grimoire references use root placeholders
-    - Check that path placeholders are documented in reference.md
-
-**Automation**: Run `validate_naming.py` and `validate_links.py` (via `validate.py`).
-
-**Manual review**: Check for deployment-specific paths, verify placeholder usage consistency, ensure docs/ file naming is correct.
-
-**Checkpoint**: Report path issues found and fixes applied
-
-### Phase 7.5: Security Validation ✨
-
-**New Phase**: Security scanning for credentials and unsafe patterns
-
-**Automation**: Run `validate_security.py` (via `validate.py`).
-
-**Manual review**: Review credential pattern matches, check shell script safety (`set -euo pipefail`), verify no `eval` usage in rites.
-
-### Phase 8: Version Preparation
-18. Prepare for version updates:
-    - Check semantic versioning compliance
-    - Update CHANGELOG.md if needed
-    - Ensure breaking changes are documented
-    - Update version numbers consistently
-
-### Phase 9: Invocation Effectiveness Tracking ✨
-19. Measure invocation performance across domains:
-    - Track invocation usage frequency
-    - Measure success rates (issues found/fixed)
-    - Analyze invocation execution times
-    - Identify pain points and friction
-    - Compare invocation effectiveness across grimoires
-
-20. Evolve invocation system:
-    - Recommend new invocations based on patterns
-    - Deprecate ineffective invocations
-    - Optimize slow-performing invocations
-    - Update invocation documentation based on usage
-
-**Checkpoint**: Report invocation metrics and evolution recommendations
-
----
-
-## Non-Negotiable Rules
-
-1. **Universal only** - Arcana contains ZERO domain-specific content
-2. **Backward compatibility** - Don't break existing domain grimoires
-3. **Clear examples** - Use generic examples (Domain A, Knowledge Domain)
-4. **No platform assumptions** - Generic "domain communication", not "Slack"
-5. **Magical boundary** - Invocations/formulae/rites ONLY in Arcana, never in grimoires
-6. **Version discipline** - Follow semantic versioning strictly
-
----
+1. **Universal only** — no domain-specific content in Arcana.
+2. **Backward compatible** — don't break existing domain grimoires.
+3. **Generic examples** — Domain A, Knowledge Domain; no platform names (Slack, GitHub), no industry terms.
+4. **Magical boundary** — invocations, formulae, rites live ONLY in Arcana.
+5. **Semantic versioning** — strict; reflected in `CHANGELOG.md`.
+6. **Path conventions** — cross-grimoire references use root placeholders (`GRIMOIRE_ARCANA/`, `GRIMOIRE_{DOMAIN}/`), never `../`.
 
 ## Scope
 
-This invocation audits only Arcana itself.
+In scope:
 
-**Discovery approach**: This invocation dynamically discovers Arcana content rather than hardcoding file lists. It scans:
-- Root documentation: `INDEX.md`, `README.md`, `CHANGELOG.md`
-- Reference docs: `docs/quickstart.md`, `docs/operating_model.md`, etc.
-- Universal invocations: `invocations/grimoire/*.md`, `invocations/arcana/*.md`, `invocations/meta/*.md`
-- Universal formulae: `formulae/*.formula.md`
-- Universal rites: `rites/*.py`
-- Template: `formulae/grimoire/`
-- Resources: `resources/`
+- Root: `INDEX.md`, `README.md`, `CHANGELOG.md`
+- `docs/*.md`
+- `invocations/grimoire/`, `invocations/arcana/`, `invocations/meta/`
+- `formulae/*.formula.md` and `formulae/grimoire/` (the master template)
+- `rites/*.py`
+- `resources/`
 
-**Path reference convention**: Cross-grimoire references use root placeholders:
-- `GRIMOIRE_ARCANA/docs/quickstart.md` - Reference Arcana from anywhere
-- `GRIMOIRE_{DOMAIN}/chapters/build_system/INDEX.md` - Reference domain's own grimoire
-
-**NOT in scope**: Domain grimoires (use `/grm-domain-improve` for those)
-
-**Anti-drift principles**:
-- No static file trees or lists (use dynamic discovery)
-- No relative paths across grimoire boundaries (use root placeholders)
-- No hardcoded deployment paths (deployment-agnostic references)
-
----
+Out of scope: domain grimoires (use `/grm-domain-improve`).
 
 ## Deliverables
 
-### 1. Fixes Applied Directly
-All improvements are applied directly to Arcana files:
-- Broken links fixed
-- Outdated examples updated
-- Placeholder consistency enforced
-- Cross-references added/updated
-- Version numbers synchronized
-- Semantic clarity issues corrected
-- Directory/path references updated
-- Duplicate information eliminated (DRY enforcement)
-- Static lists replaced with dynamic discovery
+Apply fixes directly to Arcana files. Report to the user (do not write to disk):
 
-### 2. Concise Summary Output
-Display to user (not saved to file):
-- Component inventory count
-- Issues found and fixed
-- Semantic clarity improvements
-- Duplications detected and eliminated
-- DRY violations fixed
-- Pattern insights (if analyzing domain grimoires)
-- Invocation effectiveness summary (if tracking metrics)
-- Remaining TODOs for manual review
-- CHANGELOG.md update recommendation (if significant changes)
+- Validator pass/fail summary
+- Fixes applied (counts by category)
+- Documentation duplication / clarity fixes applied
+- Remaining items needing human follow-up
+- Whether `CHANGELOG.md` should be updated
 
-### 3. Documentation Only for Major Changes
-**ONLY create documentation files when:**
-- Preparing a major version bump
-- Breaking changes that affect domains
-- Significant architectural changes requiring migration guide
+Only create new documentation files for major version bumps, breaking changes, or migration guides.
 
-**Default behavior:** Apply fixes directly, show summary, update CHANGELOG.md if needed. No bloat.
+## Maintainer checklist
 
----
+Before:
 
-## Example Output
+- [ ] Working tree clean (committed)
+- [ ] Recent CHANGELOG / governance items reviewed
 
-```
-✅ Arcana Improvement Complete
+After:
 
-📊 Inventory: 9 invocations, 3 formulae, 6 reference docs, 1 template
+- [ ] Validator suite green
+- [ ] Generated docs synced (`rites/sync_docs.py --apply`)
+- [ ] Smoke-test key skills: `/grm-domain-create-grimoire`, `/grm-meta-help`, `/grm-domain-improve`
+- [ ] `CHANGELOG.md` updated if changes are user-visible
+- [ ] Breaking changes announced to domain leads
 
-Changes Applied:
-- Updated 2 invocation examples, normalized 3 formula placeholders
-- Fixed cross-references in docs/, synchronized version numbers
-- Semantic clarity: 23 terminology fixes applied per reference.md
-- DRY: removed duplicate file trees, consolidated to canonical locations
-- Paths: fixed 11 relative cross-grimoire paths to root placeholders
+## Related
 
-Quality: all links resolve, format compliant, magical boundary 100%
-
-Remaining TODOs:
-- Update CHANGELOG.md, test invocation invocations, review with git diff
-```
-
----
-
-## Maintainer's Checklist
-
-Before running this invocation:
-- [ ] Current Arcana is committed (if using Git)
-- [ ] Review CHANGELOG.md for recent domain feedback
-- [ ] Check for any open governance proposals
-- [ ] Understand impact on existing domain grimoires
-
-After running this invocation:
-- [ ] Review audit report thoroughly
-- [ ] Test invocation invocations (/grm-domain-create-grimoire, /grm-meta-help, /grm-domain-improve)
-- [ ] Verify formulae/grimoire creates working grimoires
-- [ ] Update CHANGELOG.md if significant changes
-- [ ] Announce to domains if breaking changes
-
----
-
-## Version Update Workflow
-
-When preparing a version bump:
-
-### Patch (v1.0.x)
-- Run this invocation to fix bugs
-- Update CHANGELOG.md
-- No domain announcement needed
-
-### Minor (v1.x.0)
-- Run this invocation to ensure quality
-- Add new features to CHANGELOG.md
-- Announce in domain communication channel
-- Example: New invocation added, new formula template
-
-### Major (vx.0.0)
-- Run this invocation thoroughly
-- Document breaking changes in CHANGELOG.md
-- Create migration guide
-- Announce 2 weeks in advance
-- Example: Placeholder system changed, invocation invocation changed
-
----
-
-## Quality Standards
-
-Arcana must maintain:
-
-✅ **Zero Domain-Specific Content**
-- Generic examples only (Domain A, Domain B, Knowledge Domain)
-- No platform names (Slack, SharePoint, GitHub)
-- No industry terms (HR, Legal, Marketing)
-
-✅ **Magical Boundary Compliance**
-- Invocations, formulae, rites ONLY in Arcana
-- Clear guidance that domains use templates/, scripts/, snippets/
-
-✅ **Documentation Excellence**
-- Every invocation has clear invocation, purpose, workflow
-- Every formula has placeholder reference
-- Every reference doc is current and cross-referenced
-
-✅ **Version Discipline**
-- CHANGELOG.md tracks all changes
-- Version numbers consistent across files
-- Semantic versioning followed strictly
-
----
-
-## Related Invocations
-
-- Improve a domain grimoire: `/grm-domain-improve` (run from grimoire directory)
-- Create new invocation: Manually craft in `invocations/grimoire/` or `invocations/arcana/` and update INDEX.md
-- Run all validations: `python3 rites/validate.py`
-- Individual validations: See [rites/](../../rites/) directory
-
----
-
-## Questions?
-
-- Arcana maintainer communication channel
-- Review governance: `docs/governance.md`
-- Version history: `CHANGELOG.md`
-
----
+- All validators (orchestrated): `/grm-arcana-validate-all` — `python3 rites/validate.py`
+- Individual validators: see `invocations/arcana/validators/INDEX.md`
+- Rite quality: [`quality/validate_rites.md`](quality/validate_rites.md)
+- Documentation quality: [`quality/improve_documentation.md`](quality/improve_documentation.md)
+- Doc generator: `rites/sync_docs.py`
+- Domain grimoire equivalent: `/grm-domain-improve`
