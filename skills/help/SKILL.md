@@ -13,12 +13,13 @@ You are displaying the Grimoire skill catalog. Follow the invocation guide below
 
 - **Arcana**: `{{ARCANA_PATH}}`
 - **Skills source**: `{{ARCANA_PATH}}/skills/`
+- **Registered targets**: `~/.claude/skills/`, `~/.codex/skills/`
 - **Invocations**: `{{ARCANA_PATH}}/invocations/`
 - **Catalog**: `~/grimoire/catalog.json`
 
 ## Available Skills
 
-Users invoke Grimoire operations as Claude Code skills. Arcana maintenance skills are scoped under `grm-arcana-*`:
+Users invoke Grimoire operations as slash-command skills in supported agents. Arcana maintenance skills are scoped under `grm-arcana-*`:
 
 **Grimoire operations:**
 - `/grm-create-grimoire` — Create a new domain grimoire
@@ -36,7 +37,7 @@ Users invoke Grimoire operations as Claude Code skills. Arcana maintenance skill
 - `/grm-help` — This help screen
 - `/grm-register-skills` — Re-register all skills from Arcana and domain grimoires
 
-Domain grimoires contribute additional skills with their own namespace prefix (e.g., `/olympus-*`). Run `/grm-register-skills` after pulling updates to refresh.
+Domain grimoires contribute additional skills with their own namespace prefix (e.g., `/olympus-*`). Run `/grm-register-skills` after pulling updates to refresh Claude Code and Codex/ChatGPT registrations.
 
 ## Invocation
 

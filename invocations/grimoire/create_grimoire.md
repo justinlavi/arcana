@@ -8,7 +8,7 @@ This invocation walks the user through creating their domain's grimoire by havin
 1. Creates the grimoire directory
 2. Populates template files with real values
 3. Suggests and creates initial chapters
-4. Generates CLAUDE.md configuration
+4. Generates agent instruction configuration
 
 ## Invocation
 
@@ -52,7 +52,7 @@ Step 3: Create Grimoire (Copy + customize template)
   ↓
 Step 4: Create Chapters (Using create-chapter invocation)
   ↓
-Step 5: Generate CLAUDE.md Configuration
+Step 5: Generate Agent Instruction Configuration
   ↓
 Step 6: Validate and Test
 ```
@@ -320,7 +320,7 @@ Add the new grimoire to the user's local catalog so agents can resolve it.
    }
    ```
 
-4. **Check `~/.claude/CLAUDE.md`** — if it does not already contain a `## Grimoire Knowledge Base` section, tell the user to add the standard block from `GRIMOIRE_ARCANA/docs/agent_configuration.md`. That block never changes as new grimoires are added; only the catalog does.
+4. **Check agent instruction files** — if `~/.claude/CLAUDE.md` or `~/.codex/AGENTS.md` does not already contain a `## Grimoire Knowledge Base` section, tell the user to add the standard block from `GRIMOIRE_ARCANA/docs/agent_configuration.md`. That block never changes as new grimoires are added; only the catalog does.
 
 **Present to user**:
 ```
@@ -330,7 +330,7 @@ Add the new grimoire to the user's local catalog so agents can resolve it.
 
 1. Catalog updated: ~/grimoire/catalog.json now includes GRIMOIRE_{{token}}
 
-2. If this is your first grimoire, add the Grimoire section to ~/.claude/CLAUDE.md
+2. If this is your first grimoire, add the Grimoire section to your agent instruction files
    (see GRIMOIRE_ARCANA/docs/agent_configuration.md for the block to paste)
 
 3. Test your grimoire:
@@ -363,7 +363,7 @@ Verify the grimoire works correctly.
    # Should show: selected chapter directories
    ```
 
-2. **Test routing** (if user CLAUDE.md is already updated):
+2. **Test routing** (if the relevant agent instruction file is already updated):
    ```
    Testing: "What domains exist in {{grimoire_name}}?"
    Expected: AI reads {{grimoire_directory}}/INDEX.md and lists domains

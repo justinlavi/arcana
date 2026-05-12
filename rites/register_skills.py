@@ -3,7 +3,7 @@
 
 Discovers skills from Arcana and all installed grimoires,
 cleans stale skills by namespace prefix, templates path placeholders,
-and installs to ~/.claude/skills/.
+and installs pointer skills to supported agent skill directories.
 
 Each source gets a namespace prefix derived from its catalog key:
     Arcana:           grm-
@@ -11,14 +11,12 @@ Each source gets a namespace prefix derived from its catalog key:
     bd-grimoire:      bd-
 
 Usage:
-    python3 register_skills.py [--dry-run]
+    python3 register_skills.py [--agent all|claude|codex] [--dry-run]
 """
 
 import argparse
 import json
-import os
 import shutil
-import sys
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -28,7 +26,18 @@ from pathlib import Path
 ARCANA_PATH = Path(__file__).resolve().parent.parent
 GRIMOIRE_HOME = Path.home() / "grimoire"
 LOCAL_CATALOG = GRIMOIRE_HOME / "catalog.json"
-SKILLS_TARGET = Path.home() / ".claude" / "skills"
+SKILL_TARGETS = {
+    "claude": {
+        "label": "Claude Code",
+        "path": Path.home() / ".claude" / "skills",
+        "pointer_only": False,
+    },
+    "codex": {
+        "label": "Codex/ChatGPT",
+        "path": Path.home() / ".codex" / "skills",
+        "pointer_only": True,
+    },
+}
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -56,13 +65,13 @@ def err(msg):
 # ---------------------------------------------------------------------------
 
 
-def clean_prefix(prefix, dry_run=False):
+def clean_prefix(skills_target, prefix, dry_run=False):
     """Remove all skill directories matching a namespace prefix."""
     cleaned = 0
-    if not SKILLS_TARGET.is_dir():
+    if not skills_target.is_dir():
         return cleaned
 
-    for skill_dir in sorted(SKILLS_TARGET.iterdir()):
+    for skill_dir in sorted(skills_target.iterdir()):
         if skill_dir.is_dir() and skill_dir.name.startswith(prefix):
             if dry_run:
                 info(f"Would remove: {skill_dir.name}")
@@ -72,8 +81,16 @@ def clean_prefix(prefix, dry_run=False):
     return cleaned
 
 
-def register_skill(source_dir, registered_name, arcana_path, grimoire_path="",
-                    source_label="Arcana", dry_run=False):
+def register_skill(
+    source_dir,
+    skills_target,
+    registered_name,
+    arcana_path,
+    grimoire_path="",
+    source_label="Arcana",
+    dry_run=False,
+    pointer_only=False,
+):
     """Template and install a single skill. Returns True if registered."""
     source_file = source_dir / "SKILL.md"
 
@@ -85,12 +102,15 @@ def register_skill(source_dir, registered_name, arcana_path, grimoire_path="",
         info(f"Would register: /{registered_name} ({source_label})")
         return True
 
-    target_dir = SKILLS_TARGET / registered_name
+    target_dir = skills_target / registered_name
     target_dir.mkdir(parents=True, exist_ok=True)
 
-    # Template all files in the skill directory
+    # Template files in the skill directory. Codex/ChatGPT registrations are
+    # intentionally SKILL.md only: the skill remains a thin pointer to Arcana.
     for source in source_dir.iterdir():
         if not source.is_file():
+            continue
+        if pointer_only and source.name != "SKILL.md":
             continue
         content = source.read_text(encoding="utf-8")
         content = content.replace("{{ARCANA_PATH}}", str(arcana_path))
@@ -114,7 +134,7 @@ def register_skill(source_dir, registered_name, arcana_path, grimoire_path="",
     return True
 
 
-def register_arcana_skills(dry_run=False):
+def register_arcana_skills(skills_target, dry_run=False, pointer_only=False):
     """Register all Arcana skills (grm-* prefix)."""
     skills_dir = ARCANA_PATH / "skills"
     prefix = "grm-"
@@ -124,7 +144,7 @@ def register_arcana_skills(dry_run=False):
         return 0, 0
 
     info(f"Cleaning {prefix}* namespace...")
-    cleaned = clean_prefix(prefix, dry_run)
+    cleaned = clean_prefix(skills_target, prefix, dry_run)
 
     info("Scanning Arcana skills...")
     registered = 0
@@ -133,13 +153,20 @@ def register_arcana_skills(dry_run=False):
         if not skill_dir.is_dir():
             continue
         name = f"{prefix}{skill_dir.name}"
-        if register_skill(skill_dir, name, ARCANA_PATH, dry_run=dry_run):
+        if register_skill(
+            skill_dir,
+            skills_target,
+            name,
+            ARCANA_PATH,
+            dry_run=dry_run,
+            pointer_only=pointer_only,
+        ):
             registered += 1
 
     return registered, cleaned
 
 
-def register_grimoire_skills(dry_run=False):
+def register_grimoire_skills(skills_target, dry_run=False, pointer_only=False):
     """Register skills from all installed domain grimoires."""
     if not LOCAL_CATALOG.is_file():
         info(f"No local catalog at {LOCAL_CATALOG} — skipping domain skills")
@@ -178,7 +205,7 @@ def register_grimoire_skills(dry_run=False):
             prefix = key + "-"
 
         info(f"Cleaning {prefix}* namespace...")
-        cleaned = clean_prefix(prefix, dry_run)
+        cleaned = clean_prefix(skills_target, prefix, dry_run)
         total_cleaned += cleaned
 
         info(f"Scanning {key} skills...")
@@ -188,11 +215,62 @@ def register_grimoire_skills(dry_run=False):
                 continue
             name = f"{prefix}{skill_dir.name}"
             if register_skill(
-                skill_dir, name, ARCANA_PATH, str(local_path), key, dry_run
+                skill_dir,
+                skills_target,
+                name,
+                ARCANA_PATH,
+                str(local_path),
+                key,
+                dry_run,
+                pointer_only,
             ):
                 total_registered += 1
 
     return total_registered, total_cleaned
+
+
+def selected_targets(agent):
+    """Return target configurations for the requested agent."""
+    if agent == "all":
+        return SKILL_TARGETS.items()
+    return [(agent, SKILL_TARGETS[agent])]
+
+
+def register_target(agent_name, config, dry_run=False):
+    """Register all skills for one agent target."""
+    label = config["label"]
+    skills_target = config["path"]
+    pointer_only = config["pointer_only"]
+
+    print(f"  Target: {label} ({skills_target})")
+    if pointer_only:
+        info("Pointer-only registration — copying SKILL.md files only")
+
+    if not dry_run:
+        skills_target.mkdir(parents=True, exist_ok=True)
+
+    arcana_registered, arcana_cleaned = register_arcana_skills(
+        skills_target, dry_run, pointer_only
+    )
+    grimoire_registered, grimoire_cleaned = register_grimoire_skills(
+        skills_target, dry_run, pointer_only
+    )
+
+    total_registered = arcana_registered + grimoire_registered
+    total_cleaned = arcana_cleaned + grimoire_cleaned
+
+    print()
+    print(f"  {label}: registered {total_registered} skill(s)")
+    if total_cleaned > 0:
+        print(f"  {label}: cleaned    {total_cleaned} stale skill(s)")
+    print()
+
+    return {
+        "agent": agent_name,
+        "label": label,
+        "registered": total_registered,
+        "cleaned": total_cleaned,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -202,7 +280,17 @@ def register_grimoire_skills(dry_run=False):
 
 def main():
     parser = argparse.ArgumentParser(description="Grimoire Skill Registration")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
+    parser.add_argument(
+        "--agent",
+        choices=["all", "claude", "codex"],
+        default="all",
+        help="Agent skill target to register (default: all)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be done without making changes",
+    )
     args = parser.parse_args()
 
     print()
@@ -214,23 +302,22 @@ def main():
         info("Dry run mode — no files will be written")
         print()
 
-    SKILLS_TARGET.mkdir(parents=True, exist_ok=True)
-
-    arcana_registered, arcana_cleaned = register_arcana_skills(args.dry_run)
-    grimoire_registered, grimoire_cleaned = register_grimoire_skills(args.dry_run)
-
-    total_registered = arcana_registered + grimoire_registered
-    total_cleaned = arcana_cleaned + grimoire_cleaned
+    results = []
+    for agent_name, config in selected_targets(args.agent):
+        results.append(register_target(agent_name, config, args.dry_run))
 
     print()
     print("  ----------------------------")
-    print(f"  Registered: {total_registered} skill(s)")
+    total_registered = sum(result["registered"] for result in results)
+    total_cleaned = sum(result["cleaned"] for result in results)
+    print(f"  Registered: {total_registered} skill registration(s)")
     if total_cleaned > 0:
-        print(f"  Cleaned:    {total_cleaned} stale skill(s)")
+        print(f"  Cleaned:    {total_cleaned} stale skill registration(s)")
     print()
 
     if not args.dry_run and total_registered > 0:
-        print("  Skills are now available in any Claude Code session.")
+        labels = ", ".join(result["label"] for result in results)
+        print(f"  Skills are now available for: {labels}.")
         print("  Try: /grm-help")
         print()
 

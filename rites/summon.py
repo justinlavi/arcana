@@ -43,6 +43,7 @@ GRIMOIRE_HOME = Path.home() / "grimoire"
 ARCANA_DIR = GRIMOIRE_HOME / "arcana"
 LOCAL_CATALOG = GRIMOIRE_HOME / "catalog.json"
 CLAUDE_MD = Path.home() / ".claude" / "CLAUDE.md"
+CODEX_AGENTS_MD = Path.home() / ".codex" / "AGENTS.md"
 RITE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = RITE_DIR.parent
 DEFAULT_ARCANA_URL = "https://github.com/justinlavi/arcana.git"
@@ -571,31 +572,37 @@ def update_local_catalog(installed_keys, catalog, log):
     log.ok(f"Local catalog updated: {LOCAL_CATALOG}")
 
 
-def inject_claude_md(log):
-    """Inject Grimoire routing block into ~/.claude/CLAUDE.md."""
-    log.info("Configuring CLAUDE.md...")
+def inject_agent_file(log, target_path, title):
+    """Inject Grimoire routing block into an agent instruction file."""
+    log.info(f"Configuring {target_path.name}...")
 
-    claude_dir = CLAUDE_MD.parent
-    claude_dir.mkdir(parents=True, exist_ok=True)
+    target_dir = target_path.parent
+    target_dir.mkdir(parents=True, exist_ok=True)
 
-    if not CLAUDE_MD.is_file():
-        CLAUDE_MD.write_text("# CLAUDE.md\n", encoding="utf-8")
-        log.info(f"Created {CLAUDE_MD}")
+    if not target_path.is_file():
+        target_path.write_text(f"# {title}\n", encoding="utf-8")
+        log.info(f"Created {target_path}")
 
-    content = CLAUDE_MD.read_text(encoding="utf-8")
+    content = target_path.read_text(encoding="utf-8")
 
     if "## Grimoire Knowledge Base" in content:
-        log.ok("Grimoire block already present in CLAUDE.md (skipping)")
+        log.ok(f"Grimoire block already present in {target_path.name} (skipping)")
         return
 
-    if content.startswith("# CLAUDE.md"):
+    if content.startswith(f"# {title}"):
         first_line_end = content.index("\n") if "\n" in content else len(content)
         content = content[: first_line_end + 1] + GRIMOIRE_BLOCK + content[first_line_end + 1 :]
     else:
         content += GRIMOIRE_BLOCK
 
-    CLAUDE_MD.write_text(content, encoding="utf-8")
-    log.ok(f"Grimoire block injected into {CLAUDE_MD}")
+    target_path.write_text(content, encoding="utf-8")
+    log.ok(f"Grimoire block injected into {target_path}")
+
+
+def inject_agent_configs(log):
+    """Inject Grimoire routing blocks into supported agent instruction files."""
+    inject_agent_file(log, CLAUDE_MD, "CLAUDE.md")
+    inject_agent_file(log, CODEX_AGENTS_MD, "AGENTS.md")
 
 
 def register_skills(log):
@@ -612,7 +619,7 @@ def register_skills(log):
         return
 
     result = subprocess.run(
-        [sys.executable, str(register_script)],
+        [sys.executable, str(register_script), "--agent", "all"],
         capture_output=True,
         text=True,
     )
@@ -622,7 +629,7 @@ def register_skills(log):
     if result.returncode != 0:
         log.warn("Skill registration had warnings (see above)")
     else:
-        log.ok("Skills registered to ~/.claude/skills/")
+        log.ok("Skills registered to ~/.claude/skills/ and ~/.codex/skills/")
 
 
 # ---------------------------------------------------------------------------
@@ -748,9 +755,9 @@ def run_cli(args):
     print()
     update_local_catalog(installed_keys, catalog, log)
 
-    # Inject CLAUDE.md
+    # Inject agent instruction files
     print()
-    inject_claude_md(log)
+    inject_agent_configs(log)
 
     # Register skills
     print()
@@ -770,10 +777,12 @@ def run_cli(args):
     print()
     print(f"  Local catalog: {LOCAL_CATALOG}")
     print(f"  CLAUDE.md:     {CLAUDE_MD}")
+    print(f"  AGENTS.md:     {CODEX_AGENTS_MD}")
     print("  Skills:        ~/.claude/skills/")
+    print("                 ~/.codex/skills/")
     print()
     print("  Next steps:")
-    print("    1. Open a new Claude Code session")
+    print("    1. Open a new Claude Code or Codex/ChatGPT session")
     print("    2. Try: /grm-help")
     print()
 
@@ -964,7 +973,7 @@ def run_gui(args):
                 return
 
             update_local_catalog(installed, catalog, log)
-            inject_claude_md(log)
+            inject_agent_configs(log)
             register_skills(log)
 
             log.ok("Summoning complete!")
@@ -972,7 +981,7 @@ def run_gui(args):
                 "Summoning Complete",
                 f"Installed {len(installed)} grimoire(s).\n\n"
                 "Next steps:\n"
-                "1. Open a new Claude Code session\n"
+                "1. Open a new Claude Code or Codex/ChatGPT session\n"
                 "2. Try: /grm-help",
                 close_app=True,
             )

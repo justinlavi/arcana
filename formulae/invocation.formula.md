@@ -4,7 +4,7 @@
 [What this invocation does, when to cast it]
 
 ## Invocation
-[How to trigger this invocation, e.g., "/grm-[skill-name]" via Claude Code skills]
+[How to trigger this invocation, e.g., "/grm-[skill-name]" via supported agent skills]
 
 ## Prerequisites
 - [What the user needs to have ready]

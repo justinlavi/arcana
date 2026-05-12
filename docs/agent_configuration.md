@@ -1,12 +1,12 @@
 # Grimoire Agent Configuration
 
-Configure AI agents to use Grimoire via a minimal CLAUDE.md entry and a local catalog file. The summoning rite handles all of this automatically.
+Configure AI agents to use Grimoire via a minimal routing entry, local catalog file, and pointer skills. The summoning rite configures Claude Code and Codex/ChatGPT automatically.
 
 ---
 
 ## Summoning Rite (Recommended)
 
-One command sets up everything — installs Arcana, summons grimoires, creates the local catalog, registers skills, and configures CLAUDE.md:
+One command sets up everything — installs Arcana, summons grimoires, creates the local catalog, configures agent instruction files, and registers skills:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
@@ -34,10 +34,10 @@ The summoning rite:
 4. Presents an interactive menu — pick which grimoires to install
 5. Clones or updates selected grimoires in `~/grimoire/`
 6. Creates/updates the local catalog at `~/grimoire/catalog.json`
-7. Injects the Grimoire routing block into `~/.claude/CLAUDE.md`
-8. Registers Grimoire skills to `~/.claude/skills/`
+7. Injects the Grimoire routing block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
+8. Registers Grimoire skills to `~/.claude/skills/` and `~/.codex/skills/`
 
-After summoning, open a new Claude Code session and try `/grm-help`.
+After summoning, open a new Claude Code or Codex/ChatGPT session and try `/grm-help`.
 
 Dear PyGui is bundled into release binaries. In source fallback mode, it is installed into a Grimoire-managed Python dependency cache, not into the Arcana repository. On Arch-based systems, the source fallback may install `python-pip` with `pacman` first if the system Python does not include pip.
 
@@ -173,9 +173,9 @@ Grimoire uses two catalog files:
 
 ---
 
-## CLAUDE.md Configuration
+## Agent Instruction Files
 
-The summoning rite adds this block to `~/.claude/CLAUDE.md` automatically. If setting up manually, add it once — it never changes as new grimoires are added (that happens in the local catalog).
+The summoning rite adds this block to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` automatically. If setting up manually, add it once to each agent instruction file — it never changes as new grimoires are added (that happens in the local catalog).
 
 ```markdown
 ## Grimoire Knowledge Base
@@ -197,9 +197,31 @@ The summoning rite adds this block to `~/.claude/CLAUDE.md` automatically. If se
 
 ## Other AI Agents
 
+### ChatGPT / Codex Skills
+
+Codex/ChatGPT slash-command skills are registered to `~/.codex/skills/` from the same source files under Arcana `skills/`.
+
+These registrations are **pointer-only**: only `SKILL.md` is copied. Do not add ChatGPT-specific scripts, references, assets, or other bundled resources. A ChatGPT/Codex skill should resolve to:
+
+- An invocation markdown file under `GRIMOIRE_ARCANA/invocations/`
+- A rite Python file under `GRIMOIRE_ARCANA/rites/`
+- A domain grimoire invocation or rite through `{{GRIMOIRE_PATH}}`
+
+Register or refresh Codex/ChatGPT skills:
+
+```bash
+python3 ~/grimoire/arcana/rites/register_skills.py --agent codex
+```
+
+Register every supported agent target:
+
+```bash
+python3 ~/grimoire/arcana/rites/register_skills.py
+```
+
 ### ChatGPT Custom Instructions
 
-Paste the CLAUDE.md block above into the Custom Instructions field. Point `online_path` values at cloud-hosted grimoire URLs when available.
+For hosted ChatGPT experiences that do not read local `AGENTS.md`, paste the agent instruction block above into the Custom Instructions field. Point `online_path` values at cloud-hosted grimoire URLs when available.
 
 ### GitHub Copilot
 
@@ -218,13 +240,18 @@ Skills: `/grm-*` skills are available globally (e.g., `/grm-help`, `/grm-improve
 
 ## Skills System
 
-Grimoire operations are delivered as Claude Code skills — globally available via `~/.claude/skills/`.
+Grimoire operations are delivered as slash-command skills. The same source skills are registered to agent-specific skill directories:
+
+- Claude Code: `~/.claude/skills/`
+- Codex/ChatGPT: `~/.codex/skills/`
 
 ### How Skills Work
 
-Skills are SKILL.md files registered to `~/.claude/skills/`. A skill is a **thin pointer** — it delegates to an invocation (markdown guide) or a rite (Python script) that contains the actual logic. Skills must never embed implementation logic directly.
+Skills are `SKILL.md` files registered from Arcana and domain grimoire sources. A skill is a **thin pointer** — it delegates to an invocation (markdown guide) or a rite (Python script) that contains the actual logic. Skills must never embed implementation logic directly.
 
 This separation keeps skills portable across AI agent platforms (Claude Code, ChatGPT, Copilot). The skill file describes *what to do and where to find the instructions*; the invocation or rite contains the actual procedure.
+
+For Codex/ChatGPT, the registered skill directory must contain only `SKILL.md`. Do not bundle scripts, references, assets, generated outputs, or copied invocation content into the ChatGPT/Codex skill implementation.
 
 **Two delegation patterns:**
 - **Invocation-backed**: skill loads a markdown guide via `!`cat {{ARCANA_PATH}}/invocations/...`` — the AI follows the instructions
@@ -238,6 +265,13 @@ The summoning rite registers skills automatically. To re-register after updates,
 
 ```bash
 python3 ~/grimoire/arcana/rites/register_skills.py
+```
+
+To update only one target:
+
+```bash
+python3 ~/grimoire/arcana/rites/register_skills.py --agent claude
+python3 ~/grimoire/arcana/rites/register_skills.py --agent codex
 ```
 
 ### Available Skills
@@ -260,6 +294,8 @@ python3 ~/grimoire/arcana/rites/register_skills.py
 Domain grimoires contribute skills via their own `skills/` directory. The registration rite auto-discovers them and applies the namespace prefix derived from the catalog key (`olympus-grimoire` → `olympus-*`).
 
 Place skills in `<grimoire>/skills/<skill-name>/SKILL.md`. Each SKILL.md should be a thin pointer that delegates to an invocation or rite — never embed logic in the skill file itself. Use `{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` as path placeholders — the registration rite resolves them to absolute paths.
+
+If a domain grimoire includes extra files beside `SKILL.md`, Claude Code registration may copy them for compatibility with existing skills, but Codex/ChatGPT registration intentionally ignores them.
 
 To register new or updated skills, run `/grm-register-skills`.
 

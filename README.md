@@ -73,7 +73,7 @@ To pin a specific release instead of the latest published release:
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0 bash
 ```
 
-This clones Arcana and selected grimoires to `~/grimoire/`, sets up the local catalog, registers skills, and configures CLAUDE.md automatically.
+This clones Arcana and selected grimoires to `~/grimoire/`, sets up the local catalog, registers slash-command skills for Claude Code and Codex/ChatGPT, and configures `CLAUDE.md` and `AGENTS.md` automatically.
 
 ### Option 1: AI-Guided (Recommended) ⭐
 

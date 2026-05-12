@@ -13,7 +13,7 @@ from pathlib import Path
 ARCANA_ROOT = Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent))
 
 UPPERCASE_EXCEPTIONS = {"README.md", "CHANGELOG.md", "INDEX.md", "CLAUDE.md",
-                        "LICENSE.md", "IMPLEMENTATION_PLAN.md"}
+                        "AGENTS.md", "LICENSE.md", "IMPLEMENTATION_PLAN.md"}
 
 
 def check_naming(glob_pattern, label, ext):

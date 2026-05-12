@@ -38,7 +38,7 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 - **[formulae/invocation.formula.md](formulae/invocation.formula.md)** - Custom invocation formula
 
 ### Skills (User-Facing Operations)
-- **[skills/](skills/)** - Skill source directory (registered to `~/.claude/skills/` via `rites/register_skills.py`)
+- **[skills/](skills/)** - Skill source directory (registered to agent skill roots via `rites/register_skills.py`)
 - `/grm-create-grimoire` — Create new domain grimoire
 - `/grm-create-chapter` — Create new knowledge chapter
 - `/grm-improve` — Comprehensive grimoire improvement

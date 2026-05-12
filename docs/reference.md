@@ -75,13 +75,18 @@ Page template: `GRIMOIRE_ARCANA/formulae/page.formula.md`
 | Improve Arcana | `/grm-arcana-improve` |
 | Show help | `/grm-help` |
 
-Skills are registered to `~/.claude/skills/` and available in any Claude Code session.
+Skills are registered to supported agent skill roots:
+
+- Claude Code: `~/.claude/skills/`
+- Codex/ChatGPT: `~/.codex/skills/`
+
+Codex/ChatGPT registrations are pointer-only `SKILL.md` copies that resolve to Arcana or grimoire invocations and rites.
 
 ---
 
 ## Path Reference Convention
 
-**IMPORTANT**: When referencing Grimoire paths, use named keys defined in CLAUDE.md:
+**IMPORTANT**: When referencing Grimoire paths, use named keys defined in the agent instruction file:
 
 | Key | Purpose | Example |
 |-----|---------|---------|
@@ -90,7 +95,7 @@ Skills are registered to `~/.claude/skills/` and available in any Claude Code se
 
 **Why?** Catalog keys match the actual folder slug. `olympus-grimoire` resolves to `~/grimoire/olympus-grimoire/`. `GRIMOIRE_ARCANA` is the exception — Arcana is the engine, not a domain grimoire.
 
-**In CLAUDE.md**, the catalog maps keys to actual filesystem paths:
+**In `CLAUDE.md` and `AGENTS.md`**, the catalog maps keys to actual filesystem paths:
 ```markdown
 **Catalog**: `~/grimoire/catalog.json`
 
