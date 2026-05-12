@@ -65,18 +65,9 @@ Page template: `GRIMOIRE_ARCANA/formulae/page.formula.md`
 
 ## 🪄 Skills
 
-| Action | Skill |
-|--------|-------|
-| Create new grimoire | `/grm-domain-create-grimoire` |
-| Create new chapter | `/grm-domain-create-chapter [topic]` |
-| Improve domain grimoire | `/grm-domain-improve` |
-| Validate structure | `/grm-domain-validate-structure` |
-| Semantic analysis | `/grm-domain-analyze-semantics` |
-| Boundary validation | `/grm-arcana-validate-boundaries` |
-| Improve Arcana | `/grm-arcana-improve` |
-| Sync catalog with disk | `/grm-catalog-sync` |
-| Re-register all skills | `/grm-skills-register` |
-| Show help | `/grm-meta-help` |
+The complete, current Arcana skill catalog lives in **[skills.md](skills.md)** (auto-generated from each `skills/<slug>/SKILL.md` — single source of truth). For each skill the catalog shows the `/grm-...` command, a one-line description, and a link to the source `SKILL.md`.
+
+To enumerate every skill installed for an agent (Arcana plus every domain grimoire), invoke `/grm-meta-help`.
 
 Skills are registered to supported agent skill roots:
 
@@ -90,6 +81,77 @@ Skill command names use explicit namespace roots:
 - Domain grimoires: `{namespace}-*`, declared in each grimoire's `grimoire.json`
 
 Domain skill folders provide the subcommand after the namespace root. For example, a grimoire with `"namespace": "jpn"` in its `grimoire.json` plus `skills/travel-create-trip/` registers `/jpn-travel-create-trip`. Source `SKILL.md` files use `name: {{NAMESPACE}}-<slug>` and the registration rite substitutes the namespace at install time.
+
+---
+
+## Catalogs
+
+Grimoire uses two catalog files. The catalog is a **pure registry** — it records *where* grimoires live, nothing else. Each grimoire's identity (name, namespace, description) lives in its own [manifest](#grimoire-manifest).
+
+### Global catalog (Arcana repo)
+
+`catalog.json` at the Arcana repo root. Lists grimoires available for the summoning rite to install. Each deployment populates it with its own grimoires and URLs.
+
+```json
+{
+  "grimoires": {
+    "olympus-grimoire": {
+      "name": "Olympus",
+      "description": "Olympus domain grimoire",
+      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git"
+    }
+  }
+}
+```
+
+Fields:
+- `name` — display name for the summoning menu.
+- `description` — short description shown during selection.
+- `online_path` — git clone URL (any git-compatible host).
+
+### Local catalog (per-user)
+
+`~/grimoire/catalog.json`, created by the summoning rite or `/grm-catalog-sync`. Lists grimoires the user has cloned and where they live on disk.
+
+```json
+{
+  "grimoires": {
+    "olympus-grimoire": {
+      "local_path": "$HOME/grimoire/olympus-grimoire",
+      "online_path": "https://git.example.com/grimoire/olympus-grimoire.git"
+    }
+  }
+}
+```
+
+Fields:
+- `local_path` — absolute filesystem path to the grimoire root (supports `$HOME`).
+- `online_path` — git clone URL; set to `null` if not applicable.
+
+To add a grimoire, run `/grm-catalog-sync` after cloning into `~/grimoire/`. To detect drift (stale entries, missing grimoires, unmanaged directories), run the same skill in dry-run mode.
+
+---
+
+## Grimoire Manifest
+
+Every grimoire (and Arcana itself) declares its identity in a `grimoire.json` file at its repository root:
+
+```json
+{
+  "name": "olympus-grimoire",
+  "namespace": "oly",
+  "description": "Olympus engineering domain grimoire"
+}
+```
+
+Fields:
+- `name` — canonical grimoire name; should match the catalog key.
+- `namespace` — short lowercase slug (`^[a-z][a-z0-9]*$`) used as the skill prefix. Required if the grimoire has a `skills/` directory.
+- `description` — one-line description.
+
+**Why not in the catalog?** The grimoire owns its own identity. A cloned grimoire knows its namespace without needing a catalog entry, the registration rite reads namespace directly from the grimoire, and there is no way for catalog and grimoire to drift out of sync.
+
+When creating a new grimoire, `/grm-domain-create-grimoire` prompts for the namespace and writes `grimoire.json` as part of scaffolding.
 
 ---
 

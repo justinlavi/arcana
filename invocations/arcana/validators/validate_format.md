@@ -7,7 +7,7 @@ Validate invocation and formula format compliance (required sections and schema)
 ## Invocation
 
 ```
-/grm-arcana-improve
+/grm-arcana-validate-format
 ```
 
 ## When to Cast

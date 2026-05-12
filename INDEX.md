@@ -5,15 +5,17 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 ---
 
 ## Documentation
-- **[README.md](README.md)** - Overview and architecture
-- **[docs/quickstart.md](docs/quickstart.md)** - 10-minute setup guide
-- **[docs/operating_model.md](docs/operating_model.md)** - Core principles and routing model
-- **[docs/agent_configuration.md](docs/agent_configuration.md)** - AI agent setup (Claude, GPT, Cursor) 🤖
-- **[docs/governance.md](docs/governance.md)** - Maintenance policies and versioning
-- **[docs/release.md](docs/release.md)** - Release workflow for Summoning Rite binaries
-- **[CHANGELOG.md](CHANGELOG.md)** - Version history
-- **[docs/reference.md](docs/reference.md)** - Reference (terminology, conventions, path keys)
-- **[docs/script_vs_ai.md](docs/script_vs_ai.md)** - Architectural principle: When to use scripts vs AI ⭐
+- **[README.md](README.md)** — Overview and architecture
+- **[docs/installation.md](docs/installation.md)** — Summoning rite + manual install
+- **[docs/quickstart.md](docs/quickstart.md)** — 5-minute smoke test after install
+- **[docs/agent_configuration.md](docs/agent_configuration.md)** — Per-agent setup (Claude / Codex / Copilot)
+- **[docs/skills.md](docs/skills.md)** — Canonical Arcana skill catalog (auto-generated)
+- **[docs/reference.md](docs/reference.md)** — Terminology, catalog/manifest schemas, path keys, formula placeholders
+- **[docs/operating_model.md](docs/operating_model.md)** — Routing model and authority models
+- **[docs/script_vs_ai.md](docs/script_vs_ai.md)** — Architectural principle: when to use scripts vs AI
+- **[docs/governance.md](docs/governance.md)** — Maintenance policies and versioning
+- **[docs/release.md](docs/release.md)** — Release workflow for Summoning Rite binaries
+- **[CHANGELOG.md](CHANGELOG.md)** — Version history
 
 ### Invocations (What Grimoire Can Do)
 
@@ -38,22 +40,14 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 - **[formulae/invocation.formula.md](formulae/invocation.formula.md)** - Custom invocation formula
 
 ### Skills (User-Facing Operations)
-- **[skills/](skills/)** - Skill source directory (registered to agent skill roots via `rites/register_skills.py`)
-- `/grm-domain-create-grimoire` — Create new domain grimoire
-- `/grm-domain-create-chapter` — Create new knowledge chapter
-- `/grm-domain-improve` — Comprehensive grimoire improvement
-- `/grm-domain-validate-structure` — Validate structure compliance
-- `/grm-domain-analyze-semantics` — Semantic naming analysis
-- `/grm-arcana-validate-boundaries` — Magical boundary validation
-- `/grm-arcana-improve` — Improve Arcana (maintainer)
-- `/grm-meta-help` — Show skill catalog and usage guide
-- `/grm-skills-register` — Re-register all skills from Arcana and domain grimoires
-- `/grm-catalog-sync` — Scan ~/grimoire/ and reconcile against the local catalog
+- **[docs/skills.md](docs/skills.md)** — Canonical Arcana skill catalog (auto-generated from `skills/*/SKILL.md`)
+- **[skills/](skills/)** — Skill source directory; registered into agent skill roots via `rites/register_skills.py`
 
 ### Summoning & Catalog
 - **[rites/summon.sh](rites/summon.sh)** - Grimoire summoning rite (one-command setup)
 - **[rites/register_skills.py](rites/register_skills.py)** - Skill registration rite
 - **[rites/sync_catalog.py](rites/sync_catalog.py)** - Catalog sync rite (reconcile catalog with disk)
+- **[rites/sync_docs.py](rites/sync_docs.py)** - Docs sync rite (regenerate `docs/skills.md` from sources)
 - **[catalog.json](catalog.json)** - Company-wide grimoire catalog
 
 ### Tools

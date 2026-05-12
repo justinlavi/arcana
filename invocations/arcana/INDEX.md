@@ -1,140 +1,41 @@
-# 🧙‍♂️ Arcana Invocations Catalog
+# Arcana Invocations
 
-**Arcana maintainer only - invocations that modify Arcana itself**
+Invocations that **modify Arcana itself**. Maintainer only.
 
-⚠️ **These invocations require maintainer privileges** - they modify the universal Grimoire foundation.
+For domain operations (creating chapters, improving grimoires) see [`../grimoire/INDEX.md`](../grimoire/INDEX.md). For meta/help, see [`../meta/INDEX.md`](../meta/INDEX.md). For the canonical skill catalog, see [`../../docs/skills.md`](../../docs/skills.md).
 
----
+## Available
 
-## Single Source Architecture
+### Improvement & boundary
 
-**This catalog is a THIN ROUTER** - invocation files are the single source of truth.
+- **[improve_arcana.md](improve_arcana.md)** — Comprehensive Arcana improvement; orchestrates the validators and quality invocations. Skill: `/grm-arcana-improve`.
+- **[validate_boundaries.md](validate_boundaries.md)** — Magical/practical boundary enforcement. Skill: `/grm-arcana-validate-boundaries`.
 
-For dynamic invocation catalog with full details, use: **`/grm-meta-help`**
+### Validators (mechanical)
 
-For detailed documentation, read the invocation file directly.
+Each runs independently or as part of `/grm-arcana-improve`. Each has its own dedicated skill (`/grm-arcana-validate-<name>`):
 
----
+- [`validators/validate_structure.md`](validators/validate_structure.md) — directory/file integrity
+- [`validators/validate_naming.md`](validators/validate_naming.md) — snake_case enforcement
+- [`validators/validate_semantics.md`](validators/validate_semantics.md) — deprecated terms + hyphenated paths
+- [`validators/validate_format.md`](validators/validate_format.md) — markdown formatting
+- [`validators/validate_links.md`](validators/validate_links.md) — broken references
+- [`validators/validate_security.md`](validators/validate_security.md) — credentials & unsafe Python
 
-## Available Arcana Invocations
+Run them all in one shot: `/grm-arcana-validate-all`. See [`validators/INDEX.md`](validators/INDEX.md) for orchestration details.
 
-### 🔧 Improvement & Validation
+### Quality (judgment-based)
 
-- **[improve_arcana.md](improve_arcana.md)** - Comprehensive Arcana improvement (orchestrates all validations and improvements)
-- **[validate_boundaries.md](validate_boundaries.md)** - Magical/practical boundary enforcement
+Manual passes for things validators can't measure:
 
-### ⚡ Validators
+- [`quality/improve_documentation.md`](quality/improve_documentation.md) — duplication and clarity audit
+- [`quality/validate_rites.md`](quality/validate_rites.md) — rite-specific quality checks
 
-Modular validation invocations (can run independently or via improve-arcana):
+See [`quality/INDEX.md`](quality/INDEX.md) for usage notes.
 
-- **[validators/validate_structure.md](validators/validate_structure.md)** - Directory/file integrity
-- **[validators/validate_naming.md](validators/validate_naming.md)** - Snake_case enforcement
-- **[validators/validate_semantics.md](validators/validate_semantics.md)** - Reference-driven terminology
-- **[validators/validate_format.md](validators/validate_format.md)** - Invocation/formula schema
-- **[validators/validate_links.md](validators/validate_links.md)** - Broken reference detection
-- **[validators/validate_security.md](validators/validate_security.md)** - Credential scanning & bash safety
+## When to run
 
-See [validators/INDEX.md](validators/INDEX.md) for details.
-
-### ✨ Quality Enhancement
-
-Advanced quality improvement invocations:
-
-- **[quality/detect_duplication.md](quality/detect_duplication.md)** - DRY principle enforcement
-- **[quality/improve_documentation.md](quality/improve_documentation.md)** - Documentation excellence
-- **[quality/validate_rites.md](quality/validate_rites.md)** - Rite script quality
-
-See [quality/INDEX.md](quality/INDEX.md) for details.
-
----
-
-## Quick Reference
-
-| Name | Command | Purpose |
-|------|---------|---------|
-| improve-arcana | `/grm-arcana-improve` | Evolve Arcana |
-| validate-boundaries | `/grm-arcana-validate-boundaries` | Magical boundary enforcement |
-| validate-structure | `/grm-domain-validate-structure` | Directory/file integrity checks |
-| validate-semantics | `/grm-arcana-improve` | Reference-driven terminology validation |
-| validate-naming | `/grm-arcana-improve` | Snake_case naming enforcement |
-| validate-format | `/grm-arcana-improve` | Invocation/formula schema compliance |
-| validate-links | `/grm-arcana-improve` | Broken reference detection |
-| validate-security | `/grm-arcana-improve` | Security scanning |
-| detect-duplication | `/grm-arcana-improve` | DRY principle enforcement |
-| improve-documentation | `/grm-arcana-improve` | Documentation quality enhancement |
-| validate-rites | `/grm-arcana-improve` | Rite script quality validation |
-
----
-
-## Arcana vs Grimoire vs Meta Invocations
-
-**Arcana Invocations** (`invocations/arcana/`):
-- Operate on Arcana itself
-- Modify universal invocations, formulae, rites
-- Enforce system-wide quality gates
-- Arcana maintainer only
-
-**Grimoire Invocations** (`invocations/grimoire/`):
-- Operate on domain grimoires
-- Create and improve domain knowledge
-- Available to all users
-- See: `../grimoire/INDEX.md`
-
-**Meta Invocations** (`invocations/meta/`):
-- System documentation and help
-- Available to everyone
-- See: `../meta/INDEX.md`
-
----
-
-## For Domain Users
-
-If you're not the Arcana maintainer, you want **grimoire invocations**:
-
-→ Use `/grm-meta-help` to list all available invocations
-→ See `../grimoire/INDEX.md` for domain operations
-
----
-
-## For the Arcana Maintainer
-
-### When to Run Arcana Invocations
-
-**improve-arcana**:
-- Monthly: Quick audit to catch drift
-- Quarterly: Full improvement cycle
-- Before releases: Version preparation
-- After major changes: Validate templates
-
-**validate-boundaries**:
-- Before Arcana releases (with --arcana flag)
-- Quarterly quality validation
-- After modifying invocations/formulae
-
-**Validator invocations**:
-- Run individually for targeted checks: `/grm-domain-validate-structure`
-- Run all at once: `python3 rites/validate.py`
-- Integrated into improve-arcana workflow
-
----
-
-## For Invocation Authors
-
-**When creating a new Arcana invocation**:
-
-1. Create `invocations/arcana/your_invocation.md` from template
-2. Required sections: Purpose, Invocation, Workflow
-3. Save file
-
-**NOT required**:
-- ~~Add entry to this INDEX.md~~ (auto-discovered)
-- ~~Update invocation count~~ (auto-calculated)
-- ~~Update help.md~~ (dynamic generation)
-
-**Validation**: Run `/grm-domain-validate-structure` to verify
-
----
-
-**Invocation count**: Auto-validated by `validate-arcana-structure` invocation
-
-**Architecture**: Single-source + dynamic generation
+- Before any Arcana release
+- After bulk doc/rite changes
+- Monthly drift audit (run `/grm-arcana-validate-all` and review violations)
+- As phases of `/grm-arcana-improve` (the orchestrator handles ordering)

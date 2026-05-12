@@ -7,7 +7,7 @@ Detect broken internal references and links in Arcana documentation.
 ## Invocation
 
 ```
-/grm-arcana-improve
+/grm-arcana-validate-links
 ```
 
 ## When to Cast

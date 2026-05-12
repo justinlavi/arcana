@@ -344,7 +344,7 @@ Add the new grimoire to the user's local catalog so agents can resolve it.
    }
    ```
 
-4. **Check agent instruction files** — if `~/.claude/CLAUDE.md` or `~/.codex/AGENTS.md` does not already contain a `## Grimoire Knowledge Base` section, tell the user to add the standard block from `GRIMOIRE_ARCANA/docs/agent_configuration.md`. That block never changes as new grimoires are added; only the catalog does.
+4. **Check agent instruction files** — if `~/.claude/CLAUDE.md` or `~/.codex/AGENTS.md` does not already contain a `## Grimoire Knowledge Base` section, tell the user to add the canonical block from `GRIMOIRE_ARCANA/rites/templates/grimoire_block.md`. That block never changes as new grimoires are added; only the catalog does.
 
 **Present to user**:
 ```

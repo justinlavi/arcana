@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
-"""Extracts semantic data from Arcana for AI analysis.
+"""Validates Arcana semantics: deprecated terminology + naming patterns.
 
-This rite does NOT try to be intelligent. It simply:
-1. Extracts terminology from reference
-2. Checks basic pattern violations (hyphenated examples)
-3. Reports facts - AI (analyze_semantics invocation) does intelligent analysis
+What this rite checks (mechanical, deterministic):
+1. Deprecated terms — any markdown file containing a term from
+   `rites/data/deprecated_terms.txt` is reported as a violation.
+2. Hyphenated path examples — paths like `chapters/example-name/` or
+   `file-name.md` should use snake_case.
+
+What this rite does NOT do: intelligent semantic analysis (naming quality,
+discoverability, organization). For that, use /grm-domain-analyze-semantics.
 
 Usage: python3 rites/validate_semantics.py
-Exit codes: 0 = no mechanical violations, 1 = pattern violations found
+Exit codes: 0 = no violations, 1 = violations found
 """
 
 import os
@@ -16,124 +20,137 @@ import sys
 from pathlib import Path
 
 ARCANA_ROOT = Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent))
-REFERENCE = ARCANA_ROOT / "docs" / "reference.md"
-RESULTS_DIR = ARCANA_ROOT / "rites" / ".artifacts"
+DEPRECATED_TERMS_FILE = ARCANA_ROOT / "rites" / "data" / "deprecated_terms.txt"
 
+# Files exempt from deprecated-term scanning (the rite/data files themselves
+# need to mention the terms in order to flag them).
 SKIP_FILES = {
-    "validate_naming.md", "validate_format.md", "validate_semantics.md",
-    "script_vs_ai_intelligence.md",
+    "validate_semantics.md",
+    "deprecated_terms.txt",
 }
 
-SKIP_DIRS = {"invocations/arcana/quality"}
+SKIP_DIRS = {
+    "invocations/arcana/quality",  # quality docs may discuss historical terms
+}
 
 HYPHEN_PATTERN = re.compile(r"chapters/[a-z]+-[a-z]+/|[a-z]+-[a-z]+\.md")
 
 
-def extract_section(content, header_pattern, end_pattern="^---$"):
-    """Extract table rows from a reference section."""
-    in_section = False
-    rows = []
-    for line in content.splitlines():
-        if re.search(header_pattern, line):
-            in_section = True
+def load_deprecated_terms():
+    """Read deprecated terms from the data file, skipping comments and blanks."""
+    if not DEPRECATED_TERMS_FILE.is_file():
+        return []
+    terms = []
+    for line in DEPRECATED_TERMS_FILE.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
             continue
-        if in_section and re.search(end_pattern, line):
-            break
-        if in_section and line.startswith("|") and not line.startswith("| Concept") \
-                and not line.startswith("| Role") and not line.startswith("| Deprecated") \
-                and not line.startswith("|---"):
-            rows.append(line)
-    return rows
+        terms.append(line)
+    return terms
+
+
+def scan_markdown_files(root, predicate):
+    """Yield (rel_path, line_number, line) for every .md file matching predicate."""
+    for path in sorted(root.rglob("*.md")):
+        if path.name in SKIP_FILES:
+            continue
+        rel = str(path.relative_to(root))
+        if any(rel.startswith(sd) for sd in SKIP_DIRS):
+            continue
+        try:
+            content = path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for lineno, line in enumerate(content.splitlines(), start=1):
+            if predicate(line):
+                yield rel, lineno, line
+                break  # one report per file is enough
+
+
+def check_deprecated_terms(terms):
+    """Report any markdown file containing a deprecated term."""
+    if not terms:
+        return 0
+
+    # Build a single regex with word boundaries for whole-term matching.
+    pattern = re.compile(
+        r"\b(" + "|".join(re.escape(t) for t in terms) + r")\b"
+    )
+
+    print("Checking for deprecated terminology...")
+    found = 0
+    for rel, lineno, line in scan_markdown_files(
+        ARCANA_ROOT, lambda l: pattern.search(l) is not None
+    ):
+        match = pattern.search(line)
+        term = match.group(0) if match else "?"
+        print(f"  WARN  Deprecated term '{term}': {rel}:{lineno}")
+        found += 1
+
+    if found == 0:
+        print("  OK    No deprecated terms found")
+    print()
+    return found
+
+
+def check_hyphenated_examples():
+    """Report any markdown file containing hyphenated path examples in body text."""
+    print("Checking for hyphenated path examples...")
+    found = 0
+
+    def is_hyphenated_body_line(line):
+        if line.lstrip().startswith("#"):
+            return False
+        return HYPHEN_PATTERN.search(line) is not None
+
+    for rel, lineno, _line in scan_markdown_files(ARCANA_ROOT, is_hyphenated_body_line):
+        print(f"  WARN  Hyphenated example: {rel}:{lineno}")
+        found += 1
+
+    if found == 0:
+        print("  OK    No hyphenated examples found")
+    print()
+    return found
 
 
 def main():
-    errors = 0
-
     print()
-    print("Extracting Semantic Data (Rite)")
+    print("Validate Arcana Semantics")
     print("====================================")
-    print(f"Arcana root: {ARCANA_ROOT}")
-    print(f"Reference: {REFERENCE}")
-    print()
-    print("Note: This rite extracts data only.")
-    print("For intelligent semantic analysis, use: /grm-domain-analyze-semantics")
+    print(f"Arcana root:        {ARCANA_ROOT}")
+    print(f"Deprecated terms:   {DEPRECATED_TERMS_FILE}")
     print()
 
-    if not REFERENCE.is_file():
-        print(f"  ERROR  Reference file not found: {REFERENCE}")
-        return 1
-
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-
-    # Extract canonical terminology
-    print("Extracting canonical terminology from reference...")
-    ref_content = REFERENCE.read_text(errors="replace")
-
-    output_lines = ["=== CANONICAL TERMS (from reference.md) ===", ""]
-    output_lines.append("## Core Concepts:")
-    output_lines.extend(extract_section(ref_content, r"^## .* Core Concepts"))
-    output_lines.append("")
-    output_lines.append("## Domain Structure:")
-    output_lines.extend(extract_section(ref_content, r"^## .* Domain Structure"))
-    output_lines.append("")
-    output_lines.append("## People & Roles:")
-    output_lines.extend(extract_section(ref_content, r"^## .* People & Roles"))
-    output_lines.append("")
-    output_lines.append("## Deprecated Terms (should NOT be used):")
-    output_lines.extend(extract_section(ref_content, r"^## Deprecated Terminology"))
-
-    output_path = RESULTS_DIR / "canonical_terminology.txt"
-    output_path.write_text("\n".join(output_lines) + "\n")
-    print(f"  OK    Terminology extracted to: {output_path}")
+    terms = load_deprecated_terms()
+    if terms:
+        print(f"Loaded {len(terms)} deprecated term(s) for scanning.")
+    else:
+        print("WARN: deprecated terms file missing or empty — skipping that check.")
     print()
 
-    # Mechanical check: hyphenated examples
-    print("Checking for mechanical pattern violations...")
-    found_hyphens = 0
+    deprecated_count = check_deprecated_terms(terms)
+    hyphen_count = check_hyphenated_examples()
 
-    for path in sorted(ARCANA_ROOT.rglob("*.md")):
-        if path.name in SKIP_FILES:
-            continue
-
-        rel = str(path.relative_to(ARCANA_ROOT))
-        if any(rel.startswith(sd) for sd in SKIP_DIRS):
-            continue
-
-        content = path.read_text(errors="replace")
-        for line in content.splitlines():
-            if line.lstrip().startswith("#"):
-                continue
-            if HYPHEN_PATTERN.search(line):
-                print(f"  WARN  Hyphenated example: {rel}")
-                found_hyphens += 1
-                errors += 1
-                break
-
-    if found_hyphens == 0:
-        print("  OK    No hyphenated examples found")
-    print()
-
+    total = deprecated_count + hyphen_count
     print("====================================")
-    print("Data Extraction Complete")
-    print()
-    print("Extracted data:")
-    print(f"  - {output_path}")
-    print()
-    print(f"Mechanical violations: {errors}")
+    print(f"Deprecated terms:   {deprecated_count}")
+    print(f"Hyphenated paths:   {hyphen_count}")
+    print(f"Total violations:   {total}")
     print()
 
-    if errors == 0:
-        print("No mechanical pattern violations")
+    if total == 0:
+        print("Semantic validation passed.")
         print()
-        print("For intelligent semantic analysis:")
+        print("For intelligent semantic analysis (naming quality, discoverability):")
         print("   /grm-domain-analyze-semantics")
         print()
         return 0
-    else:
-        print(f"Found {errors} mechanical pattern violations")
-        print("   (Fix these simple pattern issues first)")
-        print()
-        return 1
+
+    print("Semantic validation failed.")
+    print("   Replace deprecated terms with their canonical equivalents and")
+    print("   convert hyphenated examples to snake_case.")
+    print()
+    return 1
 
 
 if __name__ == "__main__":

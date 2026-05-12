@@ -7,7 +7,7 @@ Enforce snake_case naming convention for Arcana files and directories.
 ## Invocation
 
 ```
-/grm-arcana-improve
+/grm-arcana-validate-naming
 ```
 
 ## When to Cast

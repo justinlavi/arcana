@@ -7,6 +7,14 @@ Historical notes from earlier private GitLab iterations were intentionally remov
 ## [Unreleased]
 
 ### Added
+- Comprehensive Arcana audit cleanup (Tier 1 + Tier 2):
+  - **Single-source skill catalog**: new `rites/sync_docs.py` generator emits `docs/skills.md` from each `skills/<slug>/SKILL.md` frontmatter. INDEX.md, README.md, agent_configuration.md, and reference.md no longer enumerate skills — they all link to the canonical catalog.
+  - **Single-source instruction block**: the canonical Grimoire instruction text now lives at `rites/templates/grimoire_block.md`. `summon.py` reads it at runtime instead of embedding it; `agent_configuration.md` references it instead of inlining.
+  - **7 new validator skills** exposing what was previously buried inside `/grm-arcana-improve`:
+    - `/grm-arcana-validate-format`, `-links`, `-naming`, `-security`, `-semantics`, `-structure`, `-all` (the `validate-all` skill drives `rites/validate.py` orchestrator).
+  - **Doc reorganization**: extracted summoning + manual install into a dedicated `docs/installation.md`. `agent_configuration.md` is now focused on per-agent setup. Catalog and grimoire.json schemas moved into `docs/reference.md`. README trimmed to "what + why + where to read next." Quickstart refocused as a 5-minute smoke test (install procedure no longer duplicated).
+  - **Quality invocations consolidated**: merged `quality/detect_duplication.md` into a leaner `quality/improve_documentation.md` covering both duplication and clarity audits.
+  - **Validator contract fix**: `rites/validate_semantics.py` now actually performs the deprecated-term scan its invocation always promised. Deprecated-term list moved to single-source data file at `rites/data/deprecated_terms.txt`.
 - Catalog sync rite and skill:
   - `rites/sync_catalog.py` walks `~/grimoire/`, classifies every subdirectory by manifest validity, and diffs the result against `~/grimoire/catalog.json`.
   - Reports four kinds of drift (missing, stale, mismatched, unmanaged) plus structural warnings (namespace collisions, name/directory mismatches).
@@ -42,6 +50,10 @@ Historical notes from earlier private GitLab iterations were intentionally remov
 
 ### Removed (breaking)
 - `skill_namespace` field in catalog entries. Move it into each grimoire's `grimoire.json` as `namespace`. The registration rite no longer reads it from the catalog. No compatibility shim.
+- `rites/analyze_health.py` — orphaned dead code with no entry point.
+- `invocations/arcana/quality/detect_duplication.md` — merged into `quality/improve_documentation.md`.
+- Inlined skill list duplicates in `INDEX.md`, `README.md`, `docs/reference.md`, `docs/agent_configuration.md`. Replaced by links to the canonical `docs/skills.md`.
+- Inlined Grimoire instruction block duplicates in `docs/agent_configuration.md` (the verbatim copy and the diverged Copilot variant). Replaced by references to `rites/templates/grimoire_block.md`.
 
 ### Removed
 - `rites/summon.bat`; Windows users can use Git Bash or WSL for the shell bootstrap, and Windows release binaries are still produced.

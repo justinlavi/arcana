@@ -7,7 +7,7 @@ Security scanning for credentials, unsafe patterns, and shell script quality.
 ## Invocation
 
 ```
-/grm-arcana-improve
+/grm-arcana-validate-security
 ```
 
 ## When to Cast

@@ -11,8 +11,10 @@ Verify Arcana directory structure, required files, and organizational integrity.
 ## Invocation
 
 ```
-/grm-domain-validate-structure
+/grm-arcana-validate-structure
 ```
+
+To validate a **domain grimoire's** structure instead, use `/grm-domain-validate-structure` — that one operates on the active grimoire directory rather than on Arcana.
 
 ## When to Cast
 
