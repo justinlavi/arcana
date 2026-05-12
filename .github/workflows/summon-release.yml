@@ -55,6 +55,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: requirements-summon-build.txt
 
       - name: Install build dependencies
         run: python -m pip install -r requirements-summon-build.txt
