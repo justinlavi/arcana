@@ -2,18 +2,22 @@
 """Grimoire Summoning Rite — cross-platform grimoire installer.
 
 Usage:
-    python3 summon.py [--scope URL] [--cli] [--gui]
+    python3 summon.py [--arcana-url URL] [--scope URL] [--cli] [--gui]
 
-One-liner entry point (substitute your Arcana URL):
-    git clone --depth 1 <your-arcana-url> /tmp/grimoire-summon && bash /tmp/grimoire-summon/rites/summon.sh
+One-liner entry point:
+    curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
 
 Options:
+    --arcana-url URL
+                   URL of the Arcana git repository to install
     --scope URL    URL of the group/org containing your grimoires
     --cli          Force terminal mode (no GUI)
     --gui          Force GUI mode
     -h, --help     Show this help message
 
 Environment variables:
+    GRIMOIRE_ARCANA_URL
+                     Same as --arcana-url (flag takes precedence)
     GRIMOIRE_SCOPE    Same as --scope (flag takes precedence)
     GITLAB_TOKEN      GitLab personal access token for private instances
     GITHUB_TOKEN      GitHub token for private orgs
@@ -24,12 +28,11 @@ import json
 import os
 import re
 import signal
-import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 from urllib.error import URLError
+from urllib.parse import quote, urlparse
 from urllib.request import Request, urlopen
 
 # ---------------------------------------------------------------------------
@@ -42,6 +45,7 @@ LOCAL_CATALOG = GRIMOIRE_HOME / "catalog.json"
 CLAUDE_MD = Path.home() / ".claude" / "CLAUDE.md"
 RITE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = RITE_DIR.parent
+DEFAULT_ARCANA_URL = "https://github.com/justinlavi/arcana.git"
 
 GRIMOIRE_BLOCK = """\
 
@@ -109,6 +113,16 @@ def detect_arcana_url():
     return url if ok else ""
 
 
+def resolve_arcana_url(args):
+    """Resolve the Arcana git URL from flag, env, local origin, or public default."""
+    return (
+        args.arcana_url
+        or os.environ.get("GRIMOIRE_ARCANA_URL", "")
+        or detect_arcana_url()
+        or DEFAULT_ARCANA_URL
+    )
+
+
 def git_credential_token(host):
     """Query git credential helper for a stored token/password."""
     try:
@@ -139,15 +153,46 @@ def parse_scope_url(url):
 
     Examples:
         https://github.com/my-org       → ("github.com", "my-org")
+        https://github.com/my-org/repo  → ("github.com", "my-org/repo")
+        git@github.com:my-org/repo.git  → ("github.com", "my-org/repo")
         https://gitlab.co/team/grimoire → ("gitlab.co", "team/grimoire")
         https://server.com              → ("server.com", "")
     """
-    path = re.sub(r"^https?://", "", url).rstrip("/")
-    if "/" in path:
-        host, scope = path.split("/", 1)
+    raw = url.strip()
+    ssh_match = re.match(r"^git@([^:]+):(.+)$", raw)
+    if ssh_match:
+        host = ssh_match.group(1)
+        scope = ssh_match.group(2)
     else:
-        host, scope = path, ""
-    return host, scope
+        if not re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://", raw):
+            raw = f"https://{raw}"
+        parsed = urlparse(raw)
+        host = parsed.netloc
+        scope = parsed.path.lstrip("/")
+
+    scope = re.sub(r"\.git$", "", scope.rstrip("/"))
+    return host.lower(), scope
+
+
+def _scope_parts(scope):
+    """Split a repository scope path into clean path parts."""
+    return [part for part in scope.split("/") if part]
+
+
+def _catalog_key_from_repo_path(path):
+    """Use the repo slug as the local catalog key."""
+    parts = _scope_parts(path)
+    return parts[-1] if parts else ""
+
+
+def _is_github_host(host):
+    """Best-effort detection for GitHub.com and GitHub Enterprise hosts."""
+    return host == "github.com" or "github" in host
+
+
+def _is_gitlab_host(host):
+    """Best-effort detection for GitLab.com and self-hosted GitLab hosts."""
+    return host == "gitlab.com" or "gitlab" in host
 
 
 # ---------------------------------------------------------------------------
@@ -188,21 +233,51 @@ def _api_get(url, token_header=None, token_value=None):
         return None, str(e)
 
 
+def _metadata_marks_grimoire(name, description="", topics=None):
+    """Return True when repository metadata marks a repo as a grimoire."""
+    topics = topics or []
+    normalized_topics = {str(topic).lower() for topic in topics}
+    name_l = (name or "").lower()
+    desc_l = (description or "").lower()
+    return (
+        name_l.endswith("-grimoire")
+        or "grimoire" in normalized_topics
+        or "grimoire" in desc_l
+    )
+
+
+def _github_entry(repo):
+    """Convert one GitHub repo API object to a catalog entry."""
+    name = repo.get("name") or _catalog_key_from_repo_path(repo.get("full_name", ""))
+    return {
+        "name": name,
+        "description": repo.get("description") or "Domain grimoire",
+        "online_path": repo.get("clone_url", ""),
+    }
+
+
+def _gitlab_entry(project):
+    """Convert one GitLab project API object to a catalog entry."""
+    path = project.get("path") or _catalog_key_from_repo_path(project.get("path_with_namespace", ""))
+    return {
+        "name": project.get("name", path),
+        "description": project.get("description") or "Domain grimoire",
+        "online_path": project.get("http_url_to_repo", ""),
+    }
+
+
 def _gitlab_filter_grimoires(data, log):
-    """Extract *-grimoire entries from a GitLab project list."""
+    """Extract grimoire entries from a GitLab project list."""
     if not isinstance(data, list):
         log.warn(f"GitLab API returned unexpected response type: {type(data).__name__}")
         return {}
     entries = {}
     for project in data:
         path = project.get("path", "")
-        if not path.endswith("-grimoire"):
+        topics = project.get("topics") or project.get("tag_list") or []
+        if not _metadata_marks_grimoire(path, project.get("description", ""), topics):
             continue
-        entries[path] = {
-            "name": project.get("name", path),
-            "description": project.get("description") or "Domain grimoire",
-            "online_path": project.get("http_url_to_repo", ""),
-        }
+        entries[path] = _gitlab_entry(project)
     return entries
 
 
@@ -222,9 +297,21 @@ def _resolve_token(host, env_var, explicit_token, log):
 
 
 def try_gitlab_discovery(host, scope, token, log):
-    """Query GitLab API for *-grimoire repos. Returns dict of catalog entries."""
+    """Query GitLab API for grimoire repos. Returns dict of catalog entries."""
     auth_h = "PRIVATE-TOKEN" if token else None
     auth_v = token or None
+
+    if len(_scope_parts(scope)) >= 2:
+        encoded_project = quote(scope, safe="")
+        project_url = f"https://{host}/api/v4/projects/{encoded_project}"
+        log.info(f"Trying GitLab project API: {project_url}")
+        data, err = _api_get(project_url, token_header=auth_h, token_value=auth_v)
+        if isinstance(data, dict) and data.get("http_url_to_repo"):
+            key = data.get("path") or _catalog_key_from_repo_path(scope)
+            log.ok(f"Using explicit GitLab project: {key}")
+            return {key: _gitlab_entry(data)}
+        if err and "404" not in err:
+            log.warn(f"GitLab project lookup failed: {err}")
 
     if not scope:
         url = f"https://{host}/api/v4/projects?search=grimoire&per_page=100"
@@ -237,7 +324,7 @@ def try_gitlab_discovery(host, scope, token, log):
             return {}
         return _gitlab_filter_grimoires(data, log)
 
-    encoded = scope.replace("/", "%2F")
+    encoded = quote(scope, safe="")
     group_url = f"https://{host}/api/v4/groups/{encoded}/projects?search=grimoire&per_page=100"
     log.info(f"Trying GitLab groups API: {group_url}")
     data, err = _api_get(group_url, token_header=auth_h, token_value=auth_v)
@@ -266,25 +353,50 @@ def try_gitlab_discovery(host, scope, token, log):
 
 
 def try_github_discovery(host, scope, token, log):
-    """Query GitHub API for *-grimoire repos. Returns dict of catalog entries."""
+    """Query GitHub API for grimoire repos. Returns dict of catalog entries."""
     if host == "github.com":
         api_base = "https://api.github.com"
     else:
         api_base = f"https://{host}/api/v3"
 
-    url = f"{api_base}/orgs/{scope}/repos?per_page=100"
+    parts = _scope_parts(scope)
+    auth_h = "Authorization" if token else None
+    auth_v = f"Bearer {token}" if token else None
 
-    log.info(f"Trying GitHub API: {url}")
+    if len(parts) >= 2:
+        owner, repo_name = parts[0], parts[1]
+        repo_url = f"{api_base}/repos/{owner}/{repo_name}"
+        log.info(f"Trying GitHub repo API: {repo_url}")
+        data, err = _api_get(repo_url, token_header=auth_h, token_value=auth_v)
+        if isinstance(data, dict) and data.get("clone_url"):
+            key = data.get("name") or repo_name
+            log.ok(f"Using explicit GitHub repository: {key}")
+            return {key: _github_entry(data)}
+        log.warn(f"GitHub repo lookup failed: {err}")
+        return {}
+
+    if not parts:
+        log.warn("GitHub discovery requires an owner/org or owner/repo URL")
+        return {}
+
+    owner = parts[0]
+    url = f"{api_base}/orgs/{owner}/repos?per_page=100"
+
+    log.info(f"Trying GitHub org repos API: {url}")
     data, err = _api_get(
         url,
-        token_header="Authorization" if token else None,
-        token_value=f"Bearer {token}" if token else None,
+        token_header=auth_h,
+        token_value=auth_v,
     )
     if err:
-        log.warn(f"GitHub API failed: {err}")
-        if not token:
-            log.warn("No credentials found — set GITHUB_TOKEN or configure git credential helper")
-        return {}
+        user_url = f"{api_base}/users/{owner}/repos?per_page=100"
+        log.info(f"Org lookup failed, trying GitHub user repos API: {user_url}")
+        data, err = _api_get(user_url, token_header=auth_h, token_value=auth_v)
+        if err:
+            log.warn(f"GitHub API failed: {err}")
+            if not token:
+                log.warn("No credentials found — set GITHUB_TOKEN or configure git credential helper")
+            return {}
     if not isinstance(data, list):
         log.warn(f"GitHub API returned unexpected response type: {type(data).__name__}")
         return {}
@@ -292,13 +404,13 @@ def try_github_discovery(host, scope, token, log):
     entries = {}
     for repo in data:
         name = repo.get("name", "")
-        if not name.endswith("-grimoire"):
+        if not _metadata_marks_grimoire(
+            name,
+            repo.get("description", ""),
+            repo.get("topics") or [],
+        ):
             continue
-        entries[name] = {
-            "name": name,
-            "description": repo.get("description") or "Domain grimoire",
-            "online_path": repo.get("clone_url", ""),
-        }
+        entries[name] = _github_entry(repo)
     return entries
 
 
@@ -314,13 +426,25 @@ def discover_grimoires(scope_url, log, explicit_token=""):
     else:
         log.info(f"Searching {host} for grimoires...")
 
-    gl_token = _resolve_token(host, "GITLAB_TOKEN", explicit_token, log)
-    entries = try_gitlab_discovery(host, scope, gl_token, log)
-    if entries:
-        log.ok(f"Discovered {len(entries)} grimoire(s) via GitLab API")
-        return entries
+    if _is_github_host(host):
+        gh_token = _resolve_token(host, "GITHUB_TOKEN", explicit_token, log)
+        entries = try_github_discovery(host, scope, gh_token, log)
+        if entries:
+            log.ok(f"Discovered {len(entries)} grimoire(s) via GitHub API")
+            return entries
+    elif _is_gitlab_host(host):
+        gl_token = _resolve_token(host, "GITLAB_TOKEN", explicit_token, log)
+        entries = try_gitlab_discovery(host, scope, gl_token, log)
+        if entries:
+            log.ok(f"Discovered {len(entries)} grimoire(s) via GitLab API")
+            return entries
+    else:
+        gl_token = _resolve_token(host, "GITLAB_TOKEN", explicit_token, log)
+        entries = try_gitlab_discovery(host, scope, gl_token, log)
+        if entries:
+            log.ok(f"Discovered {len(entries)} grimoire(s) via GitLab API")
+            return entries
 
-    if scope:
         gh_token = _resolve_token(host, "GITHUB_TOKEN", explicit_token, log)
         entries = try_github_discovery(host, scope, gh_token, log)
         if entries:
@@ -526,7 +650,7 @@ def run_cli(args):
 
     # Install Arcana
     print()
-    arcana_url = detect_arcana_url()
+    arcana_url = resolve_arcana_url(args)
     if not install_arcana(arcana_url, log):
         sys.exit(1)
 
@@ -659,81 +783,63 @@ def run_cli(args):
 # ---------------------------------------------------------------------------
 
 
-def _ensure_customtkinter():
-    """Import customtkinter, auto-installing via pip if missing."""
+def _ensure_dearpygui():
+    """Import Dear PyGui, auto-installing via pip if missing."""
+    dep_dir = Path(
+        os.environ.get(
+            "GRIMOIRE_SUMMON_PY_DEPS",
+            Path.home() / ".cache" / "grimoire" / "summon-python",
+        )
+    )
+    if dep_dir.is_dir() and str(dep_dir) not in sys.path:
+        sys.path.insert(0, str(dep_dir))
+
     try:
-        import customtkinter
-        return customtkinter
+        import dearpygui.dearpygui as dpg
+        return dpg
     except ImportError:
         pass
+
+    dep_dir.mkdir(parents=True, exist_ok=True)
     for pip_args in (
-        [sys.executable, "-m", "pip", "install", "--user", "customtkinter"],
-        [sys.executable, "-m", "pip", "install", "customtkinter"],
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--upgrade",
+            "--target",
+            str(dep_dir),
+            "dearpygui",
+        ],
     ):
         result = subprocess.run(pip_args, capture_output=True, text=True)
         if result.returncode == 0:
             break
     else:
         raise ImportError(
-            "Failed to install customtkinter. Install manually: pip install customtkinter"
+            "Failed to install Dear PyGui. Install pip, or run in CLI mode with --cli."
         )
-    import customtkinter
-    return customtkinter
 
-
-# Grimoire color palette
-_COLORS = {
-    "bg": "#1a1b2e",
-    "surface": "#242540",
-    "surface2": "#2d2f4e",
-    "border": "#3a3c5e",
-    "primary": "#7c5cbf",
-    "primary_hover": "#9370db",
-    "text": "#e0e0e8",
-    "text_dim": "#8888a0",
-    "entry_bg": "#1e1f34",
-    "log_bg": "#141524",
-    "ok": "#66bb6a",
-    "warn": "#ffa726",
-    "err": "#ef5350",
-    "info": "#64b5f6",
-}
+    if str(dep_dir) not in sys.path:
+        sys.path.insert(0, str(dep_dir))
+    import dearpygui.dearpygui as dpg
+    return dpg
 
 
 def run_gui(args):
-    """CustomTkinter GUI summoning flow."""
-    ctk = _ensure_customtkinter()
-    from tkinter import messagebox
-
-    C = _COLORS
-    log_widget = None
-
-    ctk.set_appearance_mode("dark")
-
-    root = ctk.CTk()
-    root.title("Grimoire — Summoning Rite")
-    root.geometry("700x820")
-    root.minsize(560, 680)
-    root.configure(fg_color=C["bg"])
+    """Dear PyGui summoning flow."""
+    dpg = _ensure_dearpygui()
 
     class GUILogger:
-        TAG_MAP = {
-            "OK": ("ok", C["ok"]),
-            "INFO": ("info", C["info"]),
-            "WARN": ("warn", C["warn"]),
-            "ERROR": ("err", C["err"]),
-        }
+        def __init__(self):
+            self.lines = []
 
         def _append(self, tag, msg):
-            if not log_widget:
-                return
-            log_widget.configure(state="normal")
-            _, color = self.TAG_MAP.get(tag, ("info", C["info"]))
-            log_widget.insert("end", f"  [{tag}]  {msg}\n", tag)
-            log_widget.tag_config(tag, foreground=color)
-            log_widget.see("end")
-            log_widget.configure(state="disabled")
-            root.update_idletasks()
+            line = f"  [{tag}]  {msg}"
+            self.lines.append(line)
+            if dpg.does_item_exist("log_text"):
+                dpg.set_value("log_text", "\n".join(self.lines))
 
         def info(self, msg):
             self._append("INFO", msg)
@@ -748,278 +854,221 @@ def run_gui(args):
             self._append("ERROR", msg)
 
     log = GUILogger()
-
-    # --- Main container (grid layout for stable resizing) ---
-    main = ctk.CTkFrame(root, fg_color=C["bg"])
-    main.pack(fill="both", expand=True, padx=24, pady=20)
-    main.columnconfigure(0, weight=1)
-
-    row = 0
-
-    # --- Header ---
-    ctk.CTkLabel(
-        main, text="Grimoire", font=("Segoe UI", 24, "bold"),
-        text_color=C["text"], anchor="w",
-    ).grid(row=row, column=0, sticky="ew"); row += 1
-
-    ctk.CTkLabel(
-        main, text="Summoning Rite", font=("Segoe UI", 13),
-        text_color=C["text_dim"], anchor="w",
-    ).grid(row=row, column=0, sticky="ew", pady=(0, 12)); row += 1
-
-    # Separator
-    ctk.CTkFrame(main, height=2, fg_color=C["border"]).grid(
-        row=row, column=0, sticky="ew", pady=(0, 16)); row += 1
-
-    # --- Scope section ---
-    ctk.CTkLabel(
-        main, text="Grimoire Location", font=("Segoe UI", 13, "bold"),
-        text_color=C["text"], anchor="w",
-    ).grid(row=row, column=0, sticky="ew", pady=(0, 6)); row += 1
-
-    scope_row = ctk.CTkFrame(main, fg_color="transparent")
-    scope_row.grid(row=row, column=0, sticky="ew", pady=(0, 4)); row += 1
-
-    scope_var = ctk.StringVar(value=args.scope or os.environ.get("GRIMOIRE_SCOPE", ""))
-    scope_entry = ctk.CTkEntry(
-        scope_row, textvariable=scope_var, font=("Consolas", 13),
-        fg_color=C["entry_bg"], border_color=C["border"], text_color=C["text"],
-        placeholder_text="https://github.com/my-org", placeholder_text_color=C["text_dim"],
-        height=38, corner_radius=6,
-    )
-    scope_entry.pack(side="left", fill="x", expand=True, padx=(0, 10))
-
-    discover_btn = ctk.CTkButton(
-        scope_row, text="Discover", width=110, height=38, corner_radius=6,
-        fg_color=C["primary"], hover_color=C["primary_hover"],
-        font=("Segoe UI", 13, "bold"),
-        command=lambda: on_discover(),
-    )
-    discover_btn.pack(side="right")
-
-    ctk.CTkLabel(
-        main,
-        text="e.g.  https://github.com/my-org  |  https://gitlab.company.com/team",
-        font=("Segoe UI", 11), text_color=C["text_dim"], anchor="w",
-    ).grid(row=row, column=0, sticky="ew", pady=(2, 10)); row += 1
-
-    # --- Token field ---
-    token_row = ctk.CTkFrame(main, fg_color="transparent")
-    token_row.grid(row=row, column=0, sticky="ew", pady=(0, 14)); row += 1
-
-    ctk.CTkLabel(
-        token_row, text="Token", font=("Segoe UI", 12),
-        text_color=C["text_dim"], anchor="w", width=50,
-    ).pack(side="left", padx=(0, 8))
-
-    token_var = ctk.StringVar()
-    token_entry = ctk.CTkEntry(
-        token_row, textvariable=token_var, font=("Consolas", 12), show="*",
-        fg_color=C["entry_bg"], border_color=C["border"], text_color=C["text"],
-        placeholder_text="Optional — auto-detects from git credentials / env vars",
-        placeholder_text_color=C["text_dim"],
-        height=34, corner_radius=6,
-    )
-    token_entry.pack(side="left", fill="x", expand=True)
-
-    # --- Grimoire selection (expandable) ---
-    ctk.CTkLabel(
-        main, text="Available Grimoires", font=("Segoe UI", 13, "bold"),
-        text_color=C["text"], anchor="w",
-    ).grid(row=row, column=0, sticky="ew", pady=(0, 6)); row += 1
-
-    grimoire_row = row; row += 1
-    main.rowconfigure(grimoire_row, weight=3, minsize=80)
-
-    grimoire_frame = ctk.CTkScrollableFrame(
-        main, fg_color=C["surface"], border_color=C["border"],
-        border_width=1, corner_radius=8,
-        scrollbar_button_color=C["surface2"],
-        scrollbar_button_hover_color=C["border"],
-    )
-    grimoire_frame.grid(row=grimoire_row, column=0, sticky="nsew", pady=(0, 14))
-
-    placeholder = ctk.CTkLabel(
-        grimoire_frame,
-        text="Enter a scope URL and press Discover to search for grimoires.",
-        font=("Segoe UI", 12), text_color=C["text_dim"],
-    )
-    placeholder.pack(pady=30, padx=16)
-
-    checkbox_vars = {}
     catalog = {"grimoires": {}}
+    checkbox_tags = {}
+    scope_default = args.scope or os.environ.get("GRIMOIRE_SCOPE", "")
+
+    def show_modal(title, message, close_app=False):
+        tag = "message_modal"
+        if dpg.does_item_exist(tag):
+            dpg.delete_item(tag)
+
+        def close_modal(*_):
+            if dpg.does_item_exist(tag):
+                dpg.delete_item(tag)
+            if close_app:
+                dpg.stop_dearpygui()
+
+        with dpg.window(
+            label=title,
+            tag=tag,
+            modal=True,
+            no_resize=True,
+            no_collapse=True,
+            width=420,
+            pos=(150, 240),
+        ):
+            dpg.add_text(message, wrap=380)
+            dpg.add_spacer(height=10)
+            dpg.add_button(label="OK", width=90, callback=close_modal)
+
+    def set_busy(is_busy):
+        for tag in ("discover_btn", "summon_btn", "cancel_btn"):
+            if dpg.does_item_exist(tag):
+                dpg.configure_item(tag, enabled=not is_busy)
 
     def populate_grimoires(entries):
-        nonlocal catalog
-        for widget in grimoire_frame.winfo_children():
-            widget.destroy()
+        if dpg.does_item_exist("grimoire_list"):
+            dpg.delete_item("grimoire_list", children_only=True)
 
-        checkbox_vars.clear()
+        checkbox_tags.clear()
         catalog["grimoires"].update(entries)
 
         if not catalog["grimoires"]:
-            ctk.CTkLabel(
-                grimoire_frame,
-                text="No grimoires found. Check your scope URL and authentication tokens.",
-                font=("Segoe UI", 12), text_color=C["text_dim"],
-            ).pack(pady=30, padx=16)
+            dpg.add_text(
+                "No grimoires found. Check your scope URL and authentication tokens.",
+                parent="grimoire_list",
+                wrap=620,
+                color=(136, 136, 160),
+            )
             return
 
         for key in sorted(catalog["grimoires"]):
             entry = catalog["grimoires"][key]
-            var = ctk.BooleanVar(value=True)
-            checkbox_vars[key] = var
             name = entry.get("name", key)
             desc = entry.get("description", "")
+            tag = f"grimoire::{key}"
+            checkbox_tags[key] = tag
+            label = name if not desc else f"{name} - {desc}"
+            dpg.add_checkbox(label=label, default_value=True, tag=tag, parent="grimoire_list")
 
-            row_f = ctk.CTkFrame(grimoire_frame, fg_color="transparent")
-            row_f.pack(fill="x", padx=6, pady=4)
+    def on_discover(*_):
+        set_busy(True)
+        try:
+            scope = dpg.get_value("scope_input").strip()
+            token = dpg.get_value("token_input").strip()
+            static = load_static_catalog()
+            catalog["grimoires"] = dict(static.get("grimoires", {}))
 
-            ctk.CTkCheckBox(
-                row_f, variable=var, text="",
-                width=24, height=24, corner_radius=4,
-                fg_color=C["primary"], hover_color=C["primary_hover"],
-                border_color=C["border"], checkmark_color="#ffffff",
-            ).pack(side="left", padx=(4, 10))
+            if scope:
+                discovered = discover_grimoires(scope, log, explicit_token=token)
+                for k, v in discovered.items():
+                    if k not in catalog["grimoires"]:
+                        catalog["grimoires"][k] = v
+            else:
+                log.info("No scope URL — using static catalog only")
 
-            ctk.CTkLabel(
-                row_f, text=name, font=("Segoe UI", 13, "bold"),
-                text_color=C["text"], anchor="w",
-            ).pack(side="left")
-            ctk.CTkLabel(
-                row_f, text=f"  —  {desc}", font=("Segoe UI", 12),
-                text_color=C["text_dim"], anchor="w",
-            ).pack(side="left", fill="x", expand=True)
+            populate_grimoires(catalog["grimoires"])
+        finally:
+            set_busy(False)
 
-    def on_discover():
-        scope = scope_var.get().strip()
-        token = token_var.get().strip()
-        static = load_static_catalog()
-        catalog["grimoires"] = dict(static.get("grimoires", {}))
-
-        if scope:
-            discovered = discover_grimoires(scope, log, explicit_token=token)
-            for k, v in discovered.items():
-                if k not in catalog["grimoires"]:
-                    catalog["grimoires"][k] = v
-        else:
-            log.info("No scope URL — using static catalog only")
-
-        populate_grimoires(catalog["grimoires"])
-
-    # --- Log area (expandable, but less than grimoire list) ---
-    ctk.CTkLabel(
-        main, text="Log", font=("Segoe UI", 13, "bold"),
-        text_color=C["text"], anchor="w",
-    ).grid(row=row, column=0, sticky="ew", pady=(0, 6)); row += 1
-
-    log_row = row; row += 1
-    main.rowconfigure(log_row, weight=1, minsize=100)
-
-    log_widget = ctk.CTkTextbox(
-        main, corner_radius=8,
-        fg_color=C["log_bg"], border_color=C["border"], border_width=1,
-        text_color=C["text_dim"], font=("Consolas", 12),
-        state="disabled", wrap="word",
-        scrollbar_button_color=C["surface2"],
-        scrollbar_button_hover_color=C["border"],
-    )
-    log_widget.grid(row=log_row, column=0, sticky="nsew", pady=(0, 18))
-
-    # --- Keyboard shortcuts ---
-    def _select_all_entry(event):
-        event.widget.select_range(0, "end")
-        event.widget.icursor("end")
-        return "break"
-
-    def _select_all_textbox(event):
-        event.widget.tag_add("sel", "1.0", "end")
-        return "break"
-
-    scope_entry.bind("<Control-a>", _select_all_entry)
-    scope_entry.bind("<Return>", lambda _: on_discover())
-    token_entry.bind("<Control-a>", _select_all_entry)
-    token_entry.bind("<Return>", lambda _: on_discover())
-    log_widget.bind("<Control-a>", _select_all_textbox)
-
-    # --- Bottom buttons (fixed height, never shrinks) ---
-    btn_row = ctk.CTkFrame(main, fg_color="transparent", height=48)
-    btn_row.grid(row=row, column=0, sticky="ew"); row += 1
-
-    def on_summon():
-        selected = [k for k, v in checkbox_vars.items() if v.get()]
+    def on_summon(*_):
+        selected = [key for key, tag in checkbox_tags.items() if dpg.get_value(tag)]
         if not selected:
-            messagebox.showwarning("No Selection", "Please select at least one grimoire.")
+            show_modal("No Selection", "Please select at least one grimoire.")
             return
 
-        summon_btn.configure(state="disabled")
-        cancel_btn.configure(state="disabled")
-        discover_btn.configure(state="disabled")
-        root.update_idletasks()
+        set_busy(True)
+        try:
+            if not check_git(log):
+                show_modal("Error", "git is not installed.", close_app=True)
+                return
 
-        if not check_git(log):
-            messagebox.showerror("Error", "git is not installed.")
-            root.destroy()
-            return
+            GRIMOIRE_HOME.mkdir(parents=True, exist_ok=True)
 
-        GRIMOIRE_HOME.mkdir(parents=True, exist_ok=True)
+            arcana_url = resolve_arcana_url(args)
+            if not install_arcana(arcana_url, log):
+                show_modal("Error", "Failed to install Arcana.", close_app=True)
+                return
 
-        arcana_url = detect_arcana_url()
-        if not install_arcana(arcana_url, log):
-            messagebox.showerror("Error", "Failed to install Arcana.")
-            root.destroy()
-            return
+            log.info("Installing grimoires...")
+            installed = []
+            for key in selected:
+                entry = catalog["grimoires"][key]
+                if install_grimoire(key, entry, log):
+                    installed.append(key)
 
-        log.info("Installing grimoires...")
-        installed = []
-        for key in selected:
-            entry = catalog["grimoires"][key]
-            if install_grimoire(key, entry, log):
-                installed.append(key)
+            if not installed:
+                log.err("No grimoires were installed")
+                show_modal("Error", "No grimoires were installed.")
+                return
 
-        if not installed:
-            log.err("No grimoires were installed")
-            messagebox.showerror("Error", "No grimoires were installed.")
-            summon_btn.configure(state="normal")
-            cancel_btn.configure(state="normal")
-            discover_btn.configure(state="normal")
-            return
+            update_local_catalog(installed, catalog, log)
+            inject_claude_md(log)
+            register_skills(log)
 
-        update_local_catalog(installed, catalog, log)
-        inject_claude_md(log)
-        register_skills(log)
+            log.ok("Summoning complete!")
+            show_modal(
+                "Summoning Complete",
+                f"Installed {len(installed)} grimoire(s).\n\n"
+                "Next steps:\n"
+                "1. Open a new Claude Code session\n"
+                "2. Try: /grm-help",
+                close_app=True,
+            )
+        finally:
+            set_busy(False)
 
-        log.ok("Summoning complete!")
-        messagebox.showinfo(
-            "Summoning Complete",
-            f"Installed {len(installed)} grimoire(s).\n\n"
-            "Next steps:\n"
-            "1. Open a new Claude Code session\n"
-            "2. Try: /grm-help",
-        )
-        root.destroy()
+    dpg.create_context()
+    try:
+        with dpg.theme() as grimoire_theme:
+            with dpg.theme_component(dpg.mvAll):
+                dpg.add_theme_color(dpg.mvThemeCol_WindowBg, (26, 27, 46), category=dpg.mvThemeCat_Core)
+                dpg.add_theme_color(dpg.mvThemeCol_ChildBg, (36, 37, 64), category=dpg.mvThemeCat_Core)
+                dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (30, 31, 52), category=dpg.mvThemeCat_Core)
+                dpg.add_theme_color(dpg.mvThemeCol_Button, (124, 92, 191), category=dpg.mvThemeCat_Core)
+                dpg.add_theme_color(dpg.mvThemeCol_ButtonHovered, (147, 112, 219), category=dpg.mvThemeCat_Core)
+                dpg.add_theme_color(dpg.mvThemeCol_ButtonActive, (104, 76, 165), category=dpg.mvThemeCat_Core)
+                dpg.add_theme_color(dpg.mvThemeCol_Text, (224, 224, 232), category=dpg.mvThemeCat_Core)
+                dpg.add_theme_color(dpg.mvThemeCol_TextDisabled, (136, 136, 160), category=dpg.mvThemeCat_Core)
+                dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 6, category=dpg.mvThemeCat_Core)
+                dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 20, 20, category=dpg.mvThemeCat_Core)
+                dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing, 10, 8, category=dpg.mvThemeCat_Core)
 
-    cancel_btn = ctk.CTkButton(
-        btn_row, text="Cancel", width=120, height=42, corner_radius=6,
-        fg_color=C["surface2"], hover_color=C["border"],
-        text_color=C["text"], font=("Segoe UI", 13),
-        command=root.destroy,
-    )
-    cancel_btn.pack(side="right", padx=(12, 0))
+        dpg.bind_theme(grimoire_theme)
 
-    summon_btn = ctk.CTkButton(
-        btn_row, text="Summon", width=140, height=42, corner_radius=6,
-        fg_color=C["primary"], hover_color=C["primary_hover"],
-        font=("Segoe UI", 13, "bold"),
-        command=on_summon,
-    )
-    summon_btn.pack(side="right")
+        with dpg.window(tag="main_window", label="Grimoire", no_title_bar=True):
+            dpg.add_text("Grimoire", color=(224, 224, 232))
+            dpg.add_text("Summoning Rite", color=(136, 136, 160))
+            dpg.add_separator()
+            dpg.add_spacer(height=8)
 
-    if scope_var.get():
-        root.after(100, on_discover)
+            dpg.add_text("Grimoire Location")
+            with dpg.group(horizontal=True):
+                dpg.add_input_text(
+                    tag="scope_input",
+                    default_value=scope_default,
+                    hint="https://github.com/my-org",
+                    width=-120,
+                    on_enter=True,
+                    callback=on_discover,
+                )
+                dpg.add_button(tag="discover_btn", label="Discover", width=100, callback=on_discover)
+            dpg.add_text(
+                "e.g. https://github.com/my-org | https://gitlab.company.com/team",
+                color=(136, 136, 160),
+            )
 
-    signal.signal(signal.SIGINT, lambda *_: root.destroy())
-    root.mainloop()
+            dpg.add_text("Token", color=(136, 136, 160))
+            dpg.add_input_text(
+                tag="token_input",
+                password=True,
+                hint="Optional - auto-detects from git credentials / env vars",
+                width=-1,
+                on_enter=True,
+                callback=on_discover,
+            )
+
+            dpg.add_spacer(height=8)
+            dpg.add_text("Available Grimoires")
+            with dpg.child_window(tag="grimoire_list", height=260, border=True):
+                dpg.add_text(
+                    "Enter a scope URL and press Discover to search for grimoires.",
+                    color=(136, 136, 160),
+                    wrap=620,
+                )
+
+            dpg.add_text("Log")
+            dpg.add_input_text(
+                tag="log_text",
+                multiline=True,
+                readonly=True,
+                height=170,
+                width=-1,
+            )
+
+            dpg.add_spacer(height=8)
+            with dpg.group(horizontal=True):
+                dpg.add_button(tag="summon_btn", label="Summon", width=130, callback=on_summon)
+                dpg.add_button(
+                    tag="cancel_btn",
+                    label="Cancel",
+                    width=110,
+                    callback=lambda *_: dpg.stop_dearpygui(),
+                )
+
+        dpg.create_viewport(title="Grimoire - Summoning Rite", width=700, height=820, min_width=560, min_height=680)
+        dpg.setup_dearpygui()
+        dpg.set_primary_window("main_window", True)
+        dpg.show_viewport()
+
+        if scope_default:
+            on_discover()
+
+        signal.signal(signal.SIGINT, lambda *_: dpg.stop_dearpygui())
+        dpg.start_dearpygui()
+    finally:
+        dpg.destroy_context()
 
 
 # ---------------------------------------------------------------------------
@@ -1030,6 +1079,10 @@ def run_gui(args):
 def main():
     parser = argparse.ArgumentParser(
         description="Grimoire Summoning Rite — install and configure grimoires"
+    )
+    parser.add_argument(
+        "--arcana-url",
+        help="URL of the Arcana git repository to install (defaults to public GitHub Arcana)",
     )
     parser.add_argument(
         "--scope",
@@ -1056,21 +1109,11 @@ def main():
             if not has_display:
                 gui_skip_reason = "no display server detected"
             else:
-                # tkinter needs X11 — on Wayland, ensure DISPLAY points to XWayland
                 if not os.environ.get("DISPLAY") and (
                     os.environ.get("WAYLAND_DISPLAY") or session_type == "wayland"
                 ):
                     os.environ["DISPLAY"] = ":0"
-                try:
-                    import tkinter
-                    tkinter.Tk().destroy()
-                    use_gui = True
-                except ImportError:
-                    gui_skip_reason = (
-                        "tkinter is not installed — install python3-tk (apt) / python3-tkinter (dnf)"
-                    )
-                except Exception:
-                    gui_skip_reason = "tkinter cannot connect to display"
+                use_gui = True
 
     if use_gui:
         try:

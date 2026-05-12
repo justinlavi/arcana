@@ -5,10 +5,10 @@ REM
 REM Checks for Python 3 and launches the cross-platform summoning script.
 REM
 REM Entry point (CMD):
-REM   if exist %TEMP%\grimoire-summon rmdir /s /q %TEMP%\grimoire-summon && git clone --depth 1 <your-arcana-url> %TEMP%\grimoire-summon && %TEMP%\grimoire-summon\rites\summon.bat
+REM   powershell -NoProfile -ExecutionPolicy Bypass -Command "$d=Join-Path $env:TEMP 'grimoire-summon'; New-Item -ItemType Directory -Force (Join-Path $d 'rites') | Out-Null; Invoke-WebRequest https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.bat -OutFile (Join-Path $d 'rites\summon.bat'); Invoke-WebRequest https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.py -OutFile (Join-Path $d 'rites\summon.py'); & (Join-Path $d 'rites\summon.bat')"
 REM
 REM Entry point (PowerShell):
-REM   Remove-Item -Recurse -Force "$env:TEMP\grimoire-summon" -ErrorAction SilentlyContinue; git clone --depth 1 <your-arcana-url> "$env:TEMP\grimoire-summon"; & "$env:TEMP\grimoire-summon\rites\summon.bat"
+REM   $d=Join-Path $env:TEMP 'grimoire-summon'; New-Item -ItemType Directory -Force (Join-Path $d 'rites') | Out-Null; Invoke-WebRequest https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.bat -OutFile (Join-Path $d 'rites\summon.bat'); Invoke-WebRequest https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.py -OutFile (Join-Path $d 'rites\summon.py'); & (Join-Path $d 'rites\summon.bat')
 
 SET SCRIPT_DIR=%~dp0
 

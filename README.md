@@ -54,10 +54,16 @@ Every chapter you add is one less thing AI will guess about. The more comprehens
 One command summons Arcana and any grimoires in its catalog:
 
 ```bash
-git clone --depth 1 <your-arcana-url> /tmp/grimoire-summon && bash /tmp/grimoire-summon/rites/summon.sh
+curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
 ```
 
-Replace `<your-arcana-url>` with wherever you host Arcana (GitHub, GitLab, internal server, etc.). The script detects its own origin and uses that for installation.
+This downloads the public summoning rite from GitHub, installs Arcana to `~/grimoire/arcana/`, and then uses the interactive flow to discover or select grimoires.
+
+For forks or private mirrors, pass the Arcana repository URL explicitly:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_ARCANA_URL=https://github.com/your-org/arcana.git bash
+```
 
 This clones Arcana and selected grimoires to `~/grimoire/`, sets up the local catalog, registers skills, and configures CLAUDE.md automatically.
 

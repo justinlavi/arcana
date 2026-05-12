@@ -9,13 +9,19 @@ Configure AI agents to use Grimoire via a minimal CLAUDE.md entry and a local ca
 One command sets up everything — installs Arcana, summons grimoires, creates the local catalog, registers skills, and configures CLAUDE.md:
 
 ```bash
-rm -rf /tmp/grimoire-summon && git clone --depth 1 <your-arcana-url> /tmp/grimoire-summon && bash /tmp/grimoire-summon/rites/summon.sh
+curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
 ```
 
-Replace `<your-arcana-url>` with wherever you host Arcana. The `rm -rf` ensures any stale copy from a previous run is cleaned up first. The script detects its own origin automatically.
+For forks or private mirrors, pass the Arcana repository URL explicitly:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_ARCANA_URL=https://github.com/your-org/arcana.git bash
+```
+
+The script installs from the public Arcana GitHub repository by default. When run from a cloned Arcana checkout, it still detects the checkout's git origin automatically.
 
 The summoning rite:
-1. Checks dependencies (`git`, `jq`; `curl` optional for discovery)
+1. Checks dependencies (`git`, Python 3, and Dear PyGui for app mode)
 2. Installs Arcana to `~/grimoire/arcana/` (clone or pull)
 3. Discovers grimoires via git host API (GitLab/GitHub), falls back to static catalog
 4. Presents an interactive menu — pick which grimoires to install
@@ -26,11 +32,17 @@ The summoning rite:
 
 After summoning, open a new Claude Code session and try `/grm-help`.
 
+Dear PyGui is installed into a Grimoire-managed Python dependency cache for app mode, not into the Arcana repository. On Arch-based systems, the script may install `python-pip` with `pacman` first if the system Python does not include pip.
+
 ### Dynamic Grimoire Discovery
 
 The summoning rite can discover grimoires by querying the git host API. This removes the need to maintain a static `catalog.json` — grimoires are found dynamically based on naming convention (`*-grimoire`).
 
 Arcana and grimoires don't need to live in the same place. Arcana might be cloned from a public GitHub repo, while your grimoires are in a private company GitLab or a different GitHub org. The script asks where to look.
+
+Discovery supports two URL shapes:
+- Direct repository URLs, such as `https://github.com/you/japan`, are trusted explicitly and do not need a `-grimoire` slug.
+- Namespace URLs, such as `https://github.com/you` or `https://gitlab.company.com/team`, scan available repositories/projects and select likely grimoires by `-grimoire` naming, `grimoire` topic/tag, or description metadata.
 
 **Providing a scope** — tell the script where your grimoires live:
 
@@ -43,7 +55,7 @@ export GRIMOIRE_SCOPE="https://gitlab.company.com/my-team"
 ./rites/summon.sh
 
 # Via the one-liner
-rm -rf /tmp/grimoire-summon && git clone --depth 1 <your-arcana-url> /tmp/grimoire-summon && bash /tmp/grimoire-summon/rites/summon.sh --scope https://github.com/my-org
+curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash -s -- --scope https://github.com/my-org
 ```
 
 If no scope is provided, the script prompts interactively:
@@ -74,11 +86,12 @@ If no scope is provided, the script prompts interactively:
 
 Example with a GitLab token:
 ```bash
-export GITLAB_TOKEN="glpat-xxxxxxxxxxxx"
+read -rs -p "GitLab token: " GITLAB_TOKEN
+export GITLAB_TOKEN
 ./rites/summon.sh --scope https://gitlab.company.com/my-team
 ```
 
-**Fallback**: If `curl` is not installed, the user skips the prompt, or the API is unreachable, the script falls back to the static `catalog.json`.
+**Fallback**: If the user skips the prompt or the API is unreachable, the script falls back to the static `catalog.json`.
 
 ---
 
