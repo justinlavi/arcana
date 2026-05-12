@@ -49,7 +49,7 @@ Read each rite top-to-bottom and judge:
 
 **Idempotency**
 - Re-running on an unchanged tree produces identical output and exit code
-- Mutating rites (`sync_catalog.py`, `sync_docs.py`, `register_skills.py`) support a dry-run / `--apply` split or are obviously read-only when not given a flag
+- Mutating rites (`sync_library.py`, `sync_docs.py`, `register_skills.py`) support a dry-run / `--apply` split or are obviously read-only when not given a flag
 - No accumulating side effects (appending to logs without rotation, etc.)
 
 **Portability**

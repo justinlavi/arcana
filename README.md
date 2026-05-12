@@ -43,7 +43,7 @@ Every chapter you add is one less thing AI will guess about. The more comprehens
 ## Architecture
 
 ```
-~/grimoire/
+~/grimoires/
 ├── arcana/                      # The engine (standalone)
 │   ├── invocations/             # AI procedures (markdown guides)
 │   ├── formulae/                # Templates / blueprints
@@ -58,10 +58,10 @@ Every chapter you add is one less thing AI will guess about. The more comprehens
 │   ├── skills/                  # Domain-specific skills
 │   └── chapters/
 │
-└── catalog.json                 # Local catalog (maps grimoire key → local_path)
+└── library.json                 # Local library (maps grimoire key → local_path)
 ```
 
-Arcana lives once at `~/grimoire/arcana/`. Domain grimoires are pure content — no engine code, no submodules. Every domain references the single Arcana installation via the `GRIMOIRE_ARCANA` key. Each grimoire's identity (name + namespace) lives in its own [`grimoire.json` manifest](docs/reference.md#grimoire-manifest); the catalog is a pure registry.
+Arcana lives once at `~/grimoires/arcana/`. Domain grimoires are pure content — no engine code, no submodules. Every domain references the single Arcana installation via the `GRIMOIRE_ARCANA` key. Each grimoire's identity (name + namespace) lives in its own [`grimoire.json` manifest](docs/reference.md#grimoire-manifest); the library is a pure registry.
 
 ---
 
@@ -74,7 +74,7 @@ Arcana lives once at `~/grimoire/arcana/`. Domain grimoires are pure content —
 | Configure an agent (Claude / Codex / Copilot) | [docs/agent_configuration.md](docs/agent_configuration.md) |
 | Browse the full skill catalog | [docs/skills.md](docs/skills.md) |
 | Understand the routing model | [docs/operating_model.md](docs/operating_model.md) |
-| Look up terminology / catalog / manifest schemas | [docs/reference.md](docs/reference.md) |
+| Look up terminology / library / manifest schemas | [docs/reference.md](docs/reference.md) |
 | Understand scripts vs AI | [docs/script_vs_ai.md](docs/script_vs_ai.md) |
 | Maintain Arcana itself | [docs/governance.md](docs/governance.md), [docs/release.md](docs/release.md) |
 | Navigate everything | [INDEX.md](INDEX.md) |

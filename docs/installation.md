@@ -1,8 +1,8 @@
 # Grimoire Installation
 
-One command sets up everything — installs Arcana, summons grimoires, creates the local catalog, configures agent instruction files, and registers skills.
+One command sets up everything — installs Arcana, summons grimoires, creates the local library, configures agent instruction files, and registers skills.
 
-For per-agent configuration after install, see [agent_configuration.md](agent_configuration.md). For catalog and manifest schemas, see [reference.md](reference.md).
+For per-agent configuration after install, see [agent_configuration.md](agent_configuration.md). For library and manifest schemas, see [reference.md](reference.md).
 
 ---
 
@@ -29,11 +29,11 @@ When run from the public curl command, the summoning rite is release-first:
 
 The summoning rite:
 1. Checks runtime dependencies (`git`; Python 3 and Dear PyGui only if source fallback is needed)
-2. Installs Arcana to `~/grimoire/arcana/` (clone or pull)
-3. Discovers grimoires via git host API (GitLab/GitHub), falls back to static catalog
+2. Installs Arcana to `~/grimoires/arcana/` (clone or pull)
+3. Discovers grimoires via git host API (GitLab/GitHub), falls back to the static library
 4. Presents an interactive menu — pick which grimoires to install
-5. Clones or updates selected grimoires in `~/grimoire/`
-6. Creates/updates the local catalog at `~/grimoire/catalog.json`
+5. Clones or updates selected grimoires in `~/grimoires/`
+6. Creates/updates the local library at `~/grimoires/library.json`
 7. Injects the Grimoire routing block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
 8. Registers Grimoire skills to `~/.claude/skills/` and `~/.codex/skills/`
 
@@ -45,7 +45,7 @@ Dear PyGui is bundled into release binaries. In source fallback mode, it is inst
 
 ## Dynamic Grimoire Discovery
 
-The summoning rite can discover grimoires by querying the git host API. This removes the need to maintain a static `catalog.json` — grimoires are found dynamically based on naming convention (`*-grimoire`).
+The summoning rite can discover grimoires by querying the git host API. This removes the need to maintain a static `library.json` — grimoires are found dynamically based on naming convention (`*-grimoire`).
 
 Arcana and grimoires don't need to live in the same place. Arcana might be cloned from a public GitHub repo, while your grimoires are in a private company GitLab or a different GitHub org. The script asks where to look.
 
@@ -78,7 +78,7 @@ If no scope is provided, the script prompts interactively:
 ```
   Where are your grimoires hosted?
   Enter the URL of the group or org containing your grimoires.
-  Press Enter to skip and use the static catalog only.
+  Press Enter to skip and use the static library only.
 
   Examples:
     https://github.com/my-org
@@ -106,7 +106,7 @@ export GITLAB_TOKEN
 ./rites/summon.sh --scope https://gitlab.company.com/my-team
 ```
 
-**Fallback**: If the user skips the prompt or the API is unreachable, the script falls back to the static `catalog.json`.
+**Fallback**: If the user skips the prompt or the API is unreachable, the script falls back to the static `library.json`.
 
 ---
 
@@ -114,20 +114,20 @@ export GITLAB_TOKEN
 
 If you can't run the summoning rite (no network, restricted environment, etc.):
 
-1. Clone Arcana to `~/grimoire/arcana/`.
-2. Clone each domain grimoire to `~/grimoire/<grimoire-name>/`.
-3. Create `~/grimoire/catalog.json` with one entry per grimoire (see [reference.md](reference.md#local-catalog)).
+1. Clone Arcana to `~/grimoires/arcana/`.
+2. Clone each domain grimoire to `~/grimoires/<grimoire-name>/`.
+3. Create `~/grimoires/library.json` with one entry per grimoire (see [reference.md](reference.md#local-library)).
 4. Add the Grimoire instruction block to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` — the canonical block lives at [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md).
-5. Run `python3 ~/grimoire/arcana/rites/register_skills.py` to install skills into agent skill directories.
+5. Run `python3 ~/grimoires/arcana/rites/register_skills.py` to install skills into agent skill directories.
 
 ---
 
 ## Troubleshooting
 
 **Agent can't find a grimoire**
-- Check that the grimoire key exists in `~/grimoire/catalog.json`
+- Check that the grimoire key exists in `~/grimoires/library.json`
 - Verify `local_path` resolves correctly on the filesystem
-- Run `/grm-catalog-sync` to detect and reconcile drift
+- Run `/grm-library-sync` to detect and reconcile drift
 
 **Summoning fails to clone**
 - Ensure network access to your git host (VPN if required)

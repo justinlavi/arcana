@@ -14,7 +14,7 @@ You are displaying the Grimoire skill catalog — Arcana's skills plus every dom
 
 - **Arcana**: `{{ARCANA_PATH}}`
 - **Canonical Arcana skill catalog**: `{{ARCANA_PATH}}/docs/skills.md` (auto-generated from `skills/<slug>/SKILL.md`)
-- **Catalog of installed grimoires**: `~/grimoire/catalog.json`
+- **Grimoire library**: `~/grimoires/library.json`
 
 ## Invocation
 

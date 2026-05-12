@@ -39,9 +39,9 @@ from urllib.request import Request, urlopen
 # Constants
 # ---------------------------------------------------------------------------
 
-GRIMOIRE_HOME = Path.home() / "grimoire"
-ARCANA_DIR = GRIMOIRE_HOME / "arcana"
-LOCAL_CATALOG = GRIMOIRE_HOME / "catalog.json"
+GRIMOIRES_HOME = Path.home() / "grimoires"
+ARCANA_DIR = GRIMOIRES_HOME / "arcana"
+LOCAL_LIBRARY = GRIMOIRES_HOME / "library.json"
 CLAUDE_MD = Path.home() / ".claude" / "CLAUDE.md"
 CODEX_AGENTS_MD = Path.home() / ".codex" / "AGENTS.md"
 RITE_DIR = Path(__file__).resolve().parent
@@ -171,8 +171,8 @@ def _scope_parts(scope):
     return [part for part in scope.split("/") if part]
 
 
-def _catalog_key_from_repo_path(path):
-    """Use the repo slug as the local catalog key."""
+def _library_key_from_repo_path(path):
+    """Use the repo slug as the local library key."""
     parts = _scope_parts(path)
     return parts[-1] if parts else ""
 
@@ -239,8 +239,8 @@ def _metadata_marks_grimoire(name, description="", topics=None):
 
 
 def _github_entry(repo):
-    """Convert one GitHub repo API object to a catalog entry."""
-    name = repo.get("name") or _catalog_key_from_repo_path(repo.get("full_name", ""))
+    """Convert one GitHub repo API object to a library entry."""
+    name = repo.get("name") or _library_key_from_repo_path(repo.get("full_name", ""))
     return {
         "name": name,
         "description": repo.get("description") or "Domain grimoire",
@@ -249,8 +249,8 @@ def _github_entry(repo):
 
 
 def _gitlab_entry(project):
-    """Convert one GitLab project API object to a catalog entry."""
-    path = project.get("path") or _catalog_key_from_repo_path(project.get("path_with_namespace", ""))
+    """Convert one GitLab project API object to a library entry."""
+    path = project.get("path") or _library_key_from_repo_path(project.get("path_with_namespace", ""))
     return {
         "name": project.get("name", path),
         "description": project.get("description") or "Domain grimoire",
@@ -289,7 +289,7 @@ def _resolve_token(host, env_var, explicit_token, log):
 
 
 def try_gitlab_discovery(host, scope, token, log):
-    """Query GitLab API for grimoire repos. Returns dict of catalog entries."""
+    """Query GitLab API for grimoire repos. Returns dict of library entries."""
     auth_h = "PRIVATE-TOKEN" if token else None
     auth_v = token or None
 
@@ -299,7 +299,7 @@ def try_gitlab_discovery(host, scope, token, log):
         log.info(f"Trying GitLab project API: {project_url}")
         data, err = _api_get(project_url, token_header=auth_h, token_value=auth_v)
         if isinstance(data, dict) and data.get("http_url_to_repo"):
-            key = data.get("path") or _catalog_key_from_repo_path(scope)
+            key = data.get("path") or _library_key_from_repo_path(scope)
             log.ok(f"Using explicit GitLab project: {key}")
             return {key: _gitlab_entry(data)}
         if err and "404" not in err:
@@ -345,7 +345,7 @@ def try_gitlab_discovery(host, scope, token, log):
 
 
 def try_github_discovery(host, scope, token, log):
-    """Query GitHub API for grimoire repos. Returns dict of catalog entries."""
+    """Query GitHub API for grimoire repos. Returns dict of library entries."""
     if host == "github.com":
         api_base = "https://api.github.com"
     else:
@@ -407,7 +407,7 @@ def try_github_discovery(host, scope, token, log):
 
 
 def discover_grimoires(scope_url, log, explicit_token=""):
-    """Discover grimoires from a scope URL. Returns dict of catalog entries."""
+    """Discover grimoires from a scope URL. Returns dict of library entries."""
     host, scope = parse_scope_url(scope_url)
     if not host:
         log.warn("Could not parse host from URL")
@@ -493,15 +493,15 @@ def install_arcana(arcana_url, log):
     return True
 
 
-def load_static_catalog():
-    """Load the global catalog.json from Arcana. Returns dict."""
-    catalog_path = ARCANA_DIR / "catalog.json"
-    if not catalog_path.is_file():
-        catalog_path = REPO_ROOT / "catalog.json"
-    if not catalog_path.is_file():
+def load_static_library():
+    """Load the global library.json from Arcana. Returns dict."""
+    library_path = ARCANA_DIR / "library.json"
+    if not library_path.is_file():
+        library_path = REPO_ROOT / "library.json"
+    if not library_path.is_file():
         return {"grimoires": {}}
     try:
-        with open(catalog_path) as f:
+        with open(library_path) as f:
             return json.load(f)
     except (json.JSONDecodeError, OSError):
         return {"grimoires": {}}
@@ -511,7 +511,7 @@ def install_grimoire(key, entry, log):
     """Clone or update a single grimoire. Returns True on success."""
     name = entry.get("name", key)
     url = entry.get("online_path", "")
-    target = GRIMOIRE_HOME / key
+    target = GRIMOIRES_HOME / key
 
     if (target / ".git").is_dir():
         log.info(f"{name} already installed — pulling latest...")
@@ -536,13 +536,13 @@ def install_grimoire(key, entry, log):
             return False
 
 
-def update_local_catalog(installed_keys, catalog, log):
-    """Update ~/grimoire/catalog.json with installed grimoires."""
-    log.info("Updating local catalog...")
+def update_local_library(installed_keys, library, log):
+    """Update ~/grimoires/library.json with installed grimoires."""
+    log.info("Updating local library...")
 
-    if LOCAL_CATALOG.is_file():
+    if LOCAL_LIBRARY.is_file():
         try:
-            with open(LOCAL_CATALOG) as f:
+            with open(LOCAL_LIBRARY) as f:
                 local = json.load(f)
         except (json.JSONDecodeError, OSError):
             local = {"grimoires": {}}
@@ -550,18 +550,18 @@ def update_local_catalog(installed_keys, catalog, log):
         local = {"grimoires": {}}
 
     for key in installed_keys:
-        entry = catalog.get("grimoires", {}).get(key, {})
+        entry = library.get("grimoires", {}).get(key, {})
         local_entry = {
-            "local_path": f"$HOME/grimoire/{key}",
+            "local_path": f"$HOME/grimoires/{key}",
             "online_path": entry.get("online_path", ""),
         }
         local["grimoires"][key] = local_entry
 
-    with open(LOCAL_CATALOG, "w") as f:
+    with open(LOCAL_LIBRARY, "w") as f:
         json.dump(local, f, indent=2)
         f.write("\n")
 
-    log.ok(f"Local catalog updated: {LOCAL_CATALOG}")
+    log.ok(f"Local library updated: {LOCAL_LIBRARY}")
 
 
 def inject_agent_file(log, target_path, title):
@@ -644,8 +644,8 @@ def run_cli(args):
         sys.exit(1)
 
     # Create install directory
-    GRIMOIRE_HOME.mkdir(parents=True, exist_ok=True)
-    log.ok(f"Install directory: {GRIMOIRE_HOME}")
+    GRIMOIRES_HOME.mkdir(parents=True, exist_ok=True)
+    log.ok(f"Install directory: {GRIMOIRES_HOME}")
 
     # Install Arcana
     print()
@@ -663,7 +663,7 @@ def run_cli(args):
         print()
         print("  Where are your grimoires hosted?")
         print("  Enter the URL of the group or org containing your grimoires.")
-        print("  Press Enter to skip and use the static catalog only.")
+        print("  Press Enter to skip and use the static library only.")
         print()
         print("  Examples:")
         print("    https://github.com/my-org")
@@ -672,31 +672,31 @@ def run_cli(args):
         print()
         scope_url = input("  Grimoire location: ").strip()
 
-    # Build catalog: static + discovered
-    catalog = load_static_catalog()
+    # Build library: static + discovered
+    library = load_static_library()
 
     if scope_url:
         discovered = discover_grimoires(scope_url, log)
         for key, entry in discovered.items():
-            if key not in catalog["grimoires"]:
-                catalog["grimoires"][key] = entry
+            if key not in library["grimoires"]:
+                library["grimoires"][key] = entry
     else:
         log.info("Skipping discovery")
 
-    if not catalog["grimoires"]:
-        log.err("No grimoires found (catalog is empty and discovery did not find any)")
+    if not library["grimoires"]:
+        log.err("No grimoires found (library is empty and discovery did not find any)")
         sys.exit(1)
 
-    log.ok(f"Catalog loaded ({len(catalog['grimoires'])} grimoire(s) available)")
+    log.ok(f"Library loaded ({len(library['grimoires'])} grimoire(s) available)")
 
     # Display menu
     print()
     print("  Available Grimoires:")
     print("  --------------------")
 
-    keys = sorted(catalog["grimoires"].keys())
+    keys = sorted(library["grimoires"].keys())
     for i, key in enumerate(keys, 1):
-        entry = catalog["grimoires"][key]
+        entry = library["grimoires"][key]
         name = entry.get("name", key)
         desc = entry.get("description", "")
         print(f"    {i}) {name:<20s} - {desc}")
@@ -735,7 +735,7 @@ def run_cli(args):
 
     installed_keys = []
     for key in selected_keys:
-        entry = catalog["grimoires"][key]
+        entry = library["grimoires"][key]
         if install_grimoire(key, entry, log):
             installed_keys.append(key)
 
@@ -743,9 +743,9 @@ def run_cli(args):
         log.err("No grimoires were installed")
         sys.exit(1)
 
-    # Update local catalog
+    # Update local library
     print()
-    update_local_catalog(installed_keys, catalog, log)
+    update_local_library(installed_keys, library, log)
 
     # Inject agent instruction files
     print()
@@ -761,13 +761,13 @@ def run_cli(args):
     print("  Grimoire Summoning Complete")
     print("============================================")
     print()
-    print("  Arcana:  ~/grimoire/arcana/")
+    print("  Arcana:  ~/grimoires/arcana/")
     print()
     print("  Installed grimoires:")
     for key in installed_keys:
-        print(f"    - ~/grimoire/{key}/")
+        print(f"    - ~/grimoires/{key}/")
     print()
-    print(f"  Local catalog: {LOCAL_CATALOG}")
+    print(f"  Local library: {LOCAL_LIBRARY}")
     print(f"  CLAUDE.md:     {CLAUDE_MD}")
     print(f"  AGENTS.md:     {CODEX_AGENTS_MD}")
     print("  Skills:        ~/.claude/skills/")
@@ -855,7 +855,7 @@ def run_gui(args):
             self._append("ERROR", msg)
 
     log = GUILogger()
-    catalog = {"grimoires": {}}
+    library = {"grimoires": {}}
     checkbox_tags = {}
     scope_default = args.scope or os.environ.get("GRIMOIRE_SCOPE", "")
 
@@ -893,9 +893,9 @@ def run_gui(args):
             dpg.delete_item("grimoire_list", children_only=True)
 
         checkbox_tags.clear()
-        catalog["grimoires"].update(entries)
+        library["grimoires"].update(entries)
 
-        if not catalog["grimoires"]:
+        if not library["grimoires"]:
             dpg.add_text(
                 "No grimoires found. Check your scope URL and authentication tokens.",
                 parent="grimoire_list",
@@ -904,8 +904,8 @@ def run_gui(args):
             )
             return
 
-        for key in sorted(catalog["grimoires"]):
-            entry = catalog["grimoires"][key]
+        for key in sorted(library["grimoires"]):
+            entry = library["grimoires"][key]
             name = entry.get("name", key)
             desc = entry.get("description", "")
             tag = f"grimoire::{key}"
@@ -918,18 +918,18 @@ def run_gui(args):
         try:
             scope = dpg.get_value("scope_input").strip()
             token = dpg.get_value("token_input").strip()
-            static = load_static_catalog()
-            catalog["grimoires"] = dict(static.get("grimoires", {}))
+            static = load_static_library()
+            library["grimoires"] = dict(static.get("grimoires", {}))
 
             if scope:
                 discovered = discover_grimoires(scope, log, explicit_token=token)
                 for k, v in discovered.items():
-                    if k not in catalog["grimoires"]:
-                        catalog["grimoires"][k] = v
+                    if k not in library["grimoires"]:
+                        library["grimoires"][k] = v
             else:
-                log.info("No scope URL — using static catalog only")
+                log.info("No scope URL — using static library only")
 
-            populate_grimoires(catalog["grimoires"])
+            populate_grimoires(library["grimoires"])
         finally:
             set_busy(False)
 
@@ -945,7 +945,7 @@ def run_gui(args):
                 show_modal("Error", "git is not installed.", close_app=True)
                 return
 
-            GRIMOIRE_HOME.mkdir(parents=True, exist_ok=True)
+            GRIMOIRES_HOME.mkdir(parents=True, exist_ok=True)
 
             arcana_url = resolve_arcana_url(args)
             if not install_arcana(arcana_url, log):
@@ -955,7 +955,7 @@ def run_gui(args):
             log.info("Installing grimoires...")
             installed = []
             for key in selected:
-                entry = catalog["grimoires"][key]
+                entry = library["grimoires"][key]
                 if install_grimoire(key, entry, log):
                     installed.append(key)
 
@@ -964,7 +964,7 @@ def run_gui(args):
                 show_modal("Error", "No grimoires were installed.")
                 return
 
-            update_local_catalog(installed, catalog, log)
+            update_local_library(installed, library, log)
             inject_agent_configs(log)
             register_skills(log)
 

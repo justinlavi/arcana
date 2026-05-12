@@ -35,7 +35,7 @@ When **creating knowledge** inside chapters:
 
 | Concept | Magical Term | Directory/File |
 |---------|--------------|----------------|
-| Universal foundation | **Arcana** | Standalone at `~/grimoire/arcana/`, referenced via `GRIMOIRE_ARCANA` |
+| Universal foundation | **Arcana** | Standalone at `~/grimoires/arcana/`, referenced via `GRIMOIRE_ARCANA` |
 | Domain knowledge base | **Grimoire** | domain grimoire repository root |
 | Grimoire identity | **Manifest** | `grimoire.json` at grimoire root (declares name, namespace, description) |
 | Knowledge category | **Chapter** | `chapters/` |
@@ -84,13 +84,13 @@ Domain skill folders provide the subcommand after the namespace root. For exampl
 
 ---
 
-## Catalogs
+## Libraries
 
-Grimoire uses two catalog files. The catalog is a **pure registry** — it records *where* grimoires live, nothing else. Each grimoire's identity (name, namespace, description) lives in its own [manifest](#grimoire-manifest).
+Grimoire uses two library files. The library is a **pure registry** — it records *where* grimoires live, nothing else. Each grimoire's identity (name, namespace, description) lives in its own [manifest](#grimoire-manifest).
 
-### Global catalog (Arcana repo)
+### Global library (Arcana repo)
 
-`catalog.json` at the Arcana repo root. Lists grimoires available for the summoning rite to install. Each deployment populates it with its own grimoires and URLs.
+`library.json` at the Arcana repo root. Lists grimoires available for the summoning rite to install. Each deployment populates it with its own grimoires and URLs.
 
 ```json
 {
@@ -109,15 +109,15 @@ Fields:
 - `description` — short description shown during selection.
 - `online_path` — git clone URL (any git-compatible host).
 
-### Local catalog (per-user)
+### Local library (per-user)
 
-`~/grimoire/catalog.json`, created by the summoning rite or `/grm-catalog-sync`. Lists grimoires the user has cloned and where they live on disk.
+`~/grimoires/library.json`, created by the summoning rite or `/grm-library-sync`. Lists grimoires the user has cloned and where they live on disk.
 
 ```json
 {
   "grimoires": {
     "olympus-grimoire": {
-      "local_path": "$HOME/grimoire/olympus-grimoire",
+      "local_path": "$HOME/grimoires/olympus-grimoire",
       "online_path": "https://git.example.com/grimoire/olympus-grimoire.git"
     }
   }
@@ -128,7 +128,7 @@ Fields:
 - `local_path` — absolute filesystem path to the grimoire root (supports `$HOME`).
 - `online_path` — git clone URL; set to `null` if not applicable.
 
-To add a grimoire, run `/grm-catalog-sync` after cloning into `~/grimoire/`. To detect drift (stale entries, missing grimoires, unmanaged directories), run the same skill in dry-run mode.
+To add a grimoire, run `/grm-library-sync` after cloning into `~/grimoires/`. To detect drift (stale entries, missing grimoires, unmanaged directories), run the same skill in dry-run mode.
 
 ---
 
@@ -145,11 +145,11 @@ Every grimoire (and Arcana itself) declares its identity in a `grimoire.json` fi
 ```
 
 Fields:
-- `name` — canonical grimoire name; should match the catalog key.
+- `name` — canonical grimoire name; should match the library key.
 - `namespace` — short lowercase slug (`^[a-z][a-z0-9]*$`) used as the skill prefix. Required if the grimoire has a `skills/` directory.
 - `description` — one-line description.
 
-**Why not in the catalog?** The grimoire owns its own identity. A cloned grimoire knows its namespace without needing a catalog entry, the registration rite reads namespace directly from the grimoire, and there is no way for catalog and grimoire to drift out of sync.
+**Why not in the library?** The grimoire owns its own identity. A cloned grimoire knows its namespace without needing a library entry, the registration rite reads namespace directly from the grimoire, and there is no way for library and grimoire to drift out of sync.
 
 When creating a new grimoire, `/grm-domain-create-grimoire` prompts for the namespace and writes `grimoire.json` as part of scaffolding.
 
@@ -164,13 +164,13 @@ When creating a new grimoire, `/grm-domain-create-grimoire` prompts for the name
 | `GRIMOIRE_ARCANA` | Reference Arcana from anywhere | `GRIMOIRE_ARCANA/docs/quickstart.md` |
 | `{domain}-grimoire` | Reference a specific domain grimoire | `olympus-grimoire/chapters/build_system/INDEX.md` |
 
-**Why?** Catalog keys match the actual folder slug. `olympus-grimoire` resolves to `~/grimoire/olympus-grimoire/`. `GRIMOIRE_ARCANA` is the exception — Arcana is the engine, not a domain grimoire.
+**Why?** Library keys match the actual folder slug. `olympus-grimoire` resolves to `~/grimoires/olympus-grimoire/`. `GRIMOIRE_ARCANA` is the exception — Arcana is the engine, not a domain grimoire.
 
-**In `CLAUDE.md` and `AGENTS.md`**, the catalog maps keys to actual filesystem paths:
+**In `CLAUDE.md` and `AGENTS.md`**, the library maps keys to actual filesystem paths:
 ```markdown
-**Catalog**: `~/grimoire/catalog.json`
+**Library**: `~/grimoires/library.json`
 
-**Arcana key**: `GRIMOIRE_ARCANA` = path to Arcana installation (e.g., `~/grimoire/arcana/`)
+**Arcana key**: `GRIMOIRE_ARCANA` = path to Arcana installation (e.g., `~/grimoires/arcana/`)
 ```
 
 ---

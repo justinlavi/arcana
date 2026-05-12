@@ -31,12 +31,12 @@ invoke `/grm-meta-help`.
 | [`/grm-arcana-validate-skill-refs`](../skills/arcana-validate-skill-refs/SKILL.md) | Mechanically validate that every /grm-* skill mentioned in Arcana docs resolves to a real skill folder |
 | [`/grm-arcana-validate-structure`](../skills/arcana-validate-structure/SKILL.md) | Mechanically validate Arcana's directory structure and required INDEX.md files |
 
-## Catalog management
+## Library management
 
 | Skill | Description |
 |---|---|
-| [`/grm-catalog-adopt`](../skills/catalog-adopt/SKILL.md) | Adopt an unmanaged directory under ~/grimoire/ as a domain grimoire by writing its grimoire.json manifest |
-| [`/grm-catalog-sync`](../skills/catalog-sync/SKILL.md) | Scan ~/grimoire/ for valid grimoires and reconcile against the local catalog (detect missing, stale, mismatched, and unmanaged entries) |
+| [`/grm-library-adopt`](../skills/library-adopt/SKILL.md) | Adopt an unmanaged directory under ~/grimoires/ as a domain grimoire by writing its grimoire.json manifest |
+| [`/grm-library-sync`](../skills/library-sync/SKILL.md) | Scan ~/grimoires/ for valid grimoires and reconcile against the local library (detect missing, stale, mismatched, and unmanaged entries) |
 
 ## Domain grimoire operations
 
@@ -44,7 +44,7 @@ invoke `/grm-meta-help`.
 |---|---|
 | [`/grm-domain-analyze-semantics`](../skills/domain-analyze-semantics/SKILL.md) | Deep semantic analysis of naming and organization for discoverability and token efficiency |
 | [`/grm-domain-create-chapter`](../skills/domain-create-chapter/SKILL.md) | Create a new knowledge chapter in the active domain grimoire |
-| [`/grm-domain-create-grimoire`](../skills/domain-create-grimoire/SKILL.md) | Create a new domain grimoire with full scaffolding and catalog registration |
+| [`/grm-domain-create-grimoire`](../skills/domain-create-grimoire/SKILL.md) | Create a new domain grimoire with full scaffolding and library registration |
 | [`/grm-domain-improve`](../skills/domain-improve/SKILL.md) | Comprehensive grimoire improvement — audit, normalize, and optimize the active domain grimoire |
 | [`/grm-domain-validate-structure`](../skills/domain-validate-structure/SKILL.md) | Validate grimoire structure compliance against Arcana formulae |
 
@@ -66,6 +66,6 @@ invoke `/grm-meta-help`.
 
 1. Create `skills/<area>-<verb>-<object>/SKILL.md` with frontmatter:
    `name: {{NAMESPACE}}-<area>-<verb>-<object>` and a one-line `description`.
-2. Run `python3 rites/sync_docs.py --apply` to refresh this catalog.
+2. Run `python3 rites/sync_docs.py --apply` to refresh this library.
 3. Run `python3 rites/register_skills.py` to install the skill into agent skill directories.
 

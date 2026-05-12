@@ -10,7 +10,7 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 - **[docs/quickstart.md](docs/quickstart.md)** — 5-minute smoke test after install
 - **[docs/agent_configuration.md](docs/agent_configuration.md)** — Per-agent setup (Claude / Codex / Copilot)
 - **[docs/skills.md](docs/skills.md)** — Canonical Arcana skill catalog (auto-generated)
-- **[docs/reference.md](docs/reference.md)** — Terminology, catalog/manifest schemas, path keys, formula placeholders
+- **[docs/reference.md](docs/reference.md)** — Terminology, library/manifest schemas, path keys, formula placeholders
 - **[docs/operating_model.md](docs/operating_model.md)** — Routing model and authority models
 - **[docs/script_vs_ai.md](docs/script_vs_ai.md)** — Architectural principle: when to use scripts vs AI
 - **[docs/governance.md](docs/governance.md)** — Maintenance policies and versioning
@@ -43,13 +43,13 @@ Meta-knowledge about Grimoire itself — invocations, formulae, rites, governanc
 - **[docs/skills.md](docs/skills.md)** — Canonical Arcana skill catalog (auto-generated from `skills/*/SKILL.md`)
 - **[skills/](skills/)** — Skill source directory; registered into agent skill roots via `rites/register_skills.py`
 
-### Summoning & Catalog
+### Summoning & Library
 - **[rites/summon.sh](rites/summon.sh)** - Grimoire summoning rite (one-command setup)
 - **[rites/register_skills.py](rites/register_skills.py)** - Skill registration rite
-- **[rites/sync_catalog.py](rites/sync_catalog.py)** - Catalog sync rite (reconcile catalog with disk)
+- **[rites/sync_library.py](rites/sync_library.py)** - Library sync rite (reconcile library with disk)
 - **[rites/sync_docs.py](rites/sync_docs.py)** - Docs sync rite (regenerate `docs/skills.md` from sources)
 - **[rites/adopt_grimoire.py](rites/adopt_grimoire.py)** - Adopt an unmanaged directory by writing its `grimoire.json`
-- **[catalog.json](catalog.json)** - Company-wide grimoire catalog
+- **[library.json](library.json)** - Company-wide grimoire library
 
 ### Tools
 - **[resources/](resources/)** - Branding assets (icon, etc.)

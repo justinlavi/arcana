@@ -21,7 +21,7 @@ Flags:
 
 ## Preconditions
 
-Verify the working directory is a registered domain grimoire (check `~/grimoire/catalog.json`). If not, list available grimoires and stop. Arcana is not a grimoire (use `--arcana` for that case).
+Verify the working directory is a registered domain grimoire (check `~/grimoires/library.json`). If not, list available grimoires and stop. Arcana is not a grimoire (use `--arcana` for that case).
 
 ## When to cast
 

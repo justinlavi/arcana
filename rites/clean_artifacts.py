@@ -17,8 +17,8 @@ import sys
 from pathlib import Path
 
 ARCANA_PATH = Path(__file__).resolve().parent.parent
-GRIMOIRE_HOME = Path.home() / "grimoire"
-LOCAL_CATALOG = GRIMOIRE_HOME / "catalog.json"
+GRIMOIRES_HOME = Path.home() / "grimoires"
+LOCAL_LIBRARY = GRIMOIRES_HOME / "library.json"
 
 ARTIFACTS_DIR_NAME = ".artifacts"
 
@@ -57,21 +57,21 @@ def main():
 
     total += clean_location(ARCANA_PATH, "Arcana", args.dry_run)
 
-    if LOCAL_CATALOG.is_file():
+    if LOCAL_LIBRARY.is_file():
         try:
-            with open(LOCAL_CATALOG) as f:
-                catalog = json.load(f)
+            with open(LOCAL_LIBRARY) as f:
+                library = json.load(f)
         except (json.JSONDecodeError, OSError):
-            catalog = {}
+            library = {}
 
-        for key in sorted(catalog.get("grimoires", {}).keys()):
-            entry = catalog["grimoires"][key]
+        for key in sorted(library.get("grimoires", {}).keys()):
+            entry = library["grimoires"][key]
             raw = entry.get("local_path", "")
             local_path = Path(raw.replace("$HOME", str(Path.home())))
             if local_path.is_dir():
                 total += clean_location(local_path, key, args.dry_run)
     else:
-        print("  [INFO]  No local catalog — only Arcana cleaned")
+        print("  [INFO]  No local library — only Arcana cleaned")
 
     print()
     print("  ----------------------------")

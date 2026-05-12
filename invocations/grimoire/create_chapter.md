@@ -27,7 +27,7 @@ Or with a topic:
 
 ## Step 0: Precondition
 
-Verify the working directory is a registered domain grimoire by checking `~/grimoire/catalog.json`. Arcana is not a grimoire. If the check fails, list available grimoires from the catalog and tell the user to `cd` into one. **Stop.**
+Verify the working directory is a registered domain grimoire by checking `~/grimoires/library.json`. Arcana is not a grimoire. If the check fails, list available grimoires from the library and tell the user to `cd` into one. **Stop.**
 
 ---
 
@@ -49,7 +49,7 @@ Capture: `chapter_name`, `chapter_title` (Title Case), `purpose`, `when_to_use`,
 
 ```bash
 mkdir -p chapters/{{chapter_name}}
-cp ~/grimoire/arcana/formulae/chapter_index.formula.md chapters/{{chapter_name}}/INDEX.md
+cp ~/grimoires/arcana/formulae/chapter_index.formula.md chapters/{{chapter_name}}/INDEX.md
 ```
 
 ---
@@ -79,7 +79,7 @@ grep -nE '\[(Chapter Name|purpose|when to use)\]|\{\{' chapters/{{chapter_name}}
 For each sub-topic the user wants stubbed now:
 
 ```bash
-cp ~/grimoire/arcana/formulae/page.formula.md chapters/{{chapter_name}}/{{sub_topic}}.md
+cp ~/grimoires/arcana/formulae/page.formula.md chapters/{{chapter_name}}/{{sub_topic}}.md
 ```
 
 Edit each leaf to fill: `Purpose`, `When to use`, `Primary Sources` (if external), content sections, `Gotchas`, `Related docs`.
@@ -127,7 +127,7 @@ to confirm the chapter conforms to grimoire structure rules.
 
 ## Related
 
-- **Chapter formula**: `~/grimoire/arcana/formulae/chapter_index.formula.md`
-- **Page formula**: `~/grimoire/arcana/formulae/page.formula.md`
+- **Chapter formula**: `~/grimoires/arcana/formulae/chapter_index.formula.md`
+- **Page formula**: `~/grimoires/arcana/formulae/page.formula.md`
 - **Grimoire creation**: [`create_grimoire.md`](create_grimoire.md)
 - **Structure validator**: `/grm-domain-validate-structure`

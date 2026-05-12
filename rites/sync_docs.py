@@ -86,13 +86,13 @@ def group_skills(skills):
         groups.setdefault(group, []).append((name, desc))
 
     # Stable ordering: arcana first, then domain, then alphabetical for the rest.
-    priority = {"arcana": 0, "catalog": 1, "domain": 2, "skills": 3, "meta": 4}
+    priority = {"arcana": 0, "library": 1, "domain": 2, "skills": 3, "meta": 4}
     return sorted(groups.items(), key=lambda kv: (priority.get(kv[0], 99), kv[0]))
 
 
 GROUP_HEADERS = {
     "arcana": "Arcana maintenance",
-    "catalog": "Catalog management",
+    "library": "Library management",
     "domain": "Domain grimoire operations",
     "skills": "Skill registration",
     "meta": "Meta / discovery",
@@ -140,7 +140,7 @@ def render_skills_doc(skills):
         "",
         "1. Create `skills/<area>-<verb>-<object>/SKILL.md` with frontmatter:",
         "   `name: {{NAMESPACE}}-<area>-<verb>-<object>` and a one-line `description`.",
-        "2. Run `python3 rites/sync_docs.py --apply` to refresh this catalog.",
+        "2. Run `python3 rites/sync_docs.py --apply` to refresh this library.",
         "3. Run `python3 rites/register_skills.py` to install the skill into agent skill directories.",
         "",
     ])

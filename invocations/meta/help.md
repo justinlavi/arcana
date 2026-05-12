@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Show the user every Grimoire skill currently installed: Arcana's `grm-*` catalog plus the skills shipped by each domain grimoire registered in `~/grimoire/catalog.json`. The Arcana list lives in [`docs/skills.md`](../../docs/skills.md) (auto-generated); domain skills must be enumerated live since no equivalent static catalog exists across grimoires.
+Show the user every Grimoire skill currently installed: Arcana's `grm-*` catalog plus the skills shipped by each domain grimoire registered in `~/grimoires/library.json`. The Arcana list lives in [`docs/skills.md`](../../docs/skills.md) (auto-generated); domain skills must be enumerated live since no equivalent static catalog exists across grimoires.
 
 ## Invocation
 
@@ -18,7 +18,7 @@ Read [`GRIMOIRE_ARCANA/docs/skills.md`](../../docs/skills.md) and present its ta
 
 ### 2. Enumerate domain grimoire skills
 
-Read `~/grimoire/catalog.json`. For each entry under `grimoires`:
+Read `~/grimoires/library.json`. For each entry under `grimoires`:
 
 1. Resolve `local_path` (expand `$HOME`).
 2. Read `<local_path>/grimoire.json` to get the grimoire's `name` and `skill_namespace`.
@@ -49,5 +49,5 @@ End with a one-line total: `Total: N skills across M grimoires (Arcana + <list>)
 
 - **Arcana skill catalog (canonical)**: [`docs/skills.md`](../../docs/skills.md)
 - **Skill registration**: `/grm-skills-register`
-- **Catalog reconciliation**: `/grm-catalog-sync`
+- **Catalog reconciliation**: `/grm-library-sync`
 - **Skill system mechanics**: [`docs/agent_configuration.md`](../../docs/agent_configuration.md)

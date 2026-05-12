@@ -14,13 +14,13 @@ You are performing a comprehensive improvement on the active domain grimoire. Fo
 
 **Before doing anything else**, verify the current working directory is a registered domain grimoire:
 
-1. Read `~/grimoire/catalog.json`
+1. Read `~/grimoires/library.json`
 2. Resolve each grimoire's `local_path` (expand `$HOME`)
 3. Check if the current working directory matches any registered grimoire path
 
 **If the directory is NOT a registered grimoire** (including Arcana — Arcana is not a grimoire):
 - Display a clear error: "This skill operates on domain grimoires. Your current directory is not a registered grimoire."
-- List available grimoires from the catalog with their paths
+- List available grimoires from the library with their paths
 - Tell the user to `cd` to a grimoire directory and re-run
 - **Stop.** Do not proceed with any phases.
 

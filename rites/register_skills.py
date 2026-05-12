@@ -37,8 +37,8 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 
 ARCANA_PATH = Path(__file__).resolve().parent.parent
-GRIMOIRE_HOME = Path.home() / "grimoire"
-LOCAL_CATALOG = GRIMOIRE_HOME / "catalog.json"
+GRIMOIRES_HOME = Path.home() / "grimoires"
+LOCAL_LIBRARY = GRIMOIRES_HOME / "library.json"
 NAMESPACE_RE = re.compile(r"^[a-z][a-z0-9]*$")
 SKILL_SLUG_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 NAMESPACE_PLACEHOLDER = "{{NAMESPACE}}"
@@ -284,25 +284,25 @@ def register_arcana_skills(skills_target, dry_run=False, pointer_only=False):
 def register_grimoire_skills(skills_target, dry_run=False, pointer_only=False):
     """Register skills from all installed domain grimoires.
 
-    Each grimoire's namespace is read from its own grimoire.json. The catalog
+    Each grimoire's namespace is read from its own grimoire.json. The library
     is consulted only to discover where grimoires live on disk.
     """
-    if not LOCAL_CATALOG.is_file():
-        info(f"No local catalog at {LOCAL_CATALOG} — skipping domain skills")
+    if not LOCAL_LIBRARY.is_file():
+        info(f"No local library at {LOCAL_LIBRARY} — skipping domain skills")
         return 0, 0
 
     try:
-        with open(LOCAL_CATALOG) as f:
-            catalog = json.load(f)
+        with open(LOCAL_LIBRARY) as f:
+            library = json.load(f)
     except (json.JSONDecodeError, OSError):
-        warn("Could not read local catalog — skipping domain skills")
+        warn("Could not read local library — skipping domain skills")
         return 0, 0
 
     total_registered = 0
     total_cleaned = 0
 
-    for key in sorted(catalog.get("grimoires", {}).keys()):
-        entry = catalog["grimoires"][key]
+    for key in sorted(library.get("grimoires", {}).keys()):
+        entry = library["grimoires"][key]
         raw_path = entry.get("local_path", "")
 
         # Expand $HOME

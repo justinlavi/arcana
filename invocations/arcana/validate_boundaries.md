@@ -72,7 +72,7 @@ Skim the same files for real company / product / person names used as examples. 
 
 ### 5. Arcana mode (`--arcana`)
 
-Run all of the above against Arcana itself (`~/grimoire/arcana/`). Any violation is critical — Arcana must work for every domain, so it cannot mention any specific one.
+Run all of the above against Arcana itself (`~/grimoires/arcana/`). Any violation is critical — Arcana must work for every domain, so it cannot mention any specific one.
 
 ## Report format
 

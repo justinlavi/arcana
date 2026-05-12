@@ -29,7 +29,7 @@ REQUIRED_FILES = [
     "CHANGELOG.md",
     "rites/summon.sh",
     "rites/register_skills.py",
-    "catalog.json",
+    "library.json",
     "docs/quickstart.md",
     "docs/agent_configuration.md",
     "docs/operating_model.md",

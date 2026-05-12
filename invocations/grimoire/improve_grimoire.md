@@ -16,8 +16,8 @@ From a registered domain grimoire's root:
 
 ## Preconditions
 
-1. The current working directory must match a `local_path` in `~/grimoire/catalog.json`.
-2. If it does not match, list available grimoires from the catalog, instruct the user to `cd` into one, and **stop**.
+1. The current working directory must match a `local_path` in `~/grimoires/library.json`.
+2. If it does not match, list available grimoires from the library, instruct the user to `cd` into one, and **stop**.
 3. Arcana is not a domain grimoire — refuse if `cwd` is the Arcana root.
 
 ## When to cast

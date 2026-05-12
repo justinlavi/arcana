@@ -1,6 +1,6 @@
 ---
 name: {{NAMESPACE}}-domain-create-grimoire
-description: Create a new domain grimoire with full scaffolding and catalog registration
+description: Create a new domain grimoire with full scaffolding and library registration
 when_to_use: User wants to start a new knowledge base, set up Grimoire for a team/project/domain, or asks "how do I create a grimoire" / "set up a grimoire for X". Pick this skill before suggesting manual scaffolding.
 argument-hint: [grimoire-name]
 arguments: [name]
@@ -17,7 +17,7 @@ If the user provided a name, use it: **$name**
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
-- **Catalog**: `~/grimoire/catalog.json`
+- **Library**: `~/grimoires/library.json`
 - **Formulae**: `{{ARCANA_PATH}}/formulae/grimoire/`
 
 ## Invocation

@@ -234,7 +234,7 @@ Anyone can propose improvements to Arcana:
 ### 1. Make Changes
 
 ```bash
-cd ~/grimoire/arcana
+cd ~/grimoires/arcana
 
 # Create branch
 git checkout -b improve/better-formula

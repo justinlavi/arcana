@@ -7,6 +7,24 @@ Historical notes from earlier private GitLab iterations were intentionally remov
 ## [Unreleased]
 
 ### Added
+- **Home-directory and registry rename** (breaking — existing installs must run `migrate_home.py`):
+  - `~/grimoire/` → `~/grimoires/` — the workspace root is now plural; it never was a single grimoire.
+  - `catalog.json` → `library.json` — the local registry is now called the "library"; clearer semantics.
+  - Updated everywhere: Python constants (`GRIMOIRE_HOME→GRIMOIRES_HOME`, `LOCAL_CATALOG→LOCAL_LIBRARY`), all rite files, all skill SKILL.md files, all docs, invocations, formulae, and the Olympus grimoire.
+  - Rite files renamed: `sync_catalog.py → sync_library.py`. All internal function names updated (`load_catalog→load_library`, `diff_catalog→diff_library`, etc.).
+  - Skill directories renamed: `skills/catalog-sync/ → library-sync/`, `skills/catalog-adopt/ → library-adopt/`. Registered commands are now `/grm-library-sync` and `/grm-library-adopt`.
+  - Grimoire instruction block (`rites/templates/grimoire_block.md`) updated: `**Library**: ~/grimoires/library.json`.
+  - `arcana/library.json` (was `catalog.json`) — the global grimoire registry embedded in Arcana.
+  - New migration rite: `python3 rites/migrate_home.py` moves `~/grimoire/` → `~/grimoires/`, renames `catalog.json` → `library.json`, rewrites `$HOME/grimoire/` paths in library entries, and patches `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`. Idempotent. Supports `--dry-run`.
+  - The new expected layout:
+    ```
+    ~/grimoires/
+    ├── arcana/
+    ├── olympus-grimoire/
+    └── library.json
+    ```
+
+### Added
 - Auto-invocation hints for Claude Code:
   - 10 user-facing skills now declare `when_to_use` so Claude can route to them by intent without the user typing the slash command. Targets: `/grm-domain-{create-grimoire,create-chapter,improve,validate-structure,analyze-semantics}`, `/grm-catalog-{sync,adopt}`, `/grm-skills-register`, `/grm-meta-help`, `/grm-arcana-validate-all`.
   - `/grm-arcana-clean` declares `disable-model-invocation: true` (destructive — must be user-initiated).

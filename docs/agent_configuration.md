@@ -2,13 +2,13 @@
 
 Per-agent setup for using Grimoire skills (Claude Code, Codex/ChatGPT, Copilot, etc.). The summoning rite ([installation.md](installation.md)) configures the supported agents automatically — this doc is for manual configuration, additional agents, and per-platform nuances.
 
-For installation, see [installation.md](installation.md). For catalog and manifest schemas, see [reference.md](reference.md). For the current Arcana skill catalog, see [skills.md](skills.md).
+For installation, see [installation.md](installation.md). For library and manifest schemas, see [reference.md](reference.md). For the current Arcana skill catalog, see [skills.md](skills.md).
 
 ---
 
 ## Agent Instruction Files
 
-Each agent reads a "system instructions" file. Grimoire needs a small block in that file so the agent knows how to route through the catalog.
+Each agent reads a "system instructions" file. Grimoire needs a small block in that file so the agent knows how to route through the library.
 
 **Canonical block**: [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md) — single source of truth for the instructions text. Copy this into the agent's instruction file. Do not duplicate the block in any other file — edit the canonical and the change propagates wherever it's referenced.
 
@@ -19,7 +19,7 @@ Each agent reads a "system instructions" file. Grimoire needs a small block in t
 | ChatGPT (hosted) | "Custom Instructions" field | No (paste manually) |
 | GitHub Copilot | `.github/copilot_instructions.md` | No (add manually; trim to the four key sections if length-limited) |
 
-The block never changes when grimoires are added or removed — those changes happen in the catalog, not the agent file.
+The block never changes when grimoires are added or removed — those changes happen in the library, not the agent file.
 
 ---
 
@@ -35,9 +35,9 @@ Skills are `SKILL.md` files registered into agent-specific skill directories:
 Both targets are written by the same rite:
 
 ```bash
-python3 ~/grimoire/arcana/rites/register_skills.py            # all targets
-python3 ~/grimoire/arcana/rites/register_skills.py --agent claude
-python3 ~/grimoire/arcana/rites/register_skills.py --agent codex
+python3 ~/grimoires/arcana/rites/register_skills.py            # all targets
+python3 ~/grimoires/arcana/rites/register_skills.py --agent claude
+python3 ~/grimoires/arcana/rites/register_skills.py --agent codex
 ```
 
 Or invoke `/grm-skills-register`. The summoning rite runs this for you on install.
@@ -80,7 +80,7 @@ Cross-agent safety: any field Codex/ChatGPT doesn't recognize is silently ignore
 
 Adding `when_to_use` makes a skill discoverable by intent in Claude Code (the user describes a problem; Claude routes to the right skill). The current Arcana settings:
 
-- **All user-facing operations** (`/grm-domain-*`, `/grm-catalog-*`, `/grm-skills-register`, `/grm-meta-help`, `/grm-arcana-validate-all`) declare `when_to_use` so Claude can auto-suggest them.
+- **All user-facing operations** (`/grm-domain-*`, `/grm-library-*`, `/grm-skills-register`, `/grm-meta-help`, `/grm-arcana-validate-all`) declare `when_to_use` so Claude can auto-suggest them.
 - **One destructive skill** (`/grm-arcana-clean`) declares `disable-model-invocation: true` because it deletes artifacts; users must invoke it explicitly.
 - **Individual validators** (`/grm-arcana-validate-format`, `-links`, etc.) and the heavy maintainer orchestrator (`/grm-arcana-improve`) deliberately omit `when_to_use` — the orchestrator (`/grm-arcana-validate-all` or `/grm-arcana-improve`) is the right entry point for normal flows; auto-invoking individual validators would over-activate.
 
@@ -108,7 +108,7 @@ To register new or updated skills, run `/grm-skills-register`.
 - Run `/grm-skills-register` and open a new agent session (Claude Code / Codex caches skill listings).
 
 **Agent can't find a grimoire**
-- Verify the grimoire is in `~/grimoire/catalog.json` and the `local_path` resolves. Run `/grm-catalog-sync` to detect and reconcile drift.
+- Verify the grimoire is in `~/grimoires/library.json` and the `local_path` resolves. Run `/grm-library-sync` to detect and reconcile drift.
 
 **Skill names look wrong (`{{NAMESPACE}}-...`)**
 - The grimoire is missing a `grimoire.json` or its `namespace` field. See [reference.md](reference.md#grimoire-manifest).

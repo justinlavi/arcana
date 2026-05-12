@@ -2,7 +2,7 @@
 
 ## Purpose
 
-AI-guided conversational setup that scaffolds a complete grimoire from the formula template, registers it in the local catalog, and validates the result. Output is a working grimoire directory with customized `INDEX.md`, `README.md`, `grimoire.json`, and initial chapter skeletons.
+AI-guided conversational setup that scaffolds a complete grimoire from the formula template, registers it in the local library, and validates the result. Output is a working grimoire directory with customized `INDEX.md`, `README.md`, `grimoire.json`, and initial chapter skeletons.
 
 ## Invocation
 
@@ -53,9 +53,9 @@ Let the user select, rename, drop, or add chapters and provide a one-line descri
 ```bash
 mkdir {{grimoire_directory}} && cd {{grimoire_directory}}
 git init
-cp ~/grimoire/arcana/formulae/grimoire/INDEX.md .
-cp ~/grimoire/arcana/formulae/grimoire/README.md .
-cp ~/grimoire/arcana/formulae/grimoire/grimoire.json .
+cp ~/grimoires/arcana/formulae/grimoire/INDEX.md .
+cp ~/grimoires/arcana/formulae/grimoire/README.md .
+cp ~/grimoires/arcana/formulae/grimoire/grimoire.json .
 mkdir chapters skills
 ```
 
@@ -117,9 +117,9 @@ If a chapter creation fails, report it and continue with the rest. The user can 
 
 ---
 
-## Step 6: Register in Catalog
+## Step 6: Register in Library
 
-Read `~/grimoire/catalog.json`. If absent, create it with the structure below. If present, add one entry under `grimoires`:
+Read `~/grimoires/library.json`. If absent, create it with the structure below. If present, add one entry under `grimoires`:
 
 ```json
 "{{grimoire_directory}}": {
@@ -128,7 +128,7 @@ Read `~/grimoire/catalog.json`. If absent, create it with the structure below. I
 }
 ```
 
-Use the actual absolute path from Step 3. The catalog records location only — the namespace lives in `grimoire.json`.
+Use the actual absolute path from Step 3. The library records location only — the namespace lives in `grimoire.json`.
 
 Bootstrap form (if creating from scratch):
 
@@ -143,7 +143,7 @@ Bootstrap form (if creating from scratch):
 }
 ```
 
-If `~/.claude/CLAUDE.md` or `~/.codex/AGENTS.md` lacks a `## Grimoire Knowledge Base` section, instruct the user to paste the canonical block from `GRIMOIRE_ARCANA/rites/templates/grimoire_block.md`. That block is static across new grimoires — only the catalog changes.
+If `~/.claude/CLAUDE.md` or `~/.codex/AGENTS.md` lacks a `## Grimoire Knowledge Base` section, instruct the user to paste the canonical block from `GRIMOIRE_ARCANA/rites/templates/grimoire_block.md`. That block is static across new grimoires — only the library changes.
 
 ---
 

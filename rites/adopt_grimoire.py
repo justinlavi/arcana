@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-"""Adopt an unmanaged directory under ~/grimoire/ as a domain grimoire.
+"""Adopt an unmanaged directory under ~/grimoires/ as a domain grimoire.
 
 Writes a `grimoire.json` manifest into the target directory so the
-registration and catalog rites recognize it. Validates the namespace
+registration and library rites recognize it. Validates the namespace
 isn't already used by another grimoire.
 
-After adopting, run `/grm-catalog-sync --apply` to register the grimoire
-in the local catalog, then `/grm-skills-register` if it ships skills.
+After adopting, run `/grm-library-sync --apply` to register the grimoire
+in the local library, then `/grm-skills-register` if it ships skills.
 
 Usage:
     python3 adopt_grimoire.py <directory> --namespace <ns> [--description "<desc>"]
                                           [--name <name>] [--home <path>]
 
 Args:
-    <directory>   — directory name under ~/grimoire/ (e.g. "lus-grimoire")
+    <directory>   — directory name under ~/grimoires/ (e.g. "lus-grimoire")
                     or absolute path
     --namespace   — short lowercase slug for skill prefix (^[a-z][a-z0-9]*$)
     --description — one-line description (defaults to a placeholder)
     --name        — canonical name (defaults to the directory name)
-    --home        — override grimoire home (default: ~/grimoire)
+    --home        — override grimoire home (default: ~/grimoires)
 
 Exit codes: 0 = manifest written, 1 = validation failed, 2 = collision
 """
@@ -29,7 +29,7 @@ import re
 import sys
 from pathlib import Path
 
-DEFAULT_HOME = Path.home() / "grimoire"
+DEFAULT_HOME = Path.home() / "grimoires"
 NAMESPACE_RE = re.compile(r"^[a-z][a-z0-9]*$")
 
 
@@ -132,7 +132,7 @@ def main():
     print()
 
     print("  Next steps:")
-    print("    1. Run /grm-catalog-sync to verify, then --apply to register.")
+    print("    1. Run /grm-library-sync to verify, then --apply to register.")
     print("    2. If this grimoire ships skills, run /grm-skills-register.")
     print()
     return 0

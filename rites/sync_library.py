@@ -1,26 +1,26 @@
 #!/usr/bin/env python3
-"""Grimoire Catalog Sync — scan ~/grimoire/ and reconcile against the catalog.
+"""Grimoire Library Sync — scan ~/grimoires/ and reconcile against the library.
 
 Walks the grimoire home directory, identifies every valid grimoire (any
 subdirectory containing a well-formed grimoire.json), and compares the result
-against the local catalog at ~/grimoire/catalog.json.
+against the local library at ~/grimoires/library.json.
 
 Reports four kinds of drift:
-  * Missing      — grimoire on disk but absent from the catalog
-  * Stale        — catalog entry whose local_path no longer exists
-  * Mismatched   — catalog entry whose local_path differs from where the
+  * Missing      — grimoire on disk but absent from the library
+  * Stale        — library entry whose local_path no longer exists
+  * Mismatched   — library entry whose local_path differs from where the
                    grimoire actually lives
-  * Unmanaged    — directory under ~/grimoire/ with no grimoire.json
+  * Unmanaged    — directory under ~/grimoires/ with no grimoire.json
                    (cannot be auto-registered; reported for cleanup)
 
 Also surfaces structural issues that don't block sync but warrant attention:
   * Namespace collisions across grimoires
   * grimoire.json `name` differing from the directory name
 
-Defaults to a dry-run report. Pass --apply to write the reconciled catalog.
+Defaults to a dry-run report. Pass --apply to write the reconciled library.
 
 Usage:
-    python3 sync_catalog.py [--apply] [--home PATH]
+    python3 sync_library.py [--apply] [--home PATH]
 """
 
 import argparse
@@ -34,7 +34,7 @@ from pathlib import Path
 # Constants
 # ---------------------------------------------------------------------------
 
-DEFAULT_HOME = Path.home() / "grimoire"
+DEFAULT_HOME = Path.home() / "grimoires"
 NAMESPACE_RE = re.compile(r"^[a-z][a-z0-9]*$")
 ARCANA_NAME = "arcana"
 
@@ -143,7 +143,7 @@ def scan_grimoire_home(home):
         if manifest.get("name") != child.name:
             warnings.append(
                 f"{child.name}: grimoire.json name='{manifest.get('name')}' "
-                f"differs from directory name (catalog will use directory name)"
+                f"differs from directory name (library will use directory name)"
             )
 
         grimoires.append(
@@ -171,19 +171,19 @@ def scan_grimoire_home(home):
 
 
 # ---------------------------------------------------------------------------
-# Catalog operations
+# Library operations
 # ---------------------------------------------------------------------------
 
 
-def load_catalog(catalog_path):
-    """Read the catalog. Returns the catalog dict (with at least 'grimoires')."""
-    if not catalog_path.is_file():
+def load_library(library_path):
+    """Read the library. Returns the library dict (with at least 'grimoires')."""
+    if not library_path.is_file():
         return {"grimoires": {}}
     try:
-        with open(catalog_path) as f:
+        with open(library_path) as f:
             data = json.load(f)
     except (json.JSONDecodeError, OSError) as exc:
-        warn(f"could not read catalog {catalog_path}: {exc} (treating as empty)")
+        warn(f"could not read library {library_path}: {exc} (treating as empty)")
         return {"grimoires": {}}
     if "grimoires" not in data or not isinstance(data["grimoires"], dict):
         data["grimoires"] = {}
@@ -200,33 +200,33 @@ def expected_local_path(home, key):
 
 
 def resolve_local_path(raw):
-    """Expand $HOME in a catalog local_path string."""
+    """Expand $HOME in a library local_path string."""
     if not raw:
         return Path()
     return Path(raw.replace("$HOME", str(Path.home())))
 
 
-def diff_catalog(scan, catalog, home):
-    """Compute drift between disk state and catalog.
+def diff_library(scan, library, home):
+    """Compute drift between disk state and library.
 
     Returns a dict of lists:
-        missing     — keys on disk but not in catalog
-        stale       — keys in catalog whose path doesn't exist
-        mismatched  — keys whose catalog local_path differs from disk
+        missing     — keys on disk but not in library
+        stale       — keys in library whose path doesn't exist
+        mismatched  — keys whose library local_path differs from disk
         ok          — keys present in both with matching paths
     """
     disk_keys = {g["key"] for g in scan["grimoires"]}
-    catalog_keys = set(catalog["grimoires"].keys())
+    library_keys = set(library["grimoires"].keys())
 
-    missing = sorted(disk_keys - catalog_keys)
+    missing = sorted(disk_keys - library_keys)
     stale = []
     mismatched = []
     ok_keys = []
 
     disk_index = {g["key"]: g for g in scan["grimoires"]}
 
-    for key in sorted(catalog_keys):
-        entry = catalog["grimoires"][key]
+    for key in sorted(library_keys):
+        entry = library["grimoires"][key]
         raw = entry.get("local_path", "")
         resolved = resolve_local_path(raw)
 
@@ -243,7 +243,7 @@ def diff_catalog(scan, catalog, home):
             else:
                 ok_keys.append(key)
         else:
-            # Catalog points to an existing directory that doesn't appear in
+            # Library entry points to an existing directory that doesn't appear in
             # our scan (e.g., outside home, or scan classified it as unmanaged).
             # Treat as stale only if the directory lacks a valid grimoire.json.
             manifest, errors = load_manifest(resolved)
@@ -260,8 +260,8 @@ def diff_catalog(scan, catalog, home):
     }
 
 
-def build_synced_catalog(scan, catalog, home):
-    """Produce a new catalog dict reflecting current disk state.
+def build_synced_library(scan, library, home):
+    """Produce a new library dict reflecting current disk state.
 
     Preserves any unknown fields on existing entries; updates local_path and
     online_path; drops entries whose paths no longer resolve to valid grimoires;
@@ -270,12 +270,12 @@ def build_synced_catalog(scan, catalog, home):
     new_entries = {}
     disk_index = {g["key"]: g for g in scan["grimoires"]}
 
-    # Carry forward catalog entries that still resolve to a valid grimoire,
+    # Carry forward library entries that still resolve to a valid grimoire,
     # whether or not they live under home (allows out-of-home grimoires).
-    for key in catalog["grimoires"]:
+    for key in library["grimoires"]:
         if key in disk_index:
             continue  # handled below from disk
-        entry = dict(catalog["grimoires"][key])
+        entry = dict(library["grimoires"][key])
         resolved = resolve_local_path(entry.get("local_path", ""))
         if not resolved.is_dir():
             continue
@@ -287,7 +287,7 @@ def build_synced_catalog(scan, catalog, home):
     # Add/update entries from disk scan.
     for key in sorted(disk_index):
         g = disk_index[key]
-        existing = catalog["grimoires"].get(key, {})
+        existing = library["grimoires"].get(key, {})
         entry = dict(existing)
         entry["local_path"] = expected_local_path(home, key)
         # Prefer existing online_path if present and non-empty; otherwise use
@@ -300,14 +300,14 @@ def build_synced_catalog(scan, catalog, home):
     return {"grimoires": dict(sorted(new_entries.items()))}
 
 
-def write_catalog(catalog, catalog_path):
-    """Atomically write the catalog with stable formatting."""
-    catalog_path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = catalog_path.with_suffix(catalog_path.suffix + ".tmp")
+def write_library(library, library_path):
+    """Atomically write the library with stable formatting."""
+    library_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = library_path.with_suffix(library_path.suffix + ".tmp")
     with open(tmp, "w") as f:
-        json.dump(catalog, f, indent=2)
+        json.dump(library, f, indent=2)
         f.write("\n")
-    tmp.replace(catalog_path)
+    tmp.replace(library_path)
 
 
 # ---------------------------------------------------------------------------
@@ -315,10 +315,10 @@ def write_catalog(catalog, catalog_path):
 # ---------------------------------------------------------------------------
 
 
-def print_report(scan, diff, home, catalog_path, apply_mode):
+def print_report(scan, diff, home, library_path, apply_mode):
     print()
     print(f"  Grimoire home:  {home}")
-    print(f"  Catalog file:   {catalog_path}")
+    print(f"  Library file:   {library_path}")
     print(f"  Mode:           {'apply' if apply_mode else 'dry-run (use --apply to write changes)'}")
     print()
 
@@ -335,19 +335,19 @@ def print_report(scan, diff, home, catalog_path, apply_mode):
         print()
 
     print(f"  Found {len(scan['grimoires'])} valid grimoire(s) on disk.")
-    print(f"  Catalog currently lists {len(diff['ok']) + len(diff['mismatched']) + len(diff['stale'])} entry(ies).")
+    print(f"  Library currently lists {len(diff['ok']) + len(diff['mismatched']) + len(diff['stale'])} entry(ies).")
     print()
 
     drift_count = len(diff["missing"]) + len(diff["stale"]) + len(diff["mismatched"])
 
     if diff["missing"]:
-        print("  Missing from catalog (will be added):")
+        print("  Missing from library (will be added):")
         for key in diff["missing"]:
             ok(f"+ {key}")
         print()
 
     if diff["stale"]:
-        print("  Stale catalog entries (will be removed):")
+        print("  Stale library entries (will be removed):")
         for s in diff["stale"]:
             warn(f"- {s['key']}  (path no longer resolves: {s['raw_path']})")
         print()
@@ -361,7 +361,7 @@ def print_report(scan, diff, home, catalog_path, apply_mode):
         print()
 
     if drift_count == 0:
-        ok("Catalog is in sync with disk. No changes needed.")
+        ok("Library is in sync with disk. No changes needed.")
         print()
         return False
 
@@ -377,11 +377,11 @@ def print_report(scan, diff, home, catalog_path, apply_mode):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Grimoire Catalog Sync")
+    parser = argparse.ArgumentParser(description="Grimoire Library Sync")
     parser.add_argument(
         "--apply",
         action="store_true",
-        help="Write the reconciled catalog (default: dry-run / report only)",
+        help="Write the reconciled library (default: dry-run / report only)",
     )
     parser.add_argument(
         "--home",
@@ -392,22 +392,22 @@ def main():
     args = parser.parse_args()
 
     home = args.home.expanduser().resolve() if args.home else DEFAULT_HOME
-    catalog_path = home / "catalog.json"
+    library_path = home / "library.json"
 
     print()
-    print("  Grimoire Catalog Sync")
+    print("  Grimoire Library Sync")
     print("  ----------------------------")
 
     scan = scan_grimoire_home(home)
-    catalog = load_catalog(catalog_path)
-    diff = diff_catalog(scan, catalog, home)
+    library = load_library(library_path)
+    diff = diff_library(scan, library, home)
 
-    has_drift = print_report(scan, diff, home, catalog_path, args.apply)
+    has_drift = print_report(scan, diff, home, library_path, args.apply)
 
     if args.apply and has_drift:
-        new_catalog = build_synced_catalog(scan, catalog, home)
-        write_catalog(new_catalog, catalog_path)
-        ok(f"Catalog written: {catalog_path}")
+        new_library = build_synced_library(scan, library, home)
+        write_library(new_library, library_path)
+        ok(f"Library written: {library_path}")
         print()
         print("  Re-register skills to pick up any new grimoires:")
         print("    /grm-skills-register")

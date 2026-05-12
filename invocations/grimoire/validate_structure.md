@@ -13,7 +13,7 @@ This invocation ensures:
 
 ## Preconditions
 
-Before executing, verify the current working directory is a registered domain grimoire (check `~/grimoire/catalog.json`). If it is not, list available grimoires and tell the user to `cd` to one. Arcana is not a grimoire. **Stop** if the check fails.
+Before executing, verify the current working directory is a registered domain grimoire (check `~/grimoires/library.json`). If it is not, list available grimoires and tell the user to `cd` to one. Arcana is not a grimoire. **Stop** if the check fails.
 
 ---
 

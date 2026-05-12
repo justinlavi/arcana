@@ -2,7 +2,7 @@
 
 This is the **{{GRIMOIRE_NAME}} domain grimoire** — containing chapters specific to {{GRIMOIRE_PURPOSE_DETAILED}}.
 
-Universal assets (invocations, formulae, rites, docs) live in Arcana (`~/grimoire/arcana/`). See [Arcana README](GRIMOIRE_ARCANA/README.md) for details.
+Universal assets (invocations, formulae, rites, docs) live in Arcana (`~/grimoires/arcana/`). See [Arcana README](GRIMOIRE_ARCANA/README.md) for details.
 
 ## Chapters
 
@@ -42,11 +42,11 @@ Use `/grm-domain-create-chapter [topic]` or read [create_chapter.md](GRIMOIRE_AR
 
 ## Agent Integration
 
-Registered in `~/grimoire/catalog.json`:
+Registered in `~/grimoires/library.json`:
 
 ```json
 "{{GRIMOIRE_DIRECTORY}}": {
-  "local_path": "$HOME/grimoire/{{GRIMOIRE_DIRECTORY}}",
+  "local_path": "$HOME/grimoires/{{GRIMOIRE_DIRECTORY}}",
   "online_path": null
 }
 ```

@@ -334,7 +334,7 @@ Pick by the same rule that applies to rites vs invocations themselves:
 
 | If the skill's job is… | Pick this backing | Examples |
 |---|---|---|
-| Mechanical, deterministic, no judgment required | Rite-backed | `/grm-skills-register`, `/grm-catalog-sync`, `/grm-arcana-clean`, every `/grm-arcana-validate-*` |
+| Mechanical, deterministic, no judgment required | Rite-backed | `/grm-skills-register`, `/grm-library-sync`, `/grm-arcana-clean`, every `/grm-arcana-validate-*` |
 | Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/grm-domain-create-grimoire`, `/grm-domain-improve`, `/grm-arcana-improve`, `/grm-meta-help` |
 | Both — the rite gathers data, the AI interprets | **Both, in that order**: skill body runs the rite first, then loads an invocation that reads the rite's output | `/grm-arcana-validate-semantics` could evolve into this if/when the analysis judgment grows beyond the rite's pattern check |
 
