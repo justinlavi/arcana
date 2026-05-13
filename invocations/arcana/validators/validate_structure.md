@@ -9,10 +9,6 @@ last_verified: 2026-05-12
 
 # 🔮 Invocation: Validate Arcana Structure
 
-## ⚡ The Magical Boundary ⚡
-
-This invocation validates Arcana itself (meta-knowledge).
-
 ## Purpose
 
 Verify Arcana directory structure, required files, and organizational integrity.

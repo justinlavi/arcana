@@ -14,7 +14,7 @@ last_verified: 2026-05-12
 Validate grimoire chapter routers and page structure against Arcana formulae.
 
 This invocation ensures:
-- Chapter routers follow `chapter_index.formula.md`
+- Chapter routers follow `chapter_hub.formula.md`
 - Pages follow `page.formula.md`
 - Required sections are present
 

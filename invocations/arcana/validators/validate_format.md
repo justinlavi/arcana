@@ -182,8 +182,3 @@ For each format violation:
 
 **Exclusions**: The rite automatically skips:
 - `base_invocation.md` (meta-template, not user-invocable)
-
-**Benefits of format validation**:
-- Ensures consistent user experience across all invocations
-- Prevents documentation drift
-- Enforces single-source architecture (no duplicate metadata)

@@ -23,7 +23,7 @@ Security scanning for credentials, unsafe patterns, and shell script quality.
 
 - Before Arcana releases
 - After adding or modifying rite scripts
-- During improve-arcana workflow (Phase 7.5)
+- During improve-arcana workflow
 - Before committing sensitive changes
 - As part of CI/CD pipeline
 
@@ -201,7 +201,7 @@ shellcheck --version
 ## Related
 
 - **Rite**: [rites/validate_security.py](../../../rites/validate_security.py)
-- **Best practices**: [docs/governance.md](../../../docs/governance.md#security-guidelines)
+- **Best practices**: [docs/governance.md](../../../docs/governance.md#security)
 - **Orchestrator**: [improve_arcana.md](../improve_arcana.md)
 
 ## Notes

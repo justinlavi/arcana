@@ -12,7 +12,7 @@ tags: [grimoire/{{SKILL_NAMESPACE}}, type/hub, hub/root]
 ## Read Model
 
 - Start here for any {{GRIMOIRE_DOMAIN}} request.
-- Follow hubs depth-first to the answering leaf — explicit pointers only, no exploratory wording.
+- Follow hubs depth-first to the answering leaf — explicit pointers only.
 - In-grimoire pointers use Obsidian wikilinks (`[[page]]`); cross-grimoire references use `GRIMOIRE_ARCANA/...` placeholders.
 
 ## Route By Chapter

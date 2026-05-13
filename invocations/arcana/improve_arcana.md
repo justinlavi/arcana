@@ -66,7 +66,7 @@ Cast the documentation improvement invocation:
 
 - [`quality/improve_documentation.md`](quality/improve_documentation.md)
 
-This single invocation now covers both **duplication** (same fact in two places, copy-pasted file trees, drifting lists) and **clarity** (jargon, unclear antecedents, structural overload). It is judgment-based — no slash command — and is intended to run as part of this orchestrator.
+This invocation covers both **duplication** (same fact in two places, copy-pasted file trees, drifting lists) and **clarity** (jargon, unclear antecedents, structural overload). It is judgment-based — no slash command — and is intended to run as part of this orchestrator.
 
 Apply the fixes it surfaces. Prefer:
 

@@ -355,6 +355,3 @@ Two anti-patterns to avoid:
 When a skill grows beyond a thin pointer, the right response is almost always to push the new logic *down* into a rite or invocation, not *up* into the SKILL.md body. The skill stays portable across agent platforms; the invocation/rite is where complexity lives.
 
 ---
-
-
-**This principle is foundational to Grimoire's architecture and should guide all future development.**

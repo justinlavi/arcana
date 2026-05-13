@@ -63,7 +63,7 @@ You can combine queries: `tag:#hub/chapter -path:chapters/projects/` colors only
 
 ## Other useful Obsidian features
 
-- **Backlinks pane** (`Ctrl/Cmd+Shift+B`) — every page lists who wikilinks to it. Replaces the v1 "Read order" / "Grimoire-first route" breadcrumbs.
+- **Backlinks pane** (`Ctrl/Cmd+Shift+B`) — every page lists who wikilinks to it.
 - **Dataview plugin** (community plugin) — runs queries against frontmatter (`type`, `tags`, `last_verified`, `authority`). Add a Dataview block to a chapter hub to auto-list its leaves filtered by `chapter/<name>` instead of hand-maintaining the routes section.
 - **Folder Notes plugin** (community plugin) — clicking a folder in the file explorer opens its `<folder>.md` hub. Aligns the file tree with the hub convention.
 - **Graph filters** — *Filters* tab in graph settings:

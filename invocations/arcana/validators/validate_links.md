@@ -151,7 +151,7 @@ When fixing links, check for related cross-references:
 
 **False positives** (valid links reported as broken):
 - Placeholder paths are automatically skipped
-- Code example files are excluded (IMPLEMENTATION_PLAN.md, operating_model.md)
+- Code example files are excluded (operating_model.md)
 - If needed, add exclusion to rite script
 
 **Links work but validation fails**:
@@ -172,9 +172,8 @@ When fixing links, check for related cross-references:
 ## Notes
 
 **Exclusions**: The rite automatically skips:
-- `IMPLEMENTATION_PLAN.md` (contains many code examples)
 - `docs/operating_model.md` (has example link patterns)
-- `invocations/arcana/validate_arcana_structure.md` (shows examples)
+- `invocations/arcana/validators/validate_structure.md` (shows examples)
 
 **Performance**: Moderate speed (3-5 seconds for entire Arcana)
 
