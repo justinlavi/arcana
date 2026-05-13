@@ -1,3 +1,12 @@
+---
+type: playbook
+title: "Help"
+aliases: ["help", "skill-catalog"]
+tags: [arcana/invocations, type/playbook, scope/meta]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Invocation: Grimoire Help
 
 ## Purpose

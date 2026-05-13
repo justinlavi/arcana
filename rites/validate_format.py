@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Validates invocation and formula format compliance (required sections).
+"""Validates invocation, formula, and hub format compliance.
+
+Hub convention (v2): For any folder F that acts as a router, the hub file is
+F/<basename(F)>.md. Hubs are validated as thin routers (< 200 lines, exists);
+non-hub invocation files are validated against the invocation schema.
 
 Usage: python3 rites/validate_format.py
 Exit codes: 0 = success, 1 = format violations found
@@ -18,24 +22,42 @@ INVOCATION_REQUIRED_SECTIONS = [
     (r"^## .*Invocation", "## Invocation section"),
 ]
 
+HUB_MAX_LINES = 200
+
+
+def is_hub(path):
+    """A hub file is named after its parent folder: <folder>/<folder>.md."""
+    return path.stem == path.parent.name
+
+
+SKIP_DIRS = {"sources"}
+
+
+def under_skip_dir(path):
+    rel = path.relative_to(ARCANA_ROOT)
+    return rel.parts and rel.parts[0] in SKIP_DIRS
+
 
 def main():
     errors = 0
 
     print()
-    print("Validating Invocation and Formula Format")
+    print("Validating Invocation, Formula, and Hub Format")
     print("==================================")
     print(f"Arcana root: {ARCANA_ROOT}")
     print()
 
-    # Validate invocation files
+    invocations_dir = ARCANA_ROOT / "invocations"
+
+    # 1. Invocation files (non-hub) must follow the invocation schema.
     print("Checking invocation format compliance...")
     inv_violations = 0
 
-    invocations_dir = ARCANA_ROOT / "invocations"
     if invocations_dir.is_dir():
         for path in sorted(invocations_dir.rglob("*.md")):
-            if path.name == "INDEX.md" or path.name == "base_invocation.md":
+            if path.name == "base_invocation.md":
+                continue
+            if is_hub(path):
                 continue
 
             content = path.read_text(errors="replace")
@@ -55,24 +77,26 @@ def main():
         print("  OK    All invocations have required sections")
     print()
 
-    # Validate INDEX.md files are thin routers (< 200 lines)
-    print("Checking INDEX.md files are thin routers...")
-    index_violations = 0
+    # 2. Hub files must be thin routers.
+    print(f"Checking hub files are thin routers (< {HUB_MAX_LINES} lines)...")
+    hub_violations = 0
 
     if invocations_dir.is_dir():
-        for path in sorted(invocations_dir.rglob("INDEX.md")):
+        for path in sorted(invocations_dir.rglob("*.md")):
+            if not is_hub(path):
+                continue
             lines = len(path.read_text(errors="replace").splitlines())
-            if lines > 200:
-                print(f"  WARN  INDEX.md too long ({lines} lines, should be < 200): "
+            if lines > HUB_MAX_LINES:
+                print(f"  WARN  Hub too long ({lines} lines, should be < {HUB_MAX_LINES}): "
                       f"{path.relative_to(ARCANA_ROOT)}")
-                index_violations += 1
+                hub_violations += 1
                 errors += 1
 
-    if index_violations == 0:
-        print("  OK    All INDEX.md files are appropriately sized")
+    if hub_violations == 0:
+        print("  OK    All hub files are appropriately sized")
     print()
 
-    # Validate formulae have basic structure
+    # 3. Formulae must have a title heading.
     print("Checking formula format...")
     formula_violations = 0
 

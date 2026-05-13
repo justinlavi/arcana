@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Installation"
+aliases: ["install", "summon", "setup"]
+tags: [type/reference, arcana/docs]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Grimoire Installation
 
 One command sets up everything — installs Arcana, summons grimoires, creates the local library, configures agent instruction files, and registers skills.

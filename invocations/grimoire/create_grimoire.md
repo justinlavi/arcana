@@ -1,8 +1,17 @@
+---
+type: playbook
+title: "Create Grimoire"
+aliases: ["create-grimoire", "scaffold-grimoire"]
+tags: [arcana/invocations, type/playbook, scope/domain]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Invocation: Create New Grimoire
 
 ## Purpose
 
-AI-guided conversational setup that scaffolds a complete grimoire from the formula template, registers it in the local library, and validates the result. Output is a working grimoire directory with customized `INDEX.md`, `README.md`, `grimoire.json`, and initial chapter skeletons.
+AI-guided conversational setup that scaffolds a complete grimoire from the formula template, registers it in the local library, and validates the result. Output is a working v2-compliant grimoire directory with customized root hub, README, manifest, `sources/`, `log.md`, and initial chapter skeletons (each with its own folder-named hub and frontmatter).
 
 ## Invocation
 
@@ -18,6 +27,8 @@ AI-guided conversational setup that scaffolds a complete grimoire from the formu
 4. No credentials, PII, or secrets.
 5. Link to source systems; don't duplicate their content.
 6. Designate an owner.
+7. Every page carries v2 frontmatter (see `GRIMOIRE_ARCANA/docs/page_schema.md`).
+8. Hub naming: every folder F has a hub at `F/<basename(F)>.md`.
 
 ---
 
@@ -31,7 +42,7 @@ Have a conversation, not a form. Ask one question at a time and probe for specif
 - Who are the primary users — just you, a team, public?
 - What 2–4 letter slug should prefix this grimoire's skills? Must match `^[a-z][a-z0-9]*$` (e.g. `cook` for a cooking grimoire yields `/cook-recipe-add`; `hr` for an HR grimoire yields `/hr-onboarding-checklist`).
 
-Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `token` (all-caps), `skill_namespace`, `purpose` (one sentence), `purpose_detailed`, `owner` (whoever maintains it — a person, team, or "personal"), `creation_date` (today).
+Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `token` (all-caps), `skill_namespace`, `purpose` (one sentence), `purpose_detailed`, `owner` (whoever maintains it — a person, team, or "personal"), `creation_date` (today as `YYYY-MM-DD`).
 
 ---
 
@@ -58,48 +69,52 @@ Let the user select, rename, drop, or add chapters and provide a one-line descri
 ```bash
 mkdir {{grimoire_directory}} && cd {{grimoire_directory}}
 git init
-cp ~/grimoires/arcana/formulae/grimoire/INDEX.md .
+cp ~/grimoires/arcana/formulae/grimoire/root_hub.formula.md ./{{grimoire_directory}}.md
 cp ~/grimoires/arcana/formulae/grimoire/README.md .
 cp ~/grimoires/arcana/formulae/grimoire/grimoire.json .
-mkdir chapters skills
+cp ~/grimoires/arcana/formulae/grimoire/log.md .
+mkdir chapters skills sources inbox
+cp ~/grimoires/arcana/formulae/grimoire/sources/README.md sources/README.md
+cp ~/grimoires/arcana/formulae/grimoire/inbox/README.md inbox/README.md
+touch sources/.gitkeep chapters/.gitkeep inbox/.gitkeep
 ```
 
-`grimoire.json` is the grimoire's self-declared identity (name, namespace, description) and the canonical source `/grm-skills-register` reads. `skills/` is created empty; populate as the grimoire grows.
+The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, namespace, description). `sources/` is the immutable sources layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `log.md` is the append-only activity log.
 
 ---
 
-## Step 4: Customize Manifest and Templates
+## Step 4: Customize Manifest, Hub, README, Log
 
-Replace placeholders in the three copied files. Confirm `skill_namespace` with the user before writing — it's load-bearing and must be unique across grimoires installed side-by-side.
+Replace placeholders. Confirm `skill_namespace` with the user before writing — it's load-bearing and must be unique across grimoires installed side-by-side.
 
 **`grimoire.json`**:
 - `{{GRIMOIRE_DIRECTORY}}`
 - `{{SKILL_NAMESPACE}}` (must match `^[a-z][a-z0-9]*$`)
 - `{{GRIMOIRE_PURPOSE}}`
 
-**`INDEX.md`**:
-- `{{GRIMOIRE_NAME}}`, `{{GRIMOIRE_TOKEN}}`, `{{GRIMOIRE_PURPOSE}}`, `{{GRIMOIRE_DOMAIN}}`
-- `{{CHAPTER_ROUTES}}` — one entry per selected chapter:
+**`{{grimoire_directory}}.md`** (root hub):
+- `{{GRIMOIRE_NAME}}`, `{{GRIMOIRE_NAME_LOWER}}`, `{{GRIMOIRE_DIRECTORY}}`, `{{GRIMOIRE_PURPOSE}}`, `{{GRIMOIRE_DOMAIN}}`, `{{SKILL_NAMESPACE}}`
+- `{{CHAPTER_ROUTES}}` — one entry per selected chapter, using wikilinks:
   ```markdown
-  - <chapter description>:
-    - `chapters/<chapter_name>/INDEX.md`
+  - <chapter description>: [[<chapter_name>]]
   ```
 
 **`README.md`**:
-- `{{GRIMOIRE_NAME}}`, `{{CREATION_DATE}}`, `{{OWNER_DOMAIN}}`, `{{GRIMOIRE_DOMAIN}}`
-- `{{GRIMOIRE_PURPOSE}}`, `{{GRIMOIRE_PURPOSE_DETAILED}}`
-- `{{GRIMOIRE_DIRECTORY}}`, `{{SKILL_NAMESPACE}}`
+- `{{GRIMOIRE_NAME}}`, `{{GRIMOIRE_PURPOSE_DETAILED}}`, `{{GRIMOIRE_DIRECTORY}}`, `{{SKILL_NAMESPACE}}`
 - `{{EXAMPLE_CHAPTER}}` — pick one chapter from the user's selection
 - `{{CHAPTER_LIST}}` — bulleted `**name** - description` per chapter
-- `{{CHAPTER_TREE}}` — ASCII tree of `chapters/<name>/`
+- `{{CHAPTER_TREE}}` — ASCII tree of `chapters/<name>/<name>.md`
+
+**`log.md`**:
+- `{{GRIMOIRE_NAME}}`, `{{CREATION_DATE}}`, `{{GRIMOIRE_DIRECTORY}}`
 
 Verify no `{{` placeholders remain:
 
 ```bash
-grep -r "{{" {{grimoire_directory}}/INDEX.md {{grimoire_directory}}/README.md {{grimoire_directory}}/grimoire.json
+grep -r "{{" {{grimoire_directory}}/{{grimoire_directory}}.md {{grimoire_directory}}/README.md {{grimoire_directory}}/grimoire.json {{grimoire_directory}}/log.md
 ```
 
-Remove the template `.gitkeep`:
+Remove any leftover `.gitkeep` files in chapter folders that get populated:
 
 ```bash
 rm -f {{grimoire_directory}}/chapters/.gitkeep
@@ -116,7 +131,7 @@ For each selected chapter, follow `GRIMOIRE_ARCANA/invocations/grimoire/create_c
 - **starting pointers**: ask user, or use `"Define during usage"`
 - **sub_topics**: suggest 2–3 inferred from the chapter (e.g. `onboarding` → `first_day`, `first_week`, `manager_guide`)
 
-Create chapter `INDEX.md` with routing to planned sub_topics. Do not generate full leaf docs in this pass — placeholders or TODOs in the chapter `INDEX.md` are acceptable.
+Create chapter hub `chapters/<chapter>/<chapter>.md` with v2 frontmatter and routing to planned sub_topics. Do not generate full leaf docs in this pass — placeholders or TODOs in the chapter hub are acceptable.
 
 If a chapter creation fails, report it and continue with the rest. The user can retry with `/grm-domain-create-chapter <name>`.
 
@@ -155,17 +170,14 @@ If `~/.claude/CLAUDE.md` or `~/.codex/AGENTS.md` lacks a `## Grimoire Knowledge 
 ## Step 7: Validate
 
 ```bash
-ls -la {{grimoire_directory}}/ {{grimoire_directory}}/chapters/
-grep -r "{{" {{grimoire_directory}}/   # must return nothing
+python3 GRIMOIRE_ARCANA/rites/validate_domain_structure.py --grimoire .
+python3 GRIMOIRE_ARCANA/rites/validate_frontmatter.py --grimoire .
+python3 GRIMOIRE_ARCANA/rites/validate_links.py --grimoire .
 ```
 
-Then run:
+Or invoke `/grm-domain-validate-structure` for the integrated structural pass.
 
-```
-/grm-domain-validate-structure
-```
-
-to confirm structural compliance. If the relevant agent instruction file already includes the Grimoire block, also test routing by asking the agent: `"What chapters exist in {{grimoire_name}}?"`
+If the relevant agent instruction file already includes the Grimoire block, also test routing by asking the agent: `"What chapters exist in {{grimoire_name}}?"`
 
 ---
 
@@ -173,6 +185,7 @@ to confirm structural compliance. If the relevant agent instruction file already
 
 - **Chapter creation**: [`create_chapter.md`](create_chapter.md)
 - **Template formula**: `GRIMOIRE_ARCANA/formulae/grimoire/`
+- **Page schema**: `GRIMOIRE_ARCANA/docs/page_schema.md`
 - **Skill registration**: `/grm-skills-register` (reads each grimoire's `grimoire.json`)
 - **Structure validator**: `/grm-domain-validate-structure`
 - **Agent block**: `GRIMOIRE_ARCANA/rites/templates/grimoire_block.md`

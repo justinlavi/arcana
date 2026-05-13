@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Quickstart"
+aliases: ["quick-start", "smoke-test"]
+tags: [type/reference, arcana/docs]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Grimoire Quickstart
 
 A 5-minute smoke test to verify your install and prove the routing model works end-to-end.
@@ -42,11 +51,11 @@ The skill should enumerate every installed `grm-*` and domain-namespaced skill (
 
 Pick any grimoire from your library and ask the agent (paraphrase as needed):
 
-> "Read the {grimoire-name} INDEX.md and tell me what chapters it routes to."
+> "Read the {grimoire-name} root hub and tell me what chapters it routes to."
 
 The agent should:
 1. Resolve the grimoire's `local_path` via `~/grimoires/library.json`.
-2. Read `{grimoire}/INDEX.md`.
+2. Read `<grimoire>/<grimoire>.md`.
 3. Report the chapter list — exactly what's in the file, no invention.
 
 If it makes things up or can't find the file, your agent's instruction block is missing the routing rules. Re-check [agent_configuration.md](agent_configuration.md#agent-instruction-files).
@@ -59,7 +68,7 @@ For a deeper test, ask:
 
 > "What's the canonical document for {topic} in {grimoire-name}?"
 
-The agent should follow the `INDEX.md → chapter INDEX.md → leaf doc` model and cite the exact file path it read. Three reads, one answer.
+The agent should follow hubs depth-first (root hub → chapter hub → … → leaf, however deep the topic needs) and cite the exact file path it read.
 
 ---
 

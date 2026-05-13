@@ -27,7 +27,7 @@ You are validating grimoire structure compliance. Follow the invocation guide be
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
-- **Chapter formula**: `{{ARCANA_PATH}}/formulae/chapter_index.formula.md`
+- **Chapter formula**: `{{ARCANA_PATH}}/formulae/chapter_hub.formula.md`
 - **Page formula**: `{{ARCANA_PATH}}/formulae/page.formula.md`
 
 ## Invocation

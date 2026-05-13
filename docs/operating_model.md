@@ -1,23 +1,65 @@
+---
+type: reference
+title: "Grimoire Operating Model"
+aliases: ["operating-model", "routing-model"]
+tags: [type/reference, arcana/docs]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Grimoire Operating Model
 
 ## Universal Principles
 
-The following principles apply whether you're using Grimoire for various domains and organizations.
+The following principles apply across every domain a grimoire might cover.
+
+## Storage Layers
+
+A grimoire's content is organized into layers that work together:
+
+| Layer | Directory | Owner | Purpose |
+|---|---|---|---|
+| Sources | `sources/` | LLM reads, never modifies | Immutable artifacts: articles, transcripts, papers, screenshots. Citation-stable. |
+| Inbox | `inbox/` | LLM and user both write | Transient drop zone for mixed content awaiting classification. Cleared on `/grm-domain-ingest`. |
+| Wiki | `chapters/`, root hub | LLM authors and maintains | Synthesized knowledge with frontmatter (`type`, `authority`, `sources`, `last_verified`) |
+| Schema | `grimoire.json` + injected agent block | User co-evolves | Tells the agent how to operate this grimoire |
+
+Plus the per-grimoire `log.md` (append-only activity record).
+
+`sources/` and `inbox/` are distinct on purpose: `sources/` is permanent and citation-worthy (pages with `authority: external` cite it), while `inbox/` is transient (drop a zip extract, AI-generated draft, or coworker hand-off here and the next ingest sweep classifies each item — sources go to `sources/`, authored content goes to `chapters/`, and ambiguous items stay in `inbox/` for human review). Pages must never cite `inbox/` paths in `sources:` because inbox content disappears once processed.
+
+The wiki layer's *routing surface* is the hub tree, defined next.
+
+## Hub Convention (Self-Similar, Open-Ended Depth)
+
+Every folder F that acts as a router has a hub file at `F/<basename(F)>.md`. The convention is uniform regardless of depth:
+
+- Grimoire root hub: `<grimoire>/<grimoire>.md`
+- Any chapter or sub-chapter hub: `<folder>/<folder>.md`
+
+A hub may route to **sub-hubs**, to **leaf documents**, or to both. There is no fixed maximum depth — a chapter that needs sub-chapters gets them; a chapter that needs only direct leaves keeps them. Each hub is idempotent: the same shape and rules apply at every level.
+
+Hub-level tags (`hub/root`, `hub/chapter`, `hub/sub`) distinguish levels for the Obsidian graph view but don't constrain the routing model. `hub/chapter` applies to a top-level chapter (immediately under `chapters/`); `hub/sub` applies to any deeper hub regardless of how many levels down.
+
+Folder-named hubs make Obsidian's graph view legible (every node has a unique, meaningful label) and make wikilinks (`[[chapter_name]]`) intuitive.
 
 ## What Grimoire Is
-- A deterministic knowledge router for any knowledge-based tasks (code, documentation, policies, templates, processes, etc.).
-- Minimal-read invariant: `INDEX.md` -> `chapters/<chapter>/INDEX.md` -> 1-2 leaf docs.
-- Routers are maps; leaf docs store invariants, stable patterns, and source pointers.
-- Keep canonical rules in one leaf and link to it from related docs.
 
-## How To Route (7 Steps)
-1) Start at `INDEX.md`.
+- A deterministic knowledge router for any knowledge-based work (code, documentation, policies, templates, processes, etc.).
+- A persistent, compounding artifact the LLM keeps current as new sources arrive.
+- **Minimal-read invariant:** every hop narrows the search; the path stops at the leaf that answers the question. Shallow when topics are flat (root hub → leaf), deeper when topics warrant nesting (root → chapter → sub-chapter → … → leaf). The invariant is "as few hops as the structure requires," not a fixed count.
+- Hubs are maps; leaf docs store invariants, stable patterns, and source pointers.
+- Keep canonical rules in one leaf and link/wikilink to it from related docs.
+
+## How To Route
+
+1) Start at the grimoire root hub: `<grimoire>/<grimoire>.md`.
 2) Classify the request: which chapter does it fall into? Is it shared or scoped to a particular project / use case?
-3) Follow one explicit route to `chapters/<chapter>/INDEX.md`.
-4) Read one primary leaf doc (+ one related leaf only when the router says so).
-5) For subject-specific work, follow the subject's chapter router (e.g. `chapters/recipes/INDEX.md` in a cooking grimoire, `chapters/onboarding/INDEX.md` in an HR grimoire).
-6) For project / scope-specific overrides, route through `chapters/projects/INDEX.md` (or whatever the grimoire calls its scope folder) then the specific scope router.
-7) When adding knowledge, update routers with explicit pointers; no exploratory wording.
+3) Follow one explicit pointer. The target may be a leaf (you're done) or another hub (recurse).
+4) Repeat step 3 at each hub. Read sub-hubs depth-first; do not branch unless the current hub explicitly directs you to a related sibling.
+5) When you reach a leaf, read it. Read one related leaf only when the hub or the leaf's `Related` section calls for it.
+6) For project / scope-specific overrides, the grimoire root or a chapter hub typically routes through a `projects/projects.md` (or `clients/`, `teams/`) sub-hub. Follow it and then the specific scope hub.
+7) When adding knowledge, update the relevant hub with an explicit pointer (wikilinks preferred); no exploratory wording. If the new content needs its own grouping, add a sub-folder with its own hub — the convention recurses.
 
 ## Scope Rules
 - **Shared chapters** store rules that apply across all scopes the grimoire covers (e.g. company-wide policies in an HR grimoire, kitchen-wide techniques in a cooking grimoire).

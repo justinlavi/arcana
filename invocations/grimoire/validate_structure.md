@@ -1,3 +1,12 @@
+---
+type: playbook
+title: "Validate Domain Structure"
+aliases: ["validate-structure-domain"]
+tags: [arcana/invocations, type/playbook, scope/domain]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # 📐 Invocation: Validate Grimoire Structure Compliance
 
 ## ⚡ Purpose
@@ -44,7 +53,7 @@ Optional scopes:
 
 ## Required Templates
 
-- Chapter routers: `formulae/chapter_index.formula.md`
+- Chapter routers: `formulae/chapter_hub.formula.md`
 - Pages: `formulae/page.formula.md`
 
 ---
@@ -53,7 +62,7 @@ Optional scopes:
 
 ### Phase 1: File Classification
 
-1. Identify chapter routers (`**/INDEX.md`, excluding root/README-only contexts)
+1. Identify chapter routers (`<chapter>/<chapter>.md`, excluding root/README-only contexts)
 2. Identify knowledge pages (`**/*.md` excluding routers and README docs)
 
 ### Phase 2: Chapter Router Checks

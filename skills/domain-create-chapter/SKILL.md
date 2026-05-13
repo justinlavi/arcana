@@ -31,7 +31,7 @@ If the user provided a topic, use it: **$topic**
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
-- **Chapter formula**: `{{ARCANA_PATH}}/formulae/chapter_index.formula.md`
+- **Chapter formula**: `{{ARCANA_PATH}}/formulae/chapter_hub.formula.md`
 - **Page formula**: `{{ARCANA_PATH}}/formulae/page.formula.md`
 
 ## Invocation

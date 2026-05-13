@@ -1,3 +1,12 @@
+---
+type: playbook
+title: "Improve Documentation"
+aliases: ["improve-documentation", "doc-quality"]
+tags: [arcana/invocations, type/playbook, scope/quality]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Invocation: Improve Arcana Quality
 
 ## Purpose
@@ -67,7 +76,7 @@ grep -rho '\b[A-Z][A-Z]+\b' --include="*.md" docs | sort | uniq -c | sort -rn | 
 - Documents doing more than one job (split them)
 - Documents with nothing other docs need (consider deleting)
 - Cross-references that go through too many hops to reach the answer
-- Missing or stale entries in [`INDEX.md`](../../../INDEX.md), [`docs/skills.md`](../../../docs/skills.md), or other auto-generated indexes (regenerate with `python3 rites/sync_docs.py --apply`)
+- Missing or stale entries in [hub](../../../arcana.md), [`docs/skills.md`](../../../docs/skills.md), or other auto-generated indexes (regenerate with `python3 rites/sync_docs.py --apply`)
 
 ### 4. Apply fixes
 
@@ -85,7 +94,7 @@ For each issue:
 
 ## Related
 
-- **Validators**: [`validators/INDEX.md`](../validators/INDEX.md) and `/grm-arcana-validate-all`
+- **Validators**: [`validators/validators.md`](../validators/validators.md) and `/grm-arcana-validate-all`
 - **Rite quality**: [`validate_rites.md`](validate_rites.md) (rite-specific checks; complementary)
 - **Doc generator**: [`rites/sync_docs.py`](../../../rites/sync_docs.py) (the pattern for replacing prose-as-data with single-source views)
 - **Orchestrator**: [`improve_arcana.md`](../improve_arcana.md)

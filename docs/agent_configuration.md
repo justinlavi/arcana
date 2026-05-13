@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Agent Configuration"
+aliases: ["agent-config", "agent-setup"]
+tags: [type/reference, arcana/docs]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Grimoire Agent Configuration
 
 Per-agent setup for using Grimoire skills (Claude Code, Codex/ChatGPT, Copilot, etc.). The summoning rite ([installation.md](installation.md)) configures the supported agents automatically — this doc is for manual configuration, additional agents, and per-platform nuances.

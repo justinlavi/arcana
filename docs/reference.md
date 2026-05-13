@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Grimoire Reference Guide"
+aliases: ["terminology", "glossary", "reference"]
+tags: [type/reference, arcana/docs]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Grimoire Reference Guide
 
 **Terminology, symbols, and conventions for Arcana**

@@ -34,9 +34,12 @@ SKIP_FILES = {
 
 SKIP_DIRS = {
     "invocations/arcana/quality",  # quality docs may discuss historical terms
+    "sources",  # imported source artifacts may have hyphens in their original names
 }
 
-HYPHEN_PATTERN = re.compile(r"chapters/[a-z]+-[a-z]+/|[a-z]+-[a-z]+\.md")
+# Hyphen pattern for the wiki/chapters layer only. sources/ is allowed to contain
+# arbitrary filenames (article-name.md, episode-3.md, etc.).
+HYPHEN_PATTERN = re.compile(r"chapters/[a-z]+-[a-z]+/|chapters/[^ ]*[a-z]+-[a-z]+\.md")
 
 
 def load_deprecated_terms():

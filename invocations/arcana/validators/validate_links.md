@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Validate Links"
+aliases: ["validate-links"]
+tags: [arcana/invocations, type/reference, scope/validators]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # 🔮 Invocation: Validate Arcana Links
 
 ## Purpose
@@ -71,7 +80,7 @@ When fixing links, check for related cross-references:
 
 **Example**: If you renamed a file:
 1. Update direct links to the file
-2. Update references in INDEX.md
+2. Update references in the relevant hub
 3. Update "Related" sections in other invocations
 4. Check breadcrumb trails in documentation
 

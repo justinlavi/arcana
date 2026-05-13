@@ -94,27 +94,49 @@ def main():
     if platform.system().lower() == "windows":
         binary_name += ".exe"
 
-    run(
-        [
-            sys.executable,
-            "-m",
-            "PyInstaller",
-            "--onefile",
-            "--noconfirm",
-            "--clean",
-            "--name",
-            binary_base,
-            "--distpath",
-            str(pyinstaller_dist),
-            "--workpath",
-            str(pyinstaller_work),
-            "--specpath",
-            str(pyinstaller_work),
-            "--collect-all",
-            "dearpygui",
-            str(ROOT / "rites" / "summon.py"),
-        ]
-    )
+    pyinstaller_args = [
+        sys.executable,
+        "-m",
+        "PyInstaller",
+        "--onefile",
+        "--noconfirm",
+        "--clean",
+        "--name",
+        binary_base,
+        "--distpath",
+        str(pyinstaller_dist),
+        "--workpath",
+        str(pyinstaller_work),
+        "--specpath",
+        str(pyinstaller_work),
+        "--collect-all",
+        "dearpygui",
+    ]
+
+    # Bundle the resources/ folder so the runtime icon (and any future assets)
+    # is accessible from the frozen binary via the path summon.py searches.
+    # PyInstaller's --add-data separator is ':' on Linux/macOS and ';' on Windows.
+    resources_dir = ROOT / "resources"
+    if resources_dir.is_dir():
+        sep = ";" if platform.system().lower() == "windows" else ":"
+        pyinstaller_args += ["--add-data", f"{resources_dir}{sep}resources"]
+
+    # Platform-native executable icon (Windows .exe icon / macOS .app icon).
+    # Only used if a native-format file exists alongside the PNGs; we don't
+    # auto-convert to keep the build dependency surface tiny.
+    system = platform.system().lower()
+    if system == "windows":
+        icon_path = resources_dir / "arcana_icon.ico"
+        if icon_path.is_file():
+            pyinstaller_args += ["--icon", str(icon_path)]
+    elif system == "darwin":
+        icon_path = resources_dir / "arcana_icon.icns"
+        if icon_path.is_file():
+            pyinstaller_args += ["--icon", str(icon_path)]
+
+    pyinstaller_args.append(str(ROOT / "rites" / "summon.py"))
+
+    run(pyinstaller_args)
 
     binary = pyinstaller_dist / binary_name
     if not binary.is_file():

@@ -1,8 +1,17 @@
+---
+type: playbook
+title: "Improve Grimoire"
+aliases: ["improve-grimoire", "domain-improve"]
+tags: [arcana/invocations, type/playbook, scope/domain]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Invocation: Improve Domain Grimoire
 
 ## Purpose
 
-Audit and improve the *active* domain grimoire for token-efficient, deterministic routing: `INDEX.md` → chapter `INDEX.md` → 1–2 canonical leaf docs. Combines mechanical validators with judgment-based passes. Safe to rerun.
+Audit and improve the *active* domain grimoire for token-efficient, deterministic routing through the hub tree (root hub → chapter hub → optional sub-chapter hubs → 1–2 canonical leaf docs; depth is open-ended). Combines mechanical validators with judgment-based passes. Safe to rerun.
 
 This is the domain-grimoire counterpart to `/grm-arcana-improve` (which targets Arcana itself). The two are unrelated — never fall back from one to the other.
 
@@ -22,7 +31,8 @@ From a registered domain grimoire's root:
 
 ## When to cast
 
-- Routing takes >3 hops to reach common knowledge
+- Routing takes more hops than the topic warrants (deeply-nested chains for genuinely simple knowledge)
+- Hub trees are unbalanced — a few hubs hold most of the leaves while others are nearly empty
 - Orphan docs or broken links have accumulated
 - Routers feel bloated or duplicated
 - Quarterly hygiene pass, or after adding 5+ new docs
@@ -33,15 +43,15 @@ From a registered domain grimoire's root:
 
 Invoke and collect output from:
 
-- `/grm-domain-validate-structure` — directory layout, required `INDEX.md` files, naming
+- `/grm-domain-validate-structure` — directory layout, required hub files, naming
 - `/grm-arcana-validate-links` — internal markdown links resolve
 - `/grm-arcana-validate-boundaries` — magical/practical boundary compliance
 
-Stop and report if any validator returns hard errors that would invalidate later phases (e.g. missing root `INDEX.md`).
+Stop and report if any validator returns hard errors that would invalidate later phases (e.g. missing root hub).
 
 ### Phase 2: Inventory
 
-- Enumerate routers (every `INDEX.md`) and leaf docs.
+- Enumerate routers (every hub) and leaf docs.
 - Classify leaves as wired (reachable from a router) or orphaned.
 - Flag absolute paths, `search`/`look around` instructions, and prose >150 words inside routers.
 - Identify duplicate or near-duplicate leaf content.
@@ -52,7 +62,7 @@ Run `/grm-domain-analyze-semantics` and incorporate its output:
 
 - Naming clarity scores per chapter
 - Terminology drift (`config` vs `configuration`, etc.)
-- Discoverability gaps (queries that take >3 hops)
+- Discoverability gaps (queries whose hop count is disproportionate to the topic's depth)
 - Quick wins (high impact, <30 min effort)
 
 ### Phase 4: Judgment passes
@@ -62,7 +72,7 @@ Apply the following heuristics to the inventory and semantic output. Each is hum
 **Router normalization**
 - Routers are pointer lists. Move prose into leaf docs.
 - Each router entry: one line, one destination, query-shaped phrasing (`CMake config → cmake_overrides.md`).
-- Root `INDEX.md` points only to chapter `INDEX.md` files; chapter `INDEX.md` points to 1–2 leaves per topic.
+- Root hub points only to chapter hub files; chapter hub points to 1–2 leaves per topic.
 
 **Canonicalization**
 - For duplicate topics, pick one canonical leaf and replace the others with redirects or links.
@@ -110,12 +120,15 @@ Re-run the Phase 1 validators. All must pass. Re-run `/grm-domain-analyze-semant
 Operates on the active grimoire only:
 
 ```
-grimoire-{domain}/
-├── INDEX.md
+{grimoire-name}/
+├── {grimoire-name}.md       # Root hub (folder-name convention)
 ├── README.md
+├── grimoire.json
+├── log.md
+├── sources/                     # Immutable sources
 └── chapters/
-    ├── **/INDEX.md
-    ├── **/*.md
+    ├── <chapter>/<chapter>.md   # Chapter hub (folder-name convention)
+    ├── <chapter>/*.md           # Leaf pages
     ├── **/templates/
     ├── **/scripts/
     └── **/snippets/

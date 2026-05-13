@@ -66,17 +66,30 @@ def _load_grimoire_block():
     return """
 ## Grimoire Knowledge Base
 
-**Library**: `~/grimoires/library.json` — read this file to resolve named grimoire keys and their paths.
+**Library**: `~/grimoires/library.json` — read this file to resolve named grimoire keys and their on-disk paths.
 
-**Arcana key**: `GRIMOIRE_ARCANA` — resolved from library or defaults to `~/grimoires/arcana/`
+**Arcana key**: `GRIMOIRE_ARCANA` — resolved from the library or defaults to `~/grimoires/arcana/`.
 
-**Skills**: Arcana operations are available as `/grm-*` skills (e.g., `/grm-meta-help`, `/grm-domain-improve`). Domain grimoire skills use the namespace declared in each grimoire's `grimoire.json`.
+**Skills**: Arcana ships `/grm-*` skills (e.g. `/grm-meta-help`, `/grm-domain-ingest`, `/grm-domain-lint`, `/grm-domain-improve`). Each domain grimoire ships its own `/<namespace>-*` skills declared in its `grimoire.json`.
 
-**Routing**:
-1. Determine the active grimoire from working directory or project context; look up its `local_path` in the library.
-2. Read `{active grimoire}/INDEX.md` first; route deterministically: `INDEX.md` > chapter `INDEX.md` > 1-2 page docs.
-3. For Grimoire meta-knowledge: read `GRIMOIRE_ARCANA/INDEX.md`.
-4. Do not modify Grimoire files unless a `/grm-*` skill, a domain skill, or explicit instruction asks for it.
+### Hub convention
+
+For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. The grimoire root hub is `<grimoire>/<grimoire>.md`. A hub may route to sub-hubs, to leaf pages, or both — depth is open-ended. Routing follows hubs depth-first until a leaf answers the question; chains can be 2 hops (root -> leaf) or more (root -> chapter -> sub-chapter -> ... -> leaf), as deep as the topic warrants.
+
+### Storage layers
+
+- `sources/` — Immutable source artifacts. Read, never modify. Citation-stable.
+- `inbox/` — Optional transient drop zone for mixed content awaiting classification. Cleared by `/grm-domain-ingest`. Pages must not cite `inbox/` paths.
+- `chapters/` — LLM-authored knowledge pages with YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`); see `GRIMOIRE_ARCANA/docs/page_schema.md`.
+- `log.md` — Append-only activity log; entries prefixed `## [YYYY-MM-DD HH:MM] <op> | <title>`.
+
+### Routing
+
+1. Resolve the active grimoire from the working directory or project context.
+2. Open `<grimoire>/<grimoire>.md` for routing.
+3. Use Obsidian wikilinks (`[[page]]`) for in-grimoire pointers; cross-grimoire references use placeholders (`GRIMOIRE_ARCANA/...`).
+4. For Grimoire meta-knowledge: read `GRIMOIRE_ARCANA/arcana.md`.
+5. Do not modify Grimoire files unless a `/grm-*` skill, a domain skill, or explicit instruction asks for it.
 """
 
 
@@ -88,7 +101,13 @@ GRIMOIRE_BLOCK = _load_grimoire_block()
 
 
 class Logger:
-    """Terminal logger with prefixed output."""
+    """Terminal logger with prefixed output.
+
+    Both this terminal logger and the GUI's GUILogger expose the same
+    interface — info/ok/warn/err for tagged messages, plus `line()` for raw
+    subprocess output that should appear in the user-visible log without
+    a redundant tag prefix.
+    """
 
     def info(self, msg):
         print(f"  [INFO]  {msg}")
@@ -102,14 +121,23 @@ class Logger:
     def err(self, msg):
         print(f"  [ERROR] {msg}")
 
+    def line(self, text):
+        """Append a raw line of output (no tag prefix). For subprocess output."""
+        print(text)
+
 
 # ---------------------------------------------------------------------------
 # Git helpers
 # ---------------------------------------------------------------------------
 
 
-def git(*args, cwd=None):
-    """Run a git command. Returns (success: bool, stdout: str)."""
+def git(*args, cwd=None, log=None):
+    """Run a git command. Returns (success: bool, stdout: str).
+
+    When `log` is provided and the command fails, git's stderr is fed line-by-line
+    through `log.line()` so the user sees the actual git error (auth failure,
+    network issue, repo not found, etc.) instead of just our generic message.
+    """
     try:
         result = subprocess.run(
             ["git"] + list(args),
@@ -117,8 +145,15 @@ def git(*args, cwd=None):
             capture_output=True,
             text=True,
         )
+        if result.returncode != 0 and log is not None:
+            stderr = (result.stderr or "").rstrip()
+            if stderr:
+                for line in stderr.splitlines():
+                    log.line(line)
         return result.returncode == 0, result.stdout.strip()
     except FileNotFoundError:
+        if log is not None:
+            log.line("git executable not found on PATH")
         return False, ""
 
 
@@ -494,7 +529,7 @@ def install_arcana(arcana_url, log):
 
     if (ARCANA_DIR / ".git").is_dir():
         log.info("Arcana already installed — pulling latest...")
-        ok, _ = git("-C", str(ARCANA_DIR), "pull", "--ff-only")
+        ok, _ = git("-C", str(ARCANA_DIR), "pull", "--ff-only", log=log)
         if ok:
             log.ok(f"Arcana updated: {ARCANA_DIR}")
         else:
@@ -502,11 +537,11 @@ def install_arcana(arcana_url, log):
             log.ok(f"Arcana exists: {ARCANA_DIR}")
     elif arcana_url:
         log.info(f"Cloning Arcana from {arcana_url}...")
-        ok, _ = git("clone", arcana_url, str(ARCANA_DIR))
+        ok, _ = git("clone", arcana_url, str(ARCANA_DIR), log=log)
         if ok:
             log.ok(f"Arcana cloned to {ARCANA_DIR}")
         else:
-            log.err("Failed to clone Arcana — check network and git credentials")
+            log.err("Failed to clone Arcana — check network and git credentials (see git output above)")
             return False
     else:
         if ARCANA_DIR.is_dir():
@@ -541,7 +576,7 @@ def install_grimoire(key, entry, log):
 
     if (target / ".git").is_dir():
         log.info(f"{name} already installed — pulling latest...")
-        ok, _ = git("-C", str(target), "pull", "--ff-only")
+        ok, _ = git("-C", str(target), "pull", "--ff-only", log=log)
         if ok:
             log.ok(f"{name} updated: {target}")
         else:
@@ -553,12 +588,12 @@ def install_grimoire(key, entry, log):
         return True
     else:
         log.info(f"Cloning {name} from {url}...")
-        ok, _ = git("clone", url, str(target))
+        ok, _ = git("clone", url, str(target), log=log)
         if ok:
             log.ok(f"Cloned {name} to {target}")
             return True
         else:
-            log.err(f"Failed to clone {name} — check VPN and git credentials")
+            log.err(f"Failed to clone {name} — check VPN and git credentials (see git output above)")
             return False
 
 
@@ -624,30 +659,73 @@ def inject_agent_configs(log):
 
 
 def register_skills(log):
-    """Run the skill registration script."""
-    log.info("Registering Grimoire skills...")
-    register_script = ARCANA_DIR / "rites" / "register_skills.py"
+    """Run the skill registration script.
 
+    Always attempts to run. Surfaces both stdout and stderr so failures are
+    never silent. Returns True on success, False on failure (caller may want
+    to surface the failure in the final summary, but the rest of summoning
+    should not be aborted by a registration failure).
+    """
+    log.info("Registering Grimoire skills...")
+
+    # Prefer the installed Arcana copy. Fall back to the bootstrap copy in
+    # the current rite dir during first-time install (when ARCANA_DIR is the
+    # repo we're cloning into, the script lands there a moment before this
+    # runs, but during a hot-bootstrap the script may only exist next to us).
+    register_script = ARCANA_DIR / "rites" / "register_skills.py"
     if not register_script.is_file():
-        # Fall back to current directory during first-time setup
         register_script = RITE_DIR / "register_skills.py"
 
     if not register_script.is_file():
-        log.warn("register_skills.py not found — skipping skill registration")
-        return
+        log.err(
+            f"register_skills.py not found at {ARCANA_DIR / 'rites'} or {RITE_DIR}"
+        )
+        log.err("Skills NOT registered. Re-run manually after Arcana lands:")
+        log.err(f"  python3 {ARCANA_DIR / 'rites' / 'register_skills.py'}")
+        return False
 
     result = subprocess.run(
         [sys.executable, str(register_script), "--agent", "all"],
         capture_output=True,
         text=True,
     )
+
+    # Route subprocess output through the log object so both CLI (stdout) and
+    # GUI (log window) audiences see the same lines verbatim.
     if result.stdout:
-        for line in result.stdout.strip().splitlines():
-            print(line)
+        for line in result.stdout.rstrip().splitlines():
+            log.line(line)
+    if result.stderr:
+        for line in result.stderr.rstrip().splitlines():
+            log.line(line)
+
     if result.returncode != 0:
-        log.warn("Skill registration had warnings (see above)")
-    else:
-        log.ok("Skills registered to ~/.claude/skills/ and ~/.codex/skills/")
+        log.err(
+            f"Skill registration FAILED (exit {result.returncode}). See output above."
+        )
+        log.err("Re-run manually with:")
+        log.err(f"  python3 {register_script}")
+        return False
+
+    # Confirm by spot-checking the agent skill directories.
+    claude_skills_dir = Path.home() / ".claude" / "skills"
+    codex_skills_dir = Path.home() / ".codex" / "skills"
+    claude_count = len(list(claude_skills_dir.glob("grm-*"))) if claude_skills_dir.is_dir() else 0
+    codex_count = len(list(codex_skills_dir.glob("grm-*"))) if codex_skills_dir.is_dir() else 0
+    log.ok(
+        f"Skills registered: {claude_count} to {claude_skills_dir}, "
+        f"{codex_count} to {codex_skills_dir}"
+    )
+    if claude_count == 0 and codex_count == 0:
+        log.warn(
+            "No /grm-* skills landed in either agent directory — "
+            "this usually means neither Claude Code nor Codex is set up on this machine."
+        )
+        log.warn(
+            "Run `mkdir -p ~/.claude/skills ~/.codex/skills && "
+            f"python3 {register_script}` after installing your agent of choice."
+        )
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -765,33 +843,44 @@ def run_cli(args):
         if install_grimoire(key, entry, log):
             installed_keys.append(key)
 
-    if not installed_keys:
-        log.err("No grimoires were installed")
-        sys.exit(1)
+    if selected_keys and not installed_keys:
+        log.warn(
+            "No domain grimoires installed successfully. "
+            "Continuing with Arcana-only setup (its /grm-* skills still need to register)."
+        )
 
-    # Update local library
-    print()
-    update_local_library(installed_keys, library, log)
+    # Update local library — only if at least one domain grimoire landed.
+    if installed_keys:
+        print()
+        update_local_library(installed_keys, library, log)
 
-    # Inject agent instruction files
+    # Always inject agent instruction files (the schema block changes between
+    # Arcana releases, so re-injecting keeps it current).
     print()
     inject_agent_configs(log)
 
-    # Register skills
+    # Always register skills — Arcana itself ships /grm-* skills regardless of
+    # which (or how many) domain grimoires were installed.
     print()
-    register_skills(log)
+    skills_ok = register_skills(log)
 
     # Summary
     print()
     print("============================================")
-    print("  Grimoire Summoning Complete")
+    if skills_ok:
+        print("  Grimoire Summoning Complete")
+    else:
+        print("  Grimoire Summoning Complete (with warnings)")
     print("============================================")
     print()
     print("  Arcana:  ~/grimoires/arcana/")
     print()
-    print("  Installed grimoires:")
-    for key in installed_keys:
-        print(f"    - ~/grimoires/{key}/")
+    if installed_keys:
+        print("  Installed grimoires:")
+        for key in installed_keys:
+            print(f"    - ~/grimoires/{key}/")
+    else:
+        print("  Installed grimoires: (none — Arcana only)")
     print()
     print(f"  Local library: {LOCAL_LIBRARY}")
     print(f"  CLAUDE.md:     {CLAUDE_MD}")
@@ -799,6 +888,10 @@ def run_cli(args):
     print("  Skills:        ~/.claude/skills/")
     print("                 ~/.codex/skills/")
     print()
+    if not skills_ok:
+        print("  *** Skill registration failed — see errors above. Re-run: ***")
+        print(f"      python3 {ARCANA_DIR / 'rites' / 'register_skills.py'}")
+        print()
     print("  Next steps:")
     print("    1. Open a new Claude Code or Codex/ChatGPT session")
     print("    2. Try: /grm-meta-help")
@@ -854,9 +947,243 @@ def _ensure_dearpygui():
     return dpg
 
 
+# ---------------------------------------------------------------------------
+# GUI: DPI scaling + theme + font helpers
+# ---------------------------------------------------------------------------
+
+# Vaporwave-leaning palette, mirrors docs/obsidian.md.
+GUI_COLORS = {
+    "bg":            (20, 22, 38),       # window background — deep indigo
+    "bg_alt":        (28, 30, 52),       # child windows
+    "bg_input":      (24, 26, 46),       # input fields
+    "bg_input_hov":  (34, 36, 60),
+    "border":        (60, 50, 100),
+    "text":          (235, 235, 245),    # body text — near-white
+    "text_muted":    (155, 160, 195),    # secondary text
+    "text_title":    (255, 113, 206),    # hot pink — matches hub/root
+    "accent":        (1, 205, 254),      # cyan — matches hub/chapter
+    "accent_hover":  (90, 220, 255),
+    "btn_primary":   (185, 103, 255),    # purple — matches hub/sub
+    "btn_primary_hov": (210, 140, 255),
+    "btn_primary_act": (155, 80, 220),
+    "btn_secondary": (60, 65, 100),
+    "btn_secondary_hov": (80, 85, 130),
+    "btn_secondary_act": (50, 55, 85),
+    "separator":     (60, 50, 100),
+    "checkmark":     (255, 113, 206),
+}
+
+
+def _compute_dpi_scale():
+    """Best-effort DPI scale factor. 1.0 on standard 1080p, ~1.5–2.0 on 4K.
+
+    Tries a few methods, all dependency-free, and falls back to 1.0 if every
+    detection fails. Honors GRIMOIRE_GUI_SCALE env var for explicit override.
+    """
+    override = os.environ.get("GRIMOIRE_GUI_SCALE", "").strip()
+    if override:
+        try:
+            v = float(override)
+            return max(0.5, min(4.0, v))
+        except ValueError:
+            pass
+
+    # Method 1: tkinter (ships with stdlib on most platforms)
+    try:
+        import tkinter
+        root = tkinter.Tk()
+        root.withdraw()
+        # winfo_fpixels('1i') = pixels per inch on this display
+        dpi = root.winfo_fpixels("1i")
+        root.destroy()
+        if dpi and dpi > 0:
+            return max(1.0, min(3.0, dpi / 96.0))
+    except Exception:
+        pass
+
+    # Method 2: rough heuristic from screen height
+    try:
+        if sys.platform.startswith("linux"):
+            result = subprocess.run(
+                ["xrandr", "--current"], capture_output=True, text=True, timeout=2
+            )
+            if result.returncode == 0:
+                # Parse first "current 1920 x 1080" we find
+                m = re.search(r"current\s+(\d+)\s*x\s*(\d+)", result.stdout)
+                if m:
+                    height = int(m.group(2))
+                    if height >= 2160:
+                        return 1.8
+                    if height >= 1440:
+                        return 1.35
+    except Exception:
+        pass
+
+    return 1.0
+
+
+def _find_system_font():
+    """Return a path to a usable TTF/OTF font, or None to use Dear PyGui default.
+
+    The default ProggyClean bitmap font scales poorly at high sizes; loading
+    a vector font lets us draw crisp text at DPI-scaled sizes.
+    """
+    candidates = [
+        # Linux
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        "/usr/share/fonts/TTF/DejaVuSans.ttf",
+        "/usr/share/fonts/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/noto/NotoSans-Regular.ttf",
+        # macOS
+        "/System/Library/Fonts/Helvetica.ttc",
+        "/System/Library/Fonts/SFNS.ttf",
+        "/Library/Fonts/Arial.ttf",
+        # Windows
+        "C:/Windows/Fonts/segoeui.ttf",
+        "C:/Windows/Fonts/arial.ttf",
+    ]
+    for p in candidates:
+        if Path(p).is_file():
+            return p
+    return None
+
+
+def _build_grimoire_theme(dpg):
+    """Build and return the bound Grimoire theme tag."""
+    c = GUI_COLORS
+    with dpg.theme() as theme:
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_color(dpg.mvThemeCol_WindowBg, c["bg"])
+            dpg.add_theme_color(dpg.mvThemeCol_ChildBg, c["bg_alt"])
+            dpg.add_theme_color(dpg.mvThemeCol_PopupBg, c["bg_alt"])
+            dpg.add_theme_color(dpg.mvThemeCol_FrameBg, c["bg_input"])
+            dpg.add_theme_color(dpg.mvThemeCol_FrameBgHovered, c["bg_input_hov"])
+            dpg.add_theme_color(dpg.mvThemeCol_FrameBgActive, c["bg_input_hov"])
+            dpg.add_theme_color(dpg.mvThemeCol_Border, c["border"])
+            dpg.add_theme_color(dpg.mvThemeCol_BorderShadow, (0, 0, 0, 0))
+            dpg.add_theme_color(dpg.mvThemeCol_Text, c["text"])
+            dpg.add_theme_color(dpg.mvThemeCol_TextDisabled, c["text_muted"])
+            dpg.add_theme_color(dpg.mvThemeCol_Button, c["btn_primary"])
+            dpg.add_theme_color(dpg.mvThemeCol_ButtonHovered, c["btn_primary_hov"])
+            dpg.add_theme_color(dpg.mvThemeCol_ButtonActive, c["btn_primary_act"])
+            dpg.add_theme_color(dpg.mvThemeCol_CheckMark, c["checkmark"])
+            dpg.add_theme_color(dpg.mvThemeCol_Separator, c["separator"])
+            dpg.add_theme_color(dpg.mvThemeCol_SeparatorHovered, c["accent"])
+            dpg.add_theme_color(dpg.mvThemeCol_ScrollbarBg, c["bg"])
+            dpg.add_theme_color(dpg.mvThemeCol_ScrollbarGrab, c["btn_secondary"])
+            dpg.add_theme_color(dpg.mvThemeCol_ScrollbarGrabHovered, c["btn_secondary_hov"])
+            dpg.add_theme_color(dpg.mvThemeCol_ScrollbarGrabActive, c["btn_secondary_act"])
+            dpg.add_theme_color(dpg.mvThemeCol_TitleBg, c["bg"])
+            dpg.add_theme_color(dpg.mvThemeCol_TitleBgActive, c["bg_alt"])
+            dpg.add_theme_color(dpg.mvThemeCol_Header, c["bg_input_hov"])
+            dpg.add_theme_color(dpg.mvThemeCol_HeaderHovered, c["bg_input_hov"])
+            dpg.add_theme_color(dpg.mvThemeCol_HeaderActive, c["bg_input"])
+
+            dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 6)
+            dpg.add_theme_style(dpg.mvStyleVar_WindowRounding, 8)
+            dpg.add_theme_style(dpg.mvStyleVar_ChildRounding, 6)
+            dpg.add_theme_style(dpg.mvStyleVar_PopupRounding, 6)
+            dpg.add_theme_style(dpg.mvStyleVar_ScrollbarRounding, 6)
+            dpg.add_theme_style(dpg.mvStyleVar_GrabRounding, 6)
+            dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 24, 20)
+            dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 10, 8)
+            dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing, 12, 10)
+            dpg.add_theme_style(dpg.mvStyleVar_ItemInnerSpacing, 8, 6)
+            dpg.add_theme_style(dpg.mvStyleVar_FrameBorderSize, 1)
+    return theme
+
+
+def _resolve_launcher_icon():
+    """Find the Arcana icon shipped under resources/. Returns (small, large) paths.
+
+    Falls back gracefully when running from a bootstrap temp dir that only
+    holds summon.py — in that case we return (None, None) and the launcher
+    keeps the default OS icon.
+
+    Search order (first hit wins):
+      1. PyInstaller bundle (sys._MEIPASS/resources)  — frozen binary install
+      2. Installed Arcana repo (~/grimoires/arcana/resources)
+      3. The repo this script lives in (REPO_ROOT/resources)
+      4. RITE_DIR's parent (alt layout)
+    """
+    candidates_dirs = []
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        candidates_dirs.append(Path(meipass) / "resources")
+    candidates_dirs += [
+        ARCANA_DIR / "resources",
+        REPO_ROOT / "resources",
+        RITE_DIR.parent / "resources",
+    ]
+    small_name = "arcana_icon_256.png"
+    large_name = "arcana_icon_512.png"
+    for d in candidates_dirs:
+        small = d / small_name
+        large = d / large_name
+        if small.is_file() or large.is_file():
+            # Use whichever exists for whichever slot, falling back to the
+            # other if only one is present.
+            small_path = str(small) if small.is_file() else str(large) if large.is_file() else None
+            large_path = str(large) if large.is_file() else str(small) if small.is_file() else None
+            return small_path, large_path
+    return None, None
+
+
+def _apply_launcher_icon(dpg):
+    """Bind the Arcana icon to the viewport's small + large icon slots.
+
+    Must be called AFTER `dpg.create_viewport()` and BEFORE `dpg.show_viewport()`.
+    Silently no-ops if the resource files aren't accessible.
+    """
+    small, large = _resolve_launcher_icon()
+    if small is None and large is None:
+        return
+    try:
+        if small:
+            dpg.set_viewport_small_icon(small)
+        if large:
+            dpg.set_viewport_large_icon(large)
+    except Exception:
+        # Some platforms / DPG versions don't accept PNG; never let icon
+        # binding abort the launcher.
+        pass
+
+
+def _setup_fonts(dpg, scale):
+    """Load a system font at a DPI-scaled size; bind it as the global font.
+
+    Returns the font tag, or None if font loading failed (default font remains).
+    """
+    base_size = int(round(18 * scale))
+    font_path = _find_system_font()
+    if not font_path:
+        # Fall back to Dear PyGui's built-in font; just bump the global scale.
+        try:
+            dpg.set_global_font_scale(max(1.0, scale * 1.3))
+        except Exception:
+            pass
+        return None
+    try:
+        with dpg.font_registry():
+            font = dpg.add_font(font_path, base_size)
+        dpg.bind_font(font)
+        return font
+    except Exception:
+        try:
+            dpg.set_global_font_scale(max(1.0, scale * 1.3))
+        except Exception:
+            pass
+        return None
+
+
 def run_gui(args):
     """Dear PyGui summoning flow."""
     dpg = _ensure_dearpygui()
+
+    # DPI scale is computed once and used by every dimension-bearing call.
+    # Nested helpers (show_modal, populate_grimoires, etc.) close over it.
+    scale = _compute_dpi_scale()
 
     class GUILogger:
         def __init__(self):
@@ -880,6 +1207,12 @@ def run_gui(args):
         def err(self, msg):
             self._append("ERROR", msg)
 
+        def line(self, text):
+            """Append raw output (no tag prefix). For subprocess capture."""
+            self.lines.append(text)
+            if dpg.does_item_exist("log_text"):
+                dpg.set_value("log_text", "\n".join(self.lines))
+
     log = GUILogger()
     library = {"grimoires": {}}
     checkbox_tags = {}
@@ -902,17 +1235,32 @@ def run_gui(args):
             modal=True,
             no_resize=True,
             no_collapse=True,
-            width=420,
-            pos=(150, 240),
+            width=int(440 * scale),
+            pos=(int(150 * scale), int(240 * scale)),
         ):
-            dpg.add_text(message, wrap=380)
-            dpg.add_spacer(height=10)
-            dpg.add_button(label="OK", width=90, callback=close_modal)
+            dpg.add_text(message, wrap=int(400 * scale))
+            dpg.add_spacer(height=int(10 * scale))
+            dpg.add_button(label="OK", width=int(100 * scale), callback=close_modal)
 
     def set_busy(is_busy):
-        for tag in ("discover_btn", "summon_btn", "cancel_btn"):
+        for tag in ("discover_btn", "summon_btn"):
             if dpg.does_item_exist(tag):
-                dpg.configure_item(tag, enabled=not is_busy)
+                # Re-enable summon only when there's a valid selection,
+                # not just because we stopped being busy.
+                if tag == "summon_btn" and not is_busy:
+                    update_summon_state()
+                else:
+                    dpg.configure_item(tag, enabled=not is_busy)
+
+    def update_summon_state(*_):
+        """Enable Summon iff at least one grimoire checkbox is checked."""
+        if not dpg.does_item_exist("summon_btn"):
+            return
+        any_selected = any(
+            dpg.does_item_exist(tag) and dpg.get_value(tag)
+            for tag in checkbox_tags.values()
+        )
+        dpg.configure_item("summon_btn", enabled=any_selected)
 
     def populate_grimoires(entries):
         if dpg.does_item_exist("grimoire_list"):
@@ -925,8 +1273,8 @@ def run_gui(args):
             dpg.add_text(
                 "No grimoires found. Check your scope URL and authentication tokens.",
                 parent="grimoire_list",
-                wrap=620,
-                color=(136, 136, 160),
+                wrap=int(620 * scale),
+                color=GUI_COLORS["text_muted"],
             )
             return
 
@@ -937,7 +1285,16 @@ def run_gui(args):
             tag = f"grimoire::{key}"
             checkbox_tags[key] = tag
             label = name if not desc else f"{name} - {desc}"
-            dpg.add_checkbox(label=label, default_value=True, tag=tag, parent="grimoire_list")
+            dpg.add_checkbox(
+                label=label,
+                default_value=True,
+                tag=tag,
+                parent="grimoire_list",
+                callback=update_summon_state,
+            )
+
+        # New checkboxes default to selected, so the button should light up.
+        update_summon_state()
 
     def on_discover(*_):
         set_busy(True)
@@ -985,19 +1342,37 @@ def run_gui(args):
                 if install_grimoire(key, entry, log):
                     installed.append(key)
 
-            if not installed:
-                log.err("No grimoires were installed")
-                show_modal("Error", "No grimoires were installed.")
-                return
+            if selected and not installed:
+                log.warn(
+                    "No domain grimoires installed successfully. "
+                    "Continuing with Arcana-only setup."
+                )
 
-            update_local_library(installed, library, log)
+            # Update library only if at least one domain grimoire landed.
+            if installed:
+                update_local_library(installed, library, log)
+
+            # Always re-inject agent configs and re-register skills, even if
+            # zero domain grimoires came down. Arcana itself ships /grm-* skills
+            # that need to register so the user has the framework available.
             inject_agent_configs(log)
-            register_skills(log)
+            skills_ok = register_skills(log)
 
             log.ok("Summoning complete!")
+            installed_msg = (
+                f"Installed {len(installed)} grimoire(s)."
+                if installed else
+                "No domain grimoires installed; Arcana set up alone."
+            )
+            warn_msg = (
+                ""
+                if skills_ok else
+                "\n\nWARNING: skill registration failed. Re-run:\n"
+                f"python3 {ARCANA_DIR / 'rites' / 'register_skills.py'}"
+            )
             show_modal(
-                "Summoning Complete",
-                f"Installed {len(installed)} grimoire(s).\n\n"
+                "Summoning Complete" + ("" if skills_ok else " (with warnings)"),
+                f"{installed_msg}{warn_msg}\n\n"
                 "Next steps:\n"
                 "1. Open a new Claude Code or Codex/ChatGPT session\n"
                 "2. Try: /grm-meta-help",
@@ -1008,27 +1383,30 @@ def run_gui(args):
 
     dpg.create_context()
     try:
-        with dpg.theme() as grimoire_theme:
-            with dpg.theme_component(dpg.mvAll):
-                dpg.add_theme_color(dpg.mvThemeCol_WindowBg, (26, 27, 46), category=dpg.mvThemeCat_Core)
-                dpg.add_theme_color(dpg.mvThemeCol_ChildBg, (36, 37, 64), category=dpg.mvThemeCat_Core)
-                dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (30, 31, 52), category=dpg.mvThemeCat_Core)
-                dpg.add_theme_color(dpg.mvThemeCol_Button, (124, 92, 191), category=dpg.mvThemeCat_Core)
-                dpg.add_theme_color(dpg.mvThemeCol_ButtonHovered, (147, 112, 219), category=dpg.mvThemeCat_Core)
-                dpg.add_theme_color(dpg.mvThemeCol_ButtonActive, (104, 76, 165), category=dpg.mvThemeCat_Core)
-                dpg.add_theme_color(dpg.mvThemeCol_Text, (224, 224, 232), category=dpg.mvThemeCat_Core)
-                dpg.add_theme_color(dpg.mvThemeCol_TextDisabled, (136, 136, 160), category=dpg.mvThemeCat_Core)
-                dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 6, category=dpg.mvThemeCat_Core)
-                dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 20, 20, category=dpg.mvThemeCat_Core)
-                dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing, 10, 8, category=dpg.mvThemeCat_Core)
-
+        _setup_fonts(dpg, scale)
+        grimoire_theme = _build_grimoire_theme(dpg)
         dpg.bind_theme(grimoire_theme)
 
+        c = GUI_COLORS
+
+        # Pre-scale layout dimensions so widgets keep their visual proportions
+        # regardless of DPI. Heights are sized so every element fits without
+        # scrolling at the default viewport size.
+        list_h     = int(round(220 * scale))
+        log_h      = int(round(150 * scale))
+        btn_w      = int(round(160 * scale))
+        discover_w = int(round(120 * scale))
+        input_pad  = int(round(140 * scale))
+        viewport_w = int(round(760 * scale))
+        # Generous default — final size is auto-fit to actual content after
+        # the first frame renders (see post-show_viewport block below).
+        viewport_h = int(round(980 * scale))
+
         with dpg.window(tag="main_window", label="Grimoire", no_title_bar=True):
-            dpg.add_text("Grimoire", color=(224, 224, 232))
-            dpg.add_text("Summoning Rite", color=(136, 136, 160))
+            dpg.add_text("Grimoire", color=c["text_title"])
+            dpg.add_text("Summoning Rite", color=c["text_muted"])
             dpg.add_separator()
-            dpg.add_spacer(height=8)
+            dpg.add_spacer(height=int(8 * scale))
 
             dpg.add_text("Grimoire Location")
             with dpg.group(horizontal=True):
@@ -1036,17 +1414,17 @@ def run_gui(args):
                     tag="scope_input",
                     default_value=scope_default,
                     hint="https://github.com/my-org",
-                    width=-120,
+                    width=-(input_pad),
                     on_enter=True,
                     callback=on_discover,
                 )
-                dpg.add_button(tag="discover_btn", label="Discover", width=100, callback=on_discover)
+                dpg.add_button(tag="discover_btn", label="Discover", width=discover_w, callback=on_discover)
             dpg.add_text(
                 "e.g. https://github.com/my-org | https://gitlab.company.com/team",
-                color=(136, 136, 160),
+                color=c["text_muted"],
             )
 
-            dpg.add_text("Token", color=(136, 136, 160))
+            dpg.add_text("Token", color=c["text_muted"])
             dpg.add_input_text(
                 tag="token_input",
                 password=True,
@@ -1056,38 +1434,83 @@ def run_gui(args):
                 callback=on_discover,
             )
 
-            dpg.add_spacer(height=8)
+            dpg.add_spacer(height=int(8 * scale))
             dpg.add_text("Available Grimoires")
-            with dpg.child_window(tag="grimoire_list", height=260, border=True):
+            with dpg.child_window(tag="grimoire_list", height=list_h, border=True):
                 dpg.add_text(
                     "Enter a scope URL and press Discover to search for grimoires.",
-                    color=(136, 136, 160),
-                    wrap=620,
+                    color=c["text_muted"],
+                    wrap=int(620 * scale),
                 )
 
-            dpg.add_text("Log")
+            with dpg.group(horizontal=True):
+                dpg.add_text("Log")
+                dpg.add_text(
+                    "  (click in the box, Ctrl+A to select all, Ctrl+C to copy)",
+                    color=c["text_muted"],
+                )
             dpg.add_input_text(
                 tag="log_text",
                 multiline=True,
                 readonly=True,
-                height=170,
+                height=log_h,
                 width=-1,
+                tab_input=False,
             )
 
-            dpg.add_spacer(height=8)
-            with dpg.group(horizontal=True):
-                dpg.add_button(tag="summon_btn", label="Summon", width=130, callback=on_summon)
-                dpg.add_button(
-                    tag="cancel_btn",
-                    label="Cancel",
-                    width=110,
-                    callback=lambda *_: dpg.stop_dearpygui(),
-                )
+            dpg.add_spacer(height=int(8 * scale))
+            # Summon starts disabled; lights up purple/pink only when at least
+            # one grimoire is selected. Until then it stays muted so the eye
+            # is drawn to the active action (Discover).
+            dpg.add_button(
+                tag="summon_btn",
+                label="Summon",
+                width=btn_w,
+                callback=on_summon,
+                enabled=False,
+            )
 
-        dpg.create_viewport(title="Grimoire - Summoning Rite", width=700, height=820, min_width=560, min_height=680)
+        dpg.create_viewport(
+            title="Grimoire - Summoning Rite",
+            width=viewport_w,
+            height=viewport_h,
+            min_width=int(560 * scale),
+            min_height=int(680 * scale),
+        )
+        # Apply launcher icon (no-op if files aren't accessible).
+        _apply_launcher_icon(dpg)
+
         dpg.setup_dearpygui()
         dpg.set_primary_window("main_window", True)
         dpg.show_viewport()
+
+        # Auto-fit viewport height to actual rendered content AFTER the first
+        # frame renders. Pixel math up front never quite matches what Dear PyGui
+        # produces (font metrics, OS title bar, padding rounding); measuring
+        # post-render eliminates cut-off-button bugs.
+        #
+        # MUST run via a frame callback rather than dpg.split_frame() before
+        # the main loop is active — split_frame blocks waiting for a render
+        # that hasn't happened yet, leaving the viewport black until resize.
+        def _auto_fit_viewport():
+            try:
+                content_h = dpg.get_item_rect_size("main_window")[1]
+                if not content_h:
+                    return
+                client_h = dpg.get_viewport_client_height() or viewport_h
+                chrome = max(60, viewport_h - client_h)
+                needed = content_h + chrome + int(20 * scale)
+                if needed > dpg.get_viewport_height():
+                    dpg.set_viewport_height(needed)
+            except Exception:
+                # Auto-fit is a nicety; never let it abort the launcher.
+                pass
+
+        # Frame 2 = first frame fully rendered with measurable widget rects.
+        try:
+            dpg.set_frame_callback(2, _auto_fit_viewport)
+        except Exception:
+            pass
 
         if scope_default:
             on_discover()

@@ -1,57 +1,58 @@
-# {{GRIMOIRE_NAME}} Domain Grimoire
+# {{GRIMOIRE_NAME}} Grimoire
 
-This is the **{{GRIMOIRE_NAME}} domain grimoire** — containing chapters specific to {{GRIMOIRE_PURPOSE_DETAILED}}.
+This is the **{{GRIMOIRE_NAME}}** domain grimoire — a structured, AI-navigable knowledge base for {{GRIMOIRE_PURPOSE_DETAILED}}.
 
-Universal assets (invocations, formulae, rites, docs) live in Arcana (`~/grimoires/arcana/`). See [Arcana README](GRIMOIRE_ARCANA/README.md) for details.
+The framework that powers it (Arcana) lives at `~/grimoires/arcana/`. See [Arcana README](GRIMOIRE_ARCANA/README.md) for the full architecture.
 
-## Chapters
-
-{{CHAPTER_LIST}}
-
-## How to Use
-
-1. Start with `INDEX.md` (root router)
-2. Follow routing to relevant chapter (e.g., `chapters/{{EXAMPLE_CHAPTER}}/INDEX.md`)
-3. Read the minimal page docs needed for your task
-
-### Creating New Chapters
-Use `/grm-domain-create-chapter [topic]` or read [create_chapter.md](GRIMOIRE_ARCANA/invocations/grimoire/create_chapter.md).
-
-## Repository Layout
+## Layout
 
 ```
 {{GRIMOIRE_DIRECTORY}}/
-├── INDEX.md                    # Root router
-├── README.md                   # This file
-└── chapters/                   # Domain knowledge
+├── {{GRIMOIRE_DIRECTORY}}.md     # Root hub (start here for routing)
+├── README.md                     # This file (human-facing project README)
+├── grimoire.json                 # Manifest: name, namespace, description
+├── log.md                        # Append-only activity log
+├── sources/                          # Immutable source artifacts (LLM never edits)
+├── inbox/                        # Transient drop zone (mixed content awaiting classification)
+├── chapters/                     # LLM-authored knowledge pages
 {{CHAPTER_TREE}}
+└── skills/                       # Domain skills (slash commands)
 ```
 
-## Maintenance
+## How to Use
 
-### When Adding/Updating Knowledge
-1. Use the page template: `GRIMOIRE_ARCANA/formulae/page.formula.md`
-2. Include a `Primary Sources` section when referencing external files/repos/systems
-3. For drift-sensitive values, use query commands to extract current state
+1. Open `{{GRIMOIRE_DIRECTORY}}.md` for routing.
+2. Follow hub pointers — every folder F has a hub at `F/<basename(F)>.md`.
+3. Wikilinks (`[[page]]`) inside this grimoire surface in Obsidian's graph and backlinks panes.
+4. Each page declares its provenance and authority via YAML frontmatter (see `GRIMOIRE_ARCANA/docs/page_schema.md`).
 
-### Principles
-- Keep all knowledge content under `chapters/`
-- Keep paths relative inside the repository
-- Keep routers explicit and deterministic
-- Keep page docs concise; add TODOs instead of guessing unknown conventions
+## Operations
 
-## Agent Integration
+| Goal | Skill |
+|---|---|
+| Add a new chapter | `/grm-domain-create-chapter` |
+| Ingest a new source from `sources/` and update affected pages | `/grm-domain-ingest` |
+| Promote a chat answer into a page | `/grm-domain-file-answer` |
+| Health-check the grimoire (orphans, stale, ghost refs) | `/grm-domain-lint` |
+| Audit naming and structure | `/grm-domain-improve` |
 
-Registered in `~/grimoires/library.json`:
+## Layers (the LLM-wiki model)
 
-```json
-"{{GRIMOIRE_DIRECTORY}}": {
-  "local_path": "$HOME/grimoires/{{GRIMOIRE_DIRECTORY}}",
-  "online_path": null
-}
-```
+- **Sources** (`sources/`) — Immutable source artifacts. Articles, transcripts, papers, screenshots. The LLM reads them but never modifies them.
+- **Wiki** (`chapters/`) — LLM-authored markdown synthesis. Hubs, concept pages, entity pages, playbooks, references. Updated incrementally as new sources arrive.
+- **Schema** — `grimoire.json` plus the Arcana-injected block in `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`. Tells agents how to operate this grimoire.
 
-This grimoire's identity (name, namespace, description) is declared in `grimoire.json` at the repository root:
+## Maintenance Principles
+
+- Routers are pointer lists — no prose narrative inside a hub.
+- Pages declare their authority (`external` / `grimoire` / `hybrid`) and cite sources.
+- Stale claims (over `last_verified` window) are flagged by `/grm-domain-lint` and revisited.
+- The activity log is append-only; never delete entries.
+- All paths are relative inside this grimoire; cross-grimoire references use `GRIMOIRE_ARCANA/`-style placeholders.
+
+## Identity
+
+Manifest at `grimoire.json`:
 
 ```json
 {
@@ -61,12 +62,23 @@ This grimoire's identity (name, namespace, description) is declared in `grimoire
 }
 ```
 
-Skills under `skills/` register as `/{{SKILL_NAMESPACE}}-<area>-<verb>-<object>` (the registration rite reads `namespace` from `grimoire.json` and substitutes it into each `SKILL.md`'s `{{NAMESPACE}}-<slug>` placeholder).
+Skills under `skills/<area>-<verb>-<object>/` register as `/{{SKILL_NAMESPACE}}-<area>-<verb>-<object>`.
 
-The summoning rite (`GRIMOIRE_ARCANA/rites/summon.sh`) handles registration automatically.
+## Library Registration
 
-## Getting Help
+Listed in `~/grimoires/library.json`:
 
-- **Grimoire commands**: Use `/grm-meta-help` to list all available skills.
-- **Arcana docs**: See `GRIMOIRE_ARCANA/README.md` and `GRIMOIRE_ARCANA/docs/`.
-- **About this grimoire's content**: see the maintainer or wherever this project's contributors coordinate.
+```json
+"{{GRIMOIRE_DIRECTORY}}": {
+  "local_path": "$HOME/grimoires/{{GRIMOIRE_DIRECTORY}}",
+  "online_path": null
+}
+```
+
+The summoning rite (`GRIMOIRE_ARCANA/rites/summon.sh`) handles this automatically.
+
+## Help
+
+- Skill catalog: `/grm-meta-help`
+- Arcana docs: `GRIMOIRE_ARCANA/README.md` and `GRIMOIRE_ARCANA/docs/`
+- About this grimoire's content: see the maintainer.

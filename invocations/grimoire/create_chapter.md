@@ -1,8 +1,17 @@
+---
+type: playbook
+title: "Create Chapter"
+aliases: ["create-chapter", "scaffold-chapter"]
+tags: [arcana/invocations, type/playbook, scope/domain]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Invocation: Create Grimoire Chapter
 
 ## Purpose
 
-Scaffold a new knowledge chapter inside the active domain grimoire — copy `chapter_index.formula.md`, customize placeholders, optionally seed leaf docs from `page.formula.md`, and register the chapter in the grimoire's root `INDEX.md`.
+Scaffold a new knowledge chapter inside the active domain grimoire — copy `chapter_hub.formula.md` to `chapters/<chapter>/<chapter>.md`, customize placeholders, optionally seed leaf docs from `page.formula.md`, and register the chapter in the grimoire's root hub.
 
 ## Invocation
 
@@ -19,9 +28,11 @@ Or with a topic:
 ## Non-Negotiable Rules
 
 1. Chapter names are `snake_case`, lowercase, specific (`pto_policies`, not `hr_stuff`).
-2. Practical folder names only inside chapters (`templates/`, `scripts/`, `snippets/`). Never `invocations/`, `formulae/`, or `rites/` — those live only in Arcana.
-3. Link to source systems; don't duplicate their content.
-4. Update the grimoire's root `INDEX.md` so the chapter is routable.
+2. The chapter hub file follows the folder-name convention: `chapters/<chapter>/<chapter>.md`.
+3. Practical folder names only inside chapters (`templates/`, `scripts/`, `snippets/`). Never `invocations/`, `formulae/`, or `rites/` — those live only in Arcana.
+4. Every page (hub + leaves) carries v2 frontmatter (`type`, `title`, `tags`, etc.). See `GRIMOIRE_ARCANA/docs/page_schema.md`.
+5. Link to source systems; don't duplicate their content.
+6. Update the grimoire's root hub so the chapter is routable. Use a wikilink.
 
 ---
 
@@ -49,27 +60,32 @@ Capture: `chapter_name`, `chapter_title` (Title Case), `purpose`, `when_to_use`,
 
 ```bash
 mkdir -p chapters/{{chapter_name}}
-cp ~/grimoires/arcana/formulae/chapter_index.formula.md chapters/{{chapter_name}}/INDEX.md
+cp ~/grimoires/arcana/formulae/chapter_hub.formula.md chapters/{{chapter_name}}/{{chapter_name}}.md
 ```
+
+The chapter hub takes the folder's name (not a generic `INDEX`) — this is the v2 hub convention that keeps Obsidian's graph view meaningful.
 
 ---
 
-## Step 3: Customize Chapter INDEX.md
+## Step 3: Customize the Chapter Hub
 
-Edit `chapters/{{chapter_name}}/INDEX.md` and replace placeholders:
+Edit `chapters/{{chapter_name}}/{{chapter_name}}.md` and replace placeholders:
 
+- Frontmatter: `{{CHAPTER_TITLE}}`, `{{CHAPTER_NAME}}`. Tags should include `chapter/{{chapter_name}}`.
+- **Hub level tag** — the formula defaults to `hub/chapter` (top-level). If this chapter is being created *inside* another chapter (i.e., the new path is `chapters/<existing>/<new>/`), change the tag to `hub/sub`. The level distinction drives the Obsidian graph color (chapter hubs vs sub-hubs); the routing model itself works identically at every depth.
 - `[Chapter Name]` → `{{chapter_title}}`
 - `[purpose]` → `{{purpose}}`
 - `[when to use]` → `{{when_to_use}}`
-- Routes block — one line per sub-topic:
+- Routes block — one line per child, using wikilinks. A child can be a leaf (a page with `type: concept`/`entity`/`playbook`/etc.) or a sub-hub (a folder with its own `<folder>.md`):
+
   ```markdown
-  - <sub-topic description> → <sub_topic>.md
+  - <child description> → [[<child_name>]]
   ```
 
 Verify no placeholder syntax remains:
 
 ```bash
-grep -nE '\[(Chapter Name|purpose|when to use)\]|\{\{' chapters/{{chapter_name}}/INDEX.md
+grep -nE '\[(Chapter Name|purpose|when to use)\]|\{\{' chapters/{{chapter_name}}/{{chapter_name}}.md
 ```
 
 ---
@@ -82,52 +98,62 @@ For each sub-topic the user wants stubbed now:
 cp ~/grimoires/arcana/formulae/page.formula.md chapters/{{chapter_name}}/{{sub_topic}}.md
 ```
 
-Edit each leaf to fill: `Purpose`, `When to use`, `Primary Sources` (if external), content sections, `Gotchas`, `Related docs`.
+Edit each leaf to fill in frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`) and body sections (`Purpose`, `When to use`, content, `Gotchas`, `Related`).
 
 Content rules:
 
 - **Do** point at sources of truth for drift-sensitive values; include "as of <date> — VERIFY BEFORE USE" when snapshotting.
-- **Do** use Grimoire as the canonical home for grimoire-native knowledge.
-- **Don't** duplicate content from another chapter — link to it.
+- **Do** use Grimoire as the canonical home for grimoire-native knowledge (`authority: grimoire`).
+- **Do** cite source artifacts (`sources: ["sources/<slug>.md"]`) when the page synthesizes external material.
+- **Don't** duplicate content from another chapter — wikilink to it.
 - **Don't** store implementation values without query instructions.
 
 Stubs with TODOs are acceptable — leaf authoring can happen later.
 
 ---
 
-## Step 5: Register in Root INDEX.md
+## Step 5: Register in the Parent Hub
 
-Edit the grimoire root `INDEX.md`. Under the `## Route By Chapter` section, add:
+Edit the parent hub — the grimoire root hub for a top-level chapter (`<grimoire>/<grimoire>.md`), or the containing chapter's hub for a sub-chapter (`chapters/<parent>/<parent>.md`). Under the routing section (typically `## Route By Chapter` at root, `## Routes` inside a chapter), add:
 
 ```markdown
-- <chapter description>:
-  - `chapters/{{chapter_name}}/INDEX.md`
+- <chapter description>: [[{{chapter_name}}]]
 ```
 
-Keep entries alphabetized or grouped by domain — match the existing convention in the file.
+Keep entries alphabetized or grouped by domain — match the existing convention in the file. Hubs are idempotent: the same wikilink syntax works whether the parent is the grimoire root or a deeply-nested chapter.
 
 ---
 
-## Step 6: Validate
+## Step 6: Append to log.md
+
+```bash
+python3 GRIMOIRE_ARCANA/rites/append_log.py \
+  --grimoire . \
+  --op create \
+  --title "{{chapter_title}} chapter" \
+  --skill /grm-domain-create-chapter \
+  --field pages=chapters/{{chapter_name}}/{{chapter_name}}.md
+```
+
+---
+
+## Step 7: Validate
 
 ```bash
 ls chapters/{{chapter_name}}/
-grep -n "{{chapter_name}}" INDEX.md   # must find the new route
+grep -n "{{chapter_name}}" {{grimoire_directory}}.md   # must find the new route
+python3 GRIMOIRE_ARCANA/rites/validate_domain_structure.py --grimoire .
+python3 GRIMOIRE_ARCANA/rites/validate_frontmatter.py --grimoire .
 ```
 
-Then run:
-
-```
-/grm-domain-validate-structure
-```
-
-to confirm the chapter conforms to grimoire structure rules.
+Or invoke `/grm-domain-validate-structure` for the integrated structural pass.
 
 ---
 
 ## Related
 
-- **Chapter formula**: `~/grimoires/arcana/formulae/chapter_index.formula.md`
+- **Chapter hub formula**: `~/grimoires/arcana/formulae/chapter_hub.formula.md`
 - **Page formula**: `~/grimoires/arcana/formulae/page.formula.md`
+- **Page schema**: `~/grimoires/arcana/docs/page_schema.md`
 - **Grimoire creation**: [`create_grimoire.md`](create_grimoire.md)
 - **Structure validator**: `/grm-domain-validate-structure`

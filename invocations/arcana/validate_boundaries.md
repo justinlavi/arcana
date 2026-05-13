@@ -1,3 +1,12 @@
+---
+type: playbook
+title: "Validate Boundaries"
+aliases: ["validate-boundaries", "magical-boundary"]
+tags: [arcana/invocations, type/playbook, scope/arcana]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Invocation: Validate Magical Boundaries
 
 ## Purpose

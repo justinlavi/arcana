@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Validate Naming"
+aliases: ["validate-naming"]
+tags: [arcana/invocations, type/reference, scope/validators]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # 🔮 Invocation: Validate Arcana Naming
 
 ## Purpose
@@ -40,7 +49,7 @@ The rite checks:
 - ❌ Invalid: `validate-structure.py`, `validateStructure.py`
 
 **Allowed exceptions**:
-- `README.md`, `CHANGELOG.md`, `INDEX.md`, `CLAUDE.md`, `LICENSE.md` (all caps)
+- `README.md`, `CHANGELOG.md`, hub, `CLAUDE.md`, `LICENSE.md` (all caps)
 - `IMPLEMENTATION_PLAN.md` (special planning documents)
 
 ### Step 3: Fix Violations

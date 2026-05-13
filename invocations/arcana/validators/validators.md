@@ -1,3 +1,10 @@
+---
+type: hub
+title: "Arcana Validators"
+aliases: ["validators", "arcana-validators"]
+tags: [arcana/invocations, type/hub, scope/validators, hub/sub]
+---
+
 # Arcana Validators
 
 Mechanical, deterministic checks against the Arcana repository. Each validator has its own dedicated skill, and all of them run together via the orchestrator.

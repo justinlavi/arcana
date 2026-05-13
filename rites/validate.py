@@ -27,7 +27,10 @@ RITES = [
     "validate_naming.py",
     "validate_semantics.py",
     "validate_format.py",
+    "validate_frontmatter.py",
     "validate_links.py",
+    "validate_orphans.py",
+    "validate_provenance.py",
     "validate_skill_refs.py",
     "validate_security.py",
 ]
@@ -73,7 +76,7 @@ def determine_smart_rites():
         if not path.exists():
             continue
 
-        if re.match(r"^(docs|invocations|formulae|rites|formulae/grimoire)/", f):
+        if re.match(r"^(docs|invocations|formulae|rites|formulae/grimoire|sources|chapters)/", f):
             needed.add("validate_structure.py")
 
         if f.endswith((".md", ".py")):
@@ -87,12 +90,19 @@ def determine_smart_rites():
         if f.endswith(".md"):
             try:
                 content = path.read_text(errors="replace")
-                if "](" in content:
+                if "](" in content or "[[" in content:
                     needed.add("validate_links.py")
                 if "/grm-" in content:
                     needed.add("validate_skill_refs.py")
+                if content.startswith("---\n"):
+                    needed.add("validate_frontmatter.py")
+                    if "authority:" in content:
+                        needed.add("validate_provenance.py")
             except OSError:
                 pass
+
+            # Any markdown change can affect orphan reachability.
+            needed.add("validate_orphans.py")
 
         # Adding or removing a skill changes which references are valid.
         if f.startswith("skills/"):

@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Arcana Governance"
+aliases: ["governance", "release-policy"]
+tags: [type/reference, arcana/docs]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Arcana Governance
 
 ## Purpose

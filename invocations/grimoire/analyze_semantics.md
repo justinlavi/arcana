@@ -1,3 +1,12 @@
+---
+type: playbook
+title: "Analyze Semantics"
+aliases: ["analyze-semantics", "naming-audit"]
+tags: [arcana/invocations, type/playbook, scope/domain]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Invocation: Analyze Semantic Clarity
 
 ## Purpose
@@ -35,14 +44,14 @@ Verify the working directory is a registered domain grimoire (check `~/grimoires
 
 ### 1. Load context
 
-Read `INDEX.md`, the chapter list, and `docs/reference.md` (if present) to learn the grimoire's canonical vocabulary. Note the dominant naming pattern (snake_case is standard).
+Read hub, the chapter list, and `docs/reference.md` (if present) to learn the grimoire's canonical vocabulary. Note the dominant naming pattern (snake_case is standard).
 
 ### 2. Score each chapter and file name
 
 Apply four dimensions, 0–100 each:
 
 - **Specificity** — Penalize vague names (`misc`, `other`, `stuff`, `utils`). Reward domain-specific compound names (`build_system`, `cmake_overrides`). Penalize over-specific names that bake in versions or dates (`cmake_3_28_workaround`, `new_build_system`).
-- **Searchability** — Does the name contain terms a user or agent would actually query? Does it match domain vocabulary in `reference.md`? Is it reachable from `INDEX.md`?
+- **Searchability** — Does the name contain terms a user or agent would actually query? Does it match domain vocabulary in `reference.md`? Is it reachable from hub?
 - **Comprehension** — Self-explanatory without surrounding context? Abbreviations unambiguous (`ms_sw` is not; `mission_support_sw` is)? Jargon level appropriate for the audience?
 - **Token efficiency** — Name length vs. knowledge contained. Router hop count to reach the content. Long names compound across every read.
 
@@ -69,22 +78,23 @@ If `docs/reference.md` exists, treat it as authoritative. Otherwise propose cano
 
 ### 4. Assess discoverability
 
-- **Search-term coverage** — For 5–10 plausible queries against this grimoire, can the answer be reached in ≤3 hops from `INDEX.md`? List the queries that fail.
-- **Orphans** — Knowledge present on disk but not linked from any router or index.
+- **Search-term coverage** — For 5–10 plausible queries against this grimoire, is the hop count proportionate to the topic's depth? List queries whose path is unreasonably long (a simple FAQ buried five hubs deep) or unreasonably ambiguous.
+- **Orphans** — Knowledge present on disk but not linked from any hub or related leaf.
 - **Single points of failure** — Critical knowledge with only one route in.
 - **Hot paths** — Frequently-needed chapters buried behind extra hops; recommend promoting.
 
 ### 5. Assess structure
 
-- **Hierarchy depth** — Ideal 2–3 levels. Flag anything ≥4.
+- **Hierarchy depth** — Depth is open-ended; what matters is *appropriate* depth. Flag chains that feel overly deep for the content (gratuitous nesting) or overly flat for content that has natural sub-topics (missed grouping). Don't impose a fixed limit.
 - **Chapter balance** — Bloated chapters (split candidates) and tiny chapters (merge candidates).
-- **Sub-chapter sprawl** — >8 siblings suggests reorganization.
+- **Sub-chapter sprawl** — >8 siblings under one hub suggests reorganization.
 - **Parent/child coherence** — Names should compose logically (`code/cpp/formatting` good; `build/config/stuff` bad).
+- **Idempotent hubs** — Verify each hub mixes sub-hubs and leaves cleanly; flag hubs that have only one child (collapse candidate) or that contain leaves with prose more naturally belonging in their own sub-hub.
 
 ### 6. Token efficiency
 
-- Average hops from root to a typical answer (target <2.5, acceptable ≤3.5).
-- Router file token cost (roughly word count × 1.3). Flag bloated routers.
+- Compare average hops to topic depth: a simple FAQ should be 2–3 hops, a deeply technical sub-topic may justifiably be 4–5. Flag mismatches.
+- Hub file token cost (roughly word count × 1.3). Flag bloated hubs.
 - Cumulative cost of long names across a typical multi-chapter read.
 
 ### 7. Generate recommendations

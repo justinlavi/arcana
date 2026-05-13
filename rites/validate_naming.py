@@ -12,8 +12,12 @@ from pathlib import Path
 
 ARCANA_ROOT = Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent))
 
-UPPERCASE_EXCEPTIONS = {"README.md", "CHANGELOG.md", "INDEX.md", "CLAUDE.md",
-                        "AGENTS.md", "LICENSE.md", "IMPLEMENTATION_PLAN.md"}
+UPPERCASE_EXCEPTIONS = {"README.md", "CHANGELOG.md", "CLAUDE.md",
+                        "AGENTS.md", "LICENSE.md", "IMPLEMENTATION_PLAN.md",
+                        "VERSION"}
+
+
+SKIP_DIRS = {"sources", ".git"}
 
 
 def check_naming(glob_pattern, label, ext):
@@ -23,6 +27,9 @@ def check_naming(glob_pattern, label, ext):
     print(f"Checking {label} naming...")
     for path in sorted(ARCANA_ROOT.rglob(glob_pattern)):
         name = path.name
+        rel_parts = path.relative_to(ARCANA_ROOT).parts
+        if rel_parts and rel_parts[0] in SKIP_DIRS:
+            continue
 
         if name in UPPERCASE_EXCEPTIONS:
             continue

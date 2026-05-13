@@ -52,6 +52,7 @@ SKIP_FILES = {
 SKIP_DIRS = {
     "formulae",  # template placeholders
     "skills/arcana-validate-skill-refs",  # the validator's own examples
+    "sources",  # imported source artifacts
 }
 
 

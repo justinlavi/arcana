@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Script vs AI"
+aliases: ["script-vs-ai", "rites-vs-invocations"]
+tags: [type/reference, arcana/docs, principle]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Script vs AI Intelligence: Architectural Principle
 
 **The fundamental distinction between what scripts do vs what AI does**
@@ -101,9 +110,9 @@ if diff file1.md file2.md > /dev/null; then
 fi
 
 ✅ GOOD: AI detects semantic duplication
-"Both README.md and INDEX.md explain 'What is a Grimoire' but with different
-wording. The README version is more user-friendly, while INDEX's is more technical.
-Suggest keeping README's version and having INDEX reference it."
+"Both README.md and arcana.md explain 'What is a Grimoire' but with different
+wording. The README version is more user-friendly, while the root hub's is more technical.
+Suggest keeping README's version and having the root hub reference it."
 ```
 
 ---
@@ -164,7 +173,7 @@ AI: *reads every file, analyzes content* "You have 18 invocations..."
 **Better Approach**:
 ```bash
 # ✅ GOOD: Script does the counting
-find invocations/ -name "*.md" ! -name "INDEX.md" | wc -l
+find invocations/ -name "*.md" ! -name "$(basename "$(pwd)").md" | wc -l   # leaf invocations only (excludes folder hubs)
 ```
 
 ---

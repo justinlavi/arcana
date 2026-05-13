@@ -1,8 +1,15 @@
+---
+type: hub
+title: "Arcana Invocations"
+aliases: ["arcana-invocations", "maintainer-ops"]
+tags: [arcana/invocations, type/hub, scope/arcana, hub/chapter]
+---
+
 # Arcana Invocations
 
 Invocations that **modify Arcana itself**. Maintainer only.
 
-For domain operations (creating chapters, improving grimoires) see [`../grimoire/INDEX.md`](../grimoire/INDEX.md). For meta/help, see [`../meta/INDEX.md`](../meta/INDEX.md). For the canonical skill catalog, see [`../../docs/skills.md`](../../docs/skills.md).
+For domain operations (creating chapters, improving grimoires) see [`../grimoire/grimoire.md`](../grimoire/grimoire.md). For meta/help, see [`../meta/meta.md`](../meta/meta.md). For the canonical skill catalog, see [`../../docs/skills.md`](../../docs/skills.md).
 
 ## Available
 
@@ -22,7 +29,7 @@ Each runs independently or as part of `/grm-arcana-improve`. Each has its own de
 - [`validators/validate_links.md`](validators/validate_links.md) — broken references
 - [`validators/validate_security.md`](validators/validate_security.md) — credentials & unsafe Python
 
-Run them all in one shot: `/grm-arcana-validate-all`. See [`validators/INDEX.md`](validators/INDEX.md) for orchestration details.
+Run them all in one shot: `/grm-arcana-validate-all`. See [`validators/validators.md`](validators/validators.md) for orchestration details.
 
 ### Quality (judgment-based)
 
@@ -31,7 +38,7 @@ Manual passes for things validators can't measure:
 - [`quality/improve_documentation.md`](quality/improve_documentation.md) — duplication and clarity audit
 - [`quality/validate_rites.md`](quality/validate_rites.md) — rite-specific quality checks
 
-See [`quality/INDEX.md`](quality/INDEX.md) for usage notes.
+See [`quality/quality.md`](quality/quality.md) for usage notes.
 
 ## When to run
 

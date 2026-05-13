@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Invocation Formula"
+aliases: ["invocation-template"]
+tags: [type/reference, arcana/formula]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Invocation: [Invocation Name]
 
 ## Purpose

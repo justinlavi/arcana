@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Validate Security"
+aliases: ["validate-security"]
+tags: [arcana/invocations, type/reference, scope/validators]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # 🔮 Invocation: Validate Arcana Security
 
 ## Purpose

@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Validate Semantics"
+aliases: ["validate-semantics"]
+tags: [arcana/invocations, type/reference, scope/validators]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Invocation: Validate Arcana Semantics
 
 ## Purpose

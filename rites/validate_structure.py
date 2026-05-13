@@ -3,6 +3,11 @@
 
 Usage: python3 rites/validate_structure.py
 Exit codes: 0 = success, 1 = validation errors found
+
+Hub convention (v2):
+    For any folder F that acts as a router, the hub file is F/<basename(F)>.md.
+    The Arcana root hub is arcana.md; the grimoire/ invocation router is
+    invocations/grimoire/grimoire.md; etc.
 """
 
 import os
@@ -15,29 +20,49 @@ REQUIRED_DIRS = [
     "docs",
     "invocations/grimoire",
     "invocations/arcana",
+    "invocations/arcana/quality",
+    "invocations/arcana/validators",
     "invocations/meta",
     "formulae",
+    "formulae/grimoire",
     "rites",
     "resources",
-    "formulae/grimoire",
     "skills",
+    "sources",
 ]
 
 REQUIRED_FILES = [
-    "INDEX.md",
+    "arcana.md",
     "README.md",
     "CHANGELOG.md",
+    "VERSION",
+    "log.md",
+    "library.json",
+    "grimoire.json",
     "rites/summon.sh",
     "rites/register_skills.py",
-    "library.json",
     "docs/quickstart.md",
     "docs/agent_configuration.md",
     "docs/operating_model.md",
     "docs/governance.md",
     "docs/reference.md",
+    "docs/page_schema.md",
 ]
 
-INVOCATION_DIRS = ["grimoire", "arcana", "meta"]
+# Folders whose hub file must exist with the folder-name convention.
+HUB_DIRS = [
+    "invocations/grimoire",
+    "invocations/arcana",
+    "invocations/arcana/quality",
+    "invocations/arcana/validators",
+    "invocations/meta",
+]
+
+
+def hub_path(rel_dir):
+    """Resolve the hub file path for a folder using the F/F.md convention."""
+    folder = ARCANA_ROOT / rel_dir
+    return folder / f"{folder.name}.md"
 
 
 def main():
@@ -69,14 +94,15 @@ def main():
             print(f"  OK       {f}")
     print()
 
-    print("Checking invocation directory structure...")
-    for inv_dir in INVOCATION_DIRS:
-        index = ARCANA_ROOT / "invocations" / inv_dir / "INDEX.md"
-        if not index.is_file():
-            print(f"  MISSING  INDEX.md in invocations/{inv_dir}/")
+    print("Checking router hub files (folder-name convention)...")
+    for d in HUB_DIRS:
+        hub = hub_path(d)
+        rel = hub.relative_to(ARCANA_ROOT)
+        if not hub.is_file():
+            print(f"  MISSING  hub file: {rel}")
             errors += 1
         else:
-            print(f"  OK       invocations/{inv_dir}/INDEX.md")
+            print(f"  OK       {rel}")
     print()
 
     print("==================================")

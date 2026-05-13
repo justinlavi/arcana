@@ -20,7 +20,7 @@ FORBIDDEN_PATTERNS = [
     (re.compile(r"BEGIN.*PRIVATE KEY"), "private key"),
 ]
 
-SKIP_DIRS = {"rites", "invocations/arcana/validators", "invocations/arcana/quality"}
+SKIP_DIRS = {"rites", "invocations/arcana/validators", "invocations/arcana/quality", "sources"}
 
 
 def main():

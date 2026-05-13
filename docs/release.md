@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Release Workflow"
+aliases: ["release", "binary-release"]
+tags: [type/reference, arcana/docs]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Arcana Release Guide
 
 How to build and publish Summoning Rite binaries for GitHub Releases.

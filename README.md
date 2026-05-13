@@ -2,13 +2,13 @@
 
 ![arcanaheader](./resources/arcana_header.png)
 
-**A framework for building grimoires** — structured, AI-navigable knowledge bases.
+**A framework for building grimoires** — structured, AI-navigable knowledge bases the LLM keeps current.
 
 ---
 
 Give your AI agent a map, not a maze.
 
-Most knowledge lives in scattered files that AI has to search through, interpolate between, and ultimately guess at. **Grimoires** give AI agents an explicit routing map: a layered index that leads from any question to the exact document that answers it — deterministically, every time.
+Most knowledge lives in scattered files that AI has to search through, interpolate between, and ultimately guess at. **Grimoires** give AI agents an explicit routing map: a layered hub structure that leads from any question to the exact document that answers it — deterministically, every time. And the LLM owns the maintenance: it ingests new sources, updates cross-references, flags stale claims, and keeps the wiki compounding.
 
 **Arcana** is the engine you install once to build and maintain grimoires for any subject.
 
@@ -16,29 +16,41 @@ Most knowledge lives in scattered files that AI has to search through, interpola
 
 ## What's a Grimoire?
 
-A grimoire is a structured knowledge base built around a single subject — personal recipes, team runbooks, HR policies, research notes, a campaign's lore. It has two layers that work together.
+A grimoire is a structured knowledge base built around a single subject — personal recipes, team runbooks, HR policies, research notes, a campaign's lore. It has three storage layers, a hub-based routing surface, and a skill set.
 
-### Knowledge layer: deterministic routing
+### Knowledge layer: deterministic routing through hubs
 
-A grimoire's content is organized by a layered `INDEX.md` router. When your agent gets a question, it reads:
+Every folder in a grimoire has a **hub** — a markdown file named after the folder. The grimoire root hub is `<grimoire>/<grimoire>.md`; any folder beneath it follows the same rule (`F/<basename(F)>.md`).
 
-1. Root `INDEX.md` — finds the right chapter
-2. Chapter `INDEX.md` — finds the right document
-3. That document — answers the question
-
-Three reads. One answer. No guessing.
+A hub is uniform and self-similar: it can route to *sub-hubs*, to *leaf documents*, or both. There's no fixed depth — a grimoire can be flat (root hub → leaves) or arbitrarily nested (root hub → chapter hub → sub-chapter hub → … → leaf). Each hop narrows the search; the agent stops when it reaches the leaf that answers the question.
 
 ```
-"What's the cure time for sourdough?"
-                    ↓
-cooking-grimoire/INDEX.md → chapters/breads/INDEX.md → sourdough.md
-                    ↓
-Authoritative answer, from your own documented notes.
+"What's the cure time for sourdough?"            (shallow — 2 hops)
+cooking-grimoire.md → breads.md → sourdough.md
+
+"What's the windowpane test for laminated dough?"   (deeper — 4 hops)
+cooking-grimoire.md → techniques.md → lamination.md → windowpane_test.md
 ```
+
+Both paths are deterministic. The structure stays only as deep as the topic warrants.
+
+Hubs being named after their folders means Obsidian's graph view shows meaningful nodes (`breads`, `lamination`, `cooking-grimoire`) instead of dozens of indistinguishable `INDEX` blobs. Wikilinks (`[[sourdough]]`) work natively because every page has a unique, intuitive name. Hub level is tagged in frontmatter (`hub/root`, `hub/chapter`, `hub/sub`) so the graph view colors them distinctly.
+
+### Sources layer: immutable source artifacts
+
+`sources/` holds the original sources the wiki was derived from — articles, transcripts, papers, screenshots. The LLM reads these but never modifies them. Every wiki page that synthesizes external information cites its source via the `sources:` field in YAML frontmatter, and the `validate_provenance` rite enforces it.
+
+### Inbox layer: transient drop zone
+
+`inbox/` is where you drop anything that needs to be sorted into the grimoire — zip extracts, AI-generated drafts, half-finished docs, copy-paste from somewhere. `/grm-domain-ingest` walks `inbox/` and classifies each item: external artifacts move to `sources/`, wiki-shaped content gets promoted to `chapters/` with proper frontmatter, and anything ambiguous stays in `inbox/` for you to judge. Inbox is *transient* — after processing it's empty (or near-empty). Pages never cite `inbox/` because its contents disappear.
+
+### Activity layer: append-only log
+
+`log.md` records every operation that mutates the grimoire — ingests, lints, file-answers, chapter creations. Entries follow `## [YYYY-MM-DD HH:MM] <op> | <title>` so you can `grep '^## \[' log.md | tail -20` for recent activity.
 
 ### Skills layer: actionable commands
 
-Every grimoire can also ship its own slash-command skills — domain-specific commands namespaced to that grimoire. Where the knowledge layer answers questions, the skills layer makes things happen:
+Every grimoire ships its own slash-command skills — domain-specific commands namespaced to that grimoire:
 
 | Grimoire | Skill | What it does |
 |---|---|---|
@@ -47,9 +59,21 @@ Every grimoire can also ship its own slash-command skills — domain-specific co
 | `hr-grimoire` | `/hr-onboarding-checklist` | Walks through the onboarding process step by step |
 | `hr-grimoire` | `/hr-policy-lookup` | Routes to the right policy document for a situation |
 
-Knowledge and skills compound: the better your documentation, the smarter your skills. A skill that scaffolds a new recipe already knows your format; one that runs onboarding already knows your policies. Any recurring task documented in a grimoire can become a skill that executes it.
+Knowledge and skills compound: the better your documentation, the smarter your skills.
 
-Every chapter you add is one less thing your agent will hallucinate — and every skill you add is one more task your agent can carry out reliably.
+---
+
+## The LLM does the maintenance
+
+Arcana ships universal operations every grimoire inherits:
+
+- **`/grm-domain-ingest <source>`** — file a source under `sources/`, scan existing chapters, propose page updates, apply them, append to `log.md`.
+- **`/grm-domain-file-answer`** — promote a chat answer (analysis, comparison, derived insight) into a properly-frontmattered wiki page so it doesn't evaporate into chat history.
+- **`/grm-domain-lint`** — health-check the wiki: orphans, stale claims (>90 days unverified), ghost references (entities mentioned often but lacking a page), contradictions, missing cross-references.
+- **`/grm-domain-improve`** — comprehensive normalize-and-optimize pass.
+- **`/grm-domain-create-chapter`**, **`/grm-domain-analyze-semantics`** — and more.
+
+The human curates sources and asks questions. The LLM does the bookkeeping.
 
 ---
 
@@ -57,18 +81,19 @@ Every chapter you add is one less thing your agent will hallucinate — and ever
 
 Arcana is the engine that powers all your grimoires. You install it once; your grimoires reference it forever.
 
-Arcana ships the universal framework layer. Your grimoires contribute everything domain-specific.
-
 **Arcana provides** (shared across every grimoire):
 - `/grm-*` skills for creating, improving, validating, and managing grimoires
-- Formula templates for scaffolding new grimoires and chapters
-- Validation rites and library management automation
+- The page schema (`type`, `authority`, `sources`, `last_verified` frontmatter) that makes wikis machine-checkable
+- Formula templates for scaffolding new grimoires, chapters, and pages
+- Validation rites: structure, naming, format, links, frontmatter, orphans, provenance, security, semantics, skill-refs, boundaries
+- Library management automation
 - Framework documentation and governance
 
 **Your grimoires contribute**:
-- Their chapters, pages, and content
-- Their own `/{namespace}-*` skills — the actionable, domain-specific commands
+- Their `chapters/` (LLM-authored content) and `sources/` (immutable sources)
+- Their own `/<namespace>-*` skills — actionable, domain-specific commands
 - Their `grimoire.json` manifest declaring their identity and skill namespace
+- Their `log.md` — the append-only activity record
 
 When you update Arcana, all your grimoires benefit — because they reference it rather than copy from it.
 
@@ -78,7 +103,7 @@ When you update Arcana, all your grimoires benefit — because they reference it
 
 Arcana registers skills to:
 
-- **Claude Code** — full skill registration; Arcana's `/grm-*` commands plus each grimoire's own domain commands (e.g. `/cook-recipe-add`, `/hr-onboarding-checklist`)
+- **Claude Code** — full skill registration; Arcana's `/grm-*` commands plus each grimoire's own domain commands
 - **Codex / ChatGPT** — pointer-only registration from the same source files
 - **GitHub Copilot, Cursor** — via the agent instruction block injected into `CLAUDE.md` / `AGENTS.md`
 
@@ -102,29 +127,46 @@ Open a new agent session and run `/grm-meta-help` to see every available command
 
 ```
 ~/grimoires/
-├── arcana/              # The engine — install once, reference forever
-│   ├── invocations/     # AI-guided workflows (create, improve, validate)
-│   ├── formulae/        # Templates for chapters and pages
-│   ├── rites/           # Python automation scripts
-│   ├── skills/          # Slash-command source files
-│   └── docs/            # Framework documentation
+├── arcana/                       # The engine — install once, reference forever
+│   ├── arcana.md                 # Root hub
+│   ├── invocations/              # AI-guided workflows
+│   ├── formulae/                 # Templates for hubs, chapters, pages, sources
+│   ├── rites/                    # Python automation scripts
+│   ├── skills/                   # Slash-command source files
+│   ├── docs/                     # Framework documentation (page_schema.md is canonical)
+│   ├── sources/                      # Reserved (Arcana itself rarely uses sources/)
+│   └── log.md                    # Append-only activity log
 │
-├── cooking-grimoire/    # A personal grimoire
-│   ├── INDEX.md         # Root router
-│   ├── grimoire.json    # namespace: cook  →  /cook-* skills
-│   ├── skills/          # Domain skills: /cook-recipe-add, /cook-meal-plan, ...
-│   └── chapters/        # recipes/, techniques/, equipment/, ...
+├── cooking-grimoire/             # A personal grimoire
+│   ├── cooking-grimoire.md       # Root hub
+│   ├── grimoire.json             # namespace: cook  →  /cook-* skills
+│   ├── log.md                    # Activity log
+│   ├── sources/                      # Articles, transcripts, recipe screenshots
+│   ├── inbox/                    # Drop zone for content awaiting classification
+│   ├── chapters/                 # recipes/, techniques/, equipment/, ...
+│   │   ├── recipes/recipes.md    # Chapter hub (folder-name convention)
+│   │   ├── recipes/sourdough.md  # Leaf
+│   │   └── techniques/
+│   │       ├── techniques.md     # Chapter hub
+│   │       └── lamination/       # Sub-chapter (nests as deep as needed)
+│   │           ├── lamination.md     # Sub-chapter hub (same convention)
+│   │           ├── book_folds.md     # Leaf
+│   │           └── windowpane_test.md
+│   └── skills/                   # Domain skills
 │
-├── hr-grimoire/         # A workplace grimoire
-│   ├── INDEX.md
-│   ├── grimoire.json    # namespace: hr  →  /hr-* skills
-│   ├── skills/          # Domain skills: /hr-onboarding-checklist, /hr-policy-lookup, ...
-│   └── chapters/        # onboarding/, policies/, benefits/, ...
+├── hr-grimoire/                  # A workplace grimoire
+│   ├── hr-grimoire.md            # Root hub
+│   ├── grimoire.json             # namespace: hr  →  /hr-* skills
+│   ├── log.md
+│   ├── sources/
+│   ├── inbox/
+│   ├── chapters/                 # onboarding/, policies/, benefits/, ...
+│   └── skills/
 │
-└── library.json         # Registry of installed grimoires and their paths
+└── library.json                  # Registry of installed grimoires and their paths
 ```
 
-Create as many grimoires as you need. Arcana provides the framework; each grimoire supplies its own knowledge and skills.
+Create as many grimoires as you need. Arcana provides the framework; each grimoire supplies its own knowledge, skills, and source artifacts.
 
 ---
 
@@ -136,7 +178,10 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 | [Quickstart](docs/quickstart.md) | Verify your install in 5 minutes |
 | [Agent Configuration](docs/agent_configuration.md) | Claude Code, Codex, Copilot, Cursor |
 | [Skill Catalog](docs/skills.md) | Every `/grm-*` command with descriptions |
-| [Operating Model](docs/operating_model.md) | The routing model in depth |
+| [Operating Model](docs/operating_model.md) | Three-layer model and routing |
+| [Page Schema](docs/page_schema.md) | Frontmatter spec for every page |
+| [Obsidian Setup](docs/obsidian.md) | Open as a vault; graph-view color groups |
 | [Reference](docs/reference.md) | Terminology, schemas, path conventions |
+| [Script vs AI](docs/script_vs_ai.md) | When to use rites vs invocations |
 | [Governance](docs/governance.md) | Maintaining and versioning Arcana |
-| [Full Index](INDEX.md) | Navigate everything |
+| [Full Index](arcana.md) | Navigate everything |

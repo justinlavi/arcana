@@ -1,3 +1,12 @@
+---
+type: playbook
+title: "Validate Rites"
+aliases: ["validate-rites", "rite-quality"]
+tags: [arcana/invocations, type/playbook, scope/quality]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Invocation: Validate Arcana Rites
 
 ## Purpose

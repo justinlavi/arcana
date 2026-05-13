@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Validate Format"
+aliases: ["validate-format"]
+tags: [arcana/invocations, type/reference, scope/validators]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # 🔮 Invocation: Validate Arcana Format
 
 ## Purpose
@@ -42,9 +51,9 @@ The rite validates all invocation files have required sections:
 - `## Outputs` (deliverables)
 - `## Related` (cross-references)
 
-### Step 3: Review INDEX.md Files
+### Step 3: Review Hub Files
 
-Validates INDEX.md files are **thin routers**:
+Validates hub files are **thin routers**:
 
 **Thin router criteria**:
 - < 200 lines total
@@ -87,7 +96,7 @@ For each format violation:
 1. Add required section using formula template as guide
 2. Ensure section has meaningful content (not placeholder)
 
-**INDEX.md too long**:
+**Hub too long**:
 1. Remove duplicate content
 2. Simplify descriptions to one line
 3. Move detailed content to invocation files
@@ -101,14 +110,14 @@ For each format violation:
 
 **Console output**:
 - Invocation files with missing sections
-- INDEX.md files exceeding size limit
+- hub files exceeding size limit
 - Formulae with format issues
 - Exit code: 0 (compliant) or 1 (violations found)
 
 **On success**:
 ```
 ✅ All invocations have required sections
-✅ All INDEX.md files are appropriately sized
+✅ All hub files are appropriately sized
 ✅ All formulae have proper format
 ✅ Format validation passed
 ```
@@ -151,7 +160,7 @@ For each format violation:
 [Cross-references]
 ```
 
-### INDEX.md Template (Thin Router)
+### Hub Template (Thin Router)
 
 ```markdown
 # [Category] Invocations

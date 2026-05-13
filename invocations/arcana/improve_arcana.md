@@ -1,3 +1,12 @@
+---
+type: playbook
+title: "Improve Arcana"
+aliases: ["improve-arcana", "arcana-improve"]
+tags: [arcana/invocations, type/playbook, scope/arcana]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # Invocation: Improve Arcana
 
 ## Purpose
@@ -41,7 +50,7 @@ This runs every validator (structure, naming, format, links, security, semantics
 Review the aggregated output:
 
 - **Mechanical fixes** (broken link, snake_case path, missing heading, deprecated term): apply directly.
-- **Structural issues** (missing INDEX, misplaced file): fix the structure, then re-run the offending validator.
+- **Structural issues** (missing hub, misplaced file): fix the structure, then re-run the offending validator.
 - **Security hits**: treat as blocking. Investigate every credential pattern and unsafe construct before continuing.
 - **Boundary violations**: invocations / formulae / rites belong in Arcana only. Move violators or rewrite.
 
@@ -113,7 +122,7 @@ If the pass produced user-visible changes:
 
 In scope:
 
-- Root: `INDEX.md`, `README.md`, `CHANGELOG.md`
+- Root: hub, `README.md`, `CHANGELOG.md`
 - `docs/*.md`
 - `invocations/grimoire/`, `invocations/arcana/`, `invocations/meta/`
 - `formulae/*.formula.md` and `formulae/grimoire/` (the master template)
@@ -152,7 +161,7 @@ After:
 ## Related
 
 - All validators (orchestrated): `/grm-arcana-validate-all` — `python3 rites/validate.py`
-- Individual validators: see `invocations/arcana/validators/INDEX.md`
+- Individual validators: see `invocations/arcana/validators/validators.md`
 - Rite quality: [`quality/validate_rites.md`](quality/validate_rites.md)
 - Documentation quality: [`quality/improve_documentation.md`](quality/improve_documentation.md)
 - Doc generator: `rites/sync_docs.py`

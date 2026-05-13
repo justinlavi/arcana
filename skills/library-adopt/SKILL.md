@@ -40,5 +40,5 @@ Use this skill when `/grm-library-sync` reports an "unmanaged directory" — i.e
 
 ## Notes
 
-- For grimoires you're starting from scratch, prefer `/grm-domain-create-grimoire` — it does scaffolding (INDEX.md, README.md, chapters/) in addition to the manifest. This skill only writes the manifest, intended for directories that already have content but were cloned by hand.
+- For grimoires you're starting from scratch, prefer `/grm-domain-create-grimoire` — it does scaffolding (root hub, README.md, sources/, log.md, chapters/) in addition to the manifest. This skill only writes the manifest, intended for directories that already have content but were cloned by hand.
 - The rite never modifies anything outside the target directory; it just writes one file.

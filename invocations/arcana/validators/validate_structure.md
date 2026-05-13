@@ -1,3 +1,12 @@
+---
+type: reference
+title: "Validate Structure"
+aliases: ["validate-structure-arcana"]
+tags: [arcana/invocations, type/reference, scope/validators]
+authority: grimoire
+last_verified: 2026-05-12
+---
+
 # 🔮 Invocation: Validate Arcana Structure
 
 ## ⚡ The Magical Boundary ⚡
@@ -39,8 +48,8 @@ python3 rites/validate_structure.py
 
 **Success indicators**:
 - ✅ All required directories found (docs, invocations/*, formulae, rites, resources, formulae/grimoire)
-- ✅ All required files exist (INDEX.md, README.md, CHANGELOG.md, docs/*.md)
-- ✅ All invocation directories have INDEX.md (invocations/grimoire/, invocations/arcana/, invocations/meta/)
+- ✅ All required files exist (the root hub, README.md, CHANGELOG.md, docs/*.md)
+- ✅ All invocation directories have a hub file (invocations/grimoire/, invocations/arcana/, invocations/meta/)
 
 ### Step 3: Handle Errors
 
@@ -60,7 +69,7 @@ If errors are found:
 
 Additional verification not covered by automation:
 
-- [ ] Each invocation category has INDEX.md with proper routing
+- [ ] Each invocation category has a hub with proper routing
 - [ ] formulae/grimoire/ contains complete starter grimoire
 - [ ] resources/ contains icon assets and branding materials
 - [ ] No unexpected directories or files (check for cruft)
@@ -80,7 +89,7 @@ Additional verification not covered by automation:
 **On failure**:
 ```
 ❌ Missing directory: docs
-❌ Missing file: INDEX.md
+❌ Missing file: <hub>.md
 ❌ Structure validation failed with 2 errors
 ```
 
