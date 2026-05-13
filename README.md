@@ -115,9 +115,9 @@ Arcana registers skills to:
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
 ```
 
-The summoning rite installs Arcana, walks you through selecting grimoires to clone, and configures your agent instruction file automatically.
+The summoning rite installs **Arcana** — the framework — configures your AI agents, and registers the `/grm-*` skill set. If you have existing grimoires hosted on GitHub or GitLab, the rite can discover and clone them too. Otherwise, skip straight to building your first grimoire from scratch after Arcana is up.
 
-Open a new agent session and run `/grm-meta-help` to see every available command.
+Open a new agent session and run `/grm-meta-help` to see every available command, or run `/grm-domain-create-grimoire` to start your first grimoire.
 
 → [Full installation guide](docs/installation.md) · [5-minute smoke test](docs/quickstart.md)
 

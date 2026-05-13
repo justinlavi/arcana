@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Grimoire Summoning Rite — cross-platform grimoire installer.
+"""Arcana Summoning Rite — installs Arcana and optionally clones grimoires.
 
 Usage:
     python3 summon.py [--arcana-url URL] [--scope URL] [--cli] [--gui]
@@ -766,10 +766,10 @@ def _prompt_cli_mode(scope_preselected):
         return "clone"
 
     print()
-    print("  What would you like to install?")
+    print("  What would you like to do?")
     print()
-    print("    1) Install Arcana only          (start fresh — build your own grimoire)")
-    print("    2) Install Arcana + clone existing grimoires from a known location")
+    print("    1) Install Arcana               (sets up the framework; build grimoires from scratch)")
+    print("    2) Install Arcana + clone grimoires  (also pulls existing grimoires from a git host)")
     print()
     while True:
         choice = input("  Choice [1]: ").strip() or "1"
@@ -824,16 +824,16 @@ def _print_cli_summary(mode, installed_keys, skills_ok):
     print()
     print("============================================")
     if skills_ok:
-        print("  Grimoire Summoning Complete")
+        print("  Arcana Summoning Complete")
     else:
-        print("  Grimoire Summoning Complete (with warnings)")
+        print("  Arcana Summoning Complete (with warnings)")
     print("============================================")
     print()
     print("  Arcana:  ~/grimoires/arcana/")
     print()
     if mode == "arcana_only":
-        print("  Domain grimoires: none cloned (Arcana-only setup, by design).")
-        print("  To create your first grimoire, run: /grm-domain-create-grimoire")
+        print("  Grimoires: none cloned — Arcana only.")
+        print("  To create your first grimoire, open an agent session and run: /grm-domain-create-grimoire")
     elif installed_keys:
         print("  Installed grimoires:")
         for key in installed_keys:
@@ -863,7 +863,7 @@ def run_cli(args):
 
     print()
     print("============================================")
-    print("  Grimoire Summoning Rite")
+    print("  Arcana Summoning Rite")
     print("============================================")
 
     if not check_git(log):
@@ -911,14 +911,14 @@ def run_cli(args):
 
         if not library["grimoires"]:
             log.warn(
-                "No grimoires available to clone. Continuing with Arcana-only setup."
+                "No grimoires available to clone. Continuing with Arcana-only install."
             )
         else:
             log.ok(f"Library loaded ({len(library['grimoires'])} grimoire(s) available)")
             selected_keys = _cli_select_grimoires(library, log)
             if not selected_keys:
                 log.warn(
-                    "No grimoires selected. Continuing with Arcana-only setup."
+                    "No grimoires selected. Continuing with Arcana-only install."
                 )
             else:
                 print()
@@ -932,8 +932,8 @@ def run_cli(args):
                         installed_keys.append(key)
                 if selected_keys and not installed_keys:
                     log.warn(
-                        "No domain grimoires installed successfully. "
-                        "Continuing with Arcana-only setup (its /grm-* skills still need to register)."
+                        "No grimoires were cloned successfully — "
+                        "continuing with Arcana-only install."
                     )
 
     print()
@@ -1308,7 +1308,7 @@ def run_gui(args):
             return
         if mode is None:
             mode = dpg.get_value("mode_radio") if dpg.does_item_exist("mode_radio") else ""
-        if mode == "Install Arcana only":
+        if mode == "Install Arcana":
             dpg.configure_item("summon_btn", enabled=True)
             return
         any_selected = any(
@@ -1329,7 +1329,7 @@ def run_gui(args):
         mode = app_data if app_data is not None else (
             dpg.get_value("mode_radio") if dpg.does_item_exist("mode_radio") else ""
         )
-        is_clone_mode = mode == "Install Arcana + clone existing grimoires"
+        is_clone_mode = mode == "Install Arcana and clone grimoires"
         if dpg.does_item_exist("clone_section"):
             dpg.configure_item("clone_section", show=is_clone_mode)
         # Immediate resize to pre-computed estimate.
@@ -1403,9 +1403,9 @@ def run_gui(args):
         mode = (
             dpg.get_value("mode_radio")
             if dpg.does_item_exist("mode_radio")
-            else "Install Arcana + clone existing grimoires"
+            else "Install Arcana and clone grimoires"
         )
-        arcana_only = mode == "Install Arcana only"
+        arcana_only = mode == "Install Arcana"
 
         if arcana_only:
             selected = []
@@ -1414,8 +1414,8 @@ def run_gui(args):
             if not selected:
                 show_modal(
                     "No Selection",
-                    "Please select at least one grimoire, or switch to "
-                    "'Install Arcana only' mode.",
+                    "Please select at least one grimoire to clone, or switch to "
+                    "'Install Arcana' to set up Arcana without cloning grimoires.",
                 )
                 return
 
@@ -1442,8 +1442,8 @@ def run_gui(args):
 
                 if selected and not installed:
                     log.warn(
-                        "No domain grimoires installed successfully. "
-                        "Continuing with Arcana-only setup."
+                        "No grimoires were cloned successfully — "
+                        "continuing with Arcana-only install."
                     )
 
             skills_ok = finalize_install(installed, library, log)
@@ -1451,16 +1451,17 @@ def run_gui(args):
             log.ok("Summoning complete!")
             if arcana_only:
                 installed_msg = (
-                    "Arcana installed. No domain grimoires cloned (by design — "
-                    "'Arcana only' mode).\n\n"
-                    "To create your first grimoire, run /grm-domain-create-grimoire."
+                    "Arcana is installed and ready.\n\n"
+                    "To create your first grimoire from scratch, open a new agent "
+                    "session and run /grm-domain-create-grimoire."
                 )
             elif installed:
-                installed_msg = f"Installed Arcana + {len(installed)} grimoire(s)."
+                installed_msg = (
+                    f"Arcana installed with {len(installed)} grimoire(s) cloned."
+                )
             else:
                 installed_msg = (
-                    "Arcana installed. No domain grimoires landed (clone failures — "
-                    "see log)."
+                    "Arcana installed. No grimoires were cloned — check the log for clone errors."
                 )
             warn_msg = (
                 ""
@@ -1546,39 +1547,41 @@ def run_gui(args):
         # in which case the user's intent to clone is implicit and we land on
         # the clone path so the discovery results have somewhere to render.
         default_mode = (
-            "Install Arcana + clone existing grimoires"
+            "Install Arcana and clone grimoires"
             if scope_default
-            else "Install Arcana only"
+            else "Install Arcana"
         )
 
-        with dpg.window(tag="main_window", label="Grimoire", no_title_bar=True):
-            dpg.add_text("Grimoire", color=c["text_title"])
+        with dpg.window(tag="main_window", label="Arcana", no_title_bar=True):
+            dpg.add_text("Arcana", color=c["text_title"])
             dpg.add_text("Summoning Rite", color=c["text_muted"])
             dpg.add_separator()
             dpg.add_spacer(height=int(8 * scale))
 
-            dpg.add_text("What would you like to install?")
+            dpg.add_text("What would you like to do?")
             dpg.add_radio_button(
                 items=[
-                    "Install Arcana only",
-                    "Install Arcana + clone existing grimoires",
+                    "Install Arcana",
+                    "Install Arcana and clone grimoires",
                 ],
                 tag="mode_radio",
                 default_value=default_mode,
                 callback=on_mode_change,
             )
             dpg.add_text(
-                "Tip: pick 'Arcana only' if you want to build your own grimoire from scratch.",
+                "Arcana is the framework — it's always installed. Choose the second option"
+                " only if you have existing grimoires to clone from a git host.",
                 color=c["text_muted"],
+                wrap=int(680 * scale),
             )
             dpg.add_separator()
             dpg.add_spacer(height=int(8 * scale))
 
             with dpg.group(
                 tag="clone_section",
-                show=(default_mode == "Install Arcana + clone existing grimoires"),
+                show=(default_mode == "Install Arcana and clone grimoires"),
             ):
-                dpg.add_text("Grimoire Location")
+                dpg.add_text("Grimoire Repository")
                 with dpg.group(horizontal=True):
                     dpg.add_input_text(
                         tag="scope_input",
@@ -1608,7 +1611,7 @@ def run_gui(args):
                 dpg.add_text("Available Grimoires")
                 with dpg.child_window(tag="grimoire_list", height=list_h, border=True):
                     dpg.add_text(
-                        "Enter a scope URL and press Discover to search for grimoires.",
+                        "Enter a GitHub/GitLab org or repository URL above, then press Discover.",
                         color=c["text_muted"],
                         wrap=int(620 * scale),
                     )
@@ -1638,11 +1641,11 @@ def run_gui(args):
                 label="Summon",
                 width=btn_w,
                 callback=on_summon,
-                enabled=(default_mode == "Install Arcana only"),
+                enabled=(default_mode == "Install Arcana"),
             )
 
         dpg.create_viewport(
-            title="Grimoire - Summoning Rite",
+            title="Arcana - Summoning Rite",
             width=viewport_w,
             height=viewport_h,
             min_width=int(560 * scale),
@@ -1701,7 +1704,7 @@ def run_gui(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Grimoire Summoning Rite — install and configure grimoires"
+        description="Arcana Summoning Rite — install Arcana and optionally clone grimoires"
     )
     parser.add_argument(
         "--arcana-url",

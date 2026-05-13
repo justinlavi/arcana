@@ -4,12 +4,12 @@ title: "Installation"
 aliases: ["install", "summon", "setup"]
 tags: [type/reference, arcana/docs]
 authority: grimoire
-last_verified: 2026-05-12
+last_verified: 2026-05-13
 ---
 
-# Grimoire Installation
+# Arcana Installation
 
-One command sets up everything — installs Arcana, summons grimoires, creates the local library, configures agent instruction files, and registers skills.
+One command installs Arcana — the framework that powers all your grimoires — configures your AI agents, and registers the `/grm-*` skill set. Cloning existing grimoires is optional and handled interactively.
 
 For per-agent configuration after install, see [agent_configuration.md](agent_configuration.md). For library and manifest schemas, see [reference.md](reference.md).
 
@@ -27,7 +27,7 @@ For forks or private mirrors, pass the Arcana repository URL explicitly:
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_ARCANA_URL=https://github.com/your-org/arcana.git bash
 ```
 
-The script installs from the public Arcana GitHub repository by default. When run from a cloned Arcana checkout, it still detects the checkout's git origin automatically.
+The script installs from the public Arcana GitHub repository by default. When run from a cloned Arcana checkout, it detects the checkout's git origin automatically.
 
 When run from the public curl command, the summoning rite is release-first:
 1. Detects the current OS and architecture.
@@ -36,27 +36,31 @@ When run from the public curl command, the summoning rite is release-first:
 4. Runs the binary.
 5. Falls back to the Python source bootstrap if the release asset is unavailable.
 
-The summoning rite:
+**What the summoning rite always does:**
 1. Checks runtime dependencies (`git`; Python 3 and Dear PyGui only if source fallback is needed)
 2. Installs Arcana to `~/grimoires/arcana/` (clone or pull)
-3. Discovers grimoires via git host API (GitLab/GitHub), falls back to the static library
-4. Presents an interactive menu — pick which grimoires to install
-5. Clones or updates selected grimoires in `~/grimoires/`
-6. Creates/updates the local library at `~/grimoires/library.json`
-7. Injects the Grimoire routing block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
-8. Registers Grimoire skills to `~/.claude/skills/` and `~/.codex/skills/`
+3. Injects the Grimoire routing block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
+4. Registers Arcana's `/grm-*` skills to `~/.claude/skills/` and `~/.codex/skills/`
 
-After summoning, open a new Claude Code or Codex/ChatGPT session and try `/grm-meta-help`.
+**Optional — if you have existing grimoires to clone:**
+5. Discovers grimoires via git host API (GitLab/GitHub), falls back to the static library
+6. Presents an interactive menu — pick which grimoires to clone
+7. Clones or updates selected grimoires in `~/grimoires/`
+8. Creates/updates the local library at `~/grimoires/library.json`
+
+After summoning, open a new Claude Code or Codex/ChatGPT session and try `/grm-meta-help`. To create your first grimoire from scratch, run `/grm-domain-create-grimoire`.
 
 Dear PyGui is bundled into release binaries. In source fallback mode, it is installed into a Grimoire-managed Python dependency cache, not into the Arcana repository. On Arch-based systems, the source fallback may install `python-pip` with `pacman` first if the system Python does not include pip.
 
 ---
 
-## Dynamic Grimoire Discovery
+## Cloning Existing Grimoires
 
-The summoning rite can discover grimoires by querying the git host API. This removes the need to maintain a static `library.json` — grimoires are found dynamically based on naming convention (`*-grimoire`).
+When you choose "Install Arcana and clone grimoires" in the GUI (or option 2 in the CLI), the rite can discover and clone grimoires by querying the git host API. This removes the need to maintain a static `library.json` — grimoires are found dynamically based on naming convention (`*-grimoire`).
 
-Arcana and grimoires don't need to live in the same place. Arcana might be cloned from a public GitHub repo, while your grimoires are in a private company GitLab or a different GitHub org. The script asks where to look.
+Arcana and grimoires don't need to live in the same place. Arcana might be installed from the public GitHub repo while your grimoires live in a private company GitLab or a different GitHub org. The rite asks where to look.
+
+If you don't have existing grimoires to clone yet, skip this step entirely and use `/grm-domain-create-grimoire` to build your first grimoire from scratch after Arcana is installed.
 
 Discovery supports two URL shapes:
 - Direct repository URLs, such as `https://github.com/you/cooking-grimoire`, are trusted explicitly. The `-grimoire` slug is conventional but not required when the URL points to a single repository.
@@ -82,7 +86,7 @@ To pin a specific release asset instead of using GitHub's latest published relea
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0 bash
 ```
 
-If no scope is provided, the script prompts interactively:
+If no scope is provided, the rite prompts interactively:
 
 ```
   Where are your grimoires hosted?
@@ -94,7 +98,7 @@ If no scope is provided, the script prompts interactively:
     https://gitlab.company.com/my-team
     https://gitlab.com/company/grimoires
 
-  Grimoire location: _
+  Grimoire repository: _
 ```
 
 **Supported hosts**:
