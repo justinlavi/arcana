@@ -729,71 +729,63 @@ def register_skills(log):
 
 
 # ---------------------------------------------------------------------------
+# Shared install pipeline
+# ---------------------------------------------------------------------------
+
+
+def finalize_install(installed_keys, library, log):
+    """Run the post-Arcana install steps shared by both CLI and GUI modes.
+
+    Updates the local library only when at least one domain grimoire landed,
+    then always re-injects agent configs and re-registers /grm-* skills so
+    Arcana itself is usable even when no domain grimoires were cloned.
+
+    Returns True iff skill registration succeeded.
+    """
+    if installed_keys:
+        update_local_library(installed_keys, library, log)
+    inject_agent_configs(log)
+    return register_skills(log)
+
+
+# ---------------------------------------------------------------------------
 # CLI mode
 # ---------------------------------------------------------------------------
 
 
-def run_cli(args):
-    """Terminal-based interactive summoning flow."""
-    log = Logger()
+def _prompt_cli_mode(scope_preselected):
+    """Ask whether to install Arcana only or Arcana + clone existing grimoires.
+
+    When `scope_preselected` is True (the user passed --scope or set
+    GRIMOIRE_SCOPE), we skip the prompt and assume clone mode — the explicit
+    scope makes the intent unambiguous.
+
+    Returns "arcana_only" or "clone".
+    """
+    if scope_preselected:
+        return "clone"
 
     print()
-    print("============================================")
-    print("  Grimoire Summoning Rite")
-    print("============================================")
+    print("  What would you like to install?")
     print()
-
-    # Check dependencies
-    if not check_git(log):
-        sys.exit(1)
-
-    # Create install directory
-    GRIMOIRES_HOME.mkdir(parents=True, exist_ok=True)
-    log.ok(f"Install directory: {GRIMOIRES_HOME}")
-
-    # Install Arcana
+    print("    1) Install Arcana only          (start fresh — build your own grimoire)")
+    print("    2) Install Arcana + clone existing grimoires from a known location")
     print()
-    arcana_url = resolve_arcana_url(args)
-    if not install_arcana(arcana_url, log):
-        sys.exit(1)
+    while True:
+        choice = input("  Choice [1]: ").strip() or "1"
+        if choice == "1":
+            return "arcana_only"
+        if choice == "2":
+            return "clone"
+        print(f"  Invalid choice: {choice!r}. Enter 1 or 2.")
 
-    # Discover grimoires
-    print()
-    log.info("Discovering grimoires...")
 
-    scope_url = args.scope or os.environ.get("GRIMOIRE_SCOPE", "")
+def _cli_select_grimoires(library, log):
+    """Show the grimoire selection menu and return the chosen keys.
 
-    if not scope_url:
-        print()
-        print("  Where are your grimoires hosted?")
-        print("  Enter the URL of the group or org containing your grimoires.")
-        print("  Press Enter to skip and use the static library only.")
-        print()
-        print("  Examples:")
-        print("    https://github.com/my-org")
-        print("    https://gitlab.company.com/my-team")
-        print("    https://gitlab.com/company/grimoires")
-        print()
-        scope_url = input("  Grimoire location: ").strip()
-
-    # Build library: static + discovered
-    library = load_static_library()
-
-    if scope_url:
-        discovered = discover_grimoires(scope_url, log)
-        for key, entry in discovered.items():
-            if key not in library["grimoires"]:
-                library["grimoires"][key] = entry
-    else:
-        log.info("Skipping discovery")
-
-    if not library["grimoires"]:
-        log.err("No grimoires found (library is empty and discovery did not find any)")
-        sys.exit(1)
-
-    log.ok(f"Library loaded ({len(library['grimoires'])} grimoire(s) available)")
-
-    # Display menu
+    Returns an empty list when the user makes no valid selection so the caller
+    can decide whether to abort or continue with Arcana only.
+    """
     print()
     print("  Available Grimoires:")
     print("  --------------------")
@@ -812,59 +804,23 @@ def run_cli(args):
     selection = input("  Select grimoires to install (e.g. 1 3 or a for all): ").strip()
 
     if selection.lower() in ("a", "all"):
-        selected_keys = keys
-    else:
-        selected_keys = []
-        for part in selection.split():
-            try:
-                idx = int(part) - 1
-                if 0 <= idx < len(keys):
-                    selected_keys.append(keys[idx])
-                else:
-                    log.warn(f"Invalid selection: {part} (skipping)")
-            except ValueError:
+        return keys
+
+    selected_keys = []
+    for part in selection.split():
+        try:
+            idx = int(part) - 1
+            if 0 <= idx < len(keys):
+                selected_keys.append(keys[idx])
+            else:
                 log.warn(f"Invalid selection: {part} (skipping)")
+        except ValueError:
+            log.warn(f"Invalid selection: {part} (skipping)")
+    return selected_keys
 
-    if not selected_keys:
-        log.err("No grimoires selected")
-        sys.exit(1)
 
-    print()
-    log.ok(f"Selected {len(selected_keys)} grimoire(s)")
-
-    # Install grimoires
-    print()
-    log.info("Installing grimoires...")
-    print()
-
-    installed_keys = []
-    for key in selected_keys:
-        entry = library["grimoires"][key]
-        if install_grimoire(key, entry, log):
-            installed_keys.append(key)
-
-    if selected_keys and not installed_keys:
-        log.warn(
-            "No domain grimoires installed successfully. "
-            "Continuing with Arcana-only setup (its /grm-* skills still need to register)."
-        )
-
-    # Update local library — only if at least one domain grimoire landed.
-    if installed_keys:
-        print()
-        update_local_library(installed_keys, library, log)
-
-    # Always inject agent instruction files (the schema block changes between
-    # Arcana releases, so re-injecting keeps it current).
-    print()
-    inject_agent_configs(log)
-
-    # Always register skills — Arcana itself ships /grm-* skills regardless of
-    # which (or how many) domain grimoires were installed.
-    print()
-    skills_ok = register_skills(log)
-
-    # Summary
+def _print_cli_summary(mode, installed_keys, skills_ok):
+    """Print the closing summary block for either install mode."""
     print()
     print("============================================")
     if skills_ok:
@@ -875,12 +831,15 @@ def run_cli(args):
     print()
     print("  Arcana:  ~/grimoires/arcana/")
     print()
-    if installed_keys:
+    if mode == "arcana_only":
+        print("  Domain grimoires: none cloned (Arcana-only setup, by design).")
+        print("  To create your first grimoire, run: /grm-domain-create-grimoire")
+    elif installed_keys:
         print("  Installed grimoires:")
         for key in installed_keys:
             print(f"    - ~/grimoires/{key}/")
     else:
-        print("  Installed grimoires: (none — Arcana only)")
+        print("  Domain grimoires: none landed (clone failures — see log above).")
     print()
     print(f"  Local library: {LOCAL_LIBRARY}")
     print(f"  CLAUDE.md:     {CLAUDE_MD}")
@@ -896,6 +855,90 @@ def run_cli(args):
     print("    1. Open a new Claude Code or Codex/ChatGPT session")
     print("    2. Try: /grm-meta-help")
     print()
+
+
+def run_cli(args):
+    """Terminal-based interactive summoning flow."""
+    log = Logger()
+
+    print()
+    print("============================================")
+    print("  Grimoire Summoning Rite")
+    print("============================================")
+
+    if not check_git(log):
+        sys.exit(1)
+
+    GRIMOIRES_HOME.mkdir(parents=True, exist_ok=True)
+    log.ok(f"Install directory: {GRIMOIRES_HOME}")
+
+    scope_url = args.scope or os.environ.get("GRIMOIRE_SCOPE", "")
+    mode = _prompt_cli_mode(scope_preselected=bool(scope_url))
+
+    print()
+    arcana_url = resolve_arcana_url(args)
+    if not install_arcana(arcana_url, log):
+        sys.exit(1)
+
+    installed_keys = []
+    library = {"grimoires": {}}
+
+    if mode == "clone":
+        print()
+        log.info("Discovering grimoires...")
+
+        if not scope_url:
+            print()
+            print("  Where are your grimoires hosted?")
+            print("  Enter the URL of the group or org containing your grimoires.")
+            print("  Press Enter to skip and use the static library only.")
+            print()
+            print("  Examples:")
+            print("    https://github.com/my-org")
+            print("    https://gitlab.company.com/my-team")
+            print("    https://gitlab.com/company/grimoires")
+            print()
+            scope_url = input("  Grimoire location: ").strip()
+
+        library = load_static_library()
+        if scope_url:
+            discovered = discover_grimoires(scope_url, log)
+            for key, entry in discovered.items():
+                if key not in library["grimoires"]:
+                    library["grimoires"][key] = entry
+        else:
+            log.info("Skipping discovery (no scope URL provided)")
+
+        if not library["grimoires"]:
+            log.warn(
+                "No grimoires available to clone. Continuing with Arcana-only setup."
+            )
+        else:
+            log.ok(f"Library loaded ({len(library['grimoires'])} grimoire(s) available)")
+            selected_keys = _cli_select_grimoires(library, log)
+            if not selected_keys:
+                log.warn(
+                    "No grimoires selected. Continuing with Arcana-only setup."
+                )
+            else:
+                print()
+                log.ok(f"Selected {len(selected_keys)} grimoire(s)")
+                print()
+                log.info("Installing grimoires...")
+                print()
+                for key in selected_keys:
+                    entry = library["grimoires"][key]
+                    if install_grimoire(key, entry, log):
+                        installed_keys.append(key)
+                if selected_keys and not installed_keys:
+                    log.warn(
+                        "No domain grimoires installed successfully. "
+                        "Continuing with Arcana-only setup (its /grm-* skills still need to register)."
+                    )
+
+    print()
+    skills_ok = finalize_install(installed_keys, library, log)
+    _print_cli_summary(mode, installed_keys, skills_ok)
 
 
 # ---------------------------------------------------------------------------
@@ -1252,15 +1295,55 @@ def run_gui(args):
                 else:
                     dpg.configure_item(tag, enabled=not is_busy)
 
-    def update_summon_state(*_):
-        """Enable Summon iff at least one grimoire checkbox is checked."""
+    def update_summon_state(mode=None):
+        """Enable Summon based on the active mode.
+
+        Accepts an explicit `mode` string to avoid re-reading the radio value
+        during a callback (DPG may not have committed the new value yet).
+
+        Arcana-only: always enabled.
+        Clone: enabled iff at least one grimoire checkbox is checked.
+        """
         if not dpg.does_item_exist("summon_btn"):
+            return
+        if mode is None:
+            mode = dpg.get_value("mode_radio") if dpg.does_item_exist("mode_radio") else ""
+        if mode == "Install Arcana only":
+            dpg.configure_item("summon_btn", enabled=True)
             return
         any_selected = any(
             dpg.does_item_exist(tag) and dpg.get_value(tag)
             for tag in checkbox_tags.values()
         )
         dpg.configure_item("summon_btn", enabled=any_selected)
+
+    def on_mode_change(_sender=None, app_data=None, _user_data=None):
+        """Show/hide the clone section and resize the viewport to fit the new mode.
+
+        Strategy: immediate resize to the pre-computed estimate (eliminates the
+        2-frame window where content and viewport are mismatched), then schedule
+        _auto_fit_viewport to refine to the exact measured height after the layout
+        has re-rendered.  The estimate is close enough that the refinement is a
+        few pixels at most — not noticeable as a second flash.
+        """
+        mode = app_data if app_data is not None else (
+            dpg.get_value("mode_radio") if dpg.does_item_exist("mode_radio") else ""
+        )
+        is_clone_mode = mode == "Install Arcana + clone existing grimoires"
+        if dpg.does_item_exist("clone_section"):
+            dpg.configure_item("clone_section", show=is_clone_mode)
+        # Immediate resize to pre-computed estimate.
+        estimated_h = _viewport_h_clone if is_clone_mode else _viewport_h_arcana
+        try:
+            dpg.set_viewport_height(estimated_h)
+        except Exception:
+            pass
+        # Refine after the layout has re-rendered (widget positions update next frame).
+        try:
+            dpg.set_frame_callback(dpg.get_frame_count() + 2, _auto_fit_viewport)
+        except Exception:
+            pass
+        update_summon_state(mode=mode)
 
     def populate_grimoires(entries):
         if dpg.does_item_exist("grimoire_list"):
@@ -1290,7 +1373,7 @@ def run_gui(args):
                 default_value=True,
                 tag=tag,
                 parent="grimoire_list",
-                callback=update_summon_state,
+                callback=lambda *_: update_summon_state(),
             )
 
         # New checkboxes default to selected, so the button should light up.
@@ -1317,10 +1400,24 @@ def run_gui(args):
             set_busy(False)
 
     def on_summon(*_):
-        selected = [key for key, tag in checkbox_tags.items() if dpg.get_value(tag)]
-        if not selected:
-            show_modal("No Selection", "Please select at least one grimoire.")
-            return
+        mode = (
+            dpg.get_value("mode_radio")
+            if dpg.does_item_exist("mode_radio")
+            else "Install Arcana + clone existing grimoires"
+        )
+        arcana_only = mode == "Install Arcana only"
+
+        if arcana_only:
+            selected = []
+        else:
+            selected = [key for key, tag in checkbox_tags.items() if dpg.get_value(tag)]
+            if not selected:
+                show_modal(
+                    "No Selection",
+                    "Please select at least one grimoire, or switch to "
+                    "'Install Arcana only' mode.",
+                )
+                return
 
         set_busy(True)
         try:
@@ -1335,35 +1432,36 @@ def run_gui(args):
                 show_modal("Error", "Failed to install Arcana.", close_app=True)
                 return
 
-            log.info("Installing grimoires...")
             installed = []
-            for key in selected:
-                entry = library["grimoires"][key]
-                if install_grimoire(key, entry, log):
-                    installed.append(key)
+            if not arcana_only:
+                log.info("Installing grimoires...")
+                for key in selected:
+                    entry = library["grimoires"][key]
+                    if install_grimoire(key, entry, log):
+                        installed.append(key)
 
-            if selected and not installed:
-                log.warn(
-                    "No domain grimoires installed successfully. "
-                    "Continuing with Arcana-only setup."
-                )
+                if selected and not installed:
+                    log.warn(
+                        "No domain grimoires installed successfully. "
+                        "Continuing with Arcana-only setup."
+                    )
 
-            # Update library only if at least one domain grimoire landed.
-            if installed:
-                update_local_library(installed, library, log)
-
-            # Always re-inject agent configs and re-register skills, even if
-            # zero domain grimoires came down. Arcana itself ships /grm-* skills
-            # that need to register so the user has the framework available.
-            inject_agent_configs(log)
-            skills_ok = register_skills(log)
+            skills_ok = finalize_install(installed, library, log)
 
             log.ok("Summoning complete!")
-            installed_msg = (
-                f"Installed {len(installed)} grimoire(s)."
-                if installed else
-                "No domain grimoires installed; Arcana set up alone."
-            )
+            if arcana_only:
+                installed_msg = (
+                    "Arcana installed. No domain grimoires cloned (by design — "
+                    "'Arcana only' mode).\n\n"
+                    "To create your first grimoire, run /grm-domain-create-grimoire."
+                )
+            elif installed:
+                installed_msg = f"Installed Arcana + {len(installed)} grimoire(s)."
+            else:
+                installed_msg = (
+                    "Arcana installed. No domain grimoires landed (clone failures — "
+                    "see log)."
+                )
             warn_msg = (
                 ""
                 if skills_ok else
@@ -1390,17 +1488,68 @@ def run_gui(args):
         c = GUI_COLORS
 
         # Pre-scale layout dimensions so widgets keep their visual proportions
-        # regardless of DPI. Heights are sized so every element fits without
-        # scrolling at the default viewport size.
+        # regardless of DPI.
         list_h     = int(round(220 * scale))
         log_h      = int(round(150 * scale))
         btn_w      = int(round(160 * scale))
         discover_w = int(round(120 * scale))
         input_pad  = int(round(140 * scale))
         viewport_w = int(round(760 * scale))
-        # Generous default — final size is auto-fit to actual content after
-        # the first frame renders (see post-show_viewport block below).
-        viewport_h = int(round(980 * scale))
+
+        # Pre-computed viewport heights for each mode.
+        #
+        # DPG style constants set above:
+        #   mvStyleVar_FramePadding  → 10, 8   (frame_pad_y = 8)
+        #   mvStyleVar_ItemSpacing   → 12, 10  (item_spacing_y = 10)
+        #   mvStyleVar_WindowPadding → 24, 20  (win_pad_y = 20 top + 20 bottom)
+        # Font size = round(18 * scale).
+        #
+        # Per-widget heights (DPG measures from top of frame to top of next item):
+        #   text item   → font(18) + item_spacing_y(10) = 28
+        #   input/button → font(18) + 2*frame_pad_y(16) + item_spacing_y(10) = 44
+        #   separator   → ~item_spacing_y * 2 = 20
+        #   explicit spacer(h) → h (no extra spacing)
+        #   multiline input(height=H) → H + 2*frame_pad_y(16) + item_spacing_y(10)
+        #   child_window(height=H) → H + item_spacing_y(10)
+        #   window padding         → win_pad_y top + win_pad_y bottom = 40
+        #   OS chrome (title bar)  → ~60 on Linux, ~30 on macOS
+        _t  = int(round(28 * scale))              # text item
+        _i  = int(round(44 * scale))              # input / button item
+        _s  = int(round(20 * scale))              # separator
+        _s8 = int(round(8 * scale))               # explicit spacer(8)
+        _log_inp_h = log_h + int(round(26 * scale))   # log input (150 + 2*8 + 10)
+        _list_h    = list_h + int(round(10 * scale))  # child_window (220 + 10)
+        _chrome    = int(round(100 * scale))       # win_pad(40) + OS title bar(~60)
+
+        # Arcana-only visible items (top to bottom):
+        #   "Grimoire" + "Summoning Rite" + separator + spacer(8)
+        #   "What would you like?" + radio(2 items) + tip-text + separator + spacer(8)
+        #   log-label-row + log-input + spacer(8) + summon-button
+        #   + window padding + OS chrome
+        _viewport_h_arcana = (
+            _t + _t + _s + _s8
+            + _t + 2*_t + _t + _s + _s8
+            + _t + _log_inp_h + _s8 + _i
+            + _chrome
+        )
+        # Clone section adds (between mode-selector and log section):
+        #   "Grimoire Location" + (input + discover-btn) + hint-text
+        #   + "Token" + token-input + spacer(8) + "Available Grimoires" + list + spacer(8)
+        _viewport_h_clone = _viewport_h_arcana + (
+            _t + _i + _t
+            + _t + _i + _s8 + _t + _list_h + _s8
+        )
+
+        viewport_h = _viewport_h_clone if scope_default else _viewport_h_arcana
+
+        # Default mode is Arcana-only unless a scope was preselected via flag/env,
+        # in which case the user's intent to clone is implicit and we land on
+        # the clone path so the discovery results have somewhere to render.
+        default_mode = (
+            "Install Arcana + clone existing grimoires"
+            if scope_default
+            else "Install Arcana only"
+        )
 
         with dpg.window(tag="main_window", label="Grimoire", no_title_bar=True):
             dpg.add_text("Grimoire", color=c["text_title"])
@@ -1408,40 +1557,61 @@ def run_gui(args):
             dpg.add_separator()
             dpg.add_spacer(height=int(8 * scale))
 
-            dpg.add_text("Grimoire Location")
-            with dpg.group(horizontal=True):
+            dpg.add_text("What would you like to install?")
+            dpg.add_radio_button(
+                items=[
+                    "Install Arcana only",
+                    "Install Arcana + clone existing grimoires",
+                ],
+                tag="mode_radio",
+                default_value=default_mode,
+                callback=on_mode_change,
+            )
+            dpg.add_text(
+                "Tip: pick 'Arcana only' if you want to build your own grimoire from scratch.",
+                color=c["text_muted"],
+            )
+            dpg.add_separator()
+            dpg.add_spacer(height=int(8 * scale))
+
+            with dpg.group(
+                tag="clone_section",
+                show=(default_mode == "Install Arcana + clone existing grimoires"),
+            ):
+                dpg.add_text("Grimoire Location")
+                with dpg.group(horizontal=True):
+                    dpg.add_input_text(
+                        tag="scope_input",
+                        default_value=scope_default,
+                        hint="https://github.com/my-org",
+                        width=-(input_pad),
+                        on_enter=True,
+                        callback=on_discover,
+                    )
+                    dpg.add_button(tag="discover_btn", label="Discover", width=discover_w, callback=on_discover)
+                dpg.add_text(
+                    "e.g. https://github.com/my-org | https://gitlab.company.com/team",
+                    color=c["text_muted"],
+                )
+
+                dpg.add_text("Token", color=c["text_muted"])
                 dpg.add_input_text(
-                    tag="scope_input",
-                    default_value=scope_default,
-                    hint="https://github.com/my-org",
-                    width=-(input_pad),
+                    tag="token_input",
+                    password=True,
+                    hint="Optional - auto-detects from git credentials / env vars",
+                    width=-1,
                     on_enter=True,
                     callback=on_discover,
                 )
-                dpg.add_button(tag="discover_btn", label="Discover", width=discover_w, callback=on_discover)
-            dpg.add_text(
-                "e.g. https://github.com/my-org | https://gitlab.company.com/team",
-                color=c["text_muted"],
-            )
 
-            dpg.add_text("Token", color=c["text_muted"])
-            dpg.add_input_text(
-                tag="token_input",
-                password=True,
-                hint="Optional - auto-detects from git credentials / env vars",
-                width=-1,
-                on_enter=True,
-                callback=on_discover,
-            )
-
-            dpg.add_spacer(height=int(8 * scale))
-            dpg.add_text("Available Grimoires")
-            with dpg.child_window(tag="grimoire_list", height=list_h, border=True):
-                dpg.add_text(
-                    "Enter a scope URL and press Discover to search for grimoires.",
-                    color=c["text_muted"],
-                    wrap=int(620 * scale),
-                )
+                dpg.add_spacer(height=int(8 * scale))
+                dpg.add_text("Available Grimoires")
+                with dpg.child_window(tag="grimoire_list", height=list_h, border=True):
+                    dpg.add_text(
+                        "Enter a scope URL and press Discover to search for grimoires.",
+                        color=c["text_muted"],
+                        wrap=int(620 * scale),
+                    )
 
             with dpg.group(horizontal=True):
                 dpg.add_text("Log")
@@ -1459,15 +1629,16 @@ def run_gui(args):
             )
 
             dpg.add_spacer(height=int(8 * scale))
-            # Summon starts disabled; lights up purple/pink only when at least
-            # one grimoire is selected. Until then it stays muted so the eye
-            # is drawn to the active action (Discover).
+            # In Arcana-only mode the button is immediately actionable. In
+            # clone mode it gates on selection (lights up only after the user
+            # checks at least one grimoire); until then the eye is drawn to
+            # the active action (Discover).
             dpg.add_button(
                 tag="summon_btn",
                 label="Summon",
                 width=btn_w,
                 callback=on_summon,
-                enabled=False,
+                enabled=(default_mode == "Install Arcana only"),
             )
 
         dpg.create_viewport(
@@ -1475,7 +1646,7 @@ def run_gui(args):
             width=viewport_w,
             height=viewport_h,
             min_width=int(560 * scale),
-            min_height=int(680 * scale),
+            min_height=_viewport_h_arcana - int(round(20 * scale)),
         )
         # Apply launcher icon (no-op if files aren't accessible).
         _apply_launcher_icon(dpg)
@@ -1484,29 +1655,31 @@ def run_gui(args):
         dpg.set_primary_window("main_window", True)
         dpg.show_viewport()
 
-        # Auto-fit viewport height to actual rendered content AFTER the first
-        # frame renders. Pixel math up front never quite matches what Dear PyGui
-        # produces (font metrics, OS title bar, padding rounding); measuring
-        # post-render eliminates cut-off-button bugs.
-        #
-        # MUST run via a frame callback rather than dpg.split_frame() before
-        # the main loop is active — split_frame blocks waiting for a render
-        # that hasn't happened yet, leaving the viewport black until resize.
+        # One-time auto-fit after the first frame renders so font metrics and
+        # OS chrome are actual rather than estimated.  Measures from the Summon
+        # button's rendered position rather than from main_window height
+        # (main_window height == viewport height under set_primary_window, making
+        # a window-height measurement circular and causing unbounded growth).
         def _auto_fit_viewport():
             try:
-                content_h = dpg.get_item_rect_size("main_window")[1]
-                if not content_h:
+                if not dpg.does_item_exist("summon_btn"):
                     return
-                client_h = dpg.get_viewport_client_height() or viewport_h
-                chrome = max(60, viewport_h - client_h)
-                needed = content_h + chrome + int(20 * scale)
-                if needed > dpg.get_viewport_height():
-                    dpg.set_viewport_height(needed)
+                btn_pos  = dpg.get_item_pos("summon_btn")
+                btn_size = dpg.get_item_rect_size("summon_btn")
+                if not (btn_pos and btn_size and btn_size[1]):
+                    return
+                content_bottom = btn_pos[1] + btn_size[1]
+                total_h  = dpg.get_viewport_height()
+                client_h = dpg.get_viewport_client_height() or total_h
+                chrome   = max(40, total_h - client_h)
+                target   = content_bottom + int(28 * scale) + chrome
+                dpg.set_viewport_height(target)
             except Exception:
-                # Auto-fit is a nicety; never let it abort the launcher.
                 pass
 
         # Frame 2 = first frame fully rendered with measurable widget rects.
+        # Only called once at startup; on_mode_change uses pre-computed heights
+        # instead of this measurement to avoid re-entry and growth artifacts.
         try:
             dpg.set_frame_callback(2, _auto_fit_viewport)
         except Exception:
