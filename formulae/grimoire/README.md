@@ -1,8 +1,10 @@
 # {{GRIMOIRE_NAME}} Grimoire
 
-This is the **{{GRIMOIRE_NAME}}** domain grimoire — a structured, AI-navigable knowledge base for {{GRIMOIRE_PURPOSE_DETAILED}}.
+This README is the canonical home for the long-form description. Other surfaces (the manifest in `grimoire.json`, the root hub `{{GRIMOIRE_DIRECTORY}}.md`) intentionally just say *"{{GRIMOIRE_NAME}} Grimoire"* — keep the description here so it lives in exactly one place.
 
-The framework that powers it (Arcana) lives at `~/grimoires/arcana/`. See [Arcana README](GRIMOIRE_ARCANA/README.md) for the full architecture.
+{{GRIMOIRE_PURPOSE_DETAILED}}
+
+The framework that powers this grimoire (Arcana) lives at `~/grimoires/arcana/`. See [Arcana README](GRIMOIRE_ARCANA/README.md) for the full architecture.
 
 ## Layout
 
@@ -61,6 +63,8 @@ Manifest at `grimoire.json`:
   "description": "{{GRIMOIRE_PURPOSE}}"
 }
 ```
+
+(The manifest description is a short tagline — a few words like "Olympus knowledge" or "personal cooking knowledge". The long-form description lives in this README; do not paste the long form into the manifest or hub.)
 
 Skills under `skills/<area>-<verb>-<object>/` register as `/{{SKILL_NAMESPACE}}-<area>-<verb>-<object>`.
 

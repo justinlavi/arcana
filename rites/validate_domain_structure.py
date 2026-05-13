@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validates a domain grimoire's structure against Arcana v2 conventions.
+"""Validates a domain grimoire's structure against Arcana conventions.
 
 Required at the grimoire root:
     <grimoire-name>.md   (root hub; folder-name convention)

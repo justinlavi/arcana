@@ -87,19 +87,30 @@ The root hub file is named after the grimoire directory (folder-name convention)
 
 Replace placeholders. Confirm `skill_namespace` with the user before writing — it's load-bearing and must be unique across grimoires installed side-by-side.
 
+**Description-duplication policy.** Three description shapes, each with one canonical home:
+
+| Field | Length | Where it lives | Example |
+|---|---|---|---|
+| `{{GRIMOIRE_NAME}}` | brand only (one word usually) | H1 of root hub, `name` field of manifest | `Olympus`, `LUS`, `Cooking` |
+| `{{GRIMOIRE_PURPOSE}}` | short tagline (2–5 words) | manifest `description`, italic subtitle in root hub | `Olympus knowledge`, `personal cooking knowledge`, `HR runbooks and policies` |
+| `{{GRIMOIRE_PURPOSE_DETAILED}}` | long-form paragraph | **only** `README.md` | full multi-sentence description |
+
+Do not re-paste the long form into the manifest, the root hub, the log, or any skill file. If another page needs the description, link to README — don't copy it.
+
 **`grimoire.json`**:
 - `{{GRIMOIRE_DIRECTORY}}`
 - `{{SKILL_NAMESPACE}}` (must match `^[a-z][a-z0-9]*$`)
-- `{{GRIMOIRE_PURPOSE}}`
+- `{{GRIMOIRE_PURPOSE}}` (used as the manifest's `description` — short tagline, a few words; e.g. "Olympus knowledge")
 
 **`{{grimoire_directory}}.md`** (root hub):
-- `{{GRIMOIRE_NAME}}`, `{{GRIMOIRE_NAME_LOWER}}`, `{{GRIMOIRE_DIRECTORY}}`, `{{GRIMOIRE_PURPOSE}}`, `{{GRIMOIRE_DOMAIN}}`, `{{SKILL_NAMESPACE}}`
+- `{{GRIMOIRE_NAME}}`, `{{GRIMOIRE_NAME_LOWER}}`, `{{GRIMOIRE_DIRECTORY}}`, `{{GRIMOIRE_PURPOSE}}` (italic subtitle), `{{GRIMOIRE_DOMAIN}}`, `{{SKILL_NAMESPACE}}`
+- The hub uses `{{GRIMOIRE_PURPOSE}}` as a short subtitle below the title and points readers at `README.md` for the long-form description. Do not add a multi-sentence Purpose section here.
 - `{{CHAPTER_ROUTES}}` — one entry per selected chapter, using wikilinks:
   ```markdown
   - <chapter description>: [[<chapter_name>]]
   ```
 
-**`README.md`**:
+**`README.md`** (the canonical home for the long-form description):
 - `{{GRIMOIRE_NAME}}`, `{{GRIMOIRE_PURPOSE_DETAILED}}`, `{{GRIMOIRE_DIRECTORY}}`, `{{SKILL_NAMESPACE}}`
 - `{{EXAMPLE_CHAPTER}}` — pick one chapter from the user's selection
 - `{{CHAPTER_LIST}}` — bulleted `**name** - description` per chapter

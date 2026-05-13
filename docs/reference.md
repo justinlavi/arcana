@@ -199,11 +199,11 @@ When creating new grimoires, use these placeholders in formula templates:
 
 | Placeholder | Description | Example value |
 |-------------|-------------|---------------|
-| `{{GRIMOIRE_NAME}}` | Display name | `Cooking`, `HR` |
+| `{{GRIMOIRE_NAME}}` | Display name; brand only — used in the root-hub H1 | `Cooking`, `HR`, `Olympus` |
 | `{{GRIMOIRE_TOKEN}}` | All-caps token | `COOKING`, `HR` |
 | `{{GRIMOIRE_DOMAIN}}` | Subject area / category | `cooking`, `human resources` |
-| `{{GRIMOIRE_PURPOSE}}` | One-line purpose | `personal cooking knowledge` |
-| `{{GRIMOIRE_PURPOSE_DETAILED}}` | Detailed purpose | `recipes, techniques, equipment, and ingredient inventories` |
+| `{{GRIMOIRE_PURPOSE}}` | Short tagline, 2–5 words; used in the manifest `description` and as an italic subtitle in the root hub | `Olympus knowledge`, `personal cooking knowledge`, `HR runbooks and policies` |
+| `{{GRIMOIRE_PURPOSE_DETAILED}}` | Long-form description; lives **only** in `README.md`; never duplicated to manifest or hub | `recipes, techniques, equipment, and ingredient inventories — the full personal cooking reference` |
 | `{{GRIMOIRE_DIRECTORY}}` | Filesystem name | `cooking-grimoire`, `hr-grimoire` |
 | `{{SKILL_NAMESPACE}}` | Short slug for skill prefix | `cook`, `hr` |
 | `{{CHAPTER_ROUTES}}` | Generated routing pointers (filled by create_grimoire) | — |
@@ -211,6 +211,14 @@ When creating new grimoires, use these placeholders in formula templates:
 | `{{CHAPTER_TREE}}` | Directory tree of chapters | — |
 | `{{EXAMPLE_CHAPTER}}` | One example chapter name | `recipes`, `onboarding` |
 | `{{OWNER_DOMAIN}}` | Who maintains this grimoire | `Personal`, `People Ops` |
-| `{{CREATION_DATE}}` | ISO date the grimoire was created | `2026-05-12` |
+| `{{CREATION_DATE}}` | ISO date the grimoire was created | `2026-05-13` |
+
+**Description-duplication policy.** Three description-shaped placeholders, each with a single canonical home:
+
+- `GRIMOIRE_NAME` — brand only, used in the root-hub H1 and as the manifest `name` field.
+- `GRIMOIRE_PURPOSE` — short tagline, 2–5 words. Lives in the manifest `description` and as an italic subtitle under the root hub's H1. Surfaces in skill pickers, library listings, and at-a-glance scans.
+- `GRIMOIRE_PURPOSE_DETAILED` — long-form paragraph. Lives in `README.md` only; never duplicated to the manifest, the root hub, the log, or any skill file. If another page needs the description, link to README.
+
+This prevents the same description from drifting across three files while still letting the manifest and hub carry a one-line tagline that's useful at a glance.
 
 ---
