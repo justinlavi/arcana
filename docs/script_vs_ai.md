@@ -117,17 +117,6 @@ Suggest keeping README's version and having the root hub reference it."
 
 ---
 
-## The Evolution Factor
-
-**2024**: AI can analyze a few files, suggest improvements
-**2025**: AI can analyze entire codebases, understand complex patterns
-**2026**: AI can reason about architecture, propose refactorings
-**2027+**: AI context windows and reasoning capabilities continue expanding
-
-**Implication**: Tasks that seem too complex for AI today will be trivial tomorrow. Don't prematurely encode "intelligence" into scripts that will become obsolete.
-
----
-
 ## Anti-Patterns to Avoid
 
 ### ❌ Scripts Trying to Be Smart
@@ -275,23 +264,6 @@ grep -rh -o '\b[A-Z][a-z]* [A-Z][a-z]*\b' . | sort -u > /tmp/found_terms.txt
 # AI reads found_terms.txt AND reference.md
 # AI understands context and suggests appropriate changes
 ```
-
----
-
-## Future-Proofing Grimoire
-
-**As AI evolves, tasks shift from scripts → AI:**
-
-**2024 State**:
-- Scripts: Structure validation, file finding, format checking
-- AI: Semantic analysis, improvement suggestions, pattern detection
-
-**2027+ State** (predicted):
-- Scripts: Still just finding and counting
-- AI: Everything requiring understanding (expanded dramatically)
-
-**Key**: Scripts stay simple forever. AI capabilities expand indefinitely.
-
 ---
 
 ## Decision Framework
