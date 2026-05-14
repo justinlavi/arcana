@@ -1220,9 +1220,108 @@ def _setup_fonts(dpg, scale):
         return None
 
 
+def _probe_gui(extra_env=None):
+    """Test whether DearPyGui can open an OpenGL window with the given env.
+
+    Runs the minimum DearPyGui init sequence (create_context → create_viewport
+    → destroy_context) inside an isolated subprocess.  `create_viewport()` is
+    where GLFW creates the window and initialises GLX, which is the call that
+    aborts (SIGABRT) on systems without a usable OpenGL context.  Running it in
+    a child means the abort kills only the child; the launcher catches the
+    non-zero exit code and can try a different env or fall back to CLI.
+
+    Returns (ok: bool, hint: str).  `hint` is empty on success; on failure it
+    holds the last line of the child's stderr (truncated) so callers can
+    diagnose whether the failure was a real GLX/driver problem or something
+    like a missing dependency.
+    """
+    env = dict(os.environ)
+    if extra_env:
+        env.update(extra_env)
+    code = (
+        "import sys, os\n"
+        "d = os.environ.get('GRIMOIRE_SUMMON_PY_DEPS', '')\n"
+        "if d: sys.path.insert(0, d)\n"
+        "import dearpygui.dearpygui as dpg\n"
+        "dpg.create_context()\n"
+        "dpg.create_viewport(title='_probe', width=300, height=200)\n"
+        "dpg.destroy_context()\n"
+    )
+    try:
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            timeout=8,
+            env=env,
+        )
+    except Exception as e:
+        return False, f"could not run probe: {e}"
+    if result.returncode == 0:
+        return True, ""
+    stderr = (result.stderr or b"").decode("utf-8", errors="replace").strip()
+    if stderr:
+        return False, stderr.splitlines()[-1][:200]
+    return False, f"exit code {result.returncode}"
+
+
+# Mesa software-rendering env: forces llvmpipe (CPU-side OpenGL), which
+# provides its own GLX framebuffer configs and bypasses any hardware-driver
+# brokenness.  Slower than hardware GL but functional on essentially any Linux
+# system that has Mesa installed.  Harmless on macOS / Windows (those backends
+# ignore the LIBGL_* / GALLIUM_* knobs entirely).
+_GUI_SW_RENDER_ENV = {
+    "LIBGL_ALWAYS_SOFTWARE": "1",
+    "GALLIUM_DRIVER": "llvmpipe",
+}
+
+
+def _select_gui_env():
+    """Pick the first env that makes the GUI work on this machine.
+
+    Strategy: try hardware OpenGL first.  If it fails, force Mesa software
+    rendering and try again.  Most systems where the hardware path fails
+    (broken/missing GPU drivers, restrictive GLX configs on Arch-based distros,
+    NVIDIA-on-Wayland issues, headless servers) recover with software rendering.
+
+    Returns:
+        (env_dict, label) when a working configuration is found.  `env_dict`
+            holds env vars to apply to the launcher's process before running
+            the GUI; empty dict means hardware GL works as-is.
+        (None, reason) when no configuration works.  `reason` includes both
+            probes' failure hints plus an actionable suggestion.
+    """
+    ok, hw_err = _probe_gui()
+    if ok:
+        return {}, "hardware OpenGL"
+
+    print(f"  [INFO]  Hardware OpenGL probe failed ({hw_err}) — retrying with software rendering")
+    ok, sw_err = _probe_gui(extra_env=_GUI_SW_RENDER_ENV)
+    if ok:
+        return dict(_GUI_SW_RENDER_ENV), "software OpenGL (Mesa llvmpipe)"
+
+    return None, (
+        f"no usable OpenGL/GLX context "
+        f"(hardware: {hw_err}; software: {sw_err}). "
+        f"If you're on Wayland, install XWayland — "
+        f"`sudo pacman -S xorg-xwayland` on Arch, "
+        f"`sudo apt install xwayland` on Debian/Ubuntu. "
+        f"Otherwise ensure Mesa is installed."
+    )
+
+
 def run_gui(args):
     """Dear PyGui summoning flow."""
     dpg = _ensure_dearpygui()
+
+    gui_env, label = _select_gui_env()
+    if gui_env is None:
+        raise RuntimeError(label)
+    if gui_env:
+        # Apply the env vars that made the probe succeed — the in-process
+        # DearPyGui calls below read these at create_viewport() time, so it's
+        # safe to set them here (after import, before context creation).
+        os.environ.update(gui_env)
+        print(f"  [INFO]  Using {label} for GUI rendering")
 
     # DPI scale is computed once and used by every dimension-bearing call.
     # Nested helpers (show_modal, populate_grimoires, etc.) close over it.
@@ -1735,10 +1834,13 @@ def main():
             if not has_display:
                 gui_skip_reason = "no display server detected"
             else:
-                if not os.environ.get("DISPLAY") and (
-                    os.environ.get("WAYLAND_DISPLAY") or session_type == "wayland"
-                ):
-                    os.environ["DISPLAY"] = ":0"
+                # On Wayland without XWayland, DISPLAY is unset and DearPyGui
+                # (which requires X11/GLX) will fail.  _probe_gui() catches this
+                # before the main GUI loop starts and raises RuntimeError, which
+                # the caller handles by falling back to CLI.  Setting DISPLAY=:0
+                # blindly causes GLFW to connect to a nonexistent X server and
+                # produce GLX failures — omit the assignment and let the probe
+                # decide.
                 use_gui = True
 
     if use_gui:

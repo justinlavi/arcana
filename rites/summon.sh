@@ -177,8 +177,16 @@ try_release_binary() {
     fi
 
     echo "  [OK]    Running release binary"
-    TEMP_DIR="$binary_temp"
-    exec "$binary" "$@"
+    # Run as a subprocess, not exec, so a crash (e.g. SIGABRT from GLFW/GLX)
+    # returns a non-zero exit code here rather than killing the shell process
+    # and losing the Python fallback path.
+    if "$binary" "$@"; then
+        rm -rf "$binary_temp"
+        exit 0
+    fi
+    echo "  [WARN]  Release binary exited abnormally — falling back to Python source"
+    rm -rf "$binary_temp"
+    return 1
 }
 
 if [[ -f "$SCRIPT_SOURCE" ]]; then
@@ -355,11 +363,14 @@ export PYTHONPATH="$GRIMOIRE_SUMMON_PY_DEPS${PYTHONPATH:+:$PYTHONPATH}"
 # 4. Wayland: prefer XWayland if no DISPLAY is set
 # ---------------------------------------------------------------------------
 
-if [[ -z "${DISPLAY:-}" ]]; then
-    if [[ -n "${WAYLAND_DISPLAY:-}" || "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
-        export DISPLAY=":0"
-        echo "  [INFO]  Wayland session detected — set DISPLAY=:0 for GUI rendering"
-    fi
+# Display environment: DearPyGui requires X11/GLX (via XWayland on Wayland).
+# When XWayland is running the compositor exports DISPLAY automatically.
+# Setting DISPLAY=:0 blindly when only WAYLAND_DISPLAY is set causes GLFW
+# to attempt an X connection that doesn't exist, producing GLX init failures.
+# The Python bootstrap probes GL compatibility at runtime and falls back to
+# CLI automatically — no manual DISPLAY override needed here.
+if [[ -z "${DISPLAY:-}" && ( -n "${WAYLAND_DISPLAY:-}" || "${XDG_SESSION_TYPE:-}" == "wayland" ) ]]; then
+    echo "  [INFO]  Wayland session detected — display compatibility will be probed at runtime"
 fi
 
 echo ""
