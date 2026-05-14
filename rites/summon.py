@@ -907,9 +907,30 @@ def save_settings(updated):
 
 
 def _import_sister_scripts():
-    """Import sync_library + adopt_grimoire from the same rites/ dir."""
-    if str(RITE_DIR) not in sys.path:
-        sys.path.insert(0, str(RITE_DIR))
+    """Import sync_library + adopt_grimoire helpers.
+
+    Tries the rites/ dir of THIS script first (running from inside an
+    installed Arcana clone or a dev checkout), then falls back to the
+    installed Arcana's rites/ dir. The fallback is what makes the bootstrap
+    flow work — the curl|bash bootstrap drops only summon.py into a temp
+    dir, but the user's already-installed ~/grimoires/arcana/rites/ has
+    the full set of sister scripts.
+    """
+    candidates = []
+    if (RITE_DIR / "sync_library.py").is_file():
+        candidates.append(RITE_DIR)
+    installed_rites = ARCANA_DIR / "rites"
+    if (installed_rites / "sync_library.py").is_file() and installed_rites != RITE_DIR:
+        candidates.append(installed_rites)
+    if not candidates:
+        raise ImportError(
+            f"Could not locate sync_library.py / adopt_grimoire.py. "
+            f"Looked in {RITE_DIR} and {installed_rites}. "
+            f"Install Arcana first via the Install tab, then retry."
+        )
+    chosen = candidates[0]
+    if str(chosen) not in sys.path:
+        sys.path.insert(0, str(chosen))
     import sync_library
     import adopt_grimoire
     return sync_library, adopt_grimoire
@@ -1874,7 +1895,12 @@ def _build_button_themes(dpg):
     themes["card"] = card_theme
 
     # Inner list theme — slightly different bg for nested list child_windows
-    # (grimoire selection list, installed list, drift, diagnostics).
+    # (grimoire selection list, installed list, drift, diagnostics, log).
+    # The mvAll component overrides the global ItemSpacing.y of 8px down to
+    # 2px so line-by-line content (log lines, drift entries, diag rows)
+    # stacks tightly instead of looking double-spaced. Within an installed
+    # grimoire entry we add an explicit separator + spacer for breathing
+    # room between grimoires; everything else benefits from the tight pack.
     with dpg.theme() as inner_theme:
         with dpg.theme_component(dpg.mvChildWindow):
             dpg.add_theme_color(dpg.mvThemeCol_ChildBg, c["bg_card_alt"])
@@ -1882,6 +1908,8 @@ def _build_button_themes(dpg):
             dpg.add_theme_style(dpg.mvStyleVar_ChildRounding, 6)
             dpg.add_theme_style(dpg.mvStyleVar_ChildBorderSize, 1)
             dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 10, 8)
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing, 10, 2)
     themes["inner"] = inner_theme
 
     return themes
