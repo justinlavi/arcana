@@ -131,6 +131,25 @@ class Logger:
 # ---------------------------------------------------------------------------
 
 
+def _subprocess_env():
+    """Return a clean env dict for spawning subprocesses from a frozen binary.
+
+    PyInstaller sets LD_LIBRARY_PATH to its extracted temp dir so its bundled
+    C extensions can find their dependencies.  When the binary spawns system
+    tools like git, those tools' helpers (git-remote-https, etc.) also search
+    LD_LIBRARY_PATH and pick up the bundled libssl / libcurl instead of the
+    system versions, causing symbol-version mismatches on distros with newer
+    OpenSSL (e.g. Arch / CachyOS).  Stripping the key fixes this without
+    affecting the binary's own Python extension loading (those paths are
+    already baked into the extension .so files via RPATH).
+    """
+    if not getattr(sys, "frozen", False):
+        return None  # not frozen — let subprocess inherit env unchanged
+    env = dict(os.environ)
+    env.pop("LD_LIBRARY_PATH", None)
+    return env
+
+
 def git(*args, cwd=None, log=None):
     """Run a git command. Returns (success: bool, stdout: str).
 
@@ -144,6 +163,7 @@ def git(*args, cwd=None, log=None):
             cwd=cwd,
             capture_output=True,
             text=True,
+            env=_subprocess_env(),
         )
         if result.returncode != 0 and log is not None:
             stderr = (result.stderr or "").rstrip()
@@ -1220,22 +1240,69 @@ def _setup_fonts(dpg, scale):
         return None
 
 
+def _probe_python():
+    """Return the Python executable to use for GUI probing.
+
+    When running inside a PyInstaller frozen binary, sys.executable is the
+    binary itself.  Using it for the probe would re-invoke the binary with -c,
+    re-extract the same bundled GLFW/Mesa, and fail with the same library
+    conflicts as the main run — defeating the purpose of the probe.  Using
+    system Python instead lets the probe talk to the system's Mesa/GLX stack
+    directly, giving an accurate picture of whether the GUI can actually work.
+    """
+    if not getattr(sys, "frozen", False):
+        return sys.executable
+    for candidate in ("python3", "python"):
+        try:
+            r = subprocess.run(
+                [candidate, "--version"],
+                capture_output=True,
+                timeout=3,
+                env=_subprocess_env(),
+            )
+            if r.returncode == 0:
+                return candidate
+        except Exception:
+            pass
+    return sys.executable  # last resort: try the bundle anyway
+
+
+def _extract_probe_hint(stderr_bytes):
+    """Pull the most informative line from a failed probe's stderr.
+
+    GLFW/Mesa errors (e.g. 'GLX: No GLXFBConfigs returned') appear early in
+    stderr.  The last line is often a generic crash line or a Python code
+    snippet from the traceback — not useful.  Prefer lines that mention
+    known keywords; fall back to the first non-blank line.
+    """
+    text = (stderr_bytes or b"").decode("utf-8", errors="replace").strip()
+    if not text:
+        return ""
+    keywords = ("glx", "glfw", "opengl", "egl", "error", "assert", "abort",
+                 "failed", "cannot", "unable", "libgl", "mesa")
+    for line in text.splitlines():
+        if any(k in line.lower() for k in keywords):
+            return line.strip()[:200]
+    return text.splitlines()[0].strip()[:200]
+
+
 def _probe_gui(extra_env=None):
     """Test whether DearPyGui can open an OpenGL window with the given env.
 
     Runs the minimum DearPyGui init sequence (create_context → create_viewport
-    → destroy_context) inside an isolated subprocess.  `create_viewport()` is
-    where GLFW creates the window and initialises GLX, which is the call that
-    aborts (SIGABRT) on systems without a usable OpenGL context.  Running it in
-    a child means the abort kills only the child; the launcher catches the
-    non-zero exit code and can try a different env or fall back to CLI.
+    → destroy_context) inside an isolated subprocess using system Python (not
+    the PyInstaller bundle).  `create_viewport()` is where GLFW creates the
+    window and initialises GLX — the call that aborts (SIGABRT) on systems
+    without a usable OpenGL context.  Running it in a child means the abort
+    kills only the child; the launcher catches the non-zero exit and can try
+    a different env or fall back to CLI.
 
     Returns (ok: bool, hint: str).  `hint` is empty on success; on failure it
-    holds the last line of the child's stderr (truncated) so callers can
-    diagnose whether the failure was a real GLX/driver problem or something
-    like a missing dependency.
+    holds the most informative stderr line to help diagnose the root cause.
     """
     env = dict(os.environ)
+    # Strip PyInstaller lib-path pollution so system Mesa / drivers are used.
+    env.pop("LD_LIBRARY_PATH", None)
     if extra_env:
         env.update(extra_env)
     code = (
@@ -1249,7 +1316,7 @@ def _probe_gui(extra_env=None):
     )
     try:
         result = subprocess.run(
-            [sys.executable, "-c", code],
+            [_probe_python(), "-c", code],
             capture_output=True,
             timeout=8,
             env=env,
@@ -1258,10 +1325,7 @@ def _probe_gui(extra_env=None):
         return False, f"could not run probe: {e}"
     if result.returncode == 0:
         return True, ""
-    stderr = (result.stderr or b"").decode("utf-8", errors="replace").strip()
-    if stderr:
-        return False, stderr.splitlines()[-1][:200]
-    return False, f"exit code {result.returncode}"
+    return False, _extract_probe_hint(result.stderr)
 
 
 # Mesa software-rendering env: forces llvmpipe (CPU-side OpenGL), which
