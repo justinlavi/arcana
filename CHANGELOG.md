@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] — 2026-05-13
+## [1.0.0] — 2026-05-15
 
 First release of Arcana.
 
@@ -57,13 +57,16 @@ Plus the per-grimoire `log.md` — append-only activity log. Each entry begins `
 | `/grm-domain-improve` | Comprehensive grimoire audit and improvement orchestrator. |
 | `/grm-domain-analyze-semantics` | Judgment-based naming and organization audit. |
 | `/grm-domain-validate-structure` | Structural compliance against Arcana formulae and conventions. |
+| `/grm-domain-validate-boundaries` | Magical/practical boundary enforcement — ensures domain grimoires use practical terminology, not Arcana's system vocabulary. Optional `--arcana` flag scans Arcana itself. |
+
+Every domain skill that operates on the active grimoire (everything except `create-grimoire`) shares a single precondition fragment at `invocations/meta/grimoire_directory_guard.md`, included via `!cat`. Skills are pointer-only; the guard text lives in one place.
 
 ### Validation suite
 
 Mechanical rites, each independently invocable and orchestrated by `rites/validate.py`:
 
 - `validate_structure` — Arcana directory layout and required hub files.
-- `validate_domain_structure` — domain grimoire layout (root hub, `sources/`, `chapters/`, `log.md`, `grimoire.json`).
+- `validate_domain_structure` — domain grimoire layout (root hub, `sources/`, `chapters/`, `log.md`); validates `grimoire.json` via the shared `_lib.load_manifest` (catches missing `name`, missing/invalid `namespace`, parse errors).
 - `validate_naming` — snake_case for paths, kebab-case for skills.
 - `validate_format` — invocation/formula schema; hubs are thin routers (<200 lines).
 - `validate_frontmatter` — page schema compliance (type, required fields per type, aliases/tags shape, `last_verified` parses).
@@ -71,11 +74,24 @@ Mechanical rites, each independently invocable and orchestrated by `rites/valida
 - `validate_orphans` — every page is reachable from at least one other page.
 - `validate_provenance` — pages with `authority: external` or `hybrid` cite real artifacts under `sources/`; never cite `inbox/`.
 - `validate_security` — credential patterns and unsafe Python constructs.
-- `validate_semantics` — deprecated terminology and hyphenated path examples.
+- `validate_semantics` — hyphenated path examples in markdown prose (Arcana convention is snake_case for paths).
 - `validate_skill_refs` — every `/grm-*` reference in prose resolves to a real skill folder.
-- `validate_boundaries` — magical/practical boundary compliance (system terminology in Arcana, practical terminology in domain content).
 
 The full suite runs sequentially or in parallel; smart mode picks only validators relevant to the working tree's git changes.
+
+### Shared library (`rites/_lib.py`)
+
+Every validator and library utility imports from a single shared module:
+
+- Logger functions (`info`, `ok`, `warn`, `err`) — uniform `[LEVEL]` prefix in 2-space indent.
+- Frontmatter parser (`parse_frontmatter`, `parse_frontmatter_aliases`) — canonical YAML subset handling inline + multi-line lists.
+- Markdown helpers (`strip_code_blocks`, `LINK_RE`, `WIKILINK_RE`, `CODE_FENCE_RE`).
+- Manifest / library loaders (`load_manifest`, `load_library`, `resolve_local_path`).
+- Grimoire root resolution (`default_arcana_root`, `add_grimoire_arg`, `resolve_grimoire_arg`).
+- Page discovery (`iter_pages`).
+- Regex constants (`NAMESPACE_RE`, `SKILL_SLUG_RE`, `DATE_RE`, `FRONTMATTER_RE`).
+
+Adding a new validator is now a ~30-line affair: import from `_lib`, run the check, exit 0 or 1.
 
 ### Skill system
 
@@ -83,8 +99,8 @@ The full suite runs sequentially or in parallel; smart mode picks only validator
 - Arcana ships `/grm-*` skills; each domain grimoire contributes `/<namespace>-*` skills.
 - `rites/register_skills.py` (`/grm-skills-register`) discovers and installs skills from Arcana and every library entry to Claude Code (`~/.claude/skills/`) and Codex/ChatGPT (`~/.codex/skills/`).
 - Source SKILL.md files use `{{NAMESPACE}}` and `{{ARCANA_PATH}}` placeholders resolved at registration time.
-- `when_to_use` frontmatter enables Claude Code auto-invocation by intent.
-- `disable-model-invocation` frontmatter prevents auto-invocation for destructive skills.
+- `when_to_use` frontmatter enables Claude Code auto-invocation by intent; every Arcana skill has it.
+- `disable-model-invocation: true` is set on each individual `arcana-validate-*` skill (10 validators) and on `arcana-clean`. The aggregate `arcana-validate-all` is the single auto-invoke target for "run validation"; the focused validators stay manually callable but no longer compete for picker attention.
 - `rites/sync_docs.py` regenerates `docs/skills.md` (the canonical Arcana skill catalog) from each `SKILL.md`'s frontmatter.
 
 ### Library management
@@ -95,15 +111,21 @@ The full suite runs sequentially or in parallel; smart mode picks only validator
 
 ### Summoning rite (one-command install)
 
-`rites/summon.sh` + `rites/summon.py` — release-first binary bootstrap with Python source fallback. Steps:
+`rites/summon.sh` + a three-module Python implementation. Release-first binary bootstrap with Python source fallback. Steps:
 
-1. Detects OS / architecture, downloads the matching `grimoire-summon-*` release asset from GitHub Releases (with checksum verification), and runs the binary.
-2. Falls back to the Python source bootstrap if the release asset is unavailable.
+1. Detects OS / architecture, downloads the matching `grimoire-summon-*` release asset from GitHub Releases (with checksum verification), and runs the binary. PyInstaller bundles all three Python modules into one executable.
+2. Falls back to the Python source bootstrap if the release asset is unavailable. In source mode, downloads `summon.py` + `summon_core.py` always; downloads `summon_gui.py` only when GUI mode is possible (skipped for `--cli`/`-h`/`--help`).
 3. Discovers grimoires via GitHub or GitLab API (or static `library.json`); presents an interactive menu.
 4. Clones Arcana and selected grimoires under `~/grimoires/`.
 5. Updates `~/grimoires/library.json`.
 6. Injects the canonical Grimoire instruction block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`.
 7. Always runs `register_skills.py` — including when zero domain grimoires were selected, so Arcana's own `/grm-*` skills register regardless. Surfaces both stdout and stderr from the registration subprocess so failures are never silent. Spot-checks the agent skill directories afterward and reports counts.
+
+The Python implementation is split for auditability and headless friendliness:
+
+- `rites/summon.py` (~90 lines) — pure dispatcher: argparse, GUI/CLI mode detection, lazy import of the GUI module.
+- `rites/summon_core.py` (~830 lines) — install engine: constants, Logger, git/HTTP helpers, GitHub/GitLab discovery, install pipeline, interactive CLI flow. Pure stdlib.
+- `rites/summon_gui.py` (~2,480 lines) — Dear PyGui front end: settings persistence, threaded workers with cancellation, theme system, four tabs (Install / Manage / Settings / Diagnostics), live log panel.
 
 The launcher GUI uses Dear PyGui with:
 
@@ -114,10 +136,11 @@ The launcher GUI uses Dear PyGui with:
 - Copyable log window where every subprocess line (git, register_skills) is captured so users can paste failure output back to the maintainer.
 - Summon button stays disabled until at least one grimoire is selected, drawing the eye to Discover as the first action.
 
-`rites/build_summon_binary.py` builds the release artifact via PyInstaller, bundling the resources/ directory so the runtime icon works in the frozen binary. Native executable icons (`.ico` on Windows, `.icns` on macOS) are picked up automatically if present in `resources/`.
+`rites/build_summon_binary.py` builds the release artifact via PyInstaller, bundling the resources/ directory so the runtime icon works in the frozen binary. PyInstaller follows imports automatically, so all three Python modules end up in one executable. Native executable icons (`.ico` on Windows, `.icns` on macOS) are picked up automatically if present in `resources/`.
 
 ### Formulae (templates)
 
+- `formulae/README.md` — one-line description per template; orients new contributors to which template is expanded by which skill.
 - `formulae/grimoire/` — full grimoire scaffold (root hub, README, manifest, `sources/`, `inbox/`, `chapters/`, `log.md`, `.obsidian/graph.json`).
 - `formulae/chapter_hub.formula.md` — chapter hub template with frontmatter scaffolding.
 - `formulae/page.formula.md` — knowledge page template.
@@ -136,21 +159,35 @@ The launcher GUI uses Dear PyGui with:
 ### Documentation
 
 - `arcana.md` — root hub, lists every doc / invocation / formula / rite.
-- `README.md` — project overview, what a grimoire is, install command, layout diagram.
-- `docs/installation.md` — summoning rite walkthrough plus manual install.
-- `docs/quickstart.md` — 5-minute smoke test.
+- `README.md` — project overview, what a grimoire is, install command, layout diagram. Links to canonical docs rather than re-explaining hub convention or storage layers.
+- `docs/installation.md` — summoning rite walkthrough, manual install, 5-minute smoke test, troubleshooting.
 - `docs/agent_configuration.md` — per-agent setup (Claude Code, Codex/ChatGPT, GitHub Copilot, Cursor).
-- `docs/operating_model.md` — storage layers, hub convention, routing model.
-- `docs/page_schema.md` — canonical frontmatter specification.
-- `docs/reference.md` — terminology, library/manifest schemas, path keys, formula placeholders.
+- `docs/operating_model.md` — canonical home for storage layers, hub convention, and routing rules. Other docs link here.
+- `docs/page_schema.md` — canonical frontmatter specification, including the authority models table.
+- `docs/reference.md` — terminology, the magical boundary, library/manifest schemas, path keys, formula placeholders.
 - `docs/script_vs_ai.md` — architectural principle for when to use rites (mechanical) vs invocations (judgment).
 - `docs/obsidian.md` — vault setup and graph-view configuration.
 - `docs/governance.md` — maintenance policies and versioning.
-- `docs/release.md` — release workflow for the summoning rite binaries.
+- `docs/release.md` — release workflow for the summoning rite binaries (uses the `[build]` extra in `pyproject.toml`).
 - `docs/skills.md` — canonical Arcana skill catalog (auto-generated from each `SKILL.md`).
+
+### Public-readiness
+
+- `LICENSE` — MIT.
+- `CONTRIBUTING.md` — contributor onramp covering the four working layers (`docs/`, `formulae/`, `invocations/`, `rites/`, `skills/`), local setup, validator + test suites, code style, and PR expectations.
+- `pyproject.toml` — pure-stdlib runtime; optional groups `[dev]` (pytest), `[gui]` (DearPyGui for the launcher), `[build]` (PyInstaller for release artifacts).
+- `tests/` — pytest suite with fixture grimoires (`good_grimoire`, `bad_frontmatter`, `bad_links`) covering `_lib` directly and every validator end-to-end via subprocess. The full suite runs in under a second.
+- `.github/workflows/summon-release.yml` — builds the release binary; uses `pip install '.[build]'` (single canonical dep declaration).
+
+### Sub-hub organization
+
+Inside `invocations/arcana/`:
+
+- `validators/` holds all 9 mechanical validator docs that have a corresponding `/grm-arcana-validate-*` skill.
+- `quality/` holds the 2 judgment-based quality docs (`improve_documentation.md`, `validate_rites.md`).
 
 ### Supported agents
 
-- **Claude Code** — full skill registration; `when_to_use` auto-invocation; `CLAUDE.md` instruction block injection.
+- **Claude Code** — full skill registration; `when_to_use` auto-invocation; `disable-model-invocation` to keep focused validators out of auto-pick; `CLAUDE.md` instruction block injection.
 - **Codex / ChatGPT (CLI)** — pointer-only SKILL.md registration; `AGENTS.md` instruction block injection.
 - **GitHub Copilot, Cursor, ChatGPT (hosted)** — via the agent instruction block in `CLAUDE.md` / `AGENTS.md`.
