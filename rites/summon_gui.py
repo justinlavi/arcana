@@ -46,6 +46,7 @@ from summon_core import (
     load_static_library,
     register_skills,
     resolve_arcana_url,
+    system_python,
     update_local_library,
 )
 
@@ -702,13 +703,16 @@ def _grimoire_status(path, is_arcana=False):
 def _collect_diagnostics():
     """Return a dict of environment + path + probe data."""
     git_ok, git_ver = git("--version")
+    py_for_pip = system_python()
     pip_check = subprocess.run(
-        [sys.executable, "-m", "pip", "--version"],
+        [py_for_pip, "-m", "pip", "--version"],
         capture_output=True, text=True,
+        env=_subprocess_env(),
     )
     return {
         "python": sys.version.split()[0],
         "python_executable": sys.executable,
+        "python_for_subprocesses": py_for_pip,
         "frozen": bool(getattr(sys, "frozen", False)),
         "platform": sys.platform,
         "git": git_ver if git_ok else "(not found)",
@@ -770,11 +774,11 @@ def _ensure_dearpygui():
 
     dep_dir.mkdir(parents=True, exist_ok=True)
     pip_args = [
-        sys.executable, "-m", "pip", "install", "--upgrade",
+        system_python(), "-m", "pip", "install", "--upgrade",
         "--target", str(dep_dir),
         "dearpygui",
     ]
-    result = subprocess.run(pip_args, capture_output=True, text=True)
+    result = subprocess.run(pip_args, capture_output=True, text=True, env=_subprocess_env())
     if result.returncode != 0:
         raise ImportError(
             "Failed to install Dear PyGui. Install pip, or run in CLI mode with --cli.\n"
@@ -1245,23 +1249,6 @@ def _setup_fonts(dpg, scale):
         return None
 
 
-def _probe_python():
-    """Return the Python executable to use for GUI probing."""
-    if not getattr(sys, "frozen", False):
-        return sys.executable
-    for candidate in ("python3", "python"):
-        try:
-            r = subprocess.run(
-                [candidate, "--version"], capture_output=True, timeout=3,
-                env=_subprocess_env(),
-            )
-            if r.returncode == 0:
-                return candidate
-        except Exception:
-            pass
-    return sys.executable
-
-
 def _extract_probe_hint(stderr_bytes):
     """Pull the most informative line from a failed probe's stderr."""
     text = (stderr_bytes or b"").decode("utf-8", errors="replace").strip()
@@ -1292,7 +1279,7 @@ def _probe_gui(extra_env=None):
     )
     try:
         result = subprocess.run(
-            [_probe_python(), "-c", code],
+            [system_python(), "-c", code],
             capture_output=True, timeout=8, env=env,
         )
     except Exception as e:

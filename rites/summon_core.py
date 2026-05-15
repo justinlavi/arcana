@@ -127,6 +127,32 @@ def _subprocess_env():
     return env
 
 
+def system_python():
+    """Return a usable Python executable for spawning sister scripts.
+
+    In a frozen PyInstaller binary, `sys.executable` points at the binary
+    itself (e.g. `grimoire-summon`) — invoking it as a Python interpreter
+    just makes the binary's argparse choke on the script path. Probe the
+    PATH for a real `python3` / `python` interpreter and prefer that;
+    fall back to `sys.executable` only when not frozen.
+    """
+    if not getattr(sys, "frozen", False):
+        return sys.executable
+    for candidate in ("python3", "python"):
+        try:
+            r = subprocess.run(
+                [candidate, "--version"],
+                capture_output=True,
+                timeout=3,
+                env=_subprocess_env(),
+            )
+            if r.returncode == 0:
+                return candidate
+        except Exception:
+            pass
+    return sys.executable
+
+
 def git(*args, cwd=None, log=None):
     """Run a git command. Returns (success: bool, stdout: str)."""
     try:
@@ -622,8 +648,9 @@ def register_skills(log):
         return False
 
     result = subprocess.run(
-        [sys.executable, str(register_script), "--agent", "all"],
+        [system_python(), str(register_script), "--agent", "all"],
         capture_output=True, text=True,
+        env=_subprocess_env(),
     )
     if result.stdout:
         for line in result.stdout.rstrip().splitlines():
