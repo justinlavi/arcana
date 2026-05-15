@@ -1,7 +1,9 @@
 ---
 name: {{NAMESPACE}}-arcana-validate-format
 description: Mechanically validate Arcana markdown formatting (headings, code fences, frontmatter)
+when_to_use: Before committing changes that touched docs, invocations, or formulae; as a phase of `/grm-arcana-improve`; user mentions "format check" or "is this markdown well-formed". Cheap and read-only.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 

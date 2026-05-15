@@ -38,9 +38,11 @@ Build from a clean virtual environment:
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
-python -m pip install -r requirements-summon-build.txt
+python -m pip install '.[build]'
 python rites/build_summon_binary.py --clean
 ```
+
+The `[build]` extra (declared in `pyproject.toml`) pins the same DearPyGui + PyInstaller versions the release pipeline expects.
 
 Artifacts are written to `dist/summon/`.
 

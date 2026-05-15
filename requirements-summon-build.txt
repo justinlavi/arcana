@@ -1,2 +1,0 @@
-dearpygui>=2.3,<3
-pyinstaller>=6.15,<7

@@ -19,13 +19,15 @@ Exit codes: 0 = compliant, 1 = violations
 """
 
 import argparse
-import json
 import sys
 from pathlib import Path
 
+from _lib import load_manifest
+
 REQUIRED_DIRS = ["sources", "chapters"]
 RECOMMENDED_DIRS = ["inbox"]  # Warn-only; inbox/ is the transient drop zone for /grm-domain-ingest
-REQUIRED_FILES_BY_CONVENTION = ["README.md", "grimoire.json", "log.md"]
+# grimoire.json is validated separately (step 1); the root hub is checked in step 3.
+REQUIRED_FILES_BY_CONVENTION = ["README.md", "log.md"]
 
 
 def main():
@@ -43,24 +45,24 @@ def main():
 
     errors = 0
 
-    # 1. Manifest must exist and contain a name.
-    manifest_path = root / "grimoire.json"
-    if not manifest_path.is_file():
+    # 1. Manifest must exist, parse, and declare both 'name' and a valid namespace.
+    if not (root / "grimoire.json").is_file():
         print(f"  MISSING  grimoire.json")
         errors += 1
         grimoire_name = root.name
     else:
-        try:
-            manifest = json.loads(manifest_path.read_text())
-            grimoire_name = manifest.get("name", root.name)
-            if not manifest.get("namespace"):
-                print(f"  WARN     grimoire.json missing 'namespace' field")
-                errors += 1
-        except json.JSONDecodeError as exc:
-            print(f"  WARN     grimoire.json malformed: {exc}")
+        manifest, manifest_errors = load_manifest(root)
+        if manifest is None:
+            # Parse failure — load_manifest reports the cause in errors[0].
+            print(f"  WARN     {manifest_errors[0]}")
             errors += 1
             grimoire_name = root.name
-        print(f"  OK       grimoire.json (name={grimoire_name})")
+        else:
+            grimoire_name = manifest.get("name", root.name)
+            for err_msg in manifest_errors:
+                print(f"  WARN     {err_msg}")
+                errors += 1
+            print(f"  OK       grimoire.json (name={grimoire_name})")
 
     # 2. Required root files (other than the dynamic hub name).
     for f in REQUIRED_FILES_BY_CONVENTION:

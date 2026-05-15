@@ -13,7 +13,7 @@ import re
 import sys
 from pathlib import Path
 
-from _lib import default_arcana_root
+from _lib import default_arcana_root, ok, warn
 
 ARCANA_ROOT = default_arcana_root()
 
@@ -71,14 +71,14 @@ def main():
                 if not re.search(pattern, content, re.MULTILINE):
                     if file_errors == 0:
                         print()
-                        print(f"  WARN  Format violations in: {path.relative_to(ARCANA_ROOT)}")
-                    print(f"         Missing section: {label}")
+                        warn(f"Format violations in: {path.relative_to(ARCANA_ROOT)}")
+                    print(f"          Missing section: {label}")
                     file_errors += 1
                     inv_violations += 1
                     errors += 1
 
     if inv_violations == 0:
-        print("  OK    All invocations have required sections")
+        ok("All invocations have required sections")
     print()
 
     # 2. Hub files must be thin routers.
@@ -91,13 +91,13 @@ def main():
                 continue
             lines = len(path.read_text(errors="replace").splitlines())
             if lines > HUB_MAX_LINES:
-                print(f"  WARN  Hub too long ({lines} lines, should be < {HUB_MAX_LINES}): "
-                      f"{path.relative_to(ARCANA_ROOT)}")
+                warn(f"Hub too long ({lines} lines, should be < {HUB_MAX_LINES}): "
+                     f"{path.relative_to(ARCANA_ROOT)}")
                 hub_violations += 1
                 errors += 1
 
     if hub_violations == 0:
-        print("  OK    All hub files are appropriately sized")
+        ok("All hub files are appropriately sized")
     print()
 
     # 3. Formulae must have a title heading.
@@ -109,12 +109,12 @@ def main():
         for path in sorted(formulae_dir.rglob("*.md")):
             content = path.read_text(errors="replace")
             if not re.search(r"^# ", content, re.MULTILINE):
-                print(f"  WARN  Formula missing title heading: {path.relative_to(ARCANA_ROOT)}")
+                warn(f"Formula missing title heading: {path.relative_to(ARCANA_ROOT)}")
                 formula_violations += 1
                 errors += 1
 
     if formula_violations == 0:
-        print("  OK    All formulae have proper format")
+        ok("All formulae have proper format")
     print()
 
     print("==================================")

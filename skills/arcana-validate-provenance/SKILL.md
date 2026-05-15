@@ -3,6 +3,7 @@ name: {{NAMESPACE}}-arcana-validate-provenance
 description: Mechanically validate that pages with authority external/hybrid cite real sources under sources/
 when_to_use: After `/grm-domain-ingest`, as a phase of `/grm-domain-lint`, after moving files in sources/. Cheap and read-only.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 
@@ -20,4 +21,4 @@ Report each provenance failure with file path and reason. Exit code 0 means ever
 
 ## Procedural detail
 
-!`cat {{ARCANA_PATH}}/invocations/arcana/quality/validate_provenance.md`
+!`cat {{ARCANA_PATH}}/invocations/arcana/validators/validate_provenance.md`

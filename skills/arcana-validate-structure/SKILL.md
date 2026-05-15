@@ -1,7 +1,9 @@
 ---
 name: {{NAMESPACE}}-arcana-validate-structure
 description: Mechanically validate Arcana's directory structure and required hub files
+when_to_use: After adding/removing top-level directories or required files in Arcana; as a phase of `/grm-arcana-improve`. Cheap and read-only. For domain grimoires, use `/grm-domain-validate-structure` instead.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 

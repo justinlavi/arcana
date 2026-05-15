@@ -3,6 +3,7 @@ name: {{NAMESPACE}}-arcana-validate-semantics
 description: Mechanically scan Arcana for hyphenated path examples written in prose (Arcana convention is snake_case)
 when_to_use: Before committing changes that touched docs, invocations, or formulae; as a phase of `/grm-arcana-improve`; user mentions "snake_case", "path examples", or "I think I wrote a hyphenated path somewhere". Cheap and read-only.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 

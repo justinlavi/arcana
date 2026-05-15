@@ -1,7 +1,9 @@
 ---
 name: {{NAMESPACE}}-arcana-validate-links
 description: Mechanically validate that internal markdown links in Arcana resolve to real files
+when_to_use: After moving or renaming any markdown file; as a phase of `/grm-arcana-improve`; user mentions "broken link", "dead link", or "did I break any references". Cheap and read-only.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 

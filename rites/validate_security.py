@@ -9,7 +9,7 @@ import re
 import sys
 from pathlib import Path
 
-from _lib import default_arcana_root
+from _lib import default_arcana_root, ok, warn
 
 ARCANA_ROOT = default_arcana_root()
 
@@ -61,7 +61,7 @@ def main():
                 errors += 1
 
     if cred_found == 0:
-        print("  OK    No potential credentials found")
+        ok("No potential credentials found")
     print()
 
     # Check Python scripts for unsafe patterns
@@ -77,17 +77,17 @@ def main():
             content = path.read_text(errors="replace")
 
             if "eval(" in content:
-                print(f"  WARN  Script uses eval() (security risk): {path.relative_to(ARCANA_ROOT)}")
+                warn(f"Script uses eval() (security risk): {path.relative_to(ARCANA_ROOT)}")
                 unsafe += 1
                 errors += 1
 
             if "exec(" in content and "__name__" not in content:
-                print(f"  WARN  Script uses exec() (security risk): {path.relative_to(ARCANA_ROOT)}")
+                warn(f"Script uses exec() (security risk): {path.relative_to(ARCANA_ROOT)}")
                 unsafe += 1
                 errors += 1
 
     if unsafe == 0:
-        print("  OK    No unsafe script patterns found")
+        ok("No unsafe script patterns found")
     print()
 
     print("==================================")

@@ -9,7 +9,7 @@ import re
 import sys
 from pathlib import Path
 
-from _lib import default_arcana_root
+from _lib import default_arcana_root, ok, warn
 
 ARCANA_ROOT = default_arcana_root()
 
@@ -36,17 +36,17 @@ def check_naming(glob_pattern, label, ext):
             continue
 
         if re.match(r"^[a-z].*-.*\." + ext + "$", name):
-            print(f"  WARN  Hyphenated (should use snake_case): {path.relative_to(ARCANA_ROOT)}")
+            warn(f"Hyphenated (should use snake_case): {path.relative_to(ARCANA_ROOT)}")
             violations += 1
             errors += 1
 
         if re.search(r"[a-z][A-Z]", name):
-            print(f"  WARN  CamelCase (should use snake_case): {path.relative_to(ARCANA_ROOT)}")
+            warn(f"CamelCase (should use snake_case): {path.relative_to(ARCANA_ROOT)}")
             violations += 1
             errors += 1
 
     if violations == 0:
-        print(f"  OK    All {label} use proper naming")
+        ok(f"All {label} use proper naming")
     print()
     return errors
 

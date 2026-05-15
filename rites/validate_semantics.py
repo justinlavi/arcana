@@ -17,7 +17,7 @@ import re
 import sys
 from pathlib import Path
 
-from _lib import default_arcana_root
+from _lib import default_arcana_root, ok, warn
 
 ARCANA_ROOT = default_arcana_root()
 
@@ -69,11 +69,11 @@ def check_hyphenated_examples():
         return HYPHEN_PATTERN.search(line) is not None
 
     for rel, lineno, _line in scan_markdown_files(ARCANA_ROOT, is_hyphenated_body_line):
-        print(f"  WARN  Hyphenated example: {rel}:{lineno}")
+        warn(f"Hyphenated example: {rel}:{lineno}")
         found += 1
 
     if found == 0:
-        print("  OK    No hyphenated examples found")
+        ok("No hyphenated examples found")
     print()
     return found
 

@@ -19,7 +19,7 @@ import re
 import sys
 from pathlib import Path
 
-from _lib import default_arcana_root
+from _lib import default_arcana_root, ok, warn
 
 ARCANA_ROOT = default_arcana_root()
 SKILLS_DIR = ARCANA_ROOT / "skills"
@@ -114,10 +114,10 @@ def main():
             continue
         seen_pairs.add(key)
         dangling.append((rel, lineno, full))
-        print(f"  WARN  {rel}:{lineno}  references {full}  (no skills/{slug}/SKILL.md)")
+        warn(f"{rel}:{lineno}  references {full}  (no skills/{slug}/SKILL.md)")
 
     if not dangling:
-        print("  OK    All /grm-* references resolve to existing skills.")
+        ok("All /grm-* references resolve to existing skills.")
     print()
 
     print("====================================")

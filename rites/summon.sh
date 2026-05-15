@@ -201,8 +201,16 @@ else
     TEMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/grimoire-summon.XXXXXX")"
     SCRIPT_DIR="$TEMP_DIR/rites"
     mkdir -p "$SCRIPT_DIR"
-    echo "  [INFO]  Downloading summoning companion script..."
+    echo "  [INFO]  Downloading summoning companion scripts..."
+    # summon.py is the dispatcher and summon_core.py is the install engine —
+    # both are always needed. summon_gui.py is only needed when the GUI runs,
+    # so skip it for --cli/-h/--help to keep the source bootstrap minimal.
     download_file "$GRIMOIRE_ARCANA_RAW_BASE/rites/summon.py" "$SCRIPT_DIR/summon.py"
+    download_file "$GRIMOIRE_ARCANA_RAW_BASE/rites/summon_core.py" "$SCRIPT_DIR/summon_core.py"
+    if should_prepare_gui_deps "$@"; then
+        download_file "$GRIMOIRE_ARCANA_RAW_BASE/rites/summon_gui.py" "$SCRIPT_DIR/summon_gui.py" || \
+            echo "  [WARN]  summon_gui.py download failed — GUI mode will fall back to CLI"
+    fi
 fi
 
 cleanup() {

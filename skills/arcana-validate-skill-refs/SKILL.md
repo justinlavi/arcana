@@ -1,7 +1,9 @@
 ---
 name: {{NAMESPACE}}-arcana-validate-skill-refs
 description: Mechanically validate that every /grm-* skill mentioned in Arcana docs resolves to a real skill folder
+when_to_use: After renaming or removing any skill; after editing docs that mention `/grm-*` commands; as a phase of `/grm-arcana-improve`; user mentions "stale skill reference", "broken slash command", or "did I rename a skill". Cheap and read-only.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 

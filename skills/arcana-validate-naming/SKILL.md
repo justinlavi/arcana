@@ -1,7 +1,9 @@
 ---
 name: {{NAMESPACE}}-arcana-validate-naming
 description: Mechanically validate Arcana naming conventions (snake_case paths, kebab-case skills)
+when_to_use: After adding or renaming any file in Arcana; as a phase of `/grm-arcana-improve`; user mentions "naming convention", "snake_case check", or "did I name this right". Cheap and read-only.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 

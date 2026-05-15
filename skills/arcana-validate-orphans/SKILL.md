@@ -3,6 +3,7 @@ name: {{NAMESPACE}}-arcana-validate-orphans
 description: Detect pages no other page links to (orphans) — neither via markdown links nor wikilinks
 when_to_use: After bulk renames, after removing a hub or chapter, as a phase of `/grm-domain-lint`. Cheap and read-only.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 
@@ -20,4 +21,4 @@ Report each orphan with its relative path. Exit code 0 means no orphans; non-zer
 
 ## Procedural detail
 
-!`cat {{ARCANA_PATH}}/invocations/arcana/quality/validate_orphans.md`
+!`cat {{ARCANA_PATH}}/invocations/arcana/validators/validate_orphans.md`
