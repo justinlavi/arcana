@@ -27,10 +27,18 @@ Usage:
 """
 
 import argparse
-import json
-import re
 import shutil
 from pathlib import Path
+
+from _lib import (
+    NAMESPACE_RE,
+    SKILL_SLUG_RE,
+    info,
+    load_library,
+    load_manifest,
+    ok,
+    warn,
+)
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -39,8 +47,6 @@ from pathlib import Path
 ARCANA_PATH = Path(__file__).resolve().parent.parent
 GRIMOIRES_HOME = Path.home() / "grimoires"
 LOCAL_LIBRARY = GRIMOIRES_HOME / "library.json"
-NAMESPACE_RE = re.compile(r"^[a-z][a-z0-9]*$")
-SKILL_SLUG_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 NAMESPACE_PLACEHOLDER = "{{NAMESPACE}}"
 SKILL_TARGETS = {
     "claude": {
@@ -54,26 +60,6 @@ SKILL_TARGETS = {
         "pointer_only": True,
     },
 }
-
-# ---------------------------------------------------------------------------
-# Logging
-# ---------------------------------------------------------------------------
-
-
-def info(msg):
-    print(f"  [INFO]  {msg}")
-
-
-def ok(msg):
-    print(f"  [OK]    {msg}")
-
-
-def warn(msg):
-    print(f"  [WARN]  {msg}")
-
-
-def err(msg):
-    print(f"  [ERROR] {msg}")
 
 
 # ---------------------------------------------------------------------------
@@ -92,32 +78,21 @@ def is_valid_skill_slug(slug):
 
 
 def load_grimoire_metadata(grimoire_root, label):
-    """Load grimoire.json from a grimoire (or Arcana) root.
+    """Load and namespace-validate a grimoire's manifest.
 
     Returns (metadata_dict, namespace_str) on success, or (None, None) on
-    failure with a warning logged.
+    failure with a warning logged. Thin wrapper over `_lib.load_manifest`
+    that downgrades structured errors into the side-effect logs the
+    skill-registration UX expects.
     """
-    metadata_file = grimoire_root / "grimoire.json"
-    if not metadata_file.is_file():
-        warn(f"{label}: missing grimoire.json at {metadata_file} (skipping)")
+    metadata, errors = load_manifest(grimoire_root)
+    if metadata is None:
+        warn(f"{label}: {errors[0]} (skipping)")
         return None, None
-
-    try:
-        with open(metadata_file) as f:
-            metadata = json.load(f)
-    except (json.JSONDecodeError, OSError) as exc:
-        warn(f"{label}: could not read grimoire.json ({exc}) (skipping)")
+    if errors:
+        warn(f"{label}: {errors[0]} (skipping)")
         return None, None
-
-    namespace = metadata.get("namespace", "")
-    if not namespace:
-        warn(f"{label}: grimoire.json missing 'namespace' field (skipping)")
-        return None, None
-    if not is_valid_namespace(namespace):
-        warn(f"{label}: invalid namespace '{namespace}' in grimoire.json (skipping)")
-        return None, None
-
-    return metadata, namespace
+    return metadata, metadata.get("namespace", "")
 
 
 def read_frontmatter_name(skill_file):
@@ -291,12 +266,7 @@ def register_grimoire_skills(skills_target, dry_run=False, pointer_only=False):
         info(f"No local library at {LOCAL_LIBRARY} — skipping domain skills")
         return 0, 0
 
-    try:
-        with open(LOCAL_LIBRARY) as f:
-            library = json.load(f)
-    except (json.JSONDecodeError, OSError):
-        warn("Could not read local library — skipping domain skills")
-        return 0, 0
+    library = load_library(LOCAL_LIBRARY)
 
     total_registered = 0
     total_cleaned = 0

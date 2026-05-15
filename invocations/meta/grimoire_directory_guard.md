@@ -1,15 +1,15 @@
 ---
-name: {{NAMESPACE}}-arcana-validate-boundaries
-description: Validate magical boundary compliance between system and content layers
-user-invocable: true
-allowed-tools: Bash Read Write Edit
+type: reference
+title: "Grimoire Directory Guard"
+aliases: ["domain-guard", "grimoire-cwd-guard"]
+tags: [arcana/invocations, type/reference, scope/meta]
+authority: grimoire
+last_verified: 2026-05-15
 ---
 
-# Validate Boundaries
+# Grimoire Directory Guard
 
-You are validating magical boundary compliance. Follow the invocation guide below.
-
-## Precondition: Grimoire Directory Guard
+Shared precondition for every skill that mutates or analyzes an active domain grimoire (`/grm-domain-*` operations that act on `cwd`). Skills include this fragment via `!cat` so the guard contract stays single-sourced.
 
 **Before doing anything else**, verify the current working directory is a registered domain grimoire:
 
@@ -18,16 +18,8 @@ You are validating magical boundary compliance. Follow the invocation guide belo
 3. Check if the current working directory matches any registered grimoire path
 
 **If the directory is NOT a registered grimoire** (including Arcana — Arcana is not a grimoire):
+
 - Display a clear error: "This skill operates on domain grimoires. Your current directory is not a registered grimoire."
 - List available grimoires from the library with their paths
 - Tell the user to `cd` to a grimoire directory and re-run
 - **Stop.** Do not proceed.
-
-## Context
-
-- **Arcana**: `{{ARCANA_PATH}}`
-- **Reference**: `{{ARCANA_PATH}}/docs/reference.md`
-
-## Invocation
-
-!`cat {{ARCANA_PATH}}/invocations/arcana/validate_boundaries.md`

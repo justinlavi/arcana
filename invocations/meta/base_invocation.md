@@ -20,7 +20,7 @@ The magical/practical boundary, page schema, hub convention, and storage layers 
 Anything you author following this template must conform to:
 
 - **Page schema** — every authored page carries YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`). Required-fields matrix in [`docs/page_schema.md`](../../docs/page_schema.md).
-- **Magical boundary** — system terminology (invocation, formula, rite, hub) lives in Arcana only; chapter content uses domain-natural names (`templates/`, `scripts/`, `policies/`, `recipes/`). Full rules in [`invocations/arcana/validate_boundaries.md`](../arcana/validate_boundaries.md).
+- **Magical boundary** — system terminology (invocation, formula, rite, hub) lives in Arcana only; chapter content uses domain-natural names (`templates/`, `scripts/`, `policies/`, `recipes/`). Full rules in [`invocations/grimoire/validate_boundaries.md`](../grimoire/validate_boundaries.md).
 - **Hub convention** — every folder F has a hub at `F/<basename(F)>.md`. Depth is open-ended. See [`docs/operating_model.md`](../../docs/operating_model.md).
 
 ---

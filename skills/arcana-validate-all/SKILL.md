@@ -1,6 +1,6 @@
 ---
 name: {{NAMESPACE}}-arcana-validate-all
-description: Run the full Arcana validator suite (structure, naming, semantics, format, links, security, skill-refs) via the orchestrator rite
+description: Run the full Arcana validator suite via the orchestrator rite (every mechanical check in one shot)
 when_to_use: Before committing changes to Arcana itself; after bulk edits to Arcana docs/invocations/rites/skills; as a pre-release gate; user mentions "validate Arcana" or "check before commit". Cheap and read-only — safe to run liberally.
 user-invocable: true
 allowed-tools: Bash Read
@@ -8,16 +8,9 @@ allowed-tools: Bash Read
 
 # Validate Arcana (All)
 
-You are running the full validator suite against the Arcana repository. The orchestrator rite (`rites/validate.py`) executes each individual validator and aggregates results.
+You are running the full validator suite against the Arcana repository. The orchestrator rite (`rites/validate.py`) executes every individual validator and aggregates results.
 
-For a single concern, use the focused skill:
-- `/grm-arcana-validate-structure`
-- `/grm-arcana-validate-naming`
-- `/grm-arcana-validate-semantics`
-- `/grm-arcana-validate-format`
-- `/grm-arcana-validate-links`
-- `/grm-arcana-validate-security`
-- `/grm-arcana-validate-boundaries`
+For a single concern, every validator also has its own focused skill — run `/grm-meta-help` for the full catalog, or browse `{{ARCANA_PATH}}/docs/skills.md`. Run the focused skill if you want faster feedback on one aspect; run this aggregate before commits/releases.
 
 ## Run
 

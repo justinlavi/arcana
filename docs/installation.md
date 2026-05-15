@@ -135,6 +135,49 @@ If you can't run the summoning rite (no network, restricted environment, etc.):
 
 ---
 
+## Verify Your Install (5-minute smoke test)
+
+A short end-to-end check that everything wired up correctly.
+
+### 1. Confirm files and skills landed
+
+```bash
+ls ~/grimoires/                  # arcana/ + at least one *-grimoire/ if you cloned any
+cat ~/grimoires/library.json     # lists each grimoire and its local_path
+ls ~/.claude/skills/ | grep ^grm-     # Claude Code
+ls ~/.codex/skills/  | grep ^grm-     # Codex / ChatGPT CLI
+```
+
+If any of these are missing, jump to the [Troubleshooting](#troubleshooting) section below.
+
+### 2. Smoke-test the agent
+
+Open a new Claude Code (or Codex) session and run:
+
+```
+/grm-meta-help
+```
+
+The skill should enumerate every installed `grm-*` and domain-namespaced skill. If you see a populated list, the agent has loaded the library and skill directory correctly.
+
+### 3. Smoke-test a domain grimoire
+
+Pick any grimoire from your library and ask the agent:
+
+> "Read the {grimoire-name} root hub and tell me what chapters it routes to."
+
+The agent should resolve `local_path` from `~/grimoires/library.json`, read `<grimoire>/<grimoire>.md`, and report the chapter list — exactly what's in the file, no invention. If it makes things up or can't find the file, your agent's instruction block is missing the routing rules.
+
+### 4. (Optional) Walk a full route
+
+For a deeper test, ask:
+
+> "What's the canonical document for {topic} in {grimoire-name}?"
+
+The agent should follow hubs depth-first (root hub → chapter hub → … → leaf, however deep the topic needs) and cite the exact file path it read.
+
+---
+
 ## Troubleshooting
 
 **Agent can't find a grimoire**
@@ -150,3 +193,9 @@ If you can't run the summoning rite (no network, restricted environment, etc.):
 **Skills not appearing after install**
 - Run `/grm-skills-register` to re-register all skills
 - Open a new agent session (Claude Code / Codex caches skill listings)
+
+**Skill names appear as `{{NAMESPACE}}-...`**
+- The grimoire is missing its `grimoire.json` manifest. Add one per [reference.md](reference.md#grimoire-manifest), then re-register.
+
+**Agent guesses instead of reading files**
+- The Grimoire instruction block isn't injected into `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`. See [agent_configuration.md](agent_configuration.md#agent-instruction-files).

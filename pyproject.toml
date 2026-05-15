@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arcana-grimoire"
+version = "1.0.0"
+description = "Engine for grimoires — structured, AI-navigable knowledge bases the LLM keeps current."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "Justin Lavi", email = "jlavi@proton.me" }]
+keywords = ["grimoire", "knowledge-base", "ai", "obsidian", "llm", "documentation"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Documentation",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Text Processing :: Markup :: Markdown",
+]
+
+# Runtime is intentionally pure-stdlib. Validators, library sync, skill
+# registration, and the CLI installer all run on a stock Python install.
+dependencies = []
+
+[project.optional-dependencies]
+# Test suite — pytest + a fixture grimoire under tests/.
+dev = [
+    "pytest>=7.0",
+]
+
+# Optional GUI launcher used by the summoning rite. Headless installs (CI,
+# servers) can skip this group; the rite falls back to interactive CLI.
+gui = [
+    "dearpygui>=2.3,<3",
+]
+
+# Building release artifacts (binaries published to GitHub Releases).
+build = [
+    "dearpygui>=2.3,<3",
+    "pyinstaller>=6.15,<7",
+]
+
+[project.urls]
+Homepage = "https://github.com/justinlavi/arcana"
+Repository = "https://github.com/justinlavi/arcana"
+Issues = "https://github.com/justinlavi/arcana/issues"
+Changelog = "https://github.com/justinlavi/arcana/blob/main/CHANGELOG.md"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = ["-ra", "--strict-markers"]

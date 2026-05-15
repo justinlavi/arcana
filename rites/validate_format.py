@@ -9,12 +9,13 @@ Usage: python3 rites/validate_format.py
 Exit codes: 0 = success, 1 = format violations found
 """
 
-import os
 import re
 import sys
 from pathlib import Path
 
-ARCANA_ROOT = Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent))
+from _lib import default_arcana_root
+
+ARCANA_ROOT = default_arcana_root()
 
 INVOCATION_REQUIRED_SECTIONS = [
     (r"^# ", "Title heading (# ...)"),
@@ -53,9 +54,12 @@ def main():
     print("Checking invocation format compliance...")
     inv_violations = 0
 
+    # Pattern templates and shared fragments aren't standalone invocations.
+    INVOCATION_EXEMPT = {"base_invocation.md", "grimoire_directory_guard.md"}
+
     if invocations_dir.is_dir():
         for path in sorted(invocations_dir.rglob("*.md")):
-            if path.name == "base_invocation.md":
+            if path.name in INVOCATION_EXEMPT:
                 continue
             if is_hub(path):
                 continue

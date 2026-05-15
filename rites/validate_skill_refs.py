@@ -15,12 +15,13 @@ Usage: python3 rites/validate_skill_refs.py
 Exit codes: 0 = all references resolve, 1 = at least one dangling reference
 """
 
-import os
 import re
 import sys
 from pathlib import Path
 
-ARCANA_ROOT = Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent))
+from _lib import default_arcana_root
+
+ARCANA_ROOT = default_arcana_root()
 SKILLS_DIR = ARCANA_ROOT / "skills"
 
 # Arcana's own namespace, declared in arcana/grimoire.json. Hard-coded here
@@ -45,7 +46,6 @@ PLACEHOLDER_SUFFIXES = ("-*", "-<", "-{")
 # names (templates, examples, historical references).
 SKIP_FILES = {
     "validate_skill_refs.py",
-    "deprecated_terms.txt",
     "CHANGELOG.md",  # historical references (e.g., describing a renamed/retired skill)
 }
 

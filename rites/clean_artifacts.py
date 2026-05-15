@@ -11,10 +11,11 @@ Usage:
 """
 
 import argparse
-import json
 import shutil
 import sys
 from pathlib import Path
+
+from _lib import load_library, resolve_local_path
 
 ARCANA_PATH = Path(__file__).resolve().parent.parent
 GRIMOIRES_HOME = Path.home() / "grimoires"
@@ -58,16 +59,10 @@ def main():
     total += clean_location(ARCANA_PATH, "Arcana", args.dry_run)
 
     if LOCAL_LIBRARY.is_file():
-        try:
-            with open(LOCAL_LIBRARY) as f:
-                library = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            library = {}
-
-        for key in sorted(library.get("grimoires", {}).keys()):
+        library = load_library(LOCAL_LIBRARY)
+        for key in sorted(library["grimoires"].keys()):
             entry = library["grimoires"][key]
-            raw = entry.get("local_path", "")
-            local_path = Path(raw.replace("$HOME", str(Path.home())))
+            local_path = resolve_local_path(entry.get("local_path", ""))
             if local_path.is_dir():
                 total += clean_location(local_path, key, args.dry_run)
     else:

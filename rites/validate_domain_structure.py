@@ -20,7 +20,6 @@ Exit codes: 0 = compliant, 1 = violations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 

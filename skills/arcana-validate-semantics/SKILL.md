@@ -1,18 +1,16 @@
 ---
 name: {{NAMESPACE}}-arcana-validate-semantics
-description: Mechanically scan Arcana for deprecated terminology and hyphenated path examples
+description: Mechanically scan Arcana for hyphenated path examples written in prose (Arcana convention is snake_case)
+when_to_use: Before committing changes that touched docs, invocations, or formulae; as a phase of `/grm-arcana-improve`; user mentions "snake_case", "path examples", or "I think I wrote a hyphenated path somewhere". Cheap and read-only.
 user-invocable: true
 allowed-tools: Bash Read
 ---
 
 # Validate Arcana Semantics
 
-You are running the semantics validator against the Arcana repository. It scans for:
+You are running the semantics validator against the Arcana repository. It scans markdown body text for hyphenated paths inside `chapters/...` (for example a folder or filename written with a dash where Arcana expects snake_case).
 
-1. **Deprecated terms** listed in `{{ARCANA_PATH}}/rites/data/deprecated_terms.txt` (single source of truth — add new deprecations there).
-2. **Hyphenated path examples** in body text (Arcana convention is snake_case for paths).
-
-This is a mechanical pattern scan. For *intelligent* semantic analysis (naming quality, organizational discoverability), use `/grm-domain-analyze-semantics`.
+This is a mechanical pattern scan that's distinct from `/grm-arcana-validate-naming` (which enforces snake_case on actual filenames). For *intelligent* semantic analysis (naming quality, organizational discoverability), use `/grm-domain-analyze-semantics`.
 
 ## Run
 
@@ -20,7 +18,7 @@ This is a mechanical pattern scan. For *intelligent* semantic analysis (naming q
 python3 {{ARCANA_PATH}}/rites/validate_semantics.py
 ```
 
-Report violations with file:line citations. Exit code 0 means clean; non-zero means violations exist.
+Report violations with file:line citations. Exit code 0 means clean; non-zero means at least one hyphenated example exists.
 
 ## Procedural detail
 

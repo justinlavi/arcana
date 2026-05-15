@@ -15,51 +15,34 @@ Usage: python3 rites/validate_links.py
 Exit codes: 0 = success, 1 = broken links found
 """
 
-import os
 import re
 import sys
 from pathlib import Path
 
-def _default_root():
-    return Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent))
+from _lib import (
+    LINK_RE,
+    WIKILINK_RE,
+    add_grimoire_arg,
+    parse_frontmatter_aliases,
+    resolve_grimoire_arg,
+    strip_code_blocks,
+)
 
 SKIP_DIRS = {
     "invocations/arcana/validators",
     "invocations/arcana/quality",
     "sources",
     "inbox",
+    "tests",
 }
 
 SKIP_FILES = {"operating_model.md"}
-
-LINK_RE = re.compile(r"\]\(([^)]+)\)")
-WIKILINK_RE = re.compile(r"\[\[([^\]\n]+)\]\]")
-FRONTMATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
-CODE_FENCE_RE = re.compile(r"^```")
 
 PLACEHOLDER_TOKENS = ["{", "<", "invocation_name", "chapter_name", "file_name",
                       "GRIMOIRE_ARCANA", "GRIMOIRE_PATH", "ARCANA_PATH",
                       "Chapter Name", "Title", "Sub-topic", "filename",
                       "related_page", "sub_topic", "related_chapter",
                       "path/to/related", "path/url/system", "Source title"]
-
-
-def parse_frontmatter_aliases(content):
-    """Return list of aliases from frontmatter, or []."""
-    m = FRONTMATTER_RE.match(content)
-    if not m:
-        return []
-    block = m.group(1)
-    for line in block.splitlines():
-        if not line.startswith("aliases:"):
-            continue
-        value = line.partition(":")[2].strip()
-        if value.startswith("[") and value.endswith("]"):
-            inner = value[1:-1].strip()
-            if not inner:
-                return []
-            return [s.strip().strip("'\"") for s in inner.split(",")]
-    return []
 
 
 def build_alias_index(root):
@@ -82,23 +65,6 @@ def build_alias_index(root):
     return index
 
 
-def strip_code_blocks(content):
-    """Replace fenced code blocks and inline code with whitespace so links inside don't get scanned."""
-    result = []
-    in_fence = False
-    for line in content.splitlines():
-        if CODE_FENCE_RE.match(line):
-            in_fence = not in_fence
-            result.append("")
-            continue
-        if in_fence:
-            result.append("")
-            continue
-        # Inline code: replace `...` content with empty backticks of same length.
-        result.append(re.sub(r"`[^`]*`", lambda m: " " * len(m.group()), line))
-    return "\n".join(result)
-
-
 def resolve_wikilink(target, alias_index):
     """Return resolved Path or None."""
     body = target.split("|", 1)[0].split("#", 1)[0].strip().lower()
@@ -110,10 +76,9 @@ def resolve_wikilink(target, alias_index):
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Validate internal links and wikilinks")
-    parser.add_argument("--grimoire", type=Path, default=_default_root(),
-                        help="Grimoire root (default: GRIMOIRE_ARCANA env or rites parent)")
+    add_grimoire_arg(parser)
     args = parser.parse_args()
-    grimoire_root = args.grimoire.expanduser().resolve()
+    grimoire_root = resolve_grimoire_arg(args.grimoire)
 
     errors = 0
 

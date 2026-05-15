@@ -13,10 +13,11 @@ For domain operations (creating chapters, improving grimoires) see [`../grimoire
 
 ## Available
 
-### Improvement & boundary
+### Improvement
 
 - **[improve_arcana.md](improve_arcana.md)** — Comprehensive Arcana improvement; orchestrates the validators and quality invocations. Skill: `/grm-arcana-improve`.
-- **[validate_boundaries.md](validate_boundaries.md)** — Magical/practical boundary enforcement. Skill: `/grm-arcana-validate-boundaries`.
+
+Boundary enforcement lives in the domain layer: see [`../grimoire/validate_boundaries.md`](../grimoire/validate_boundaries.md) (skill: `/grm-domain-validate-boundaries`). It can scan Arcana itself with the `--arcana` flag.
 
 ### Validators (mechanical)
 
@@ -24,7 +25,7 @@ Each runs independently or as part of `/grm-arcana-improve`. Each has its own de
 
 - [`validators/validate_structure.md`](validators/validate_structure.md) — directory/file integrity
 - [`validators/validate_naming.md`](validators/validate_naming.md) — snake_case enforcement
-- [`validators/validate_semantics.md`](validators/validate_semantics.md) — deprecated terms + hyphenated paths
+- [`validators/validate_semantics.md`](validators/validate_semantics.md) — hyphenated path examples in prose
 - [`validators/validate_format.md`](validators/validate_format.md) — markdown formatting
 - [`validators/validate_links.md`](validators/validate_links.md) — broken references
 - [`validators/validate_security.md`](validators/validate_security.md) — credentials & unsafe Python

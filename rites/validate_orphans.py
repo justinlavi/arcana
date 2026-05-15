@@ -18,49 +18,21 @@ Exit codes: 0 = no orphans, 1 = orphans found
 """
 
 import argparse
-import os
 import re
 import sys
 from pathlib import Path
 
-FRONTMATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
-LINK_RE = re.compile(r"\]\(([^)]+)\)")
-WIKILINK_RE = re.compile(r"\[\[([^\]\n]+)\]\]")
-CODE_FENCE_RE = re.compile(r"^```")
+from _lib import (
+    LINK_RE,
+    WIKILINK_RE,
+    add_grimoire_arg,
+    parse_frontmatter_aliases,
+    resolve_grimoire_arg,
+    strip_code_blocks,
+)
 
-EXEMPT_FILENAMES = {"README.md", "CHANGELOG.md", "log.md", "VERSION", "SKILL.md"}
-SKIP_DIRS = {"sources", "inbox", ".git", "skills"}
-
-
-def parse_frontmatter_aliases(content):
-    m = FRONTMATTER_RE.match(content)
-    if not m:
-        return []
-    for line in m.group(1).splitlines():
-        if not line.startswith("aliases:"):
-            continue
-        value = line.partition(":")[2].strip()
-        if value.startswith("[") and value.endswith("]"):
-            inner = value[1:-1].strip()
-            if not inner:
-                return []
-            return [s.strip().strip("'\"") for s in inner.split(",")]
-    return []
-
-
-def strip_code_blocks(content):
-    out = []
-    in_fence = False
-    for line in content.splitlines():
-        if CODE_FENCE_RE.match(line):
-            in_fence = not in_fence
-            out.append("")
-            continue
-        if in_fence:
-            out.append("")
-            continue
-        out.append(re.sub(r"`[^`]*`", lambda m: " " * len(m.group()), line))
-    return "\n".join(out)
+EXEMPT_FILENAMES = {"README.md", "CHANGELOG.md", "CONTRIBUTING.md", "log.md", "VERSION", "SKILL.md"}
+SKIP_DIRS = {"sources", "inbox", ".git", "skills", "tests"}
 
 
 def is_hub(path):
@@ -129,12 +101,9 @@ def collect_inbound(pages, root, alias_map):
 
 def main():
     parser = argparse.ArgumentParser(description="Detect orphan pages in a grimoire")
-    parser.add_argument("--grimoire", type=Path,
-                        default=Path(os.environ.get("GRIMOIRE_ARCANA",
-                                                    Path(__file__).resolve().parent.parent)),
-                        help="Grimoire root (default: GRIMOIRE_ARCANA env or rites parent)")
+    add_grimoire_arg(parser)
     args = parser.parse_args()
-    root = args.grimoire.expanduser().resolve()
+    root = resolve_grimoire_arg(args.grimoire)
 
     print()
     print("Validating Orphans")

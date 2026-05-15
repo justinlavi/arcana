@@ -45,7 +45,7 @@ Invoke and collect output from:
 
 - `/grm-domain-validate-structure` — directory layout, required hub files, naming
 - `/grm-arcana-validate-links` — internal markdown links resolve
-- `/grm-arcana-validate-boundaries` — magical/practical boundary compliance
+- `/grm-domain-validate-boundaries` — magical/practical boundary compliance
 
 Stop and report if any validator returns hard errors that would invalidate later phases (e.g. missing root hub).
 
@@ -151,7 +151,7 @@ Surface in chat (do not write report files):
 
 ## Related
 
-- Mechanical: `/grm-domain-validate-structure`, `/grm-arcana-validate-links`, `/grm-arcana-validate-boundaries`
+- Mechanical: `/grm-domain-validate-structure`, `/grm-arcana-validate-links`, `/grm-domain-validate-boundaries`
 - Semantic: `/grm-domain-analyze-semantics`
 - Authoring: `/grm-domain-create-chapter`
 - Arcana counterpart (maintainer only): `/grm-arcana-improve`

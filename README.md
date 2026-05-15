@@ -16,13 +16,11 @@ Most knowledge lives in scattered files that AI has to search through, interpola
 
 ## What's a Grimoire?
 
-A grimoire is a structured knowledge base built around a single subject — personal recipes, team runbooks, HR policies, research notes, a campaign's lore. It has three storage layers, a hub-based routing surface, and a skill set.
+A grimoire is a structured knowledge base built around a single subject — personal recipes, team runbooks, HR policies, research notes, a campaign's lore.
 
-### Knowledge layer: deterministic routing through hubs
+### Deterministic routing through hubs
 
-Every folder in a grimoire has a **hub** — a markdown file named after the folder. The grimoire root hub is `<grimoire>/<grimoire>.md`; any folder beneath it follows the same rule (`F/<basename(F)>.md`).
-
-A hub is uniform and self-similar: it can route to *sub-hubs*, to *leaf documents*, or both. There's no fixed depth — a grimoire can be flat (root hub → leaves) or arbitrarily nested (root hub → chapter hub → sub-chapter hub → … → leaf). Each hop narrows the search; the agent stops when it reaches the leaf that answers the question.
+Every folder has a **hub** — a markdown file named after the folder. Each hop narrows the search; the agent stops at the leaf that answers the question.
 
 ```
 "What's the cure time for sourdough?"            (shallow — 2 hops)
@@ -32,23 +30,13 @@ cooking-grimoire.md → breads.md → sourdough.md
 cooking-grimoire.md → techniques.md → lamination.md → windowpane_test.md
 ```
 
-Both paths are deterministic. The structure stays only as deep as the topic warrants.
+Both paths are deterministic. The structure stays only as deep as the topic warrants. Full rules in [docs/operating_model.md](docs/operating_model.md).
 
-Hubs being named after their folders means Obsidian's graph view shows meaningful nodes (`breads`, `lamination`, `cooking-grimoire`) instead of dozens of indistinguishable `INDEX` blobs. Wikilinks (`[[sourdough]]`) work natively because every page has a unique, intuitive name. Hub level is tagged in frontmatter (`hub/root`, `hub/chapter`, `hub/sub`) so the graph view colors them distinctly.
+### Storage layers
 
-### Sources layer: immutable source artifacts
+A grimoire keeps four kinds of content side-by-side: **`sources/`** holds immutable artifacts the wiki cites; **`chapters/`** holds the LLM-authored wiki; **`inbox/`** is a transient drop zone for things waiting to be classified; **`log.md`** is an append-only record of every mutation. See [docs/operating_model.md](docs/operating_model.md) for ownership rules and the validator-enforced contracts.
 
-`sources/` holds the original sources the wiki was derived from — articles, transcripts, papers, screenshots. The LLM reads these but never modifies them. Every wiki page that synthesizes external information cites its source via the `sources:` field in YAML frontmatter, and the `validate_provenance` rite enforces it.
-
-### Inbox layer: transient drop zone
-
-`inbox/` is where you drop anything that needs to be sorted into the grimoire — zip extracts, AI-generated drafts, half-finished docs, copy-paste from somewhere. `/grm-domain-ingest` walks `inbox/` and classifies each item: external artifacts move to `sources/`, wiki-shaped content gets promoted to `chapters/` with proper frontmatter, and anything ambiguous stays in `inbox/` for you to judge. Inbox is *transient* — after processing it's empty (or near-empty). Pages never cite `inbox/` because its contents disappear.
-
-### Activity layer: append-only log
-
-`log.md` records every operation that mutates the grimoire — ingests, lints, file-answers, chapter creations. Entries follow `## [YYYY-MM-DD HH:MM] <op> | <title>` so you can `grep '^## \[' log.md | tail -20` for recent activity.
-
-### Skills layer: actionable commands
+### Skills
 
 Every grimoire ships its own slash-command skills — domain-specific commands namespaced to that grimoire:
 
@@ -119,7 +107,7 @@ The summoning rite installs **Arcana** — the framework — configures your AI 
 
 Open a new agent session and run `/grm-meta-help` to see every available command, or run `/grm-domain-create-grimoire` to start your first grimoire.
 
-→ [Full installation guide](docs/installation.md) · [5-minute smoke test](docs/quickstart.md)
+→ [Full installation guide](docs/installation.md) · [5-minute smoke test](docs/installation.md#verify-your-install-5-minute-smoke-test)
 
 ---
 
@@ -174,8 +162,7 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 
 | | |
 |---|---|
-| [Installation](docs/installation.md) | One-command setup, manual setup, troubleshooting |
-| [Quickstart](docs/quickstart.md) | Verify your install in 5 minutes |
+| [Installation](docs/installation.md) | One-command setup, manual setup, 5-minute smoke test, troubleshooting |
 | [Agent Configuration](docs/agent_configuration.md) | Claude Code, Codex, Copilot, Cursor |
 | [Skill Catalog](docs/skills.md) | Every `/grm-*` command with descriptions |
 | [Operating Model](docs/operating_model.md) | Three-layer model and routing |

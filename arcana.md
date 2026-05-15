@@ -13,15 +13,16 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 
 ## Read Model
 
-- Hub convention: every folder F has a hub at `F/<basename(F)>.md`. A hub may route to sub-hubs, to leaves, or both. Depth is open-ended — `arcana.md` → `<area>.md` → … → leaf, however deep the topic warrants.
-- Page schema (frontmatter, types, authority): [docs/page_schema.md](docs/page_schema.md).
-- Layers: `sources/` (immutable source artifacts), `inbox/` (transient drop zone), `chapters/`-equivalent content under `docs/` `invocations/` `formulae/`, `log.md` for activity.
+How Arcana is laid out — for the rules themselves, follow the links:
+
+- Routing: hub-per-folder, open-ended depth. Full rules in [docs/operating_model.md](docs/operating_model.md).
+- Frontmatter: type / authority / sources / last_verified. Spec in [docs/page_schema.md](docs/page_schema.md).
+- Layers in Arcana: `docs/`, `invocations/`, `formulae/` carry chapter-equivalent content; `sources/` is reserved (Arcana itself rarely uses it); `log.md` records activity.
 
 ## Documentation
 
 - [README.md](README.md) — Overview and architecture
-- [docs/installation.md](docs/installation.md) — Summoning rite + manual install
-- [docs/quickstart.md](docs/quickstart.md) — 5-minute smoke test after install
+- [docs/installation.md](docs/installation.md) — Summoning rite, manual install, 5-minute smoke test
 - [docs/agent_configuration.md](docs/agent_configuration.md) — Per-agent setup (Claude / Codex / Copilot)
 - [docs/skills.md](docs/skills.md) — Canonical Arcana skill catalog (auto-generated)
 - [docs/reference.md](docs/reference.md) — Terminology, library/manifest schemas, path keys, formula placeholders
@@ -45,11 +46,11 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - [improve_grimoire.md](invocations/grimoire/improve_grimoire.md) — `/grm-domain-improve`
 - [analyze_semantics.md](invocations/grimoire/analyze_semantics.md) — `/grm-domain-analyze-semantics`
 - [validate_structure.md](invocations/grimoire/validate_structure.md) — `/grm-domain-validate-structure`
+- [validate_boundaries.md](invocations/grimoire/validate_boundaries.md) — `/grm-domain-validate-boundaries`
 
 **Arcana (maintainer only)** — see [invocations/arcana/arcana.md](invocations/arcana/arcana.md):
 
 - [improve_arcana.md](invocations/arcana/improve_arcana.md) — `/grm-arcana-improve`
-- [validate_boundaries.md](invocations/arcana/validate_boundaries.md) — `/grm-arcana-validate-boundaries`
 - Validators hub: [invocations/arcana/validators/validators.md](invocations/arcana/validators/validators.md)
 - Quality hub: [invocations/arcana/quality/quality.md](invocations/arcana/quality/quality.md)
 

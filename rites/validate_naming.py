@@ -5,19 +5,20 @@ Usage: python3 rites/validate_naming.py
 Exit codes: 0 = success, 1 = violations found
 """
 
-import os
 import re
 import sys
 from pathlib import Path
 
-ARCANA_ROOT = Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent))
+from _lib import default_arcana_root
 
-UPPERCASE_EXCEPTIONS = {"README.md", "CHANGELOG.md", "CLAUDE.md",
-                        "AGENTS.md", "LICENSE.md", "IMPLEMENTATION_PLAN.md",
-                        "VERSION"}
+ARCANA_ROOT = default_arcana_root()
+
+UPPERCASE_EXCEPTIONS = {"README.md", "CHANGELOG.md", "CONTRIBUTING.md",
+                        "CLAUDE.md", "AGENTS.md", "LICENSE.md",
+                        "IMPLEMENTATION_PLAN.md", "VERSION"}
 
 
-SKIP_DIRS = {"sources", ".git"}
+SKIP_DIRS = {"sources", ".git", "tests"}
 
 
 def check_naming(glob_pattern, label, ext):

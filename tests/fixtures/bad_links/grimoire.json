@@ -1,0 +1,5 @@
+{
+  "name": "bad_links",
+  "namespace": "lnk",
+  "description": "Fixture grimoire whose pages contain broken markdown and wikilinks."
+}

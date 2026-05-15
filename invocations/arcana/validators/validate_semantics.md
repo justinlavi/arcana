@@ -4,16 +4,16 @@ title: "Validate Semantics"
 aliases: ["validate-semantics"]
 tags: [arcana/invocations, type/reference, scope/validators]
 authority: grimoire
-last_verified: 2026-05-12
+last_verified: 2026-05-15
 ---
 
 # Invocation: Validate Arcana Semantics
 
 ## Purpose
 
-Mechanical scan of Arcana for **deprecated terminology** and **hyphenated path examples**. Fast, deterministic, no judgment required.
+Mechanical scan of Arcana for **hyphenated path examples** written in prose. Fast, deterministic, no judgment required.
 
-For *intelligent* semantic analysis (naming quality, organizational discoverability, terminology design), use `/grm-domain-analyze-semantics` — this rite is intentionally not that.
+For *intelligent* semantic analysis (naming quality, organizational discoverability, terminology design), use `/grm-domain-analyze-semantics` — this rite is intentionally not that. Filename validation lives in [`validate_naming.md`](validate_naming.md).
 
 ## Invocation
 
@@ -25,12 +25,9 @@ Also runs as part of `/grm-arcana-improve` (alongside the other validators).
 
 ## What the Rite Checks
 
-The rite is `rites/validate_semantics.py`. Two checks, both data-driven:
+The rite is `rites/validate_semantics.py`.
 
-1. **Deprecated terms** — any markdown file containing a term from
-   [`rites/data/deprecated_terms.txt`](../../../rites/data/deprecated_terms.txt) is flagged with file:line. To deprecate a new term, add it to that file (one term per line). The data file is the single source of truth — do not list deprecated terms here.
-
-2. **Hyphenated path examples** — paths like `chapters/example-name/` or `file-name.md` in body text are flagged. Arcana convention is `snake_case` for filesystem paths.
+**Hyphenated path examples** — paths like `chapters/example-name/` or `file-name.md` written in markdown body text are flagged. Arcana convention is `snake_case` for filesystem paths. Headings and code fences are exempt; the check applies only to prose lines that aren't headers.
 
 ## Workflow
 
@@ -43,18 +40,18 @@ Exit code: 0 if no violations, 1 if any violation is found.
 ## Exclusions
 
 - `validate_semantics.md` (this file)
-- `deprecated_terms.txt` (the data file — necessarily mentions all the terms)
+- `validate_naming.md` (documents naming-violation examples)
+- `script_vs_ai.md` (demos validator behavior)
 - `invocations/arcana/quality/` (quality docs may discuss historical terms)
+- `sources/` (imported source artifacts may have hyphens in their original names)
 
 ## Fixing Violations
 
-1. **Deprecated term hits**: replace with the canonical equivalent. For roles previously called "The Keepers" / "Archmage" / "Domain Master" use "Arcana maintainer" or "domain lead". For "tome" use "grimoire". The `deprecated_terms.txt` file is the authoritative list of what to avoid; the canonical replacements live in [`docs/reference.md`](../../../docs/reference.md).
-2. **Hyphenated example hits**: convert to snake_case (`chapters/example_name/`).
+Convert each hyphenated example to snake_case (`chapters/example_name/`, `file_name.md`). If the path appears inside a code block, no fix is needed — only prose lines are flagged.
 
 ## Related
 
 - **Rite**: [`rites/validate_semantics.py`](../../../rites/validate_semantics.py)
-- **Data**: [`rites/data/deprecated_terms.txt`](../../../rites/data/deprecated_terms.txt) (single source of truth for the deprecated-term list)
-- **Reference**: [`docs/reference.md`](../../../docs/reference.md) (canonical terminology)
+- **Naming counterpart**: [`validate_naming.md`](validate_naming.md) (snake_case enforcement on actual filenames)
 - **Smart analysis**: `/grm-domain-analyze-semantics` (judgment-based, not mechanical)
 - **Orchestrator**: [`improve_arcana.md`](../improve_arcana.md)

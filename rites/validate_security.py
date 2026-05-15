@@ -5,12 +5,13 @@ Usage: python3 rites/validate_security.py
 Exit codes: 0 = success, 1 = security issues found
 """
 
-import os
 import re
 import sys
 from pathlib import Path
 
-ARCANA_ROOT = Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent))
+from _lib import default_arcana_root
+
+ARCANA_ROOT = default_arcana_root()
 
 FORBIDDEN_PATTERNS = [
     (re.compile(r"""password\s*=\s*['"][^'"]+['"]""", re.IGNORECASE), "password assignment"),

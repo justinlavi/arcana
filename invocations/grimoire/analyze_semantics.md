@@ -13,7 +13,7 @@ last_verified: 2026-05-12
 
 Judgment-based analysis of naming and organization in a domain grimoire. Evaluates whether chapter and file names are clear, discoverable, terminologically consistent, and token-efficient — and proposes prioritized renames.
 
-This is the AI counterpart to `/grm-arcana-validate-semantics`, which only mechanically scans Arcana for deprecated terms and hyphenated paths. This invocation reads meaning; the validator matches patterns.
+This is the AI counterpart to `/grm-arcana-validate-semantics`, which only mechanically scans Arcana for hyphenated path examples in prose. This invocation reads meaning; the validator matches patterns.
 
 ## Invocation
 
@@ -135,7 +135,7 @@ Surface the report in the chat. Do not write files unless the user asks.
 
 ## Related
 
-- **Mechanical counterpart**: `/grm-arcana-validate-semantics` (deprecated terms, hyphenated paths)
+- **Mechanical counterpart**: `/grm-arcana-validate-semantics` (hyphenated path examples in prose)
 - **Apply changes**: `/grm-domain-improve`
 - **Structure validation**: `/grm-domain-validate-structure`
-- **Boundary validation**: `/grm-arcana-validate-boundaries`
+- **Boundary validation**: `/grm-domain-validate-boundaries`

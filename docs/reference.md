@@ -60,13 +60,7 @@ When **creating knowledge** inside chapters:
 
 ## Authority Models
 
-Pages fall into one of three categories based on where truth lives:
-
-| Model | When to Use |
-|-------|-------------|
-| **External** | Truth lives outside Grimoire (repos, services, platforms). Page routes and summarizes. |
-| **Grimoire** | This page IS the source of truth. Knowledge is owned in Grimoire. |
-| **Hybrid** | Grimoire owns the synthesis; external systems own implementation details. |
+Every page declares one of `external`, `grimoire`, or `hybrid` to indicate where truth lives. Full table, required-fields matrix, and rules of thumb in [page_schema.md § Authority Models](page_schema.md#authority-models).
 
 Page template: `GRIMOIRE_ARCANA/formulae/page.formula.md`
 
@@ -74,22 +68,9 @@ Page template: `GRIMOIRE_ARCANA/formulae/page.formula.md`
 
 ## 🪄 Skills
 
-The complete, current Arcana skill catalog lives in **[skills.md](skills.md)** (auto-generated from each `skills/<slug>/SKILL.md` — single source of truth). For each skill the catalog shows the `/grm-...` command, a one-line description, and a link to the source `SKILL.md`.
+The current Arcana skill catalog lives in **[skills.md](skills.md)** (auto-generated from each `skills/<slug>/SKILL.md`). To enumerate every skill installed for an agent — Arcana plus every domain grimoire — invoke `/grm-meta-help`.
 
-To enumerate every skill installed for an agent (Arcana plus every domain grimoire), invoke `/grm-meta-help`.
-
-Skills are registered to supported agent skill roots:
-
-- Claude Code: `~/.claude/skills/`
-- Codex/ChatGPT: `~/.codex/skills/`
-
-Codex/ChatGPT registrations are pointer-only `SKILL.md` copies that resolve to Arcana or grimoire invocations and rites.
-
-Skill command names use explicit namespace roots:
-- Arcana: `grm-*` (declared in `arcana/grimoire.json`)
-- Domain grimoires: `{namespace}-*`, declared in each grimoire's `grimoire.json`
-
-Domain skill folders provide the subcommand after the namespace root. For example, a grimoire with `"namespace": "cook"` in its `grimoire.json` plus `skills/recipe-add/` registers `/cook-recipe-add`. Source `SKILL.md` files use `name: {{NAMESPACE}}-<slug>` and the registration rite substitutes the namespace at install time.
+Skill names use namespace roots: Arcana ships `grm-*` (declared in `arcana/grimoire.json`); each domain grimoire ships `{namespace}-*` from its own manifest. Source `SKILL.md` files use `name: {{NAMESPACE}}-<slug>` and the registration rite substitutes the namespace at install time. Skills register to `~/.claude/skills/` (Claude Code) and `~/.codex/skills/` (Codex/ChatGPT, pointer-only).
 
 ---
 
@@ -179,7 +160,7 @@ When creating a new grimoire, `/grm-domain-create-grimoire` prompts for the name
 
 | Key | Purpose | Example |
 |-----|---------|---------|
-| `GRIMOIRE_ARCANA` | Reference Arcana from anywhere | `GRIMOIRE_ARCANA/docs/quickstart.md` |
+| `GRIMOIRE_ARCANA` | Reference Arcana from anywhere | `GRIMOIRE_ARCANA/docs/installation.md` |
 | `{domain}-grimoire` | Reference a specific domain grimoire | `cooking-grimoire/chapters/breads/sourdough.md` |
 
 **Why?** Library keys match the actual folder slug. `cooking-grimoire` resolves to `~/grimoires/cooking-grimoire/`. `GRIMOIRE_ARCANA` is the exception — Arcana is the engine, not a domain grimoire.

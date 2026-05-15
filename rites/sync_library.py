@@ -25,38 +25,25 @@ Usage:
 
 import argparse
 import json
-import re
 import subprocess
 import sys
 from pathlib import Path
+
+from _lib import (
+    info,
+    load_library,
+    load_manifest,
+    ok,
+    resolve_local_path,
+    warn,
+)
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
 
 DEFAULT_HOME = Path.home() / "grimoires"
-NAMESPACE_RE = re.compile(r"^[a-z][a-z0-9]*$")
 ARCANA_NAME = "arcana"
-
-# ---------------------------------------------------------------------------
-# Logging
-# ---------------------------------------------------------------------------
-
-
-def info(msg):
-    print(f"  [INFO]  {msg}")
-
-
-def ok(msg):
-    print(f"  [OK]    {msg}")
-
-
-def warn(msg):
-    print(f"  [WARN]  {msg}")
-
-
-def err(msg):
-    print(f"  [ERROR] {msg}")
 
 
 # ---------------------------------------------------------------------------
@@ -79,31 +66,6 @@ def detect_origin_url(directory):
     if result.returncode != 0:
         return ""
     return result.stdout.strip()
-
-
-def load_manifest(directory):
-    """Load and validate grimoire.json. Returns (metadata, errors)."""
-    manifest_file = directory / "grimoire.json"
-    if not manifest_file.is_file():
-        return None, ["missing grimoire.json"]
-
-    try:
-        with open(manifest_file) as f:
-            metadata = json.load(f)
-    except (json.JSONDecodeError, OSError) as exc:
-        return None, [f"could not parse grimoire.json: {exc}"]
-
-    errors = []
-    name = metadata.get("name", "")
-    namespace = metadata.get("namespace", "")
-    if not name:
-        errors.append("grimoire.json missing 'name' field")
-    if not namespace:
-        errors.append("grimoire.json missing 'namespace' field")
-    elif not NAMESPACE_RE.fullmatch(namespace):
-        errors.append(f"invalid namespace '{namespace}' (must match {NAMESPACE_RE.pattern})")
-
-    return metadata, errors
 
 
 def scan_grimoire_home(home):
@@ -175,21 +137,6 @@ def scan_grimoire_home(home):
 # ---------------------------------------------------------------------------
 
 
-def load_library(library_path):
-    """Read the library. Returns the library dict (with at least 'grimoires')."""
-    if not library_path.is_file():
-        return {"grimoires": {}}
-    try:
-        with open(library_path) as f:
-            data = json.load(f)
-    except (json.JSONDecodeError, OSError) as exc:
-        warn(f"could not read library {library_path}: {exc} (treating as empty)")
-        return {"grimoires": {}}
-    if "grimoires" not in data or not isinstance(data["grimoires"], dict):
-        data["grimoires"] = {}
-    return data
-
-
 def expected_local_path(home, key):
     """Return the canonical $HOME-based local_path for a grimoire."""
     home_marker = str(Path.home())
@@ -197,13 +144,6 @@ def expected_local_path(home, key):
     if actual.startswith(home_marker):
         return "$HOME" + actual[len(home_marker) :]
     return actual
-
-
-def resolve_local_path(raw):
-    """Expand $HOME in a library local_path string."""
-    if not raw:
-        return Path()
-    return Path(raw.replace("$HOME", str(Path.home())))
 
 
 def diff_library(scan, library, home):

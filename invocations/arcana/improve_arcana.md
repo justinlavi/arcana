@@ -49,7 +49,7 @@ This runs every validator (structure, naming, format, links, security, semantics
 
 Review the aggregated output:
 
-- **Mechanical fixes** (broken link, snake_case path, missing heading, deprecated term): apply directly.
+- **Mechanical fixes** (broken link, snake_case path, missing heading, hyphenated example): apply directly.
 - **Structural issues** (missing hub, misplaced file): fix the structure, then re-run the offending validator.
 - **Security hits**: treat as blocking. Investigate every credential pattern and unsafe construct before continuing.
 - **Boundary violations**: invocations / formulae / rites belong in Arcana only. Move violators or rewrite.

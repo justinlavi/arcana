@@ -23,21 +23,27 @@ Exit codes: 0 = no violations, 1 = violations found
 
 import argparse
 import datetime
-import os
-import re
 import sys
 from pathlib import Path
 
+from _lib import (
+    DATE_RE,
+    FRONTMATTER_RE,
+    add_grimoire_arg,
+    iter_pages,
+    parse_frontmatter,
+    resolve_grimoire_arg,
+    warn,
+)
+
 # Folders whose .md files require schema-compliant frontmatter.
 SCAN_DIRS = ["docs", "invocations", "formulae", "chapters"]
-# Plus any .md at the grimoire root (arcana.md, the equivalent root hub for a
-# domain grimoire, README.md is exempt).
-ROOT_REQUIRED_GLOBS = ["arcana.md"]
 
 EXEMPT_FILENAMES = {
     "SKILL.md",
     "README.md",
     "CHANGELOG.md",
+    "CONTRIBUTING.md",
     "VERSION",
     "log.md",
     "CLAUDE.md",
@@ -52,78 +58,6 @@ FORMULA_TEMPLATE_DIRS = {"formulae"}
 
 VALID_TYPES = {"hub", "concept", "entity", "source", "playbook", "reference", "log-entry"}
 VALID_AUTHORITIES = {"external", "grimoire", "hybrid"}
-
-DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-FRONTMATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
-
-
-def info(msg):
-    print(f"  [INFO]  {msg}")
-
-
-def warn(msg):
-    print(f"  [WARN]  {msg}")
-
-
-def err(msg):
-    print(f"  [ERROR] {msg}")
-
-
-def parse_simple_yaml(block):
-    """Minimal YAML parser — handles the subset used by page frontmatter.
-
-    Supports:
-      key: value
-      key: "quoted value"
-      key: [a, b, "c"]
-      key:
-        - item
-        - item
-
-    Returns dict[str, str|list[str]]. Lines that don't match are ignored.
-    """
-    fields = {}
-    current_list_key = None
-    for raw_line in block.splitlines():
-        line = raw_line.rstrip()
-        if not line or line.lstrip().startswith("#"):
-            current_list_key = None
-            continue
-
-        # Multi-line list continuation (- item).
-        if current_list_key is not None and re.match(r"^\s+-\s+", raw_line):
-            value = raw_line.split("-", 1)[1].strip().strip("'\"")
-            fields[current_list_key].append(value)
-            continue
-        else:
-            current_list_key = None
-
-        if ":" not in line:
-            continue
-        key, _, value = line.partition(":")
-        key = key.strip()
-        value = value.strip()
-
-        if not value:
-            # Could be a multi-line list following.
-            fields[key] = []
-            current_list_key = key
-            continue
-
-        # Inline list: [a, b, "c"]
-        if value.startswith("[") and value.endswith("]"):
-            inner = value[1:-1].strip()
-            if not inner:
-                fields[key] = []
-            else:
-                items = []
-                for piece in re.split(r",\s*", inner):
-                    items.append(piece.strip().strip("'\""))
-                fields[key] = items
-            continue
-
-        fields[key] = value.strip("'\"")
-    return fields
 
 
 def required_fields_for(type_):
@@ -143,30 +77,6 @@ def is_template(rel_path):
     return any(rel_path.startswith(d + "/") or rel_path == d for d in FORMULA_TEMPLATE_DIRS)
 
 
-def scan_files(grimoire_root):
-    """Yield Path objects for every file we need to validate."""
-    seen = set()
-    for d in SCAN_DIRS:
-        root = grimoire_root / d
-        if not root.is_dir():
-            continue
-        for path in sorted(root.rglob("*.md")):
-            if path.name in EXEMPT_FILENAMES:
-                continue
-            seen.add(path)
-            yield path
-    # The grimoire root hub is the file named after the grimoire directory.
-    root_hub = grimoire_root / f"{grimoire_root.name}.md"
-    if root_hub.is_file() and root_hub not in seen:
-        seen.add(root_hub)
-        yield root_hub
-    # Plus any other root-level .md that fits the schema and isn't exempt.
-    for path in sorted(grimoire_root.glob("*.md")):
-        if path in seen or path.name in EXEMPT_FILENAMES:
-            continue
-        yield path
-
-
 def check_file(path, grimoire_root):
     """Return list of violation strings for a single file."""
     rel = str(path.relative_to(grimoire_root))
@@ -177,11 +87,10 @@ def check_file(path, grimoire_root):
     except OSError as exc:
         return [f"{rel}: could not read ({exc})"]
 
-    match = FRONTMATTER_RE.match(content)
-    if not match:
+    if not FRONTMATTER_RE.match(content):
         return [f"{rel}: missing or malformed YAML frontmatter (must start with `---`)"]
 
-    fields = parse_simple_yaml(match.group(1))
+    fields = parse_frontmatter(content)
     type_ = fields.get("type", "")
 
     if not type_:
@@ -249,13 +158,9 @@ def check_file(path, grimoire_root):
 
 def main():
     parser = argparse.ArgumentParser(description="Validate page frontmatter")
-    parser.add_argument(
-        "--grimoire", type=Path,
-        default=Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent)),
-        help="Grimoire root (default: GRIMOIRE_ARCANA env var or rites parent)",
-    )
+    add_grimoire_arg(parser)
     args = parser.parse_args()
-    grimoire_root = args.grimoire.expanduser().resolve()
+    grimoire_root = resolve_grimoire_arg(args.grimoire)
 
     print()
     print("Validating Page Frontmatter")
@@ -266,7 +171,7 @@ def main():
     total_violations = 0
     files_checked = 0
 
-    for path in scan_files(grimoire_root):
+    for path in iter_pages(grimoire_root, SCAN_DIRS, exempt_filenames=EXEMPT_FILENAMES):
         files_checked += 1
         violations = check_file(path, grimoire_root)
         for v in violations:

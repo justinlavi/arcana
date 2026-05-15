@@ -2,9 +2,9 @@
 type: playbook
 title: "Validate Boundaries"
 aliases: ["validate-boundaries", "magical-boundary"]
-tags: [arcana/invocations, type/playbook, scope/arcana]
+tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
-last_verified: 2026-05-12
+last_verified: 2026-05-15
 ---
 
 # Invocation: Validate Magical Boundaries
@@ -18,8 +18,8 @@ Canonical definition and full term mapping: [`docs/reference.md`](../../docs/ref
 ## Invocation
 
 ```
-/grm-arcana-validate-boundaries          # validate domain grimoire (cwd)
-/grm-arcana-validate-boundaries --arcana # validate Arcana itself (strictest)
+/grm-domain-validate-boundaries          # validate active grimoire (cwd)
+/grm-domain-validate-boundaries --arcana # also scan Arcana itself (strictest)
 ```
 
 Also runs as part of `/grm-domain-improve` and `/grm-arcana-improve`.

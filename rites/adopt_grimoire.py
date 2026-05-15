@@ -25,28 +25,12 @@ Exit codes: 0 = manifest written, 1 = validation failed, 2 = collision
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 
+from _lib import NAMESPACE_RE, err, info, ok
+
 DEFAULT_HOME = Path.home() / "grimoires"
-NAMESPACE_RE = re.compile(r"^[a-z][a-z0-9]*$")
-
-
-def info(msg):
-    print(f"  [INFO]  {msg}")
-
-
-def ok(msg):
-    print(f"  [OK]    {msg}")
-
-
-def warn(msg):
-    print(f"  [WARN]  {msg}")
-
-
-def err(msg):
-    print(f"  [ERROR] {msg}")
 
 
 def find_existing_namespaces(home):

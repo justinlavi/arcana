@@ -10,11 +10,12 @@ Hub convention (v2):
     invocations/grimoire/grimoire.md; etc.
 """
 
-import os
 import sys
 from pathlib import Path
 
-ARCANA_ROOT = Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent))
+from _lib import default_arcana_root
+
+ARCANA_ROOT = default_arcana_root()
 
 REQUIRED_DIRS = [
     "docs",
@@ -41,7 +42,7 @@ REQUIRED_FILES = [
     "grimoire.json",
     "rites/summon.sh",
     "rites/register_skills.py",
-    "docs/quickstart.md",
+    "docs/installation.md",
     "docs/agent_configuration.md",
     "docs/operating_model.md",
     "docs/governance.md",

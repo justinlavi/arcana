@@ -16,7 +16,7 @@ Mechanical, deterministic checks against the Arcana repository. Each validator h
 | [validate_structure.md](validate_structure.md) | `/grm-arcana-validate-structure` | Required directories and files exist; layout matches conventions |
 | [validate_naming.md](validate_naming.md) | `/grm-arcana-validate-naming` | snake_case for paths; kebab-case for skills |
 | [validate_format.md](validate_format.md) | `/grm-arcana-validate-format` | Invocation/formula schema compliance |
-| [validate_semantics.md](validate_semantics.md) | `/grm-arcana-validate-semantics` | Deprecated terms (from `rites/data/deprecated_terms.txt`) and hyphenated path examples |
+| [validate_semantics.md](validate_semantics.md) | `/grm-arcana-validate-semantics` | Hyphenated path examples in markdown prose |
 | [validate_links.md](validate_links.md) | `/grm-arcana-validate-links` | Internal markdown links resolve |
 | [validate_security.md](validate_security.md) | `/grm-arcana-validate-security` | Credential patterns and unsafe Python constructs in rites |
 
