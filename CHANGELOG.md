@@ -115,14 +115,16 @@ Adding a new validator is now a ~30-line affair: import from `_lib`, run the che
 `rites/summon.sh` + a three-module Python implementation. Release-first binary bootstrap with Python source fallback. Steps:
 
 1. Detects OS / architecture, downloads the matching `grimoire-summon-*` release asset from GitHub Releases (with checksum verification), and runs the binary. PyInstaller bundles all three Python modules into one executable.
-2. Falls back to the Python source bootstrap if the release asset is unavailable or exits abnormally. In source mode, downloads `summon.py` + `summon_core.py` always; downloads `summon_gui.py` only when GUI mode is possible (skipped for `--cli`/`-h`/`--help`).
-3. Probes Dear PyGui/OpenGL startup in a subprocess before opening the full source GUI. If GLX/GLFW fails, the rite falls back to CLI cleanly.
-4. Reads CLI prompts from the controlling terminal when launched through `curl | bash`, so the curl pipe does not cause `EOFError`.
-5. Discovers grimoires via GitHub or GitLab API (or static `library.json`); presents an interactive menu.
-6. Clones Arcana and selected grimoires under `~/grimoires/`.
-7. Updates `~/grimoires/library.json`.
-8. Injects the canonical marked Grimoire instruction block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`.
-9. Always runs `register_skills.py` — including when zero domain grimoires were selected, so Arcana's own `/grm-*` skills register regardless. Surfaces both stdout and stderr from the registration subprocess so failures are never silent. Spot-checks the agent skill directories afterward and reports counts.
+2. Uses Python source mode by default for Linux GUI sessions, avoiding frozen GLFW/GLX library drift across distro render stacks. Linux CLI/headless installs, macOS, Windows, and `GRIMOIRE_SUMMON_BINARY=always` still use the release-binary path.
+3. Falls back to the Python source bootstrap if the release asset is unavailable or exits abnormally. In source mode, downloads `summon.py` + `summon_core.py` always; downloads `summon_gui.py` only when GUI mode is possible (skipped for `--cli`/`-h`/`--help`).
+4. Probes Dear PyGui/OpenGL startup in a subprocess before opening the full source GUI. If GLX/GLFW fails, the rite falls back to CLI cleanly.
+5. Reads prompts from the controlling terminal when launched through `curl | bash`, so the curl pipe does not cause `EOFError`.
+6. Installs Python, pip, and Dear PyGui only after explicit `y` confirmation. Dear PyGui installs into the Grimoire-managed dependency cache, never into the Arcana repository.
+7. Discovers grimoires via GitHub or GitLab API (or static `library.json`); presents an interactive menu.
+8. Clones Arcana and selected grimoires under `~/grimoires/`.
+9. Updates `~/grimoires/library.json`.
+10. Injects the canonical marked Grimoire instruction block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`.
+11. Always runs `register_skills.py` — including when zero domain grimoires were selected, so Arcana's own `/grm-*` skills register regardless. Surfaces both stdout and stderr from the registration subprocess so failures are never silent. Spot-checks the agent skill directories afterward and reports counts.
 
 The Python implementation is split for auditability and headless friendliness:
 

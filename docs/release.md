@@ -4,7 +4,7 @@ title: "Release Workflow"
 aliases: ["release", "binary-release"]
 tags: [type/reference, arcana/docs]
 authority: grimoire
-last_verified: 2026-05-12
+last_verified: 2026-05-19
 ---
 
 # Arcana Release Guide
@@ -82,7 +82,7 @@ Draft releases are useful for private review, but they are not useful for unauth
 
 ## Bootstrap Behavior
 
-`rites/summon.sh` prefers release assets when run through the public curl pipe. Running it from a local checkout keeps using local source by default, which is better for Arcana development.
+`rites/summon.sh` prefers release assets when run through the public curl pipe, except on Linux GUI sessions where it uses the Python source launcher by default. The Linux source-first GUI path avoids frozen GLFW/GLX library drift across fast-moving distro render stacks while preserving binary use for CLI/headless Linux and for macOS/Windows. Running from a local checkout keeps using local source by default, which is better for Arcana development.
 
 Public curl flow:
 1. Detect OS and architecture.
@@ -91,8 +91,10 @@ Public curl flow:
 4. Extract and run the `grimoire-summon` binary.
 5. Fall back to the Python source bootstrap if any release step fails.
 
+On Linux with a detected display session, `GRIMOIRE_SUMMON_BINARY=auto` skips steps 2-4 and goes straight to source mode. Use `GRIMOIRE_SUMMON_BINARY=always` to test the Linux release binary directly.
+
 Binary controls:
-- `GRIMOIRE_SUMMON_BINARY=auto` — default. Piped scripts try release binaries; local scripts use source.
+- `GRIMOIRE_SUMMON_BINARY=auto` — default. Piped scripts try release binaries except Linux GUI sessions; local scripts use source.
 - `GRIMOIRE_SUMMON_BINARY=always` — force release binary lookup.
 - `GRIMOIRE_SUMMON_BINARY=never` — force Python source bootstrap.
 - `GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0` — download from a specific release tag instead of `latest`.

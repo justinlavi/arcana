@@ -94,6 +94,31 @@ release_download_base() {
     fi
 }
 
+arg_disables_gui() {
+    local arg
+    for arg in "$@"; do
+        case "$arg" in
+            --cli|-h|--help) return 0 ;;
+        esac
+    done
+    return 1
+}
+
+has_display_session() {
+    [[ -n "${DISPLAY:-}" || -n "${WAYLAND_DISPLAY:-}" || "${XDG_SESSION_TYPE:-}" == "x11" || "${XDG_SESSION_TYPE:-}" == "wayland" ]]
+}
+
+should_prefer_source_for_linux_gui() {
+    local platform
+
+    [[ "$GRIMOIRE_SUMMON_BINARY" == "auto" ]] || return 1
+    [[ ! -f "$SCRIPT_SOURCE" ]] || return 1
+    platform="$(summon_platform 2>/dev/null || true)"
+    [[ "$platform" == linux-* ]] || return 1
+    arg_disables_gui "$@" && return 1
+    has_display_session
+}
+
 verify_checksum() {
     local checksum="$1"
 
@@ -114,6 +139,10 @@ should_try_binary() {
     if [[ "$GRIMOIRE_SUMMON_BINARY" == "always" ]]; then
         return 0
     fi
+    if should_prefer_source_for_linux_gui "$@"; then
+        echo "  [INFO]  Linux GUI session detected — using Python source launcher"
+        return 1
+    fi
     [[ ! -f "$SCRIPT_SOURCE" ]]
 }
 
@@ -121,12 +150,7 @@ should_try_binary() {
 # after their definitions have executed. Keep this tiny helper independent of
 # Python so the piped bootstrap can decide whether to fetch summon_gui.py.
 should_download_gui_source() {
-    local arg
-    for arg in "$@"; do
-        case "$arg" in
-            --cli|-h|--help) return 1 ;;
-        esac
-    done
+    arg_disables_gui "$@" && return 1
     return 0
 }
 
@@ -208,7 +232,7 @@ if [[ -f "$SCRIPT_SOURCE" ]]; then
         try_release_binary "$@" || true
     fi
 else
-    if should_try_binary; then
+    if should_try_binary "$@"; then
         try_release_binary "$@" || true
     fi
     TEMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/grimoire-summon.XXXXXX")"
@@ -269,6 +293,23 @@ install_packages() {
     esac
 }
 
+prompt_yes() {
+    local prompt="$1"
+    local response=""
+
+    if [[ -t 0 ]]; then
+        read -r -p "$prompt [y/N]: " response || response=""
+    elif [[ -r /dev/tty && -w /dev/tty ]]; then
+        printf "%s [y/N]: " "$prompt" > /dev/tty
+        IFS= read -r response < /dev/tty || response=""
+    else
+        echo "  [WARN]  No interactive terminal available — not installing dependencies"
+        return 1
+    fi
+
+    [[ "${response,,}" == "y" ]]
+}
+
 pip_install_hint() {
     local mgr="$1"
     case "$mgr" in
@@ -287,12 +328,7 @@ python_can_import() {
 }
 
 should_prepare_gui_deps() {
-    local arg
-    for arg in "$@"; do
-        case "$arg" in
-            --cli|-h|--help) return 1 ;;
-        esac
-    done
+    arg_disables_gui "$@" && return 1
     return 0
 }
 
@@ -312,8 +348,7 @@ if ! PYTHON=$(find_python); then
         exit 1
     fi
 
-    read -r -p "  Install Python 3 now? (requires sudo) [y/N]: " response
-    if [[ "${response,,}" != "y" ]]; then
+    if ! prompt_yes "  Install Python 3 now? (requires sudo)"; then
         echo "  Install Python 3 manually and re-run."
         exit 1
     fi
@@ -339,34 +374,43 @@ echo "  [OK]    Using $($PYTHON --version 2>&1)"
 # ---------------------------------------------------------------------------
 
 if should_prepare_gui_deps "$@"; then
-    if ! "$PYTHON" -m pip --version &>/dev/null; then
-        echo "  [INFO]  pip not found — attempting to install..."
-        PKG_MGR=$(detect_pkg_manager)
-        case "$PKG_MGR" in
-            apt) install_packages "$PKG_MGR" python3-pip 2>/dev/null || true ;;
-            dnf) install_packages "$PKG_MGR" python3-pip 2>/dev/null || true ;;
-            pacman) install_packages "$PKG_MGR" python-pip 2>/dev/null || true ;;
-            brew) install_packages "$PKG_MGR" python 2>/dev/null || true ;;
-        esac
-        if ! "$PYTHON" -m pip --version &>/dev/null; then
-            "$PYTHON" -m ensurepip --default-pip 2>/dev/null || true
-        fi
-        if "$PYTHON" -m pip --version &>/dev/null; then
-            echo "  [OK]    pip installed"
-        else
-            echo "  [WARN]  pip not available — Dear PyGui auto-install may fail"
-            echo "  [INFO]  To enable app mode manually, run: $(pip_install_hint "$PKG_MGR")"
-        fi
-    fi
-
     if ! python_can_import "dearpygui.dearpygui"; then
-        echo "  [INFO]  Dear PyGui not found — installing via pip..."
-        if "$PYTHON" -m pip --version &>/dev/null; then
-            mkdir -p "$GRIMOIRE_SUMMON_PY_DEPS"
-            if "$PYTHON" -m pip install --upgrade --target "$GRIMOIRE_SUMMON_PY_DEPS" dearpygui 2>/dev/null; then
-                echo "  [OK]    Dear PyGui installed"
+        PKG_MGR=$(detect_pkg_manager)
+        echo "  [INFO]  Dear PyGui not found"
+        if ! "$PYTHON" -m pip --version &>/dev/null; then
+            echo "  [INFO]  pip not found"
+            if prompt_yes "  Install pip now? (may require sudo)"; then
+                case "$PKG_MGR" in
+                    apt) install_packages "$PKG_MGR" python3-pip 2>/dev/null || true ;;
+                    dnf) install_packages "$PKG_MGR" python3-pip 2>/dev/null || true ;;
+                    pacman) install_packages "$PKG_MGR" python-pip 2>/dev/null || true ;;
+                    brew) install_packages "$PKG_MGR" python 2>/dev/null || true ;;
+                esac
+                if ! "$PYTHON" -m pip --version &>/dev/null; then
+                    "$PYTHON" -m ensurepip --default-pip 2>/dev/null || true
+                fi
+                if "$PYTHON" -m pip --version &>/dev/null; then
+                    echo "  [OK]    pip installed"
+                else
+                    echo "  [WARN]  pip not available — GUI may fall back to CLI"
+                    echo "  [INFO]  To enable app mode manually, run: $(pip_install_hint "$PKG_MGR")"
+                fi
             else
-                echo "  [WARN]  Could not install Dear PyGui — GUI may fall back to CLI"
+                echo "  [WARN]  pip install skipped — GUI may fall back to CLI"
+                echo "  [INFO]  To enable app mode manually, run: $(pip_install_hint "$PKG_MGR")"
+            fi
+        fi
+
+        if "$PYTHON" -m pip --version &>/dev/null; then
+            if prompt_yes "  Install Dear PyGui into $GRIMOIRE_SUMMON_PY_DEPS now?"; then
+                mkdir -p "$GRIMOIRE_SUMMON_PY_DEPS"
+                if "$PYTHON" -m pip install --upgrade --target "$GRIMOIRE_SUMMON_PY_DEPS" dearpygui 2>/dev/null; then
+                    echo "  [OK]    Dear PyGui installed"
+                else
+                    echo "  [WARN]  Could not install Dear PyGui — GUI may fall back to CLI"
+                fi
+            else
+                echo "  [WARN]  Dear PyGui install skipped — GUI will fall back to CLI"
             fi
         else
             echo "  [WARN]  pip unavailable — GUI may fall back to CLI"

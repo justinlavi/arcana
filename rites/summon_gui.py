@@ -751,12 +751,12 @@ def _format_diagnostics_bundle(diag):
 
 
 # ---------------------------------------------------------------------------
-# Dear PyGui setup helpers (auto-install, DPI, fonts, theme, GL probe)
+# Dear PyGui setup helpers (import, DPI, fonts, theme, GL probe)
 # ---------------------------------------------------------------------------
 
 
 def _ensure_dearpygui():
-    """Import Dear PyGui, auto-installing via pip if missing."""
+    """Import Dear PyGui from system Python or the consented dependency cache."""
     dep_dir = Path(
         os.environ.get(
             "GRIMOIRE_SUMMON_PY_DEPS",
@@ -770,25 +770,10 @@ def _ensure_dearpygui():
         import dearpygui.dearpygui as dpg
         return dpg
     except ImportError:
-        pass
-
-    dep_dir.mkdir(parents=True, exist_ok=True)
-    pip_args = [
-        system_python(), "-m", "pip", "install", "--upgrade",
-        "--target", str(dep_dir),
-        "dearpygui",
-    ]
-    result = subprocess.run(pip_args, capture_output=True, text=True, env=_subprocess_env())
-    if result.returncode != 0:
         raise ImportError(
-            "Failed to install Dear PyGui. Install pip, or run in CLI mode with --cli.\n"
-            + (result.stderr or "")
+            "Dear PyGui is not installed. Re-run and answer y when asked to "
+            "install GUI dependencies, install it manually, or run with --cli."
         )
-
-    if str(dep_dir) not in sys.path:
-        sys.path.insert(0, str(dep_dir))
-    import dearpygui.dearpygui as dpg
-    return dpg
 
 
 # Palette derived from arcana_icon_1024.png — pinks / purples / indigos.

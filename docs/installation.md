@@ -29,7 +29,7 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 
 The script installs from the public Arcana GitHub repository by default. When run from a cloned Arcana checkout, it detects the checkout's git origin automatically.
 
-When run from the public curl command, the summoning rite is release-first:
+When run from the public curl command, the summoning rite is release-first except on Linux GUI sessions, where it uses the Python source launcher by default to avoid frozen OpenGL/GLX library drift:
 1. Detects the current OS and architecture.
 2. Downloads the matching `grimoire-summon-*` asset from the latest GitHub Release.
 3. Verifies the `.sha256` checksum.
@@ -50,9 +50,9 @@ When run from the public curl command, the summoning rite is release-first:
 
 After summoning, open a new Claude Code or Codex/ChatGPT session and try `/grm-meta-help`. To create your first grimoire from scratch, run `/grm-domain-create-grimoire`.
 
-Dear PyGui is bundled into release binaries. In source fallback mode, it is installed into a Grimoire-managed Python dependency cache, not into the Arcana repository. On Arch-based systems, the source fallback may install `python-pip` with `pacman` first if the system Python does not include pip.
+Dear PyGui is bundled into release binaries. In source mode, Dear PyGui is imported from the system Python or from a Grimoire-managed Python dependency cache, not from the Arcana repository. If pip or Dear PyGui is missing, the bootstrap asks before installing anything; only an explicit `y` proceeds. On Arch-based systems, accepting the pip prompt may install `python-pip` with `pacman` first if the system Python does not include pip.
 
-GUI startup is probed before the source launcher opens a full Dear PyGui window. If OpenGL/GLX is unavailable, the rite falls back to the CLI. When the one-line installer is run through `curl | bash`, CLI prompts read from the controlling terminal instead of the curl pipe.
+GUI startup is probed before the source launcher opens a full Dear PyGui window. If OpenGL/GLX is unavailable or GUI dependencies are missing and not installed, the rite falls back to the CLI. When the one-line installer is run through `curl | bash`, prompts read from the controlling terminal instead of the curl pipe.
 
 ---
 
