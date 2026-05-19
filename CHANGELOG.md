@@ -151,7 +151,7 @@ The launcher GUI uses Dear PyGui with:
 ### Formulae (templates)
 
 - `formulae/README.md` — one-line description per template; orients new contributors to which template is expanded by which skill.
-- `formulae/grimoire/` — full grimoire scaffold (root hub, README, manifest, `sources/`, `inbox/`, `chapters/`, `log.md`, `.obsidian/graph.json`).
+- `formulae/grimoire/` — full grimoire scaffold (root hub, README, manifest, `sources/`, `inbox/`, `chapters/`, `log.md`, `.obsidian/graph.json`). The scaffolded `README.md` ships with an `## Installation` section keyed off a `{{GRIMOIRE_REPO_URL}}` placeholder, so any downstream consumer who finds a grimoire on a git host (private GitLab, public GitHub, internal Gitea) is routed through the Arcana summoning rite first instead of cloning the grimoire standalone. The `/grm-domain-create-grimoire` flow captures `repo_url` during Step 1 (Discovery) and substitutes it during Step 4.
 - `formulae/chapter_hub.formula.md` — chapter hub template with frontmatter scaffolding.
 - `formulae/page.formula.md` — knowledge page template.
 - `formulae/source.formula.md` — source artifact template.
@@ -172,7 +172,7 @@ The launcher GUI uses Dear PyGui with:
 
 - `arcana.md` — root hub, lists every doc / invocation / formula / rite.
 - `README.md` — project overview, what a grimoire is, install command, layout diagram. Links to canonical docs rather than re-explaining hub convention or storage layers.
-- `docs/installation.md` — summoning rite walkthrough, manual install, 5-minute smoke test, troubleshooting.
+- `docs/installation.md` — summoning rite walkthrough, manual install, 5-minute smoke test, troubleshooting. Includes a "When a grimoire is discovered first" subsection covering the reverse case (user finds a grimoire repo before Arcana).
 - `docs/agent_configuration.md` — per-agent setup (Claude Code, Codex/ChatGPT, GitHub Copilot, Cursor).
 - `docs/operating_model.md` — canonical home for storage layers, hub convention, and routing rules. Other docs link here.
 - `docs/page_schema.md` — canonical frontmatter specification, including the authority models table.

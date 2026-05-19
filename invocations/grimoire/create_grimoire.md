@@ -42,7 +42,7 @@ Have a conversation, not a form. Ask one question at a time and probe for specif
 - Who are the primary users — just you, a team, public?
 - What 2–4 letter slug should prefix this grimoire's skills? Must match `^[a-z][a-z0-9]*$` (e.g. `cook` for a cooking grimoire yields `/cook-recipe-add`; `hr` for an HR grimoire yields `/hr-onboarding-checklist`).
 
-Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `token` (all-caps), `skill_namespace`, `purpose` (one sentence), `purpose_detailed`, `owner` (whoever maintains it — a person, team, or "personal"), `creation_date` (today as `YYYY-MM-DD`).
+Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `token` (all-caps), `skill_namespace`, `purpose` (one sentence), `purpose_detailed`, `owner` (whoever maintains it — a person, team, or "personal"), `creation_date` (today as `YYYY-MM-DD`), `repo_url` (the canonical git URL you intend to push this grimoire to — public GitHub, private GitLab, internal Gitea, etc. If you don't know it yet, accept the placeholder `<set this when you push to a git host>` and fix it later).
 
 ---
 
@@ -112,6 +112,7 @@ Do not re-paste the long form into the manifest, the root hub, the log, or any s
 
 **`README.md`** (the canonical home for the long-form description):
 - `{{GRIMOIRE_NAME}}`, `{{GRIMOIRE_PURPOSE_DETAILED}}`, `{{GRIMOIRE_DIRECTORY}}`, `{{SKILL_NAMESPACE}}`
+- `{{GRIMOIRE_REPO_URL}}` — the git URL captured in Step 1; used in the README's `## Installation` section so downstream consumers who discover this grimoire on a git host know to summon Arcana first rather than clone the grimoire directly. Leave the literal placeholder `<set this when you push to a git host>` if unknown.
 - `{{EXAMPLE_CHAPTER}}` — pick one chapter from the user's selection
 - `{{CHAPTER_LIST}}` — bulleted `**name** - description` per chapter
 - `{{CHAPTER_TREE}}` — ASCII tree of `chapters/<name>/<name>.md`

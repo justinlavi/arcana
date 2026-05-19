@@ -4,7 +4,54 @@ This README is the canonical home for the long-form description. Other surfaces 
 
 {{GRIMOIRE_PURPOSE_DETAILED}}
 
-The framework that powers this grimoire (Arcana) lives at `~/grimoires/arcana/`. See [Arcana README](GRIMOIRE_ARCANA/README.md) for the full architecture.
+## Installation
+
+This grimoire is part of the **Grimoire** ecosystem powered by **Arcana**, the framework that handles agent integration, the validator suite, the canonical `/grm-*` skill set, and library registration. The recommended way to install both is the Arcana summoning rite — one command, end-to-end.
+
+### Recommended — Arcana summoning rite
+
+Run the public summoning rite, passing this grimoire's repo URL as `--scope`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash -s -- --scope {{GRIMOIRE_REPO_URL}}
+```
+
+Works whether or not you already have Arcana installed. The rite:
+
+1. Installs (or pulls) Arcana into `~/grimoires/arcana/`
+2. Injects the Grimoire routing block into your agent instruction file (Claude Code's `~/.claude/CLAUDE.md`, Codex's `~/.codex/AGENTS.md`)
+3. Registers the canonical `/grm-*` skills
+4. Discovers this grimoire at the URL you passed
+5. Offers it in the interactive menu, clones it into `~/grimoires/{{GRIMOIRE_DIRECTORY}}`
+6. Updates `~/grimoires/library.json`
+7. Registers this grimoire's `/{{SKILL_NAMESPACE}}-*` skills
+
+For private GitLab / GitHub hosts, you may need to configure git credentials (HTTPS helper or SSH keys) and/or export an API token so namespace discovery can authenticate:
+
+```bash
+export GITLAB_TOKEN=<your token>     # GitLab
+export GITHUB_TOKEN=<your token>     # GitHub
+```
+
+Open a new agent session and try `/grm-meta-help` to confirm the new skills are available. Full reference for scope shapes, auth, and troubleshooting: [github.com/justinlavi/arcana — docs/installation.md](https://github.com/justinlavi/arcana/blob/main/docs/installation.md).
+
+### Manual install
+
+If you'd rather drive each step yourself — or the summoning rite can't reach your host — Arcana and this grimoire can be installed by hand. The path layout is the one thing that matters: Arcana goes at `~/grimoires/arcana/` and this grimoire goes at `~/grimoires/{{GRIMOIRE_DIRECTORY}}/`, because the other rites resolve each other through those locations.
+
+```bash
+# 1. Clone Arcana
+git clone https://github.com/justinlavi/arcana.git ~/grimoires/arcana
+
+# 2. Clone this grimoire
+git clone {{GRIMOIRE_REPO_URL}} ~/grimoires/{{GRIMOIRE_DIRECTORY}}
+
+# 3. Register the library entry and skills
+python3 ~/grimoires/arcana/rites/sync_library.py --apply
+python3 ~/grimoires/arcana/rites/register_skills.py
+```
+
+Add the canonical Grimoire instruction block to your agent file using `/grm-meta-update-agent-block` once skills are registered, or paste it manually from [`rites/templates/grimoire_block.md`](https://github.com/justinlavi/arcana/blob/main/rites/templates/grimoire_block.md).
 
 ## Layout
 

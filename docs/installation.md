@@ -123,6 +123,25 @@ export GITLAB_TOKEN
 
 **Fallback**: If the user skips the prompt or the API is unreachable, the script falls back to the static `library.json`.
 
+### When a grimoire is discovered first
+
+Most users will find Arcana first and use the summoning rite's interactive discovery to clone grimoires. But it's also common for someone to be pointed at a *grimoire repo* (on a private GitLab, a public GitHub repo, etc.) without ever having heard of Arcana. The summoning rite is the recommended entry point in that case too — one command pulls Arcana, registers it, and clones the grimoire into the right place. Users who'd rather install by hand can do that as well; the only thing that matters is the path layout — Arcana at `~/grimoires/arcana/` and each grimoire at `~/grimoires/<grimoire-directory>/` — because the other rites resolve each other through those locations.
+
+Every grimoire scaffolded from `formulae/grimoire/README.md` therefore carries its own `## Installation` section that:
+
+1. Frames the grimoire as part of the Arcana-powered ecosystem (content + engine), not standalone software
+2. Recommends a single command — the summoning rite with the grimoire's own URL as `--scope`:
+
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash -s -- --scope <grimoire-url>
+   ```
+
+   This works whether or not Arcana is already installed: the rite pulls / installs Arcana, then runs discovery against the supplied URL, clones the grimoire into `~/grimoires/<grimoire-directory>`, and registers everything end-to-end.
+
+3. Documents a manual install path for readers who prefer step-by-step (`git clone` Arcana + the grimoire into `~/grimoires/`, then `sync_library.py --apply` + `register_skills.py`), with the path layout called out as the one thing the other rites depend on.
+
+The `{{GRIMOIRE_REPO_URL}}` placeholder in the formula is the hook that `/grm-domain-create-grimoire` fills in during Step 1 (Discovery), so every new grimoire ships with this section pre-filled with its own canonical clone URL.
+
 ---
 
 ## Manual Setup
