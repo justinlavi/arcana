@@ -76,7 +76,7 @@ def determine_smart_rites():
         if not path.exists():
             continue
 
-        if re.match(r"^(docs|invocations|formulae|rites|formulae/grimoire|sources|chapters)/", f):
+        if re.match(r"^(docs|invocations|formulae|rites|formulae/grimoire)/", f):
             needed.add("validate_structure.py")
 
         if f.endswith((".md", ".py")):

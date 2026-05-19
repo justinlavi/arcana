@@ -122,8 +122,7 @@ Open a new agent session and run `/grm-meta-help` to see every available command
 │   ├── rites/                    # Python automation scripts
 │   ├── skills/                   # Slash-command source files
 │   ├── docs/                     # Framework documentation (page_schema.md is canonical)
-│   ├── sources/                      # Reserved (Arcana itself rarely uses sources/)
-│   └── log.md                    # Append-only activity log
+│   └── resources/                # Branding assets
 │
 ├── cooking-grimoire/             # A personal grimoire
 │   ├── cooking-grimoire.md       # Root hub

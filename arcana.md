@@ -17,7 +17,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 
 - Routing: hub-per-folder, open-ended depth. Full rules in [docs/operating_model.md](docs/operating_model.md).
 - Frontmatter: type / authority / sources / last_verified. Spec in [docs/page_schema.md](docs/page_schema.md).
-- Layers in Arcana: `docs/`, `invocations/`, `formulae/` carry chapter-equivalent content; `sources/` is reserved (Arcana itself rarely uses it); `log.md` records activity.
+- Arcana is the engine layer: `docs/`, `invocations/`, `formulae`, `rites`, `skills`, and `resources`. Domain grimoire layers (`chapters/`, `sources/`, `inbox/`, `log.md`) are scaffolded by [formulae/grimoire/](formulae/grimoire/), not kept at Arcana root.
 
 ## Documentation
 

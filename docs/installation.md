@@ -4,7 +4,7 @@ title: "Installation"
 aliases: ["install", "summon", "setup"]
 tags: [type/reference, arcana/docs]
 authority: grimoire
-last_verified: 2026-05-13
+last_verified: 2026-05-19
 ---
 
 # Arcana Installation
@@ -34,7 +34,7 @@ When run from the public curl command, the summoning rite is release-first:
 2. Downloads the matching `grimoire-summon-*` asset from the latest GitHub Release.
 3. Verifies the `.sha256` checksum.
 4. Runs the binary.
-5. Falls back to the Python source bootstrap if the release asset is unavailable.
+5. Falls back to the Python source bootstrap if the release asset is unavailable or exits abnormally.
 
 **What the summoning rite always does:**
 1. Checks runtime dependencies (`git`; Python 3 and Dear PyGui only if source fallback is needed)
@@ -51,6 +51,8 @@ When run from the public curl command, the summoning rite is release-first:
 After summoning, open a new Claude Code or Codex/ChatGPT session and try `/grm-meta-help`. To create your first grimoire from scratch, run `/grm-domain-create-grimoire`.
 
 Dear PyGui is bundled into release binaries. In source fallback mode, it is installed into a Grimoire-managed Python dependency cache, not into the Arcana repository. On Arch-based systems, the source fallback may install `python-pip` with `pacman` first if the system Python does not include pip.
+
+GUI startup is probed before the source launcher opens a full Dear PyGui window. If OpenGL/GLX is unavailable, the rite falls back to the CLI. When the one-line installer is run through `curl | bash`, CLI prompts read from the controlling terminal instead of the curl pipe.
 
 ---
 
@@ -98,7 +100,7 @@ If no scope is provided, the rite prompts interactively:
     https://gitlab.company.com/my-team
     https://gitlab.com/company/grimoires
 
-  Grimoire repository: _
+  Grimoire location: _
 ```
 
 **Supported hosts**:
@@ -189,6 +191,12 @@ The agent should follow hubs depth-first (root hub → chapter hub → … → l
 - Ensure network access to your git host (VPN if required)
 - Ensure git credentials are configured for the host
 - Try `git ls-remote <url>` to test access
+
+**GUI fails on Linux**
+- Run the installer with `--cli` to force terminal mode:
+  `curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash -s -- --cli`
+- On Wayland systems, ensure XWayland is installed and running.
+- On Arch-based systems, install Mesa and XWayland if needed: `sudo pacman -S --needed mesa xorg-xwayland`
 
 **Skills not appearing after install**
 - Run `/grm-skills-register` to re-register all skills

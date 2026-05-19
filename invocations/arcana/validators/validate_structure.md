@@ -43,9 +43,10 @@ python3 rites/validate_structure.py
 **Expected**: All required directories and files present.
 
 **Success indicators**:
-- ✅ All required directories found (docs, invocations/*, formulae, rites, resources, formulae/grimoire)
+- ✅ All required directories found (docs, invocations/*, formulae, rites, resources, skills, formulae/grimoire)
 - ✅ All required files exist (the root hub, README.md, CHANGELOG.md, docs/*.md)
 - ✅ All invocation directories have a hub file (invocations/grimoire/, invocations/arcana/, invocations/meta/)
+- ✅ Domain grimoire layers (`chapters/`, `sources/`, `inbox/`, `log.md`) exist in `formulae/grimoire/`, not at Arcana root
 
 ### Step 3: Handle Errors
 

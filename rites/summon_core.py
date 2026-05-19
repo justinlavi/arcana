@@ -699,6 +699,30 @@ def finalize_install(installed_keys, library, log):
 # ---------------------------------------------------------------------------
 
 
+def _prompt_text(prompt, default=""):
+    """Read an interactive prompt from stdin or the controlling terminal."""
+    try:
+        if sys.stdin.isatty():
+            return input(prompt)
+        try:
+            with open("/dev/tty", "r", encoding="utf-8") as tty_in, \
+                    open("/dev/tty", "w", encoding="utf-8") as tty_out:
+                tty_out.write(prompt)
+                tty_out.flush()
+                line = tty_in.readline()
+                if line == "":
+                    raise EOFError
+                return line.rstrip("\n")
+        except OSError:
+            if default is not None:
+                return default
+            raise EOFError
+    except EOFError:
+        if default is not None:
+            return default
+        raise
+
+
 def _prompt_cli_mode(scope_preselected):
     if scope_preselected:
         return "clone"
@@ -709,7 +733,7 @@ def _prompt_cli_mode(scope_preselected):
     print("    2) Install Arcana + clone grimoires  (also pulls existing grimoires from a git host)")
     print()
     while True:
-        choice = input("  Choice [1]: ").strip() or "1"
+        choice = _prompt_text("  Choice [1]: ", default="1").strip() or "1"
         if choice == "1":
             return "arcana_only"
         if choice == "2":
@@ -730,7 +754,10 @@ def _cli_select_grimoires(library, log):
     print()
     print("    a) Install ALL grimoires")
     print()
-    selection = input("  Select grimoires to install (e.g. 1 3 or a for all): ").strip()
+    selection = _prompt_text(
+        "  Select grimoires to install (e.g. 1 3 or a for all): ",
+        default="",
+    ).strip()
     if selection.lower() in ("a", "all"):
         return keys
     selected_keys = []
@@ -823,7 +850,7 @@ def run_cli(args):
             print("    https://gitlab.company.com/my-team")
             print("    https://gitlab.com/company/grimoires")
             print()
-            scope_url = input("  Grimoire location: ").strip()
+            scope_url = _prompt_text("  Grimoire location: ", default="").strip()
 
         library = load_static_library()
         if scope_url:

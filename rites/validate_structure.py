@@ -29,7 +29,6 @@ REQUIRED_DIRS = [
     "rites",
     "resources",
     "skills",
-    "sources",
 ]
 
 REQUIRED_FILES = [
@@ -37,7 +36,6 @@ REQUIRED_FILES = [
     "README.md",
     "CHANGELOG.md",
     "VERSION",
-    "log.md",
     "library.json",
     "grimoire.json",
     "rites/summon.sh",
@@ -48,6 +46,13 @@ REQUIRED_FILES = [
     "docs/governance.md",
     "docs/reference.md",
     "docs/page_schema.md",
+]
+
+FORBIDDEN_DOMAIN_LAYER_PATHS = [
+    "chapters",
+    "sources",
+    "inbox",
+    "log.md",
 ]
 
 # Folders whose hub file must exist with the folder-name convention.
@@ -93,6 +98,16 @@ def main():
             errors += 1
         else:
             print(f"  OK       {f}")
+    print()
+
+    print("Checking Arcana root excludes domain grimoire layers...")
+    for rel in FORBIDDEN_DOMAIN_LAYER_PATHS:
+        path = ARCANA_ROOT / rel
+        if path.exists():
+            print(f"  FORBIDDEN root path: {rel} (domain layer belongs in formulae/grimoire/)")
+            errors += 1
+        else:
+            print(f"  OK       no {rel}")
     print()
 
     print("Checking router hub files (folder-name convention)...")

@@ -117,6 +117,19 @@ should_try_binary() {
     [[ ! -f "$SCRIPT_SOURCE" ]]
 }
 
+# Defined before the source-download branch because bash only knows functions
+# after their definitions have executed. Keep this tiny helper independent of
+# Python so the piped bootstrap can decide whether to fetch summon_gui.py.
+should_download_gui_source() {
+    local arg
+    for arg in "$@"; do
+        case "$arg" in
+            --cli|-h|--help) return 1 ;;
+        esac
+    done
+    return 0
+}
+
 try_release_binary() {
     local platform
     local repo_base
@@ -207,7 +220,7 @@ else
     # so skip it for --cli/-h/--help to keep the source bootstrap minimal.
     download_file "$GRIMOIRE_ARCANA_RAW_BASE/rites/summon.py" "$SCRIPT_DIR/summon.py"
     download_file "$GRIMOIRE_ARCANA_RAW_BASE/rites/summon_core.py" "$SCRIPT_DIR/summon_core.py"
-    if should_prepare_gui_deps "$@"; then
+    if should_download_gui_source "$@"; then
         download_file "$GRIMOIRE_ARCANA_RAW_BASE/rites/summon_gui.py" "$SCRIPT_DIR/summon_gui.py" || \
             echo "  [WARN]  summon_gui.py download failed — GUI mode will fall back to CLI"
     fi

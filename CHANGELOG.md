@@ -26,7 +26,7 @@ last_verified: YYYY-MM-DD
 
 The schema is documented canonically in `docs/page_schema.md` and enforced mechanically by `rites/validate_frontmatter.py`.
 
-**Storage layers.** Every grimoire (Arcana included) is organized into:
+**Storage layers.** Every domain grimoire is organized into:
 
 | Layer | Directory | Owner | Purpose |
 |---|---|---|---|
@@ -35,7 +35,7 @@ The schema is documented canonically in `docs/page_schema.md` and enforced mecha
 | Wiki | `chapters/`, root hub | LLM authors and maintains | Synthesized knowledge with required frontmatter. |
 | Schema | `grimoire.json` + injected agent block | User co-evolves | Tells the agent how to operate this grimoire. |
 
-Plus the per-grimoire `log.md` — append-only activity log. Each entry begins `## [YYYY-MM-DD HH:MM] <op> | <title>` so recent activity is `grep`-scannable.
+Plus the per-grimoire `log.md` — append-only activity log. Each entry begins `## [YYYY-MM-DD HH:MM] <op> | <title>` so recent activity is `grep`-scannable. Arcana itself is the framework repository and does not keep root-level grimoire content layers such as `sources/`, `inbox/`, or `log.md`; those live in the domain grimoire scaffold under `formulae/grimoire/`.
 
 **Wikilinks for in-grimoire references.** Hubs use full-path Obsidian-style wikilinks for in-grimoire pointers, e.g. `[[chapters/build_system/cmake|cmake]]`. `rites/validate_links.py` resolves wikilink targets only as repository-root relative paths; alias-based and filename-stem-only wikilinks are invalid. Display labels should name only the target filename, normalized for reading, because the path already carries parent context. `validate_links` warns when a display label repeats folder/project/trip context. Cross-grimoire references stay as path placeholders (`GRIMOIRE_ARCANA/...`).
 
@@ -115,12 +115,14 @@ Adding a new validator is now a ~30-line affair: import from `_lib`, run the che
 `rites/summon.sh` + a three-module Python implementation. Release-first binary bootstrap with Python source fallback. Steps:
 
 1. Detects OS / architecture, downloads the matching `grimoire-summon-*` release asset from GitHub Releases (with checksum verification), and runs the binary. PyInstaller bundles all three Python modules into one executable.
-2. Falls back to the Python source bootstrap if the release asset is unavailable. In source mode, downloads `summon.py` + `summon_core.py` always; downloads `summon_gui.py` only when GUI mode is possible (skipped for `--cli`/`-h`/`--help`).
-3. Discovers grimoires via GitHub or GitLab API (or static `library.json`); presents an interactive menu.
-4. Clones Arcana and selected grimoires under `~/grimoires/`.
-5. Updates `~/grimoires/library.json`.
-6. Injects the canonical marked Grimoire instruction block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`.
-7. Always runs `register_skills.py` — including when zero domain grimoires were selected, so Arcana's own `/grm-*` skills register regardless. Surfaces both stdout and stderr from the registration subprocess so failures are never silent. Spot-checks the agent skill directories afterward and reports counts.
+2. Falls back to the Python source bootstrap if the release asset is unavailable or exits abnormally. In source mode, downloads `summon.py` + `summon_core.py` always; downloads `summon_gui.py` only when GUI mode is possible (skipped for `--cli`/`-h`/`--help`).
+3. Probes Dear PyGui/OpenGL startup in a subprocess before opening the full source GUI. If GLX/GLFW fails, the rite falls back to CLI cleanly.
+4. Reads CLI prompts from the controlling terminal when launched through `curl | bash`, so the curl pipe does not cause `EOFError`.
+5. Discovers grimoires via GitHub or GitLab API (or static `library.json`); presents an interactive menu.
+6. Clones Arcana and selected grimoires under `~/grimoires/`.
+7. Updates `~/grimoires/library.json`.
+8. Injects the canonical marked Grimoire instruction block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`.
+9. Always runs `register_skills.py` — including when zero domain grimoires were selected, so Arcana's own `/grm-*` skills register regardless. Surfaces both stdout and stderr from the registration subprocess so failures are never silent. Spot-checks the agent skill directories afterward and reports counts.
 
 The Python implementation is split for auditability and headless friendliness:
 
@@ -177,7 +179,7 @@ The launcher GUI uses Dear PyGui with:
 - `LICENSE` — MIT.
 - `CONTRIBUTING.md` — contributor onramp covering the four working layers (`docs/`, `formulae/`, `invocations/`, `rites/`, `skills/`), local setup, validator + test suites, code style, and PR expectations.
 - `pyproject.toml` — pure-stdlib runtime; optional groups `[dev]` (pytest), `[gui]` (DearPyGui for the launcher), `[build]` (PyInstaller for release artifacts).
-- `tests/` — pytest suite with fixture grimoires (`good_grimoire`, `bad_frontmatter`, `bad_links`) covering `_lib` directly and every validator end-to-end via subprocess. The full suite runs in under a second.
+- `tests/` — pytest suite with fixture grimoires (`good_grimoire`, `bad_frontmatter`, `bad_links`) covering `_lib`, installer prompt fallback behavior, and every validator end-to-end via subprocess. The full suite runs in under a second.
 - `.github/workflows/summon-release.yml` — builds the release binary; uses `pip install '.[build]'` (single canonical dep declaration).
 
 ### Sub-hub organization

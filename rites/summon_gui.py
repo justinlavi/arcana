@@ -1274,8 +1274,13 @@ def _probe_gui(extra_env=None):
         "if d: sys.path.insert(0, d)\n"
         "import dearpygui.dearpygui as dpg\n"
         "dpg.create_context()\n"
-        "dpg.create_viewport(title='_probe', width=300, height=200)\n"
-        "dpg.destroy_context()\n"
+        "try:\n"
+        "    dpg.create_viewport(title='_probe', width=300, height=200)\n"
+        "    dpg.setup_dearpygui()\n"
+        "    dpg.show_viewport()\n"
+        "    dpg.render_dearpygui_frame()\n"
+        "finally:\n"
+        "    dpg.destroy_context()\n"
     )
     try:
         result = subprocess.run(
@@ -2465,4 +2470,3 @@ def run_gui(args):
             dpg.render_dearpygui_frame()
     finally:
         dpg.destroy_context()
-

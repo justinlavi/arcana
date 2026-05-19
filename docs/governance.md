@@ -4,7 +4,7 @@ title: "Arcana Governance"
 aliases: ["governance", "release-policy"]
 tags: [type/reference, arcana/docs]
 authority: grimoire
-last_verified: 2026-05-12
+last_verified: 2026-05-19
 ---
 
 # Arcana Governance
@@ -60,6 +60,7 @@ Do **not** include in Arcana:
 - Skills specific to one domain (those live under `<grimoire>/skills/`, namespaced by the grimoire's manifest).
 - Custom rites only one grimoire uses.
 - Real-world data: company names, project names, employee data, customer data, credentials.
+- Domain grimoire storage layers at Arcana root (`chapters/`, `sources/`, `inbox/`, `log.md`). Arcana keeps their templates under `formulae/grimoire/`.
 
 **Where these belong**: in the relevant `<grimoire>-grimoire/chapters/` or `<grimoire>-grimoire/skills/`.
 
