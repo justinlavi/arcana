@@ -1,3 +1,4 @@
+<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->
 ## Grimoire Knowledge Base
 
 **Library**: `~/grimoires/library.json` — read this file to resolve named grimoire keys and their on-disk paths.
@@ -21,7 +22,7 @@ For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. Th
 
 1. Resolve the active grimoire from the working directory (its key in the library) or project context.
 2. Open `<grimoire>/<grimoire>.md` for routing.
-3. Use Obsidian wikilinks (`[[page]]`) for in-grimoire pointers; the agent resolves via filename or `aliases:` frontmatter.
+3. Use full-path Obsidian wikilinks (`[[chapters/path/to/page|label]]`) for in-grimoire pointers; aliases are metadata only and never link targets. Keep display labels to the target filename, normalized for reading.
 4. Cross-grimoire references use path placeholders (`GRIMOIRE_ARCANA/...`, `<grimoire>/...`).
 5. For Grimoire meta-knowledge: read `GRIMOIRE_ARCANA/arcana.md`.
 6. Do not modify Grimoire files unless a `/grm-*` skill, a domain skill, or explicit instruction asks for it.
@@ -41,3 +42,4 @@ Pages with `authority: external` or `hybrid` cite their `sources:` (paths under 
 | Add a new chapter | `/grm-domain-create-chapter` |
 | Audit naming and structure | `/grm-domain-improve` |
 | List every skill installed | `/grm-meta-help` |
+<!-- END GRIMOIRE KNOWLEDGE BASE -->

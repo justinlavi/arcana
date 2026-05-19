@@ -53,6 +53,7 @@ def _load_grimoire_block():
 
     # Inline fallback — kept in sync with rites/templates/grimoire_block.md.
     return """
+<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->
 ## Grimoire Knowledge Base
 
 **Library**: `~/grimoires/library.json` — read this file to resolve named grimoire keys and their on-disk paths.
@@ -76,9 +77,10 @@ For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. Th
 
 1. Resolve the active grimoire from the working directory or project context.
 2. Open `<grimoire>/<grimoire>.md` for routing.
-3. Use Obsidian wikilinks (`[[page]]`) for in-grimoire pointers; cross-grimoire references use placeholders (`GRIMOIRE_ARCANA/...`).
+3. Use full-path Obsidian wikilinks (`[[chapters/path/to/page|label]]`) for in-grimoire pointers; display labels name only the target filename. Cross-grimoire references use placeholders (`GRIMOIRE_ARCANA/...`).
 4. For Grimoire meta-knowledge: read `GRIMOIRE_ARCANA/arcana.md`.
 5. Do not modify Grimoire files unless a `/grm-*` skill, a domain skill, or explicit instruction asks for it.
+<!-- END GRIMOIRE KNOWLEDGE BASE -->
 """
 
 
@@ -855,4 +857,3 @@ def run_cli(args):
     print()
     skills_ok = finalize_install(installed_keys, library, log)
     _print_cli_summary(mode, installed_keys, skills_ok)
-

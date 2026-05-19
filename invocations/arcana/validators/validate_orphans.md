@@ -11,7 +11,7 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-Detect pages no other page links to — neither via standard markdown links nor via wikilinks (resolved by stem or `aliases:` frontmatter). Orphans are pages the routing surface can't reach; they're either dead content or a missing hub pointer.
+Detect pages no other page links to — neither via standard markdown links nor via full-path wikilinks. Orphans are pages the routing surface can't reach; they're either dead content or a missing hub pointer.
 
 ## Invocation
 

@@ -25,7 +25,7 @@ The framework that powers this grimoire (Arcana) lives at `~/grimoires/arcana/`.
 
 1. Open `{{GRIMOIRE_DIRECTORY}}.md` for routing.
 2. Follow hub pointers — every folder F has a hub at `F/<basename(F)>.md`.
-3. Wikilinks (`[[page]]`) inside this grimoire surface in Obsidian's graph and backlinks panes.
+3. Full-path wikilinks (`[[chapters/path/to/page|label]]`) inside this grimoire surface in Obsidian's graph and backlinks panes.
 4. Each page declares its provenance and authority via YAML frontmatter (see `GRIMOIRE_ARCANA/docs/page_schema.md`).
 
 ## Operations

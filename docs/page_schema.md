@@ -66,8 +66,8 @@ last_verified: 2026-05-12
 | Field | Required for | Notes |
 |---|---|---|
 | `type` | every page | Must be one of the seven values above. |
-| `title` | every page | Free text; what Obsidian shows as the document title and what wikilinks fall back to when no `aliases` match. |
-| `aliases` | optional, encouraged on `hub`, `entity`, `concept` | List of alternate names. Wikilinks matching any alias resolve to this page. Lowercase preferred. |
+| `title` | every page | Free text; what Obsidian shows as the document title. |
+| `aliases` | optional | List of alternate names for search, Dataview, and human metadata. Aliases are metadata only; wikilinks never resolve through aliases. |
 | `tags` | every page | Use `/`-separated namespaces: `chapter/<name>`, `type/<type>`, `domain/<...>`. Drives Dataview and Obsidian tag panes. |
 | `sources` | required for `authority: external` and `authority: hybrid` | Paths or URLs. At least one entry must resolve. Validator checks `sources/...` paths exist on disk. |
 | `authority` | every page except `hub` / `log-entry` | One of the three values above. |
@@ -85,7 +85,7 @@ last_verified: 2026-05-12
 | `reference` | ✓ | ✓ | ✓ | ✓ | ✓ if external/hybrid | ✓ |
 | `log-entry` | ✓ | ✓ | — | — | — | — |
 
-`aliases` is optional everywhere but strongly encouraged on hubs and named entities so wikilinks resolve naturally.
+`aliases` is optional everywhere. Use it for alternate names and discovery, not for routing.
 
 ---
 
@@ -188,7 +188,7 @@ The `/grm-arcana-validate-frontmatter` skill wraps this rite for Arcana itself; 
 
 Three concrete payoffs:
 
-1. **Obsidian wikilinks** — `[[Some Page]]` resolves through `aliases:` so contributors can link by intuitive names instead of memorizing filenames.
+1. **Obsidian wikilinks** — full-path wikilinks such as `[[chapters/build_system/cmake|CMake]]` make routes explicit while still giving contributors readable labels.
 2. **Dataview** — `tags`, `last_verified`, and `authority` are queryable. Hubs can include Dataview blocks that auto-list their children, eliminating hand-maintained route lists.
 3. **Mechanical lint** — provenance (`sources:`), staleness (`last_verified`), orphan detection (cross-referenced with hub link analysis) all become rite-checkable instead of judgment calls.
 

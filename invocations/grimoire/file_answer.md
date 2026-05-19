@@ -52,17 +52,17 @@ Copy `GRIMOIRE_ARCANA/formulae/page.formula.md`. Fill the frontmatter:
 
 - `type:` per Step 2.
 - `title:` clear, query-shaped.
-- `aliases:` alternate names a wikilink might use.
+- `aliases:` alternate names for search and metadata; not wikilink targets.
 - `tags:` `chapter/<chapter>` plus `type/<type>` plus any domain tags.
 - `authority: grimoire` (the wiki itself owns this analysis).
 - `sources:` if the answer drew on source artifacts, list them. Otherwise empty.
 - `last_verified:` today.
 
-Write the body. The conversation is the source material — distill it into clean prose. Cite source artifacts with wikilinks (`[[<source-slug>]]`) when relevant.
+Write the body. The conversation is the source material — distill it into clean prose. Cite source artifacts with full-path wikilinks when relevant.
 
 ### 4. Update affected hubs
 
-Add a wikilink pointer in the relevant chapter hub's `## Routes` section. If multiple chapters relate, mention secondary hubs in `## Related Chapters`.
+Add a full-path wikilink pointer in the relevant chapter hub's `## Routes` section. If multiple chapters relate, mention secondary hubs in `## Related Chapters`.
 
 ### 5. Append to log.md
 

@@ -61,7 +61,7 @@ For every page with `last_verified` older than 90 days (or older than the user's
 Scan all chapter markdown for entity-shaped tokens (capitalized phrases, code identifiers, recurring proper nouns). For any token that:
 
 - appears in 3+ pages, AND
-- has no page named after it (or aliased to it),
+- has no canonical page path representing it,
 
 propose creating a page. List frequency and source pages. The user picks which to promote.
 
@@ -80,7 +80,7 @@ Flag contradictions with file:line citations. Resolution is the user's call — 
 For each pair of pages in the same chapter or sharing a `domain/<...>` tag:
 
 - If they discuss the same entity/concept, ensure each links to the other.
-- Suggest wikilink additions where bidirectional links are missing.
+- Suggest full-path wikilink additions where bidirectional links are missing.
 
 ### Phase 6: Apply fixes
 

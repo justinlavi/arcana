@@ -2,8 +2,7 @@
 """Detect orphan pages in a grimoire.
 
 A page is an orphan when no other markdown file in the grimoire links to it
-via either a relative-path markdown link or a wikilink (resolved by stem or
-`aliases:` frontmatter).
+via either a relative-path markdown link or a full-path wikilink.
 
 Pages that are themselves entry points are excluded from the orphan check:
   * the grimoire root hub (`<grimoire>/<grimoire>.md`)
@@ -26,9 +25,10 @@ from _lib import (
     LINK_RE,
     WIKILINK_RE,
     add_grimoire_arg,
-    parse_frontmatter_aliases,
     resolve_grimoire_arg,
+    resolve_wikilink_path,
     strip_code_blocks,
+    wikilink_target_body,
 )
 
 EXEMPT_FILENAMES = {"README.md", "CHANGELOG.md", "CONTRIBUTING.md", "log.md", "VERSION", "SKILL.md"}
@@ -49,23 +49,7 @@ def collect_pages(root):
     return pages
 
 
-def build_alias_map(pages, root):
-    """alias-or-stem (lowercase) → page path"""
-    m = {}
-    for p in pages:
-        try:
-            content = p.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-        m.setdefault(p.stem.lower(), p)
-        for alias in parse_frontmatter_aliases(content):
-            key = alias.strip().lower()
-            if key:
-                m.setdefault(key, p)
-    return m
-
-
-def collect_inbound(pages, root, alias_map):
+def collect_inbound(pages, root):
     """Return set of pages with at least one inbound link or wikilink."""
     inbound = set()
     for src in pages:
@@ -93,9 +77,10 @@ def collect_inbound(pages, root, alias_map):
                 inbound.add(target)
 
         for m in WIKILINK_RE.finditer(scanable):
-            body = m.group(1).split("|", 1)[0].split("#", 1)[0].strip().lower()
-            if body in alias_map:
-                inbound.add(alias_map[body].resolve())
+            body_raw = wikilink_target_body(m.group(1))
+            path_target = resolve_wikilink_path(body_raw, root)
+            if path_target is not None:
+                inbound.add(path_target.resolve())
     return inbound
 
 
@@ -112,8 +97,7 @@ def main():
     print()
 
     pages = collect_pages(root)
-    alias_map = build_alias_map(pages, root)
-    inbound = collect_inbound(pages, root, alias_map)
+    inbound = collect_inbound(pages, root)
 
     grimoire_name = root.name
     orphans = []

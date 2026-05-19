@@ -41,7 +41,7 @@ A hub may route to **sub-hubs**, to **leaf documents**, or to both. There is no 
 
 Hub-level tags (`hub/root`, `hub/chapter`, `hub/sub`) distinguish levels for the Obsidian graph view but don't constrain the routing model. `hub/chapter` applies to a top-level chapter (immediately under `chapters/`); `hub/sub` applies to any deeper hub regardless of how many levels down.
 
-Folder-named hubs make Obsidian's graph view legible (every node has a unique, meaningful label) and make wikilinks (`[[chapter_name]]`) intuitive.
+Folder-named hubs make Obsidian's graph view legible (every node has a unique, meaningful label) and make full-path wikilinks intuitive, e.g. `[[chapters/build_system/build_system|build system]]`.
 
 ## What Grimoire Is
 
@@ -59,7 +59,7 @@ Folder-named hubs make Obsidian's graph view legible (every node has a unique, m
 4) Repeat step 3 at each hub. Read sub-hubs depth-first; do not branch unless the current hub explicitly directs you to a related sibling.
 5) When you reach a leaf, read it. Read one related leaf only when the hub or the leaf's `Related` section calls for it.
 6) For project / scope-specific overrides, the grimoire root or a chapter hub typically routes through a `projects/projects.md` (or `clients/`, `teams/`) sub-hub. Follow it and then the specific scope hub.
-7) When adding knowledge, update the relevant hub with an explicit pointer (wikilinks preferred); no exploratory wording. If the new content needs its own grouping, add a sub-folder with its own hub — the convention recurses.
+7) When adding knowledge, update the relevant hub with an explicit pointer (full-path wikilinks preferred); no exploratory wording. If the new content needs its own grouping, add a sub-folder with its own hub — the convention recurses.
 
 ## Scope Rules
 - **Shared chapters** store rules that apply across all scopes the grimoire covers (e.g. company-wide policies in an HR grimoire, kitchen-wide techniques in a cooking grimoire).

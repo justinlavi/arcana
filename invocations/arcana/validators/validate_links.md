@@ -39,10 +39,12 @@ python3 rites/validate_links.py
 ### Step 2: Review Broken Links
 
 The rite scans all markdown files for links and verifies targets exist.
+It also warns when a wikilink's display label repeats parent-folder context instead of matching the target filename.
 
 **Link types validated**:
 - Relative file references: `[text](../file.md)`
 - Relative directory references: `[text](folder/)`
+- Full-path wikilinks: `[[chapters/path/to/page|label]]`
 - Intra-document anchors: `[text](#section)` (partial validation)
 
 **Link types skipped**:
@@ -130,9 +132,23 @@ When fixing links, check for related cross-references:
 [chapter](cooking-grimoire/chapters/breads/sourdough.md)
 ```
 
+### Use Full-Path Wikilinks For In-Grimoire Routing
+
+Wikilink targets must be repository-root relative paths. The `.md` suffix is optional in wikilinks for Obsidian compatibility.
+When using display text, use only the target filename stem, normalized for reading. The path already supplies parent context.
+
+```markdown
+✅ [[chapters/breads/sourdough|sourdough]]
+✅ [[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|overview]]
+✅ [[README]]
+❌ [[sourdough]]
+❌ [[bread alias]]
+❌ [[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|fukuoka kyoto tokyo trip overview]]
+```
+
 ### Include File Extensions
 
-**Always use .md extension**:
+**Always use .md extension for markdown links**:
 ```markdown
 ✅ [file](path/file.md)
 ❌ [file](path/file)

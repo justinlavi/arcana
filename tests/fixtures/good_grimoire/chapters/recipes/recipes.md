@@ -9,4 +9,4 @@ tags: [grimoire/good, type/hub, hub/chapter]
 
 Sample chapter for the test fixture.
 
-- [[sourdough]] — example leaf page
+- [[chapters/recipes/sourdough|sourdough]] — example leaf page

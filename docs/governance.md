@@ -87,9 +87,9 @@ The current version lives in three places:
 ### Patch / Minor
 
 1. Make changes; run `/grm-arcana-validate-all` (or `python3 rites/validate.py`).
-2. Add a `CHANGELOG.md` entry under `[Unreleased]`.
+2. Update `CHANGELOG.md`. Before the first tag for a version, edit that version's entry as the current state. After a version is tagged, collect future changes under `[Unreleased]` until the next release entry is cut.
 3. Commit (`fix:` for patch, `feat:` for minor).
-4. Tag and push.
+4. Tag and push when cutting the release.
 
 ### Major (Breaking)
 

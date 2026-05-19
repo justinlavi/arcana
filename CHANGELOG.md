@@ -2,7 +2,7 @@
 
 ## [1.0.0] — 2026-05-15
 
-First release of Arcana.
+Current Arcana 1.0.0 state.
 
 Arcana is the engine for **grimoires** — structured, AI-navigable knowledge bases the LLM keeps current. A grimoire combines deterministic hub-based routing, a layered storage model, mechanical validators, and slash-command skills. Arcana ships universally; each domain grimoire contributes its own content, sources, and skills.
 
@@ -37,7 +37,7 @@ The schema is documented canonically in `docs/page_schema.md` and enforced mecha
 
 Plus the per-grimoire `log.md` — append-only activity log. Each entry begins `## [YYYY-MM-DD HH:MM] <op> | <title>` so recent activity is `grep`-scannable.
 
-**Wikilinks for in-grimoire references.** Hubs use Obsidian-style `[[wikilinks]]` for in-grimoire pointers. `rites/validate_links.py` resolves them against filename stems and `aliases:` frontmatter. Cross-grimoire references stay as path placeholders (`GRIMOIRE_ARCANA/...`).
+**Wikilinks for in-grimoire references.** Hubs use full-path Obsidian-style wikilinks for in-grimoire pointers, e.g. `[[chapters/build_system/cmake|cmake]]`. `rites/validate_links.py` resolves wikilink targets only as repository-root relative paths; alias-based and filename-stem-only wikilinks are invalid. Display labels should name only the target filename, normalized for reading, because the path already carries parent context. `validate_links` warns when a display label repeats folder/project/trip context. Cross-grimoire references stay as path placeholders (`GRIMOIRE_ARCANA/...`).
 
 ### Identity and library
 
@@ -70,8 +70,8 @@ Mechanical rites, each independently invocable and orchestrated by `rites/valida
 - `validate_naming` — snake_case for paths, kebab-case for skills.
 - `validate_format` — invocation/formula schema; hubs are thin routers (<200 lines).
 - `validate_frontmatter` — page schema compliance (type, required fields per type, aliases/tags shape, `last_verified` parses).
-- `validate_links` — markdown links resolve; wikilinks resolve via filename or `aliases:` frontmatter.
-- `validate_orphans` — every page is reachable from at least one other page.
+- `validate_links` — markdown links resolve; wikilinks resolve only as repository-root relative paths; verbose wikilink display labels warn.
+- `validate_orphans` — every page is reachable from at least one other page, including full-path wikilink inbound references.
 - `validate_provenance` — pages with `authority: external` or `hybrid` cite real artifacts under `sources/`; never cite `inbox/`.
 - `validate_security` — credential patterns and unsafe Python constructs.
 - `validate_semantics` — hyphenated path examples in markdown prose (Arcana convention is snake_case for paths).
@@ -84,7 +84,7 @@ The full suite runs sequentially or in parallel; smart mode picks only validator
 Every validator and library utility imports from a single shared module:
 
 - Logger functions (`info`, `ok`, `warn`, `err`) — uniform `[LEVEL]` prefix in 2-space indent.
-- Frontmatter parser (`parse_frontmatter`, `parse_frontmatter_aliases`) — canonical YAML subset handling inline + multi-line lists.
+- Frontmatter parser (`parse_frontmatter`) — canonical YAML subset handling inline + multi-line lists.
 - Markdown helpers (`strip_code_blocks`, `LINK_RE`, `WIKILINK_RE`, `CODE_FENCE_RE`).
 - Manifest / library loaders (`load_manifest`, `load_library`, `resolve_local_path`).
 - Grimoire root resolution (`default_arcana_root`, `add_grimoire_arg`, `resolve_grimoire_arg`).
@@ -102,6 +102,7 @@ Adding a new validator is now a ~30-line affair: import from `_lib`, run the che
 - `when_to_use` frontmatter enables Claude Code auto-invocation by intent; every Arcana skill has it.
 - `disable-model-invocation: true` is set on each individual `arcana-validate-*` skill (10 validators) and on `arcana-clean`. The aggregate `arcana-validate-all` is the single auto-invoke target for "run validation"; the focused validators stay manually callable but no longer compete for picker attention.
 - `rites/sync_docs.py` regenerates `docs/skills.md` (the canonical Arcana skill catalog) from each `SKILL.md`'s frontmatter.
+- `/grm-meta-update-agent-block` refreshes the canonical Grimoire block in user agent instruction files (`CLAUDE.md`, `AGENTS.md`, and user-specified files) while preserving unrelated user instructions. The canonical block carries begin/end markers so future replacements can touch only the Grimoire section.
 
 ### Library management
 
@@ -118,7 +119,7 @@ Adding a new validator is now a ~30-line affair: import from `_lib`, run the che
 3. Discovers grimoires via GitHub or GitLab API (or static `library.json`); presents an interactive menu.
 4. Clones Arcana and selected grimoires under `~/grimoires/`.
 5. Updates `~/grimoires/library.json`.
-6. Injects the canonical Grimoire instruction block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`.
+6. Injects the canonical marked Grimoire instruction block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`.
 7. Always runs `register_skills.py` — including when zero domain grimoires were selected, so Arcana's own `/grm-*` skills register regardless. Surfaces both stdout and stderr from the registration subprocess so failures are never silent. Spot-checks the agent skill directories afterward and reports counts.
 
 The Python implementation is split for auditability and headless friendliness:
@@ -150,11 +151,11 @@ The launcher GUI uses Dear PyGui with:
 
 ### Obsidian integration
 
-- Folder-named hubs render as meaningful graph-view nodes; wikilinks and `aliases:` frontmatter make backlinks first-class.
+- Folder-named hubs render as meaningful graph-view nodes; full-path wikilinks make backlinks deterministic.
 - Hub-level tags (`hub/root`, `hub/chapter`, `hub/sub`) plus `type/*` tags drive Obsidian graph color groups.
 - Each grimoire ships `.obsidian/graph.json` with a vaporwave color palette: hot pink for the grimoire root, cyan for chapter hubs, purple for sub-hubs, lavender for source pages, electric blue for playbooks, pale pink for references.
 - `.gitignore` policy ignores per-user Obsidian state but tracks the shareable `graph.json`, `app.json`, `core-plugins.json`, `community-plugins.json`.
-- `docs/obsidian.md` documents the conventions and explains common gotchas (e.g. alias-resolved wikilinks creating empty stubs on Ctrl+click).
+- `docs/obsidian.md` documents the full-path wikilink convention and editor behavior.
 
 ### Documentation
 
@@ -183,7 +184,7 @@ The launcher GUI uses Dear PyGui with:
 
 Inside `invocations/arcana/`:
 
-- `validators/` holds all 9 mechanical validator docs that have a corresponding `/grm-arcana-validate-*` skill.
+- `validators/` holds all 10 mechanical validator docs that have a corresponding `/grm-arcana-validate-*` skill.
 - `quality/` holds the 2 judgment-based quality docs (`improve_documentation.md`, `validate_rites.md`).
 
 ### Supported agents

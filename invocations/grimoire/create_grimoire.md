@@ -105,9 +105,9 @@ Do not re-paste the long form into the manifest, the root hub, the log, or any s
 **`{{grimoire_directory}}.md`** (root hub):
 - `{{GRIMOIRE_NAME}}`, `{{GRIMOIRE_NAME_LOWER}}`, `{{GRIMOIRE_DIRECTORY}}`, `{{GRIMOIRE_PURPOSE}}` (italic subtitle), `{{GRIMOIRE_DOMAIN}}`, `{{SKILL_NAMESPACE}}`
 - The hub uses `{{GRIMOIRE_PURPOSE}}` as a short subtitle below the title and points readers at `README.md` for the long-form description. Do not add a multi-sentence Purpose section here.
-- `{{CHAPTER_ROUTES}}` — one entry per selected chapter, using wikilinks:
+- `{{CHAPTER_ROUTES}}` — one entry per selected chapter, using full-path wikilinks:
   ```markdown
-  - <chapter description>: [[<chapter_name>]]
+  - <chapter description>: [[chapters/<chapter_name>/<chapter_name>|<chapter label>]]
   ```
 
 **`README.md`** (the canonical home for the long-form description):

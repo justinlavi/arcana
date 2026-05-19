@@ -158,16 +158,6 @@ def parse_frontmatter(text: str) -> dict:
     return fields
 
 
-def parse_frontmatter_aliases(text: str) -> list:
-    """Convenience: return the `aliases:` list from frontmatter, or `[]`.
-
-    Equivalent to `parse_frontmatter(text).get("aliases", [])` but guards
-    against `aliases:` being a non-list (returns `[]` in that case too).
-    """
-    aliases = parse_frontmatter(text).get("aliases", [])
-    return aliases if isinstance(aliases, list) else []
-
-
 # ---------------------------------------------------------------------------
 # Markdown helpers
 # ---------------------------------------------------------------------------
@@ -191,6 +181,50 @@ def strip_code_blocks(content: str) -> str:
             continue
         out.append(re.sub(r"`[^`]*`", lambda m: " " * len(m.group()), line))
     return "\n".join(out)
+
+
+def wikilink_target_body(target: str) -> str:
+    """Return the target portion of a wikilink, without display text or section.
+
+    Examples:
+      ``page|Label`` -> ``page``
+      ``chapters/places/places#Routes|Places`` -> ``chapters/places/places``
+    """
+    return target.split("|", 1)[0].split("#", 1)[0].strip()
+
+
+def resolve_wikilink_path(body: str, root: Path) -> Optional[Path]:
+    """Resolve a full-path wikilink target against a grimoire root.
+
+    Wikilinks are repository-root relative paths, with the ``.md`` suffix
+    optional for Obsidian compatibility. Aliases and global filename-stem
+    matches are intentionally not resolved.
+    """
+    if not body:
+        return None
+
+    candidate = Path(body)
+    if candidate.is_absolute():
+        return None
+
+    if not candidate.suffix:
+        candidate = candidate.with_suffix(".md")
+
+    resolved = root / candidate
+
+    try:
+        resolved = resolved.resolve()
+    except OSError:
+        return None
+
+    try:
+        resolved.relative_to(root)
+    except ValueError:
+        return None
+
+    if resolved.is_file() and resolved.suffix == ".md":
+        return resolved
+    return None
 
 
 # ---------------------------------------------------------------------------

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Validates internal links and wikilinks in markdown files.
 
-Resolves three link forms:
+Resolves two link forms:
 
   1. Standard markdown links: `[text](path/to/file.md)` — relative or root-anchored.
-  2. Wikilinks: `[[page-name]]` — resolved via:
-       a. exact filename stem match (`page-name.md` anywhere in the grimoire), or
-       b. `aliases:` frontmatter match (any page whose `aliases:` contains the
-          wikilink's body resolves to that page).
-     Wikilinks may use `[[page#section]]` or `[[page|display text]]`; the body
-     before `#` or `|` is what's resolved.
+  2. Wikilinks: `[[path/to/page|display text]]` — resolved only as a
+     repository-root relative path, with `.md` optional.
+
+Warns when wikilink display text repeats ancestor context instead of matching
+the target filename stem. The path carries location; the label should name the
+target page.
 
 Usage: python3 rites/validate_links.py
 Exit codes: 0 = success, 1 = broken links found
@@ -23,9 +23,10 @@ from _lib import (
     LINK_RE,
     WIKILINK_RE,
     add_grimoire_arg,
-    parse_frontmatter_aliases,
     resolve_grimoire_arg,
+    resolve_wikilink_path,
     strip_code_blocks,
+    wikilink_target_body,
 )
 
 SKIP_DIRS = {
@@ -45,32 +46,24 @@ PLACEHOLDER_TOKENS = ["{", "<", "invocation_name", "chapter_name", "file_name",
                       "path/to/related", "path/url/system", "Source title"]
 
 
-def build_alias_index(root):
-    """Map wikilink-body → resolved file path. Body matches stem or any alias."""
-    index = {}
-    for path in sorted(root.rglob("*.md")):
-        rel_parts = path.relative_to(root).parts
-        if rel_parts and rel_parts[0] in SKIP_DIRS:
-            continue
-        try:
-            content = path.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-        # Stem indexing — last writer wins, but warn at validation time.
-        index.setdefault(path.stem.lower(), path)
-        for alias in parse_frontmatter_aliases(content):
-            key = alias.strip().lower()
-            if key:
-                index.setdefault(key, path)
-    return index
-
-
-def resolve_wikilink(target, alias_index):
+def resolve_wikilink(target, root):
     """Return resolved Path or None."""
-    body = target.split("|", 1)[0].split("#", 1)[0].strip().lower()
-    if not body:
-        return None
-    return alias_index.get(body)
+    body_raw = wikilink_target_body(target)
+    return resolve_wikilink_path(body_raw, root)
+
+
+def wikilink_display_text(target):
+    """Return display text after `|`, or empty string if no display is present."""
+    if "|" not in target:
+        return ""
+    return target.split("|", 1)[1].strip()
+
+
+def label_key(text):
+    """Normalize a filename stem or display label for comparison."""
+    text = text.replace("_", " ").replace("-", " ")
+    text = re.sub(r"\s+", " ", text)
+    return text.strip().lower()
 
 
 def main():
@@ -81,16 +74,12 @@ def main():
     grimoire_root = resolve_grimoire_arg(args.grimoire)
 
     errors = 0
+    warnings = 0
 
     print()
     print("Validating Internal Links and Wikilinks")
     print("==================================")
     print(f"Grimoire root: {grimoire_root}")
-    print()
-
-    print("Building wikilink alias index...")
-    alias_index = build_alias_index(grimoire_root)
-    print(f"  {len(alias_index)} resolvable wikilink targets indexed.")
     print()
 
     print("Scanning markdown files for broken links and wikilinks...")
@@ -150,20 +139,33 @@ def main():
             target = wl_match.group(1)
             if any(tok in target for tok in PLACEHOLDER_TOKENS):
                 continue
-            resolved = resolve_wikilink(target, alias_index)
+            resolved = resolve_wikilink(target, grimoire_root)
             if resolved is None:
                 print(f"  BROKEN  {rel}:")
-                print(f"          Wikilink: [[{target}]] (no page or alias matches)")
+                print(f"          Wikilink: [[{target}]] (must resolve as a repository path; aliases and filename-only targets are invalid)")
                 errors += 1
+                continue
+
+            display = wikilink_display_text(target)
+            if display and label_key(display) != label_key(resolved.stem):
+                expected = resolved.stem.replace("_", " ").replace("-", " ")
+                print(f"  WARN    {rel}:")
+                print(f"          Wikilink: [[{target}]]")
+                print(f"          Display label should be target filename only: \"{expected}\"")
+                warnings += 1
 
     print()
 
     print("==================================")
     if errors == 0:
         print("Link validation passed (no broken links or wikilinks found)")
+        if warnings:
+            print(f"Link label warnings: {warnings}")
         return 0
     else:
         print(f"Link validation failed with {errors} broken link(s)")
+        if warnings:
+            print(f"Link label warnings: {warnings}")
         return 1
 
 

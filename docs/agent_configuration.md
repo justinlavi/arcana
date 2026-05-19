@@ -28,7 +28,7 @@ Each agent reads a "system instructions" file. Grimoire needs a small block in t
 | ChatGPT (hosted) | "Custom Instructions" field | No (paste manually) |
 | GitHub Copilot | `.github/copilot_instructions.md` | No (add manually; trim to the four key sections if length-limited) |
 
-The block never changes when grimoires are added or removed — those changes happen in the library, not the agent file.
+The block never changes when grimoires are added or removed — those changes happen in the library, not the agent file. When Arcana itself changes the block, use `/grm-meta-update-agent-block` to refresh existing `CLAUDE.md`, `AGENTS.md`, or other agent instruction files while preserving unrelated user instructions.
 
 ---
 
@@ -115,6 +115,9 @@ To register new or updated skills, run `/grm-skills-register`.
 
 **Agent doesn't see new skills**
 - Run `/grm-skills-register` and open a new agent session (Claude Code / Codex caches skill listings).
+
+**Agent has stale Grimoire routing instructions**
+- Run `/grm-meta-update-agent-block`. It compares existing agent instruction files against the canonical block and updates only the Grimoire section.
 
 **Agent can't find a grimoire**
 - Verify the grimoire is in `~/grimoires/library.json` and the `local_path` resolves. Run `/grm-library-sync` to detect and reconcile drift.

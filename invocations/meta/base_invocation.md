@@ -143,13 +143,13 @@ last_verified: YYYY-MM-DD
    - `playbook`: `## Workflow`, `## Inputs`, `## Outputs`, `## Validation`
    - `reference`: `## Vocabulary`, `## Schema`, `## Field Reference`
 6. `## Gotchas` — optional. Common mistakes, edge cases.
-7. `## Related` — wikilinks to sibling/parent pages.
+7. `## Related` — full-path wikilinks to sibling/parent pages.
 
 ### Phase 4 — Route (wire into the hub tree)
 
 - Update the directly-containing chapter hub with a wikilink pointer to the new leaf.
 - Update the root hub only when introducing a top-level chapter.
-- Use Obsidian wikilinks (`[[page]]`) for in-grimoire pointers; the alias index resolves them. Cross-grimoire references stay as path placeholders (`GRIMOIRE_ARCANA/...`).
+- Use full-path Obsidian wikilinks (`[[chapters/path/to/page|label]]`) for in-grimoire pointers. Display labels name only the target filename, normalized for reading. Aliases are metadata only and never link targets. Cross-grimoire references stay as path placeholders (`GRIMOIRE_ARCANA/...`).
 - If the new page introduces a new sub-chapter, scaffold its hub at `<new-folder>/<new-folder>.md` (the hub convention recurses).
 
 ### Phase 5 — Validate before finishing

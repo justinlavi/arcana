@@ -13,7 +13,7 @@ last_verified: 2026-05-12
 
 # Arcana Skill Catalog
 
-All 26 skills shipped by Arcana itself, namespaced `grm-*`.
+All 27 skills shipped by Arcana itself, namespaced `grm-*`.
 Each entry links to the source `SKILL.md` — that file is canonical.
 
 Domain grimoire skills (e.g. `cook-*` for a cooking grimoire,
@@ -75,6 +75,7 @@ invoke `/grm-meta-help`.
 | Skill | Description |
 |---|---|
 | [`/grm-meta-help`](../skills/meta-help/SKILL.md) | Display the Grimoire skill catalog and usage guide |
+| [`/grm-meta-update-agent-block`](../skills/meta-update-agent-block/SKILL.md) | Refresh the Grimoire instruction block in user agent files while preserving non-Grimoire content |
 
 ---
 

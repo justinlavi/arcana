@@ -12,3 +12,4 @@ Fixture grimoire used by the Arcana test suite. Has one chapter and the minimum 
 ## Chapters
 
 - [recipes](chapters/recipes/recipes.md) — sample chapter
+- [[chapters/recipes/sourdough|sourdough]] — full-path wikilink fixture

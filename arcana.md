@@ -57,6 +57,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 **Meta** — see [invocations/meta/meta.md](invocations/meta/meta.md):
 
 - [help.md](invocations/meta/help.md) — `/grm-meta-help`
+- [update_agent_block.md](invocations/meta/update_agent_block.md) — `/grm-meta-update-agent-block`
 - [base_invocation.md](invocations/meta/base_invocation.md)
 
 ## Formulae

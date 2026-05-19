@@ -46,21 +46,6 @@ def test_parse_frontmatter_strips_quotes():
 
 
 # ---------------------------------------------------------------------------
-# parse_frontmatter_aliases
-# ---------------------------------------------------------------------------
-
-
-def test_parse_frontmatter_aliases_returns_list():
-    text = "---\ntype: hub\naliases: [a, b]\n---\n\nbody"
-    assert _lib.parse_frontmatter_aliases(text) == ["a", "b"]
-
-
-def test_parse_frontmatter_aliases_returns_empty_when_missing():
-    text = "---\ntype: hub\n---\n\nbody"
-    assert _lib.parse_frontmatter_aliases(text) == []
-
-
-# ---------------------------------------------------------------------------
 # strip_code_blocks
 # ---------------------------------------------------------------------------
 

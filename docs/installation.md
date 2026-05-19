@@ -130,7 +130,7 @@ If you can't run the summoning rite (no network, restricted environment, etc.):
 1. Clone Arcana to `~/grimoires/arcana/`.
 2. Clone each domain grimoire to `~/grimoires/<grimoire-name>/`.
 3. Create `~/grimoires/library.json` with one entry per grimoire (see [reference.md](reference.md#local-library)).
-4. Add the Grimoire instruction block to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` — the canonical block lives at [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md).
+4. Add the Grimoire instruction block to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` — the canonical block lives at [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md). To refresh an existing block after Arcana changes, use `/grm-meta-update-agent-block`.
 5. Run `python3 ~/grimoires/arcana/rites/register_skills.py` to install skills into agent skill directories.
 
 ---
@@ -198,4 +198,4 @@ The agent should follow hubs depth-first (root hub → chapter hub → … → l
 - The grimoire is missing its `grimoire.json` manifest. Add one per [reference.md](reference.md#grimoire-manifest), then re-register.
 
 **Agent guesses instead of reading files**
-- The Grimoire instruction block isn't injected into `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`. See [agent_configuration.md](agent_configuration.md#agent-instruction-files).
+- The Grimoire instruction block isn't injected into `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`, or it is stale. See [agent_configuration.md](agent_configuration.md#agent-instruction-files), then run `/grm-meta-update-agent-block`.

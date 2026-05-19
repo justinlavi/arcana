@@ -84,7 +84,7 @@ For each affected page (existing or new):
 - **Existing page**: edit in place. Preserve frontmatter; bump `last_verified` to today; add the new source artifact path to `sources:` (deduplicate).
 - **New page**: scaffold from `GRIMOIRE_ARCANA/formulae/page.formula.md` with appropriate `type:` and `authority:`. Source-derived pages get `authority: external` and a `sources:` entry. Wiki-content promotions (Mode B) get `authority: grimoire` (unless they cite a source artifact, in which case `hybrid`).
 
-Wikilink existing pages with `[[name]]` so Obsidian backlinks reflect new connections.
+Wikilink existing pages with full-path targets such as `[[chapters/path/to/page|label]]` so Obsidian backlinks reflect new connections.
 
 #### 4. Update the affected hubs
 
@@ -127,7 +127,7 @@ Fix and re-run until clean. Do not append a second log entry for the fix.
 2. `inbox/` items that get promoted to `chapters/` get **moved** (original removed). Items that become `sources/` sources get **moved**. Items the AI can't classify are **left in place** and surfaced to the user — never auto-deleted.
 3. Every page derived from a source carries `authority: external` (or `hybrid`) and lists the source in `sources:`.
 4. Contradictions surface to the user; the wiki never silently overrides itself.
-5. Wikilinks for in-grimoire pointers; relative paths only when wikilinks can't disambiguate.
+5. Full-path wikilinks for in-grimoire pointers; relative markdown paths only for non-wiki references.
 6. One log entry per ingest operation, regardless of how many files were processed.
 
 ## Report

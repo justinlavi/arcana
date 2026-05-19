@@ -76,10 +76,10 @@ Edit `chapters/{{chapter_name}}/{{chapter_name}}.md` and replace placeholders:
 - `[Chapter Name]` → `{{chapter_title}}`
 - `[purpose]` → `{{purpose}}`
 - `[when to use]` → `{{when_to_use}}`
-- Routes block — one line per child, using wikilinks. A child can be a leaf (a page with `type: concept`/`entity`/`playbook`/etc.) or a sub-hub (a folder with its own `<folder>.md`):
+- Routes block — one line per child, using full-path wikilinks. A child can be a leaf (a page with `type: concept`/`entity`/`playbook`/etc.) or a sub-hub (a folder with its own `<folder>.md`):
 
   ```markdown
-  - <child description> → [[<child_name>]]
+  - <child description> → [[chapters/{{chapter_name}}/<child_name>|<child label>]]
   ```
 
 Verify no placeholder syntax remains:
@@ -105,7 +105,7 @@ Content rules:
 - **Do** point at sources of truth for drift-sensitive values; include "as of <date> — VERIFY BEFORE USE" when snapshotting.
 - **Do** use Grimoire as the canonical home for grimoire-native knowledge (`authority: grimoire`).
 - **Do** cite source artifacts (`sources: ["sources/<slug>.md"]`) when the page synthesizes external material.
-- **Don't** duplicate content from another chapter — wikilink to it.
+- **Don't** duplicate content from another chapter — full-path wikilink to it.
 - **Don't** store implementation values without query instructions.
 
 Stubs with TODOs are acceptable — leaf authoring can happen later.
@@ -117,10 +117,10 @@ Stubs with TODOs are acceptable — leaf authoring can happen later.
 Edit the parent hub — the grimoire root hub for a top-level chapter (`<grimoire>/<grimoire>.md`), or the containing chapter's hub for a sub-chapter (`chapters/<parent>/<parent>.md`). Under the routing section (typically `## Route By Chapter` at root, `## Routes` inside a chapter), add:
 
 ```markdown
-- <chapter description>: [[{{chapter_name}}]]
+- <chapter description>: [[chapters/{{chapter_name}}/{{chapter_name}}|{{chapter_title}}]]
 ```
 
-Keep entries alphabetized or grouped by domain — match the existing convention in the file. Hubs are idempotent: the same wikilink syntax works whether the parent is the grimoire root or a deeply-nested chapter.
+Keep entries alphabetized or grouped by domain — match the existing convention in the file. Hubs are idempotent: wikilinks always target repository-root relative paths, even from deeply-nested chapters.
 
 ---
 

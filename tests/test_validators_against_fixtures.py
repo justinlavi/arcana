@@ -21,6 +21,7 @@ FIXTURES = Path(__file__).parent / "fixtures"
 GOOD = FIXTURES / "good_grimoire"
 BAD_FRONT = FIXTURES / "bad_frontmatter"
 BAD_LINKS = FIXTURES / "bad_links"
+WARN_LABELS = FIXTURES / "warn_labels"
 
 
 def _run(script: str, grimoire: Path) -> subprocess.CompletedProcess:
@@ -85,6 +86,16 @@ def test_bad_links_is_caught():
     # Both a markdown link and a wikilink should be reported broken.
     assert "does_not_exist.md" in out
     assert "no-such-wikilink" in out
+
+
+def test_verbose_wikilink_label_warns_without_failing():
+    result = _run("validate_links.py", WARN_LABELS)
+    assert result.returncode == 0, (
+        "Verbose wikilink labels should warn but not fail validation\n"
+        f"--- stdout ---\n{result.stdout}"
+    )
+    assert "WARN" in result.stdout
+    assert "Display label should be target filename only" in result.stdout
 
 
 # ---------------------------------------------------------------------------

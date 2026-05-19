@@ -72,15 +72,15 @@ You can combine queries: `tag:#hub/chapter -path:chapters/projects/` colors only
   - Search filter: e.g. `path:chapters/build_system/` to focus on one chapter.
 - **Local graph** (`Ctrl/Cmd+P` → *Open local graph*) — graph centered on the current page; great for chapter exploration.
 
-## Alias-resolved wikilinks: a Ctrl+click gotcha
+## Full-path wikilinks
 
-When a wikilink uses an alias-resolved target — e.g. `[[cf_sw_overview|overview]]` resolves to `chapters/projects/cf_sw/overview.md` via that page's `aliases:` frontmatter — Obsidian *displays* and *renders* the link correctly, but **Ctrl/Cmd+click navigation may sometimes create a new empty stub file at the alias name** instead of opening the aliased target. This depends on Obsidian's settings and version.
+Arcana supports only repository-root relative wikilinks. Write `[[chapters/projects/cf_sw/overview|overview]]`, not `[[cf_sw_overview|overview]]` or `[[overview]]`. The `.md` suffix is optional in wikilinks for Obsidian compatibility.
 
-If you find a 1–2 line stub like `# cf_sw_overview` appearing in a chapter folder, it's almost certainly this gotcha. Safe to delete — the real content is at the actual filename, and the alias still resolves for AI agents and the validator.
+If a wikilink includes display text after `|`, keep it to the target filename only, normalized for reading. The path already carries chapter, project, trip, and parent-folder context, so `[[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|overview]]` is preferred over `[[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|fukuoka kyoto tokyo trip overview]]`.
 
-To avoid it: prefer the file picker (`Ctrl/Cmd+O`) when opening alias-resolved pages, or check that *Settings → Files & Links → Use Wikilinks → On* and *Detect all file extensions → Off* are configured. If stubs keep appearing, switch the wikilink to its full path form (`[[chapters/projects/cf_sw/overview|overview]]`) for that specific link.
+Aliases remain useful as page metadata, but they are never link targets. This keeps routing deterministic, prevents global alias collisions, and avoids Ctrl/Cmd-click creating empty alias-named stubs.
 
-`/grm-domain-lint` and `validate_orphans` will catch these stubs (they're orphan pages with no inbound links and no real content), so the quality gates protect you even if you forget.
+`validate_links` rejects alias-based and filename-only wikilinks unless the target is an actual path relative to the grimoire root, such as `[[README]]`. It also warns when display text repeats parent context instead of matching the target filename.
 
 ---
 
