@@ -24,6 +24,7 @@ ARCANA_ROOT = Path(os.environ.get("GRIMOIRE_ARCANA", RITE_DIR.parent))
 
 RITES = [
     "validate_structure.py",
+    "validate_portability.py",
     "validate_naming.py",
     "validate_semantics.py",
     "validate_format.py",
@@ -71,6 +72,9 @@ def determine_smart_rites():
         return list(RITES)
 
     needed = set()
+    # Portability scans path segments themselves — any path change is a candidate.
+    if changed:
+        needed.add("validate_portability.py")
     for f in changed:
         path = ARCANA_ROOT / f
         if not path.exists():

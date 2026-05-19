@@ -37,6 +37,7 @@ invoke `/grm-meta-help`.
 | [`/grm-arcana-validate-links`](../skills/arcana-validate-links/SKILL.md) | Mechanically validate that internal markdown links in Arcana resolve to real files |
 | [`/grm-arcana-validate-naming`](../skills/arcana-validate-naming/SKILL.md) | Mechanically validate Arcana naming conventions (snake_case paths, kebab-case skills) |
 | [`/grm-arcana-validate-orphans`](../skills/arcana-validate-orphans/SKILL.md) | Detect pages no other page links to (orphans) — neither via markdown links nor wikilinks |
+| [`/grm-arcana-validate-portability`](../skills/arcana-validate-portability/SKILL.md) | Detect Windows-reserved characters (< > : " | ? *) and reserved basenames in any grimoire path — prevents catastrophic git checkout failures on Windows clones |
 | [`/grm-arcana-validate-provenance`](../skills/arcana-validate-provenance/SKILL.md) | Mechanically validate that pages with authority external/hybrid cite real sources under sources/ |
 | [`/grm-arcana-validate-security`](../skills/arcana-validate-security/SKILL.md) | Mechanically scan Arcana for credential patterns and unsafe Python constructs |
 | [`/grm-arcana-validate-semantics`](../skills/arcana-validate-semantics/SKILL.md) | Mechanically scan Arcana for hyphenated path examples written in prose (Arcana convention is snake_case) |

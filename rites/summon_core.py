@@ -507,6 +507,38 @@ def check_git(log):
     return True
 
 
+# Top-level files we expect in a healthy working tree. If `.git/` exists but
+# none of these are checked out, the working tree is partial — most commonly
+# because `git checkout` aborted on a path that's invalid on this OS (Windows
+# rejects names containing < > : " | ? *).
+WORKING_TREE_SENTINELS = ("README.md", "grimoire.json", "arcana.md")
+
+
+def working_tree_populated(target_dir):
+    """True if the working tree under target_dir has at least one sentinel file."""
+    return any((target_dir / s).exists() for s in WORKING_TREE_SENTINELS)
+
+
+def attempt_working_tree_recovery(target_dir, name, log):
+    """Re-run checkout from HEAD to recover a partial working tree.
+
+    Returns True if recovery succeeded (sentinel present afterward), False otherwise.
+    """
+    log.warn(f"{name}: .git/ present but working tree is partial — attempting recovery")
+    ok, _ = git("-C", str(target_dir), "checkout", "HEAD", "--", ".", log=log)
+    if ok and working_tree_populated(target_dir):
+        log.ok(f"{name}: working tree recovered via `git checkout HEAD -- .`")
+        return True
+    log.err(
+        f"{name}: working tree still partial after recovery. The repository "
+        f"likely contains a path invalid on this OS (Windows reserves "
+        f"< > : \" | ? *). Inspect with `cd {target_dir} && git status`, "
+        f"then either fix the upstream repo or remove {target_dir} and re-summon "
+        f"once upstream is corrected."
+    )
+    return False
+
+
 def install_arcana(arcana_url, log):
     """Clone or update Arcana."""
     log.info("Installing Arcana...")
@@ -518,14 +550,24 @@ def install_arcana(arcana_url, log):
         else:
             log.warn("Arcana pull failed (local changes?) — skipping update")
             log.ok(f"Arcana exists: {ARCANA_DIR}")
+        if not working_tree_populated(ARCANA_DIR):
+            if not attempt_working_tree_recovery(ARCANA_DIR, "Arcana", log):
+                return False
     elif arcana_url:
         log.info(f"Cloning Arcana from {arcana_url}...")
         ok, _ = git("clone", arcana_url, str(ARCANA_DIR), log=log)
-        if ok:
-            log.ok(f"Arcana cloned to {ARCANA_DIR}")
-        else:
+        if not ok:
             log.err("Failed to clone Arcana — check network and git credentials")
+            if (ARCANA_DIR / ".git").is_dir() and not working_tree_populated(ARCANA_DIR):
+                log.err(
+                    "A partial clone was left at {0}. After resolving the cause, "
+                    "remove that directory and re-run summon.".format(ARCANA_DIR)
+                )
             return False
+        if not working_tree_populated(ARCANA_DIR):
+            if not attempt_working_tree_recovery(ARCANA_DIR, "Arcana", log):
+                return False
+        log.ok(f"Arcana cloned to {ARCANA_DIR}")
     else:
         if ARCANA_DIR.is_dir():
             log.ok(f"Arcana exists: {ARCANA_DIR}")
@@ -563,6 +605,9 @@ def install_grimoire(key, entry, log):
         else:
             log.warn(f"{name} pull failed (local changes?) — skipping update")
             log.ok(f"{name} exists: {target}")
+        if not working_tree_populated(target):
+            if not attempt_working_tree_recovery(target, name, log):
+                return False
         return True
     elif target.is_dir():
         log.warn(f"{name} directory exists but is not a git repo — skipping")
@@ -570,12 +615,19 @@ def install_grimoire(key, entry, log):
     else:
         log.info(f"Cloning {name} from {url}...")
         ok, _ = git("clone", url, str(target), log=log)
-        if ok:
-            log.ok(f"Cloned {name} to {target}")
-            return True
-        else:
+        if not ok:
             log.err(f"Failed to clone {name} — check VPN and git credentials")
+            if (target / ".git").is_dir() and not working_tree_populated(target):
+                log.err(
+                    f"A partial clone was left at {target}. After resolving "
+                    f"the cause, remove that directory and re-run summon."
+                )
             return False
+        if not working_tree_populated(target):
+            if not attempt_working_tree_recovery(target, name, log):
+                return False
+        log.ok(f"Cloned {name} to {target}")
+        return True
 
 
 def update_local_library(installed_keys, library, log):

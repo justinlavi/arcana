@@ -14,6 +14,7 @@ Mechanical, deterministic checks against the Arcana repository. Each validator h
 | Validator | Skill | What it checks |
 |---|---|---|
 | [validate_structure.md](validate_structure.md) | `/grm-arcana-validate-structure` | Required directories and files exist; layout matches conventions |
+| [validate_portability.md](validate_portability.md) | `/grm-arcana-validate-portability` | No Windows-reserved characters or basenames in any path |
 | [validate_naming.md](validate_naming.md) | `/grm-arcana-validate-naming` | snake_case for paths; kebab-case for skills |
 | [validate_format.md](validate_format.md) | `/grm-arcana-validate-format` | Invocation/formula schema compliance |
 | [validate_frontmatter.md](validate_frontmatter.md) | `/grm-arcana-validate-frontmatter` | Every page declares its `type` and the schema's required fields |
