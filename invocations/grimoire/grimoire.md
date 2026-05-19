@@ -18,6 +18,7 @@ Domain operations — invocations that create or improve a domain grimoire (not 
 | [ingest.md](ingest.md) | `/grm-domain-ingest` | File a source artifact under sources/ and update affected wiki pages |
 | [file_answer.md](file_answer.md) | `/grm-domain-file-answer` | Promote a chat answer into a properly-frontmattered wiki page |
 | [lint.md](lint.md) | `/grm-domain-lint` | Health-check the grimoire (orphans, stale, ghost references, contradictions) |
+| [repair_links.md](repair_links.md) | `/grm-domain-repair-links` | Bulk-promote filename-only wikilinks to canonical full-path form |
 | [improve_grimoire.md](improve_grimoire.md) | `/grm-domain-improve` | Comprehensive grimoire improvement (audit, normalize, optimize) |
 | [analyze_semantics.md](analyze_semantics.md) | `/grm-domain-analyze-semantics` | Deep semantic analysis (naming quality, organization, discoverability) |
 | [validate_structure.md](validate_structure.md) | `/grm-domain-validate-structure` | Mechanical structure compliance against Arcana formulae |

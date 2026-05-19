@@ -115,7 +115,7 @@ def render_skills_doc(skills):
         "",
         "# Arcana Skill Catalog",
         "",
-        f"All {len(skills)} skills shipped by Arcana itself, namespaced `grm-*`.",
+        "Skills shipped by Arcana itself, namespaced `grm-*`.",
         "Each entry links to the source `SKILL.md` — that file is canonical.",
         "",
         "Domain grimoire skills (e.g. `cook-*` for a cooking grimoire,",

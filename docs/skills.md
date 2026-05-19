@@ -13,7 +13,7 @@ last_verified: 2026-05-12
 
 # Arcana Skill Catalog
 
-All 27 skills shipped by Arcana itself, namespaced `grm-*`.
+Skills shipped by Arcana itself, namespaced `grm-*`.
 Each entry links to the source `SKILL.md` — that file is canonical.
 
 Domain grimoire skills (e.g. `cook-*` for a cooking grimoire,
@@ -61,6 +61,7 @@ invoke `/grm-meta-help`.
 | [`/grm-domain-improve`](../skills/domain-improve/SKILL.md) | Comprehensive grimoire improvement — audit, normalize, and optimize the active domain grimoire |
 | [`/grm-domain-ingest`](../skills/domain-ingest/SKILL.md) | Bring content into the active grimoire — single source, folder, or inbox/ sweep — classifying each item into sources/ (citations), chapters/ (wiki content), or leaving it for review |
 | [`/grm-domain-lint`](../skills/domain-lint/SKILL.md) | Health-check the active grimoire — orphans, stale claims, ghost references, contradictions, missing cross-refs |
+| [`/grm-domain-repair-links`](../skills/domain-repair-links/SKILL.md) | Promote filename-only wikilinks to canonical full-path form across the active grimoire |
 | [`/grm-domain-validate-boundaries`](../skills/domain-validate-boundaries/SKILL.md) | Validate magical boundary compliance — domain grimoires must not borrow Arcana's system terminology |
 | [`/grm-domain-validate-structure`](../skills/domain-validate-structure/SKILL.md) | Validate grimoire structure compliance against Arcana formulae |
 

@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] — 2026-05-15
+## [1.0.0] — 2026-05-19
 
 Current Arcana 1.0.0 state.
 
@@ -39,6 +39,10 @@ Plus the per-grimoire `log.md` — append-only activity log. Each entry begins `
 
 **Wikilinks for in-grimoire references.** Hubs use full-path Obsidian-style wikilinks for in-grimoire pointers, e.g. `[[chapters/build_system/cmake|cmake]]`. `rites/validate_links.py` resolves wikilink targets only as repository-root relative paths; alias-based and filename-stem-only wikilinks are invalid. Display labels should name only the target filename, normalized for reading, because the path already carries parent context. `validate_links` warns when a display label repeats folder/project/trip context. Cross-grimoire references stay as path placeholders (`GRIMOIRE_ARCANA/...`).
 
+The shared `_lib.resolve_wikilink_path` resolver tries `<body>.md` first, then `<body>` as-given, so multi-dot stems like `[[plugin_ICD.template]]` correctly resolve to `plugin_ICD.template.md`. This supports the deliverable-suffix conventions `<name>.<ACRONYM>.md` (e.g. ICD, IDD, SDK) and `<name>.<role>.md` (e.g. `.template`, `.example`) without misreading the suffix as a file extension.
+
+When a wikilink fails to resolve, the bundled `.obsidian/app.json` (`newLinkFormat: "absolute"`, `useMarkdownLinks: false`) prevents Obsidian's default `"shortest"` behavior from silently spawning a recursive directory tree on Ctrl-click. `rites/repair_links.py` (skill: `/grm-domain-repair-links`) bulk-promotes legacy filename-only wikilinks to canonical full-path form.
+
 ### Identity and library
 
 - Each grimoire declares its identity in a `grimoire.json` manifest at the repository root: `name`, `namespace`, `description`. This is the single source of truth for skill namespacing.
@@ -54,6 +58,7 @@ Plus the per-grimoire `log.md` — append-only activity log. Each entry begins `
 | `/grm-domain-ingest` | Polymorphic. Single file → file under `sources/` and synthesize. Folder or `inbox/` (default) → classify each item into `sources/`, `chapters/`, or leave for review. |
 | `/grm-domain-file-answer` | Promote a substantive chat answer into a properly-frontmattered wiki page. |
 | `/grm-domain-lint` | Health-check: orphans, provenance, frontmatter, stale (`last_verified` >90d), ghost references, contradictions, missing cross-refs. |
+| `/grm-domain-repair-links` | Bulk-promotes filename-only and `[[parent_sibling\|sibling]]` wikilinks to canonical full-path form. Resolution order: sibling → descendant-of-source-dir → descendant-of-source-chapter → globally-unique → display-label fallback for the synthesized-basename anti-pattern. Code-fence and inline-backtick aware, dry-run by default, refuses to guess on ambiguous targets. |
 | `/grm-domain-improve` | Comprehensive grimoire audit and improvement orchestrator. |
 | `/grm-domain-analyze-semantics` | Judgment-based naming and organization audit. |
 | `/grm-domain-validate-structure` | Structural compliance against Arcana formulae and conventions. |
@@ -66,7 +71,7 @@ Every domain skill that operates on the active grimoire (everything except `crea
 Mechanical rites, each independently invocable and orchestrated by `rites/validate.py`:
 
 - `validate_structure` — Arcana directory layout and required hub files.
-- `validate_domain_structure` — domain grimoire layout (root hub, `sources/`, `chapters/`, `log.md`); validates `grimoire.json` via the shared `_lib.load_manifest` (catches missing `name`, missing/invalid `namespace`, parse errors).
+- `validate_domain_structure` — domain grimoire layout (root hub, `sources/`, `chapters/`, `log.md`); validates `grimoire.json` via the shared `_lib.load_manifest` (catches missing `name`, missing/invalid `namespace`, parse errors); enforces `.obsidian/app.json` with `newLinkFormat: "absolute"` so wikilinks cannot silently spawn recursive directory trees on Ctrl-click.
 - `validate_naming` — snake_case for paths, kebab-case for skills.
 - `validate_format` — invocation/formula schema; hubs are thin routers (<200 lines).
 - `validate_frontmatter` — page schema compliance (type, required fields per type, aliases/tags shape, `last_verified` parses).
@@ -100,7 +105,7 @@ Adding a new validator is now a ~30-line affair: import from `_lib`, run the che
 - `rites/register_skills.py` (`/grm-skills-register`) discovers and installs skills from Arcana and every library entry to Claude Code (`~/.claude/skills/`) and Codex/ChatGPT (`~/.codex/skills/`).
 - Source SKILL.md files use `{{NAMESPACE}}` and `{{ARCANA_PATH}}` placeholders resolved at registration time.
 - `when_to_use` frontmatter enables Claude Code auto-invocation by intent; every Arcana skill has it.
-- `disable-model-invocation: true` is set on each individual `arcana-validate-*` skill (10 validators) and on `arcana-clean`. The aggregate `arcana-validate-all` is the single auto-invoke target for "run validation"; the focused validators stay manually callable but no longer compete for picker attention.
+- `disable-model-invocation: true` is set on each individual `arcana-validate-*` skill and on `arcana-clean`. The aggregate `arcana-validate-all` is the single auto-invoke target for "run validation"; the focused validators stay manually callable but no longer compete for picker attention.
 - `rites/sync_docs.py` regenerates `docs/skills.md` (the canonical Arcana skill catalog) from each `SKILL.md`'s frontmatter.
 - `/grm-meta-update-agent-block` refreshes the canonical Grimoire block in user agent instruction files (`CLAUDE.md`, `AGENTS.md`, and user-specified files) while preserving unrelated user instructions. The canonical block carries begin/end markers so future replacements can touch only the Grimoire section.
 
@@ -158,8 +163,10 @@ The launcher GUI uses Dear PyGui with:
 - Folder-named hubs render as meaningful graph-view nodes; full-path wikilinks make backlinks deterministic.
 - Hub-level tags (`hub/root`, `hub/chapter`, `hub/sub`) plus `type/*` tags drive Obsidian graph color groups.
 - Each grimoire ships `.obsidian/graph.json` with a vaporwave color palette: hot pink for the grimoire root, cyan for chapter hubs, purple for sub-hubs, lavender for source pages, electric blue for playbooks, pale pink for references.
+- Each grimoire also ships `.obsidian/app.json` with `{"newLinkFormat": "absolute", "useMarkdownLinks": false}` — mandatory settings (not preferences) that prevent the recursive-directory Ctrl-click footgun and keep wikilinks in `[[...]]` form so the rest of Arcana (validators, repair rite, ingest skills) operates on a single canonical link syntax. `validate_domain_structure` enforces both at validation time.
 - `.gitignore` policy ignores per-user Obsidian state but tracks the shareable `graph.json`, `app.json`, `core-plugins.json`, `community-plugins.json`.
-- `docs/obsidian.md` documents the full-path wikilink convention and editor behavior.
+- `docs/obsidian.md` documents the full-path wikilink convention, the required `app.json` settings, the multi-dot filename conventions (`<name>.<ACRONYM>.md`, `<name>.<role>.md`), and editor behavior.
+- `docs/vscode.md` documents the parallel setup VS Code needs to avoid the same recursive-directory class of bug. Root cause: the **Markdown Preview Enhanced** extension ships a `DocumentLinkProvider` whose wikilink Ctrl-click handler resolves targets relative to the current file, with no per-workspace override. Recommended fix: uninstall MPE (VS Code's built-in markdown preview is sufficient and has no wikilink bug) and install `foam.foam-vscode` for workspace-root wikilink resolution. A disable-only fallback (`markdown-preview-enhanced.enableWikiLinkSyntax: false` in user settings) is documented for users who need MPE's advanced rendering.
 
 ### Documentation
 
@@ -172,6 +179,7 @@ The launcher GUI uses Dear PyGui with:
 - `docs/reference.md` — terminology, the magical boundary, library/manifest schemas, path keys, formula placeholders.
 - `docs/script_vs_ai.md` — architectural principle for when to use rites (mechanical) vs invocations (judgment).
 - `docs/obsidian.md` — vault setup and graph-view configuration.
+- `docs/vscode.md` — VS Code setup for wikilink Ctrl-click navigation (uninstall Markdown Preview Enhanced, install Foam).
 - `docs/governance.md` — maintenance policies and versioning.
 - `docs/release.md` — release workflow for the summoning rite binaries (uses the `[build]` extra in `pyproject.toml`).
 - `docs/skills.md` — canonical Arcana skill catalog (auto-generated from each `SKILL.md`).
@@ -188,8 +196,8 @@ The launcher GUI uses Dear PyGui with:
 
 Inside `invocations/arcana/`:
 
-- `validators/` holds all 10 mechanical validator docs that have a corresponding `/grm-arcana-validate-*` skill.
-- `quality/` holds the 2 judgment-based quality docs (`improve_documentation.md`, `validate_rites.md`).
+- `validators/` holds the mechanical validator docs that each have a corresponding `/grm-arcana-validate-*` skill.
+- `quality/` holds the judgment-based quality docs (`improve_documentation.md`, `validate_rites.md`).
 
 ### Supported agents
 

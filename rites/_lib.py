@@ -199,6 +199,11 @@ def resolve_wikilink_path(body: str, root: Path) -> Optional[Path]:
     Wikilinks are repository-root relative paths, with the ``.md`` suffix
     optional for Obsidian compatibility. Aliases and global filename-stem
     matches are intentionally not resolved.
+
+    Multi-dot filenames are supported: ``[[path/to/plugin_ICD.template]]``
+    resolves to ``path/to/plugin_ICD.template.md``. The convention covers
+    capitalized acronym suffixes (ICD, IDD, SDK) and role suffixes
+    (``.template``, ``.example``) that domain grimoires use deliberately.
     """
     if not body:
         return None
@@ -207,23 +212,25 @@ def resolve_wikilink_path(body: str, root: Path) -> Optional[Path]:
     if candidate.is_absolute():
         return None
 
-    if not candidate.suffix:
-        candidate = candidate.with_suffix(".md")
+    # Try variants in priority order: body+.md first (Obsidian default), then
+    # body as-given (in case the wikilink already includes the .md suffix).
+    if candidate.suffix == ".md":
+        tries = [candidate]
+    else:
+        tries = [Path(str(candidate) + ".md"), candidate]
 
-    resolved = root / candidate
-
-    try:
-        resolved = resolved.resolve()
-    except OSError:
-        return None
-
-    try:
-        resolved.relative_to(root)
-    except ValueError:
-        return None
-
-    if resolved.is_file() and resolved.suffix == ".md":
-        return resolved
+    for cand in tries:
+        resolved_raw = root / cand
+        try:
+            resolved = resolved_raw.resolve()
+        except OSError:
+            continue
+        try:
+            resolved.relative_to(root)
+        except ValueError:
+            continue
+        if resolved.is_file() and resolved.suffix == ".md":
+            return resolved
     return None
 
 

@@ -135,6 +135,33 @@ def main():
             print(f"  WARN     sources/chapters exists — sources/ is for immutable artifacts, not wiki content")
             errors += 1
 
+    # 7. Obsidian app.json must set newLinkFormat=absolute. The default
+    # ("shortest") causes Ctrl-clicking a full-path wikilink to create a
+    # recursive directory tree relative to the current note when the link
+    # doesn't resolve. Setting "absolute" matches the validator's wikilink
+    # resolution model.
+    obsidian_app = root / ".obsidian" / "app.json"
+    if obsidian_app.is_file():
+        import json
+        try:
+            cfg = json.loads(obsidian_app.read_text())
+        except (json.JSONDecodeError, OSError) as exc:
+            print(f"  WARN     .obsidian/app.json unreadable: {exc}")
+            errors += 1
+        else:
+            if cfg.get("newLinkFormat") != "absolute":
+                print(f"  WARN     .obsidian/app.json must set \"newLinkFormat\": \"absolute\" "
+                      f"(got {cfg.get('newLinkFormat')!r}); Ctrl-click on full-path wikilinks "
+                      f"will create recursive directory trees otherwise")
+                errors += 1
+            else:
+                print(f"  OK       .obsidian/app.json (newLinkFormat=absolute)")
+    else:
+        print(f"  WARN     .obsidian/app.json missing — copy from "
+              f"GRIMOIRE_ARCANA/formulae/grimoire/.obsidian/app.json to prevent "
+              f"Obsidian's default link behavior from creating recursive directories")
+        errors += 1
+
     print()
     print("==================================")
     if errors == 0:

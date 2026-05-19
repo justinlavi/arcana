@@ -18,11 +18,31 @@ Arcana ships a recommended `.obsidian/graph.json` in every grimoire scaffold and
 ## Open the vault
 
 1. **Open Obsidian** → *Open another vault* → *Open folder as vault* → pick the grimoire's root directory (e.g. `~/grimoires/cooking-grimoire`).
-2. Obsidian reads the bundled `.obsidian/graph.json` automatically.
+2. Obsidian reads the bundled `.obsidian/graph.json` and `.obsidian/app.json` automatically.
 3. Open the grimoire root hub (`<grimoire>.md`) — that's the routing entry point.
 4. Open the **Graph view** (icon in the left sidebar, or `Ctrl/Cmd+G`).
 
-If your vault doesn't already have `.obsidian/graph.json`, copy the one from `GRIMOIRE_ARCANA/formulae/grimoire/.obsidian/graph.json`.
+If your vault doesn't already have `.obsidian/graph.json` or `.obsidian/app.json`, copy them from `GRIMOIRE_ARCANA/formulae/grimoire/.obsidian/`.
+
+### Required app.json settings
+
+Every grimoire ships an `.obsidian/app.json` with:
+
+```json
+{
+  "newLinkFormat": "absolute",
+  "useMarkdownLinks": false
+}
+```
+
+These two settings are **mandatory**, not preferences:
+
+- **`newLinkFormat: "absolute"`** — Obsidian's default is `"shortest"`, which interprets `[[chapters/foo/bar]]` as a path *relative to the current note*. From `chapters/foo/bar.md` that resolves to `chapters/foo/bar/chapters/foo/bar.md` — and if it doesn't exist, Ctrl-click **silently creates a recursive directory tree** matching the link path. Setting `"absolute"` makes Obsidian treat full-path wikilinks as vault-root relative, matching the convention `validate_links` enforces.
+- **`useMarkdownLinks: false`** — Keep wikilinks as `[[...]]` instead of having Obsidian rewrite them to `[label](path)` on save. The rest of Arcana (validators, repair rite, ingest skills) assumes wikilink syntax.
+
+If you find a stray nested folder like `chapters/build_system/ci/chapters/build_system/ci/`, `newLinkFormat` was not set when someone Ctrl-clicked a wikilink. Delete the bogus tree, set the config, and reload the vault.
+
+**Note:** `app.json` only configures Obsidian. VS Code has its own wikilink handling and ignores this file — see `vscode.md` for the parallel setup (install Foam, disable MPE's wikilink syntax).
 
 ---
 
@@ -81,6 +101,18 @@ If a wikilink includes display text after `|`, keep it to the target filename on
 Aliases remain useful as page metadata, but they are never link targets. This keeps routing deterministic, prevents global alias collisions, and avoids Ctrl/Cmd-click creating empty alias-named stubs.
 
 `validate_links` rejects alias-based and filename-only wikilinks unless the target is an actual path relative to the grimoire root, such as `[[README]]`. It also warns when display text repeats parent context instead of matching the target filename.
+
+### Multi-dot filenames
+
+Files may carry a capitalized acronym suffix or a role suffix before `.md`. Both are supported by the resolver:
+
+| Pattern | Example file | Example wikilink |
+|---|---|---|
+| Acronym suffix | `plugin_ICD.md` | `[[chapters/documentation/icd/plugin_ICD\|plugin_ICD]]` |
+| Role suffix | `plugin_ICD.template.md` | `[[chapters/documentation/icd/templates/plugin_ICD.template\|plugin_ICD.template]]` |
+| Both | `gcs.SDK.example.md` | `[[chapters/sdk/gcs.SDK.example\|gcs.SDK.example]]` |
+
+The resolver tries `<body>.md` first (the Obsidian default), then `<body>` as-given, so dots inside the stem do not block resolution. Use these patterns deliberately — they signal a deliverable kind (ICD, IDD, SDK) or a role (`.template`, `.example`) that's part of the page's identity, not arbitrary punctuation.
 
 ---
 
