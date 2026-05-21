@@ -949,16 +949,20 @@ def _compute_dpi_scale():
             return max(0.5, min(4.0, v))
         except ValueError:
             pass
-    try:
-        import tkinter
-        root = tkinter.Tk()
-        root.withdraw()
-        dpi = root.winfo_fpixels("1i")
-        root.destroy()
-        if dpi and dpi > 0:
-            return max(1.0, min(3.0, dpi / 96.0))
-    except Exception:
-        pass
+    # Skip Tk probe on macOS: Python 3.9 builds with bundled Tcl/Tk abort with
+    # "Tcl_FindHashEntry on deleted table" on init+destroy. Cocoa-backed DPG
+    # handles Retina backing automatically, so 1.0 is correct on Retina.
+    if sys.platform != "darwin":
+        try:
+            import tkinter
+            root = tkinter.Tk()
+            root.withdraw()
+            dpi = root.winfo_fpixels("1i")
+            root.destroy()
+            if dpi and dpi > 0:
+                return max(1.0, min(3.0, dpi / 96.0))
+        except Exception:
+            pass
     try:
         if sys.platform.startswith("linux"):
             result = subprocess.run(
