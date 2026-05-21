@@ -307,7 +307,7 @@ prompt_yes() {
         return 1
     fi
 
-    [[ "${response,,}" == "y" ]]
+    [[ "$response" == [yY] ]]
 }
 
 pip_install_hint() {
