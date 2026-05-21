@@ -36,12 +36,17 @@ dev = [
 # Optional GUI launcher used by the summoning rite. Headless installs (CI,
 # servers) can skip this group; the rite falls back to interactive CLI.
 gui = [
-    "dearpygui>=2.3,<3",
+    # Dear PyGui dropped Intel macOS wheels after 2.1.1; on that platform we
+    # accept the older line. Bootstrap already installs unpinned on Intel Mac,
+    # so the runtime path matches.
+    "dearpygui>=2.3,<3; platform_system != 'Darwin' or platform_machine != 'x86_64'",
+    "dearpygui>=2.1,<3; platform_system == 'Darwin' and platform_machine == 'x86_64'",
 ]
 
 # Building release artifacts (binaries published to GitHub Releases).
 build = [
-    "dearpygui>=2.3,<3",
+    "dearpygui>=2.3,<3; platform_system != 'Darwin' or platform_machine != 'x86_64'",
+    "dearpygui>=2.1,<3; platform_system == 'Darwin' and platform_machine == 'x86_64'",
     "pyinstaller>=6.15,<7",
 ]
 
