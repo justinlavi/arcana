@@ -23,6 +23,7 @@ generated docs impact
 Arcana-shipped public skill appears exactly once, that each listed skill,
 invocation, guard, and rite path exists, and that every contract entry uses a
 known owner and mutation profile.
+`docs/skills.md` renders the same matrix as the generated skill catalog.
 
 ## Fields
 
@@ -50,7 +51,7 @@ When adding, removing, or renaming a public Arcana-shipped command:
 2. Update or create the invocation leaf.
 3. Update `rites/data/command_surface.json`.
 4. Run `python3 rites/validate_skill_refs.py`.
-5. Run `python3 rites/sync_docs.py --apply` if skill frontmatter changed.
+5. Run `python3 rites/sync_docs.py --apply`.
 
 ## Related
 

@@ -16,7 +16,7 @@
       "mutation_behavior": "May edit Arcana source, docs, tests, skills, and generated artifacts after reading current context.",
       "log_behavior": "Updates CHANGELOG.md for user-visible Arcana changes.",
       "validation_profile": "python rites/validate.py --parallel; python -m pytest; python rites/sync_docs.py --apply when generated docs change.",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-all",
@@ -31,7 +31,7 @@
       "mutation_behavior": "Runs the deterministic Arcana validator suite; parallel mode may refresh transient rite artifacts.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate.py --parallel",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-encoding",
@@ -46,7 +46,7 @@
       "mutation_behavior": "Scans Arcana text files for UTF-8, LF, BOM, mojibake, and repair-artifact issues.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_encoding.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-format",
@@ -61,7 +61,7 @@
       "mutation_behavior": "Scans Arcana Markdown for formatting and formula/invocation structure issues.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_format.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-frontmatter",
@@ -76,7 +76,7 @@
       "mutation_behavior": "Scans Arcana pages for canonical frontmatter fields and schema values.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_frontmatter.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-links",
@@ -91,7 +91,7 @@
       "mutation_behavior": "Scans Arcana Markdown links and wikilinks for repository-resolvable targets.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_links.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-naming",
@@ -106,7 +106,7 @@
       "mutation_behavior": "Scans Arcana paths for snake_case files, kebab-case skills, and naming-policy drift.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_naming.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-orphans",
@@ -121,7 +121,7 @@
       "mutation_behavior": "Scans Arcana Markdown pages for routing reachability through links and wikilinks.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_orphans.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-portability",
@@ -136,7 +136,7 @@
       "mutation_behavior": "Scans Arcana paths for Windows-reserved characters and reserved basenames.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_portability.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-provenance",
@@ -151,7 +151,7 @@
       "mutation_behavior": "Scans external and hybrid Arcana pages for stable source citations.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_provenance.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-security",
@@ -166,7 +166,7 @@
       "mutation_behavior": "Scans Arcana for credential patterns and unsafe Python or shell constructs.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_security.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-semantics",
@@ -181,7 +181,7 @@
       "mutation_behavior": "Scans Arcana prose for hyphenated path examples where snake_case is required.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_semantics.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-skill-refs",
@@ -196,7 +196,7 @@
       "mutation_behavior": "Scans Arcana slash-command references and this command-surface contract for drift.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_skill_refs.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-validate-structure",
@@ -211,7 +211,7 @@
       "mutation_behavior": "Scans Arcana for required directories, hub files, and structural invariants.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_structure.py",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-analyze-semantics",
@@ -226,7 +226,7 @@
       "mutation_behavior": "Reads the active grimoire and reports semantic naming, routing, and discoverability findings.",
       "log_behavior": "Does not append grimoire logs unless a separate apply workflow edits files.",
       "validation_profile": "Run grimoire validators after applying any accepted recommendations.",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-create",
@@ -241,7 +241,7 @@
       "mutation_behavior": "Creates a new grimoire directory, scaffold files, starter chapters, git repository, and library entry.",
       "log_behavior": "Creates the new grimoire log.md with the initial creation entry.",
       "validation_profile": "python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-create-chapter",
@@ -256,7 +256,7 @@
       "mutation_behavior": "Creates a chapter hub, optional leaf stubs, and root or parent hub routes inside the active grimoire.",
       "log_behavior": "Appends one create entry to the active grimoire log.md.",
       "validation_profile": "python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-file-answer",
@@ -271,7 +271,7 @@
       "mutation_behavior": "Creates or updates a wiki page and routes it through an active-grimoire hub.",
       "log_behavior": "Appends one file-answer entry to the active grimoire log.md.",
       "validation_profile": "python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-improve",
@@ -286,7 +286,7 @@
       "mutation_behavior": "Audits and may edit active-grimoire scaffold files, hubs, links, routing, and chapter organization.",
       "log_behavior": "Appends active-grimoire log entries for applied improvements when files change.",
       "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT before and after edits; run /grm-validate-boundaries as the judgment boundary pass.",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-ingest",
@@ -301,7 +301,7 @@
       "mutation_behavior": "Moves or copies classified inputs into sources or chapters, then updates derived pages and hubs.",
       "log_behavior": "Appends one ingest entry to the active grimoire log.md per operation.",
       "validation_profile": "python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_provenance.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-lint",
@@ -316,7 +316,7 @@
       "mutation_behavior": "Runs mechanical validators and judgment passes; applies only approved fixes.",
       "log_behavior": "Appends one lint entry to the active grimoire log.md when fixes are applied.",
       "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-register-skills",
@@ -331,7 +331,7 @@
       "mutation_behavior": "Plans and writes Arcana-shipped skills and active-grimoire skills into supported agent skill directories; generated SKILL.md files carry Arcana ownership metadata, generated provenance can prove ownership, unowned collisions block apply, and stale cleanup touches only owned generated skills.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/register_skills.py --grimoire GRIMOIRE_ROOT --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, and prefix collisions.",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-repair-links",
@@ -346,7 +346,7 @@
       "mutation_behavior": "Dry-run reports filename-only wikilink repairs; --apply rewrites unambiguous wikilinks in active-grimoire Markdown files.",
       "log_behavior": "Records repair details in active-grimoire log.md through the invocation workflow after apply.",
       "validation_profile": "python rites/repair_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_orphans.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-update-arcana",
@@ -361,7 +361,7 @@
       "mutation_behavior": "May pull Arcana with git --ff-only, reconcile the library, register skills, and refresh marked agent blocks.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate.py --summary; python rites/validate.py --grimoire GRIMOIRE_ROOT --summary",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-validate-all",
@@ -376,7 +376,7 @@
       "mutation_behavior": "Runs the deterministic grimoire validator profile; parallel mode may refresh transient rite artifacts.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT --parallel",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-validate-boundaries",
@@ -391,7 +391,7 @@
       "mutation_behavior": "Uses deterministic search aids and judgment to report boundary violations in the active grimoire.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "Run as a judgment pass; confirm fixes with /grm-validate-structure and /grm-validate-links when files change.",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-validate-encoding",
@@ -406,7 +406,7 @@
       "mutation_behavior": "Scans active-grimoire text files for UTF-8, LF, BOM, mojibake, and repair-artifact issues.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate_encoding.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-validate-format",
@@ -421,7 +421,7 @@
       "mutation_behavior": "Scans active-grimoire Markdown for tables, code fences, and tree examples.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate_format.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-validate-frontmatter",
@@ -436,7 +436,7 @@
       "mutation_behavior": "Scans active-grimoire pages for canonical frontmatter fields and schema values.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-validate-links",
@@ -451,7 +451,7 @@
       "mutation_behavior": "Scans active-grimoire Markdown links and wikilinks for repository-resolvable targets.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate_links.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-validate-orphans",
@@ -466,7 +466,7 @@
       "mutation_behavior": "Scans active-grimoire pages for routing reachability through links and wikilinks.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate_orphans.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-validate-portability",
@@ -481,7 +481,7 @@
       "mutation_behavior": "Scans active-grimoire paths for Windows-reserved characters and reserved basenames.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate_portability.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-validate-provenance",
@@ -496,7 +496,7 @@
       "mutation_behavior": "Scans active-grimoire external and hybrid pages for stable source citations.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate_provenance.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/grm-validate-structure",
@@ -511,7 +511,7 @@
       "mutation_behavior": "Scans active-grimoire required structure and managed scaffold files against the scaffold contract.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-agent-register-skills",
@@ -526,7 +526,7 @@
       "mutation_behavior": "Plans and writes Arcana-shipped skills and installed grimoire skills into supported agent skill directories; generated SKILL.md files carry Arcana ownership metadata, generated provenance can prove ownership, unowned collisions block apply, and stale cleanup touches only owned generated skills.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/register_skills.py --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, and prefix collisions.",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-agent-update",
@@ -541,7 +541,7 @@
       "mutation_behavior": "Replaces or inserts only the marked Grimoire instruction block in user agent instruction files.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "Re-read touched files and confirm exactly one canonical Grimoire block per file.",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-library-adopt",
@@ -556,7 +556,7 @@
       "mutation_behavior": "Writes a new grimoire.json manifest and refuses to overwrite an existing manifest.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/adopt_grimoire.py TARGET --skill-prefix PREFIX --description DESC; python rites/sync_library.py --apply",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-library-sync",
@@ -571,7 +571,7 @@
       "mutation_behavior": "Dry-run reports local library drift; --apply reconciles library.json entries.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/sync_library.py; python rites/sync_library.py --apply when approved.",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-workspace-clean",
@@ -586,7 +586,7 @@
       "mutation_behavior": "Deletes known temporary rite artifacts; dry-run previews removals.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/clean_artifacts.py --dry-run",
-      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
       "command": "/arc-help",
@@ -600,8 +600,8 @@
       "mutation_profile": "read_only",
       "mutation_behavior": "Reads generated Arcana skill catalog and locally registered grimoire skill frontmatter.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
-      "validation_profile": "python rites/sync_docs.py --apply when Arcana skill frontmatter changes.",
-      "generated_docs_impact": "Reads docs/skills.md as the generated Arcana skill catalog."
+      "validation_profile": "python rites/sync_docs.py --apply when Arcana skill frontmatter or command-surface metadata changes.",
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     }
   ]
 }

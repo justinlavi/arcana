@@ -20,6 +20,8 @@
   full deterministic validation profile for active grimoires.
 - Added structured validator diagnostics through `--format json` and
   `--format jsonl` on every Arcana validator and the validator orchestrator.
+- Added regression coverage for the generated skill catalog's
+  command-surface metadata.
 
 ### Changed
 
@@ -45,6 +47,8 @@
   from the registry.
 - Updated grimoire improvement, lint, and update workflows to route mechanical
   health checks through the grimoire validation profile.
+- Updated `docs/skills.md` generation to render workflow, ownership, guard,
+  mutation, rite, and validation metadata from the command-surface contract.
 
 ## [1.0.0] - 2026-05-25
 

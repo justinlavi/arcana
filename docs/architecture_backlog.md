@@ -47,55 +47,7 @@ Priority labels:
 
 | ID | Priority | Item | Primary owner | Why deferred |
 |---|---|---|---|---|
-| ST-009 | P3 | Richer generated skill catalog | `rites/sync_docs.py`, `docs/skills.md` | Needs catalog rendering and tests against the command-surface contract. |
 | ST-010 | P3 | Source wrapper and provenance boundary clarification | source formula, provenance docs/validators | Needs design judgment before adding mechanical checks. |
-
-## ST-009: Richer Generated Skill Catalog
-
-Priority: P3
-
-Status: Deferred
-
-Primary owner: `rites/sync_docs.py`, `docs/skills.md`,
-`rites/data/command_surface.json`
-
-Current evidence:
-
-- `docs/skills.md` is generated and useful.
-- The catalog currently shows command and description, but not invocation
-  owner, rite owner, mutation behavior, or validation profile.
-
-Finding:
-
-The generated catalog is good as a skill index. It can now become a stronger
-operational map by rendering the command-surface metadata.
-
-Desired S-tier endpoint:
-
-- `docs/skills.md` remains generated, but includes enough metadata to route a
-  command quickly.
-- The catalog clearly distinguishes generated view from source of truth.
-- Skill additions automatically update the command-surface view.
-
-First implementable slice:
-
-Use `rites/data/command_surface.json` to update `sync_docs.py` so the
-generated catalog renders workflow owner, rite owner, guard, mutation profile,
-and validation profile.
-
-Blast radius:
-
-Low-medium. The command-surface contract now provides the metadata source.
-
-Validation profile:
-
-- `python rites/sync_docs.py --apply`
-- `python rites/validate.py --parallel`
-
-Read-path delta:
-
-Humans and agents can use the skill catalog as an operational index, not just
-a list of command descriptions.
 
 ## ST-010: Source Wrapper And Provenance Boundary Clarification
 
@@ -150,8 +102,7 @@ create a wrapper, cite a raw file, or cite an external URL.
 
 ## Suggested Implementation Sequence
 
-1. ST-009 can now render richer metadata from the command-surface contract.
-2. ST-010 after the validation and catalog contracts settle.
+1. ST-010 after the validation and catalog contracts settle.
 
 ## Update Triggers
 
