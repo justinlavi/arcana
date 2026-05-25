@@ -3,7 +3,7 @@
 
 Currently emits:
   docs/skills.md - canonical list of every Arcana skill, derived from each
-                    skills/<slug>/SKILL.md frontmatter (name + description).
+                    SKILL.md frontmatter (name + description).
 
 Why a generator? The skill list is referenced from many places. With this rite,
 each `SKILL.md` frontmatter is the single source of truth: edit the source file,
@@ -17,6 +17,7 @@ Usage:
 
 import argparse
 import difflib
+import json
 import re
 import sys
 from pathlib import Path
@@ -28,6 +29,7 @@ SKILLS_DOC = DOCS_DIR / "skills.md"
 
 SKILL_PREFIX_PLACEHOLDER = "{{SKILL_PREFIX}}"
 ARCANA_SKILL_PREFIX = "arc"
+ARCANA_MANIFEST = ARCANA_PATH / "arcana.json"
 
 
 def read_frontmatter(skill_file):
@@ -47,77 +49,105 @@ def read_frontmatter(skill_file):
     return fields
 
 
+def load_arcana_skill_families():
+    """Return normalized command-family definitions from arcana.json."""
+    metadata = json.loads(ARCANA_MANIFEST.read_text(encoding="utf-8"))
+    default_prefix = metadata.get("skill_prefix", ARCANA_SKILL_PREFIX)
+    raw_families = metadata.get("skill_families", {})
+    if not isinstance(raw_families, dict) or not raw_families:
+        raw_families = {
+            "arcana": {
+                "skill_prefix": default_prefix,
+                "path": "skills",
+                "slug_prefix": "",
+            }
+        }
+
+    families = []
+    for name, config in raw_families.items():
+        families.append({
+            "name": name,
+            "skill_prefix": config.get("skill_prefix", default_prefix),
+            "path": ARCANA_PATH / config.get("path", ""),
+            "slug_prefix": config.get("slug_prefix", ""),
+        })
+    return families
+
+
 def collect_skills():
-    """Return list of (registered_name, description) for every Arcana skill."""
+    """Return list of (registered_name, description, source_path) for Arcana skills."""
     skills = []
-    if not SKILLS_DIR.is_dir():
-        return skills
-    for skill_dir in sorted(SKILLS_DIR.iterdir()):
-        if not skill_dir.is_dir():
+    for family in load_arcana_skill_families():
+        family_dir = family["path"]
+        if not family_dir.is_dir():
             continue
-        skill_file = skill_dir / "SKILL.md"
-        if not skill_file.is_file():
-            continue
-        fm = read_frontmatter(skill_file)
-        templated_name = fm.get("name", "")
-        if not templated_name:
-            continue
-        registered_name = templated_name.replace(
-            SKILL_PREFIX_PLACEHOLDER, ARCANA_SKILL_PREFIX
-        )
-        description = fm.get("description", "")
-        skills.append((registered_name, description))
+        for skill_dir in sorted(family_dir.iterdir()):
+            if not skill_dir.is_dir():
+                continue
+            skill_file = skill_dir / "SKILL.md"
+            if not skill_file.is_file():
+                continue
+            fm = read_frontmatter(skill_file)
+            templated_name = fm.get("name", "")
+            if not templated_name:
+                continue
+            registered_name = templated_name.replace(
+                SKILL_PREFIX_PLACEHOLDER, family["skill_prefix"]
+            )
+            description = fm.get("description", "")
+            source = skill_file.relative_to(ARCANA_PATH).as_posix()
+            skills.append((registered_name, description, source))
     return skills
 
 
 def group_skills(skills):
-    """Group skills by their first segment after the skill_prefix.
-
-    Example: 'arc-grimoire-ingest' -> group 'grimoire'.
-    Returns an ordered dict-like list of (group, [(name, desc), ...]).
-    """
+    """Group skills by target and purpose."""
     groups = {}
-    for name, desc in skills:
+    for name, desc, source in skills:
         without_ns = re.sub(r"^[a-z]+-", "", name, count=1)
-        if without_ns in {"clean", "improve"}:
-            group = "arcana"
-        elif without_ns.startswith("validate-"):
-            group = "validate"
-        elif without_ns.startswith("grimoire-"):
+        if name.startswith("grm-validate-"):
+            group = "grimoire_validate"
+        elif name.startswith("grm-"):
             group = "grimoire"
+        elif without_ns.startswith("validate-"):
+            group = "arcana_validate"
+        elif without_ns == "improve":
+            group = "arcana"
         elif without_ns.startswith("library-"):
             group = "library"
-        elif without_ns.startswith("skills-"):
-            group = "skills"
-        elif without_ns == "help":
-            group = "help"
         elif without_ns.startswith("agent-"):
             group = "agent"
+        elif without_ns.startswith("workspace-"):
+            group = "workspace"
+        elif without_ns == "help":
+            group = "help"
         else:
             group = without_ns.split("-", 1)[0] if "-" in without_ns else without_ns
-        groups.setdefault(group, []).append((name, desc))
+        groups.setdefault(group, []).append((name, desc, source))
 
     # Stable ordering: Arcana core first, then grimoire and support groups.
     priority = {
         "arcana": 0,
-        "validate": 1,
+        "arcana_validate": 1,
         "grimoire": 2,
-        "library": 3,
-        "skills": 4,
-        "help": 5,
-        "agent": 6,
+        "grimoire_validate": 3,
+        "library": 4,
+        "agent": 5,
+        "workspace": 6,
+        "help": 7,
     }
     return sorted(groups.items(), key=lambda kv: (priority.get(kv[0], 99), kv[0]))
 
 
 GROUP_HEADERS = {
     "arcana": "Arcana maintenance",
-    "validate": "Arcana validation",
+    "arcana_validate": "Arcana validation",
     "library": "Library management",
     "grimoire": "Grimoire operations",
-    "skills": "Skill registration",
+    "grimoire_validate": "Grimoire validation",
     "help": "Help",
     "agent": "Agent configuration",
+    "workspace": "Workspace maintenance",
 }
 
 
@@ -134,12 +164,14 @@ def render_skills_doc(skills):
         "---",
         "",
         "<!-- GENERATED by rites/sync_docs.py - do not edit by hand. -->",
-        "<!-- Source of truth: each skills/<slug>/SKILL.md frontmatter. -->",
+        "<!-- Source of truth: each skills/<family>/<slug>/SKILL.md frontmatter. -->",
         "<!-- Regenerate with: python3 rites/sync_docs.py --apply -->",
         "",
         "# Arcana Skill Catalog",
         "",
-        "Skills shipped by Arcana itself, prefixed `arc-*`.",
+        "Skills shipped by Arcana use command-family prefixes:",
+        "`arc-*` for Arcana platform operations and `grm-*` for universal",
+        "grimoire operations. See [skill_schema.md](skill_schema.md).",
         "Each entry links to the source `SKILL.md` - that file is canonical.",
         "",
         "Grimoire skills (e.g. `cook-*` for a cooking grimoire,",
@@ -159,10 +191,8 @@ def render_skills_doc(skills):
         lines.append("")
         lines.append("| Skill | Description |")
         lines.append("|---|---|")
-        for name, desc in members:
-            slug = name.removeprefix(f"{ARCANA_SKILL_PREFIX}-")
-            source = f"../skills/{slug}/SKILL.md"
-            lines.append(f"| [`/{name}`]({source}) | {desc} |")
+        for name, desc, source in members:
+            lines.append(f"| [`/{name}`](../{source}) | {desc} |")
         lines.append("")
 
     lines.extend([
@@ -170,10 +200,11 @@ def render_skills_doc(skills):
         "",
         "## Adding a new skill",
         "",
-        "1. Create `skills/<area>-<verb>-<object>/SKILL.md` with frontmatter:",
-        "   `name: {{SKILL_PREFIX}}-<area>-<verb>-<object>` and a one-line `description`.",
-        "2. Run `python3 rites/sync_docs.py --apply` to refresh this library.",
-        "3. Run `python3 rites/register_skills.py` to install the skill into agent skill directories.",
+        "1. Choose the command family in [skill_schema.md](skill_schema.md).",
+        "2. Create `skills/<family>/<slug>/SKILL.md` with frontmatter:",
+        "   `name: {{SKILL_PREFIX}}-<registered-slug>` and a one-line `description`.",
+        "3. Run `python3 rites/sync_docs.py --apply` to refresh this library.",
+        "4. Run `python3 rites/register_skills.py` to install the skill into agent skill directories.",
         "",
     ])
     return "\n".join(lines) + "\n"

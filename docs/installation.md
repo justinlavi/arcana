@@ -48,7 +48,7 @@ When run from the public curl command, the summoning rite is release-first excep
 7. Clones or updates selected grimoires in `~/grimoires/`
 8. Creates/updates the local library at `~/grimoires/library.json`
 
-After summoning, open a new Claude Code or Codex/ChatGPT session and try `/arc-help`. To create your first grimoire from scratch, run `/arc-grimoire-create`.
+After summoning, open a new Claude Code or Codex/ChatGPT session and try `/arc-help`. To create your first grimoire from scratch, run `/grm-create`.
 
 Dear PyGui is bundled into release binaries. In source mode, Dear PyGui is imported from the system Python or from a Grimoire-managed Python dependency cache, not from the Arcana repository. If pip or Dear PyGui is missing, the bootstrap asks before installing anything; only an explicit `y` proceeds. On Arch-based systems, accepting the pip prompt may install `python-pip` with `pacman` first if the system Python does not include pip.
 
@@ -62,7 +62,7 @@ When you choose "Install Arcana and clone grimoires" in the GUI (or option 2 in 
 
 Arcana and grimoires don't need to live in the same place. Arcana might be installed from the public GitHub repo while your grimoires live in a private company GitLab or a different GitHub org. The rite asks where to look.
 
-If you don't have existing grimoires to clone yet, skip this step entirely and use `/arc-grimoire-create` to build your first grimoire from scratch after Arcana is installed.
+If you don't have existing grimoires to clone yet, skip this step entirely and use `/grm-create` to build your first grimoire from scratch after Arcana is installed.
 
 Discovery supports two URL shapes:
 - Direct repository URLs, such as `https://github.com/you/cooking-grimoire`, are trusted explicitly. The `-grimoire` slug is conventional but not required when the URL points to a single repository.
@@ -142,7 +142,7 @@ Every grimoire scaffolded from `formulae/grimoire/README.md` therefore carries i
 
 3. Documents a manual install path for readers who prefer step-by-step (`git clone` Arcana + the grimoire into `~/grimoires/`, then `sync_library.py --apply` + `register_skills.py`), with the path layout called out as the one thing the other rites depend on.
 
-The `{{GRIMOIRE_REPO_URL}}` placeholder in the formula is the hook that `/arc-grimoire-create` fills in during Step 1 (Discovery), so every new grimoire ships with this section pre-filled with its own canonical clone URL.
+The `{{GRIMOIRE_REPO_URL}}` placeholder in the formula is the hook that `/grm-create` fills in during Step 1 (Discovery), so every new grimoire ships with this section pre-filled with its own canonical clone URL.
 
 ---
 
@@ -220,7 +220,7 @@ The agent should follow hubs depth-first (root hub -> chapter hub -> ... -> leaf
 - On Arch-based systems, install Mesa and XWayland if needed: `sudo pacman -S --needed mesa xorg-xwayland`
 
 **Skills not appearing after install**
-- Run `/arc-skills-register` to re-register all skills
+- Run `/arc-agent-register-skills` to re-register all skills
 - Open a new agent session (Claude Code / Codex caches skill listings)
 
 **Skill names appear as `{{SKILL_PREFIX}}-...`**

@@ -12,7 +12,7 @@ This directory holds the **immutable source artifacts** that feed this grimoire'
 ## How content lands here
 
 - Manual: drop a file in.
-- `/arc-grimoire-ingest <path-or-url>` (recommended): files the source, summarizes it, updates affected wiki pages, appends to `log.md`.
+- `/grm-ingest <path-or-url>` (recommended): files the source, summarizes it, updates affected wiki pages, appends to `log.md`.
 
 ## What does NOT belong here
 

@@ -1769,7 +1769,7 @@ def _render_preview(state):
     if "codex" in targets:
         items.append(("codex", "Inject Grimoire block into ~/.codex/AGENTS.md"))
     if not skip:
-        items.append(("skills", "Register /arc-* and skill prefix skills to agent skills/ dirs"))
+        items.append(("skills", "Register /arc-*, /grm-*, and grimoire-prefix skills to agent skills/ dirs"))
     c = GUI_COLORS
     for pill, text in items:
         with dpg.group(parent=TAG.INSTALL_PREVIEW, horizontal=True):

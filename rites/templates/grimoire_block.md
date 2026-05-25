@@ -5,7 +5,7 @@
 
 **Arcana key**: `ARCANA_HOME` - resolved from the library or defaults to `~/grimoires/arcana/`.
 
-**Skills**: Arcana ships `/arc-*` skills (e.g. `/arc-help`, `/arc-grimoire-ingest`, `/arc-grimoire-lint`, `/arc-grimoire-improve`). Each grimoire ships its own `/<skill prefix>-*` skills declared in its `grimoire.json`.
+**Skills**: Arcana ships `/arc-*` platform skills (e.g. `/arc-help`, `/arc-agent-register-skills`) and `/grm-*` universal grimoire skills (e.g. `/grm-ingest`, `/grm-lint`, `/grm-improve`). Each grimoire ships its own `/<skill prefix>-*` skills declared in its `grimoire.json`.
 
 ### Hub convention
 
@@ -14,7 +14,7 @@ For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. Th
 ### Storage layers
 
 - **`sources/`** - Immutable source artifacts (articles, transcripts, papers, screenshots). Read, never modify. Citation-stable: pages with `authority: external` cite paths under here.
-- **`inbox/`** - Optional transient drop zone for mixed content awaiting classification. Cleared by `/arc-grimoire-ingest`. Pages must NOT cite `inbox/` paths (contents disappear once processed).
+- **`inbox/`** - Optional transient drop zone for mixed content awaiting classification. Cleared by `/grm-ingest`. Pages must NOT cite `inbox/` paths (contents disappear once processed).
 - **`chapters/`** - LLM-authored knowledge pages. Every page carries YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`); see `ARCANA_HOME/docs/page_schema.md`.
 - **`log.md`** - Append-only activity log. Each entry begins `## [YYYY-MM-DD HH:MM] <op> | <title>`.
 
@@ -29,21 +29,21 @@ For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. Th
 
 ### Text file standard
 
-Arcana and grimoires use UTF-8 without BOM and LF line endings. Unicode is allowed when useful; mojibake and repair artifacts are not. Preserve this standard when editing files, and run `/arc-validate-encoding` after broad or cross-platform edits.
+Arcana and grimoires use UTF-8 without BOM and LF line endings. Unicode is allowed when useful; mojibake and repair artifacts are not. Preserve this standard when editing files. In Arcana, run `/arc-validate-encoding`; in a grimoire, run `/grm-validate-encoding`.
 
 ### Provenance
 
-Pages with `authority: external` or `hybrid` cite their `sources:` (paths under `sources/` or external URLs). The `validate_provenance` rite enforces this. Do not author external pages without filing the source first via `/arc-grimoire-ingest`.
+Pages with `authority: external` or `hybrid` cite their `sources:` (paths under `sources/` or external URLs). The `validate_provenance` rite enforces this. Do not author external pages without filing the source first via `/grm-ingest`.
 
 ### Operations vocabulary
 
 | You want to | Skill |
 |---|---|
-| Ingest a single source | `/arc-grimoire-ingest <path>` |
-| Sort a folder of mixed content (zip extract, drafts, etc.) | `/arc-grimoire-ingest <folder>` (or drop into `inbox/` and run `/arc-grimoire-ingest`) |
-| Promote a chat answer into a wiki page | `/arc-grimoire-file-answer` |
-| Health-check the grimoire | `/arc-grimoire-lint` |
-| Add a new chapter | `/arc-grimoire-create-chapter` |
-| Audit naming and structure | `/arc-grimoire-improve` |
+| Ingest a single source | `/grm-ingest <path>` |
+| Sort a folder of mixed content (zip extract, drafts, etc.) | `/grm-ingest <folder>` (or drop into `inbox/` and run `/grm-ingest`) |
+| Promote a chat answer into a wiki page | `/grm-file-answer` |
+| Health-check the grimoire | `/grm-lint` |
+| Add a new chapter | `/grm-create-chapter` |
+| Audit naming and structure | `/grm-improve` |
 | List every skill installed | `/arc-help` |
 <!-- END GRIMOIRE KNOWLEDGE BASE -->

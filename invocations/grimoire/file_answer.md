@@ -2,7 +2,7 @@
 type: playbook
 title: "File Answer"
 aliases: ["file-answer", "domain-file-answer", "promote-answer"]
-tags: [arcana/invocations, type/playbook, scope/domain]
+tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-12
 ---
@@ -18,7 +18,7 @@ If a chat answer is just a one-line reply, skip this. Use it when the answer is 
 ## Invocation
 
 ```
-/arc-grimoire-file-answer
+/grm-file-answer
 ```
 
 The agent decides what to file based on the immediate prior conversation. The user can scope it: "file the comparison", "file the analysis we just did".
@@ -42,9 +42,9 @@ Decide the chapter and `type:`:
 - **`entity`** — a specific person, project, product.
 - **`playbook`** — a procedure derived from the conversation (most common for "how do I do X" answers).
 - **`reference`** — a comparison table, a glossary entry, a cheatsheet.
-- **`source`** — only when filing a transcript of an external thing; usually `/arc-grimoire-ingest` is the right skill for that.
+- **`source`** — only when filing a transcript of an external thing; usually `/grm-ingest` is the right skill for that.
 
-Pick a slug (snake_case filename). Place under the most relevant chapter. If no chapter fits, this answer may be a hint to create a new chapter (`/arc-grimoire-create-chapter`).
+Pick a slug (snake_case filename). Place under the most relevant chapter. If no chapter fits, this answer may be a hint to create a new chapter (`/grm-create-chapter`).
 
 ### 3. Scaffold the page
 
@@ -71,7 +71,7 @@ python3 ARCANA_HOME/rites/append_log.py \
   --grimoire . \
   --op file-answer \
   --title "<page title>" \
-  --skill /arc-grimoire-file-answer \
+  --skill /grm-file-answer \
   --field source=chat \
   --field pages=chapters/<chapter>/<slug>.md
 ```
@@ -85,7 +85,7 @@ python3 ARCANA_HOME/rites/validate_links.py --grimoire .
 
 ## Non-negotiable rules
 
-1. Filed answers carry `authority: grimoire` unless they directly summarize a single source (in which case use `/arc-grimoire-ingest`).
+1. Filed answers carry `authority: grimoire` unless they directly summarize a single source (in which case use `/grm-ingest`).
 2. New page must be wired into a hub before considering the operation complete.
 3. One log entry per file-answer.
 4. Don't file trivial answers — promote what compounds.
@@ -103,5 +103,5 @@ Surface in chat:
 
 - Page formula: `ARCANA_HOME/formulae/page.formula.md`
 - Page schema: `ARCANA_HOME/docs/page_schema.md`
-- Source ingest: `/arc-grimoire-ingest`
-- New chapter when no chapter fits: `/arc-grimoire-create-chapter`
+- Source ingest: `/grm-ingest`
+- New chapter when no chapter fits: `/grm-create-chapter`

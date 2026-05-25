@@ -13,7 +13,7 @@ last_verified: 2026-05-15
 
 Mechanical scan of Arcana for **hyphenated path examples** written in prose. Fast, deterministic, no judgment required.
 
-For *intelligent* semantic analysis (naming quality, organizational discoverability, terminology design), use `/arc-grimoire-analyze-semantics` - this rite is intentionally not that. Filename validation lives in [`validate_naming.md`](validate_naming.md).
+For *intelligent* semantic analysis (naming quality, organizational discoverability, terminology design), use `/grm-analyze-semantics` - this rite is intentionally not that. Filename validation lives in [`validate_naming.md`](validate_naming.md).
 
 ## Invocation
 
@@ -53,5 +53,5 @@ Convert each hyphenated example to snake_case (`chapters/example_name/`, `file_n
 
 - **Rite**: [`rites/validate_semantics.py`](../../../rites/validate_semantics.py)
 - **Naming counterpart**: [`validate_naming.md`](validate_naming.md) (snake_case enforcement on actual filenames)
-- **Smart analysis**: `/arc-grimoire-analyze-semantics` (judgment-based, not mechanical)
+- **Smart analysis**: `/grm-analyze-semantics` (judgment-based, not mechanical)
 - **Orchestrator**: [`improve_arcana.md`](../improve_arcana.md)

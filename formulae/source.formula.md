@@ -28,6 +28,6 @@ For binary or large sources (PDFs, audio, video): keep the binary in `sources/<s
 
 ## Wiki Pages Derived From This Source
 
-Filled by `/arc-grimoire-ingest` after processing. Do not edit by hand.
+Filled by `/grm-ingest` after processing. Do not edit by hand.
 
 - (none yet)

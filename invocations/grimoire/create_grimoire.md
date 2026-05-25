@@ -2,7 +2,7 @@
 type: playbook
 title: "Create Grimoire"
 aliases: ["create-grimoire", "scaffold-grimoire"]
-tags: [arcana/invocations, type/playbook, scope/domain]
+tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-12
 ---
@@ -16,7 +16,7 @@ AI-guided conversational setup that scaffolds a complete grimoire from the formu
 ## Invocation
 
 ```
-/arc-grimoire-create
+/grm-create
 ```
 
 ## Non-Negotiable Rules
@@ -147,7 +147,7 @@ For each selected chapter, follow `ARCANA_HOME/invocations/grimoire/create_chapt
 
 Create chapter hub `chapters/<chapter>/<chapter>.md` with v2 frontmatter and routing to planned sub_topics. Do not generate full leaf docs in this pass — placeholders or TODOs in the chapter hub are acceptable.
 
-If a chapter creation fails, report it and continue with the rest. The user can retry with `/arc-grimoire-create-chapter <name>`.
+If a chapter creation fails, report it and continue with the rest. The user can retry with `/grm-create-chapter <name>`.
 
 ---
 
@@ -189,7 +189,7 @@ python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
 python3 ARCANA_HOME/rites/validate_links.py --grimoire .
 ```
 
-Or invoke `/arc-grimoire-validate-structure` for the integrated structural pass.
+Or invoke `/grm-validate-structure` for the integrated structural pass.
 
 If the relevant agent instruction file already includes the Grimoire block, also test routing by asking the agent: `"What chapters exist in {{grimoire_name}}?"`
 
@@ -200,6 +200,6 @@ If the relevant agent instruction file already includes the Grimoire block, also
 - **Chapter creation**: [`create_chapter.md`](create_chapter.md)
 - **Template formula**: `ARCANA_HOME/formulae/grimoire/`
 - **Page schema**: `ARCANA_HOME/docs/page_schema.md`
-- **Skill registration**: `/arc-skills-register` (reads each grimoire's `grimoire.json`)
-- **Structure validator**: `/arc-grimoire-validate-structure`
+- **Skill registration**: `/arc-agent-register-skills` (reads each grimoire's `grimoire.json`)
+- **Structure validator**: `/grm-validate-structure`
 - **Agent block**: `ARCANA_HOME/rites/templates/grimoire_block.md`

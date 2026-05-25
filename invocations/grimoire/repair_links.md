@@ -2,7 +2,7 @@
 type: playbook
 title: "Repair Wikilinks"
 aliases: ["repair-links", "domain-repair-links", "fix-wikilinks"]
-tags: [arcana/invocations, type/playbook, scope/domain]
+tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-19
 ---
@@ -13,14 +13,14 @@ last_verified: 2026-05-19
 
 Promote filename-only wikilinks (`[[foo]]`, `[[parent_sibling|sibling]]`) to canonical full-path form (`[[chapters/path/to/foo|foo]]`). Arcana wikilinks must resolve as repository-root relative paths; this rite mechanizes the bulk rewrite.
 
-Use this after a structural migration, after `/arc-grimoire-ingest` finds drift, or any time `/arc-grimoire-lint` reports a wave of broken wikilinks of the form "must resolve as a repository path".
+Use this after a structural migration, after `/grm-ingest` finds drift, or any time `/grm-lint` reports a wave of broken wikilinks of the form "must resolve as a repository path".
 
 ## Invocation
 
 From the active grimoire's root:
 
 ```
-/arc-grimoire-repair-links
+/grm-repair-links
 ```
 
 The skill runs a dry-run first, surfaces the proposed changes plus any ambiguities, and asks before applying.
@@ -120,4 +120,4 @@ If none of these yield a unique target, the link is reported and skipped - never
 
 - Validator that detects the broken links: `ARCANA_HOME/rites/validate_links.py`
 - Wikilink rules: `ARCANA_HOME/docs/obsidian.md` (Full-path wikilinks section)
-- Health-check umbrella: `/arc-grimoire-lint`
+- Health-check umbrella: `/grm-lint`

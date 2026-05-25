@@ -6,7 +6,7 @@ registration and library rites recognize it. Validates the skill_prefix
 isn't already used by another grimoire.
 
 After adopting, run `/arc-library-sync --apply` to register the grimoire
-in the local library, then `/arc-skills-register` if it ships skills.
+in the local library, then `/arc-agent-register-skills` if it ships skills.
 
 Usage:
     python3 adopt_grimoire.py <directory> --skill-prefix <prefix> [--description "<desc>"]
@@ -122,7 +122,7 @@ def main():
 
     print("  Next steps:")
     print("    1. Run /arc-library-sync to verify, then --apply to register.")
-    print("    2. If this grimoire ships skills, run /arc-skills-register.")
+    print("    2. If this grimoire ships skills, run /arc-agent-register-skills.")
     print()
     return 0
 

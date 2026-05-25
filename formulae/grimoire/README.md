@@ -79,11 +79,11 @@ Add the canonical Grimoire instruction block to your agent file using `/arc-agen
 
 | Goal | Skill |
 |---|---|
-| Add a new chapter | `/arc-grimoire-create-chapter` |
-| Ingest a new source from `sources/` and update affected pages | `/arc-grimoire-ingest` |
-| Promote a chat answer into a page | `/arc-grimoire-file-answer` |
-| Health-check the grimoire (orphans, stale, ghost refs) | `/arc-grimoire-lint` |
-| Audit naming and structure | `/arc-grimoire-improve` |
+| Add a new chapter | `/grm-create-chapter` |
+| Ingest a new source from `sources/` and update affected pages | `/grm-ingest` |
+| Promote a chat answer into a page | `/grm-file-answer` |
+| Health-check the grimoire (orphans, stale, ghost refs) | `/grm-lint` |
+| Audit naming and structure | `/grm-improve` |
 
 ## Layers (the LLM-wiki model)
 
@@ -95,7 +95,7 @@ Add the canonical Grimoire instruction block to your agent file using `/arc-agen
 
 - Routers are pointer lists - no prose narrative inside a hub.
 - Pages declare their authority (`external` / `grimoire` / `hybrid`) and cite sources.
-- Stale claims (over `last_verified` window) are flagged by `/arc-grimoire-lint` and revisited.
+- Stale claims (over `last_verified` window) are flagged by `/grm-lint` and revisited.
 - The activity log is append-only; never delete entries.
 - All paths are relative inside this grimoire; cross-grimoire references use `ARCANA_HOME/`-style placeholders.
 - Text files use UTF-8 without BOM and LF line endings. Unicode is allowed; mojibake and repair artifacts are not.

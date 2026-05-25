@@ -64,8 +64,8 @@ Every validator should:
 2. Accept `--grimoire <path>` via `add_grimoire_arg(parser)`. Default to Arcana itself; allow grimoires too.
 3. Exit `0` on clean, `1` on violations. Use `info` / `ok` / `warn` / `err` from `_lib` for output.
 4. Ship as a `validate_<aspect>.py` file under `rites/`.
-5. Get a corresponding skill folder under `skills/validate-<aspect>/SKILL.md` (pointer-only - see existing examples).
-6. Be added to the orchestrator [rites/validate.py](rites/validate.py) so `/arc-validate-all` picks it up.
+5. Get a corresponding command-family skill folder such as `skills/arcana/validate-<aspect>/SKILL.md` or `skills/grimoire/validate-<aspect>/SKILL.md` (see [docs/skill_schema.md](docs/skill_schema.md)).
+6. Be added to the orchestrator [rites/validate.py](rites/validate.py) if it is part of the Arcana validator suite so `/arc-validate-all` picks it up.
 7. Get a covering test under `tests/test_validate_<aspect>.py` using the fixture grimoires under `tests/fixtures/`.
 
 The minimal skeleton:
@@ -88,11 +88,12 @@ def main():
 
 Skills are pointer files. The skill itself contains no logic - it dispatches to an invocation or rite.
 
-1. Create `skills/<slug>/SKILL.md`. The folder name is the command suffix after Arcana's `arc-` prefix.
-2. Use the `{{SKILL_PREFIX}}-<slug>` template in the `name:` frontmatter - registration substitutes `arc` from `arcana.json`.
-3. Mirror the frontmatter fields the surrounding skills use: `description`, `when_to_use`, `user-invocable`, `allowed-tools`. Add `disable-model-invocation: true` for destructive skills.
-4. Include the corresponding invocation under `invocations/` if the skill needs more than 5-10 lines of guidance.
-5. Run [rites/sync_docs.py](rites/sync_docs.py) to regenerate [docs/skills.md](docs/skills.md).
+1. Choose the command family first: `arcana`, `grimoire`, `library`, `agent`, `workspace`, or `help`. See [docs/skill_schema.md](docs/skill_schema.md).
+2. Create `skills/<family>/<slug>/SKILL.md`. The folder name is the command suffix after that family's prefix.
+3. Use the `{{SKILL_PREFIX}}-<registered-slug>` template in the `name:` frontmatter - registration substitutes the command family's prefix from `arcana.json`.
+4. Mirror the frontmatter fields the surrounding skills use: `description`, `when_to_use`, `user-invocable`, `allowed-tools`. Add `disable-model-invocation: true` for destructive skills.
+5. Include the corresponding invocation under `invocations/` if the skill needs more than 5-10 lines of guidance.
+6. Run [rites/sync_docs.py](rites/sync_docs.py) to regenerate [docs/skills.md](docs/skills.md).
 
 ---
 

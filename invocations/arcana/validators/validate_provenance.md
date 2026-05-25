@@ -7,7 +7,7 @@ authority: grimoire
 last_verified: 2026-05-12
 ---
 
-# Validate Provenance
+# Validate Arcana Provenance
 
 ## Purpose
 
@@ -22,13 +22,14 @@ Confirm every page declaring `authority: external` or `authority: hybrid` lists 
 Or directly:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_provenance.py [--grimoire <path>]
+python3 ARCANA_HOME/rites/validate_provenance.py
 ```
+
+For an active grimoire, use `/grm-validate-provenance`.
 
 ## When to run
 
-- After `/arc-grimoire-ingest` to confirm the new pages cite their source.
-- As a phase of `/arc-grimoire-lint`.
+- After adding Arcana pages with external/hybrid authority.
 - After moving or renaming files in `sources/`.
 - As a pre-release gate.
 
@@ -42,5 +43,4 @@ python3 ARCANA_HOME/rites/validate_provenance.py [--grimoire <path>]
 
 - Schema: [`../../../docs/page_schema.md`](../../../docs/page_schema.md)
 - Frontmatter validator: [`validate_frontmatter.md`](validate_frontmatter.md)
-- Ingest: [`../../grimoire/ingest.md`](../../grimoire/ingest.md)
-- Lint: [`../../grimoire/lint.md`](../../grimoire/lint.md)
+- Grimoire provenance validator: [`../../grimoire/validators/validate_provenance.md`](../../grimoire/validators/validate_provenance.md)

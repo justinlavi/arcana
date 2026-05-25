@@ -13,7 +13,7 @@ last_verified: 2026-05-12
 
 Maintainer-only orchestrator for Arcana itself. Sequences the validator suite, the rite quality check, and the documentation quality pass - applies fixes, re-validates, and reports.
 
-For grimoires use `/arc-grimoire-improve`. This invocation only audits Arcana.
+For grimoires use `/grm-improve`. This invocation only audits Arcana.
 
 ## Invocation
 
@@ -124,12 +124,12 @@ In scope:
 
 - Root: hub, `README.md`, `CHANGELOG.md`
 - `docs/*.md`
-- `invocations/grimoire/`, `invocations/arcana/`, `invocations/meta/`
+- `invocations/arcana/`, `invocations/grimoire/`, `invocations/agent/`, `invocations/library/`, `invocations/workspace/`, `invocations/help/`, and `invocations/meta/`
 - `formulae/*.formula.md` and `formulae/grimoire/` (the master template)
 - `rites/*.py`
 - `resources/`
 
-Out of scope: grimoires (use `/arc-grimoire-improve`).
+Out of scope: grimoires (use `/grm-improve`).
 
 ## Deliverables
 
@@ -154,7 +154,7 @@ After:
 
 - [ ] Validator suite green
 - [ ] Generated docs synced (`rites/sync_docs.py --apply`)
-- [ ] Smoke-test key skills: `/arc-grimoire-create`, `/arc-help`, `/arc-grimoire-improve`
+- [ ] Smoke-test key skills: `/grm-create`, `/arc-help`, `/grm-improve`
 - [ ] `CHANGELOG.md` updated if changes are user-visible
 - [ ] Breaking changes announced to domain leads
 
@@ -165,4 +165,4 @@ After:
 - Rite quality: [`quality/validate_rites.md`](quality/validate_rites.md)
 - Documentation quality: [`quality/improve_documentation.md`](quality/improve_documentation.md)
 - Doc generator: `rites/sync_docs.py`
-- Grimoire equivalent: `/arc-grimoire-improve`
+- Grimoire equivalent: `/grm-improve`

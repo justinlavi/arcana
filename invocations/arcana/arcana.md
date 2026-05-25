@@ -9,7 +9,7 @@ tags: [arcana/invocations, type/hub, scope/arcana, hub/chapter]
 
 Invocations that **modify Arcana itself**. Maintainer only.
 
-For grimoire operations (creating chapters, improving grimoires) see [`../grimoire/grimoire.md`](../grimoire/grimoire.md). For meta/help, see [`../meta/meta.md`](../meta/meta.md). For the canonical skill catalog, see [`../../docs/skills.md`](../../docs/skills.md).
+For grimoire operations (creating chapters, improving grimoires) see [`../grimoire/grimoire.md`](../grimoire/grimoire.md). For agent, library, help, workspace, and shared support docs, route through their invocation hubs. For the canonical skill catalog, see [`../../docs/skills.md`](../../docs/skills.md).
 
 ## Available
 
@@ -17,7 +17,7 @@ For grimoire operations (creating chapters, improving grimoires) see [`../grimoi
 
 - **[improve_arcana.md](improve_arcana.md)** - Comprehensive Arcana improvement; orchestrates the validators and quality invocations. Skill: `/arc-improve`.
 
-Boundary enforcement lives in the domain layer: see [`../grimoire/validate_boundaries.md`](../grimoire/validate_boundaries.md) (skill: `/arc-grimoire-validate-boundaries`). It can scan Arcana itself with the `--arcana` flag.
+Boundary enforcement lives in the grimoire layer: see [`../grimoire/validate_boundaries.md`](../grimoire/validate_boundaries.md) (skill: `/grm-validate-boundaries`). It can scan Arcana itself with the `--arcana` flag.
 
 ### Validators (mechanical)
 

@@ -2,7 +2,7 @@
 type: playbook
 title: "Validate Grimoire Structure"
 aliases: ["validate-structure-domain"]
-tags: [arcana/invocations, type/playbook, scope/domain]
+tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-25
 ---
@@ -30,7 +30,7 @@ Before executing, verify the current working directory is a registered grimoire 
 - After creating or editing chapters/pages
 - After pulling a newer Arcana version
 - During periodic grimoire quality reviews
-- Before running `/arc-grimoire-improve`
+- Before running `/grm-improve`
 - Before publishing or handoff
 
 ## Invocation
@@ -38,7 +38,7 @@ Before executing, verify the current working directory is a registered grimoire 
 From your grimoire directory, cast:
 
 ```
-/arc-grimoire-validate-structure
+/grm-validate-structure
 ```
 
 Mechanical equivalent:

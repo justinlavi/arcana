@@ -2,5 +2,37 @@
   "name": "arcana",
   "kind": "arcana",
   "skill_prefix": "arc",
+  "skill_families": {
+    "arcana": {
+      "skill_prefix": "arc",
+      "path": "skills/arcana",
+      "slug_prefix": ""
+    },
+    "grimoire": {
+      "skill_prefix": "grm",
+      "path": "skills/grimoire",
+      "slug_prefix": ""
+    },
+    "agent": {
+      "skill_prefix": "arc",
+      "path": "skills/agent",
+      "slug_prefix": "agent"
+    },
+    "library": {
+      "skill_prefix": "arc",
+      "path": "skills/library",
+      "slug_prefix": "library"
+    },
+    "workspace": {
+      "skill_prefix": "arc",
+      "path": "skills/workspace",
+      "slug_prefix": "workspace"
+    },
+    "help": {
+      "skill_prefix": "arc",
+      "path": "skills/help",
+      "slug_prefix": ""
+    }
+  },
   "description": "Framework for creating and maintaining grimoires"
 }

@@ -7,7 +7,7 @@ authority: grimoire
 last_verified: 2026-05-24
 ---
 
-# Validate Encoding
+# Validate Arcana Encoding
 
 ## Purpose
 
@@ -24,10 +24,10 @@ Arcana and grimoires may use Unicode for useful visual texture, but text files m
 Or directly:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_encoding.py [--grimoire <path>]
+python3 ARCANA_HOME/rites/validate_encoding.py
 ```
 
-The same standard applies to Arcana and to every grimoire.
+The same standard applies to Arcana and to every grimoire. For an active grimoire, use `/grm-validate-encoding`.
 
 ## What it rejects
 

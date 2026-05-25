@@ -2,7 +2,7 @@
 type: playbook
 title: "Create Chapter"
 aliases: ["create-chapter", "scaffold-chapter"]
-tags: [arcana/invocations, type/playbook, scope/domain]
+tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-12
 ---
@@ -16,13 +16,13 @@ Scaffold a new knowledge chapter inside the active grimoire — copy `chapter_hu
 ## Invocation
 
 ```
-/arc-grimoire-create-chapter
+/grm-create-chapter
 ```
 
 Or with a topic:
 
 ```
-/arc-grimoire-create-chapter for <topic>
+/grm-create-chapter for <topic>
 ```
 
 ## Non-Negotiable Rules
@@ -131,7 +131,7 @@ python3 ARCANA_HOME/rites/append_log.py \
   --grimoire . \
   --op create \
   --title "{{chapter_title}} chapter" \
-  --skill /arc-grimoire-create-chapter \
+  --skill /grm-create-chapter \
   --field pages=chapters/{{chapter_name}}/{{chapter_name}}.md
 ```
 
@@ -146,7 +146,7 @@ python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire .
 python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
 ```
 
-Or invoke `/arc-grimoire-validate-structure` for the integrated structural pass.
+Or invoke `/grm-validate-structure` for the integrated structural pass.
 
 ---
 
@@ -156,4 +156,4 @@ Or invoke `/arc-grimoire-validate-structure` for the integrated structural pass.
 - **Page formula**: `~/grimoires/arcana/formulae/page.formula.md`
 - **Page schema**: `~/grimoires/arcana/docs/page_schema.md`
 - **Grimoire creation**: [`create_grimoire.md`](create_grimoire.md)
-- **Structure validator**: `/arc-grimoire-validate-structure`
+- **Structure validator**: `/grm-validate-structure`

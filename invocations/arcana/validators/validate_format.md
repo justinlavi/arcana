@@ -36,11 +36,7 @@ Execute the validation rite:
 python3 rites/validate_format.py
 ```
 
-For a grimoire root:
-
-```bash
-python3 ARCANA_HOME/rites/validate_format.py --grimoire .
-```
+For an active grimoire, use `/grm-validate-format`.
 
 ### Step 2: Review Invocation Format
 
@@ -79,7 +75,7 @@ Validates hub files are **thin routers**:
 **Example of thick router** (❌ wrong):
 ```markdown
 ### create_grimoire.md
-**Invocation**: /arc-grimoire-create
+**Invocation**: /grm-create
 **Purpose**: Long description here...
 **What it does**: Detailed workflow...
 [This duplicates invocation file content - violation]

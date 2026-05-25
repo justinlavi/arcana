@@ -2,7 +2,7 @@
 type: playbook
 title: "Improve Grimoire"
 aliases: ["improve-grimoire", "upgrade-grimoire", "domain-improve"]
-tags: [arcana/invocations, type/playbook, scope/domain]
+tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-25
 ---
@@ -13,14 +13,14 @@ last_verified: 2026-05-25
 
 Upgrade, audit, and improve the *active* grimoire against the current Arcana version. This includes managed scaffold drift, schema/structure drift, and token-efficient deterministic routing through the hub tree (root hub -> chapter hub -> optional sub-chapter hubs -> 1-2 canonical leaf docs; depth is open-ended). Combines mechanical validators with judgment-based passes. Safe to rerun.
 
-This is the domain-grimoire counterpart to `/arc-improve` (which targets Arcana itself). The two are unrelated - never fall back from one to the other.
+This is the grimoire counterpart to `/arc-improve` (which targets Arcana itself). The two are unrelated - never fall back from one to the other.
 
 ## Invocation
 
 From a registered grimoire's root:
 
 ```
-/arc-grimoire-improve
+/grm-improve
 ```
 
 ## Preconditions
@@ -46,7 +46,7 @@ From a registered grimoire's root:
 Before editing the grimoire:
 
 - Confirm the user has pulled the latest Arcana they intend to use. Do not run network commands unless the user asks.
-- Confirm Arcana skills have been registered after the update (`/arc-skills-register`) or tell the user to run it before relying on newly added skills.
+- Confirm Arcana skills have been registered after the update (`/arc-agent-register-skills`) or tell the user to run it before relying on newly added skills.
 - If the user asks to upgrade all grimoires, list registered grimoires from `~/grimoires/library.json`, recommend doing one grimoire at a time, and start with the active grimoire unless the user chooses another.
 - Confirm the active grimoire root is not Arcana.
 
@@ -54,14 +54,14 @@ Before editing the grimoire:
 
 Invoke and collect output from:
 
-- `/arc-grimoire-validate-structure` - directory layout, required hub files, managed scaffold drift
-- `/arc-validate-format` (`python3 ARCANA_HOME/rites/validate_format.py --grimoire .`) - Markdown tables, fences, and tree examples
-- `/arc-validate-links` - internal markdown links resolve
-- `/arc-grimoire-validate-boundaries` - magical/practical boundary compliance
+- `/grm-validate-structure` - directory layout, required hub files, managed scaffold drift
+- `/grm-validate-format` - Markdown tables, fences, and tree examples
+- `/grm-validate-links` - internal markdown links resolve
+- `/grm-validate-boundaries` - magical/practical boundary compliance
 
 Stop and report if any validator returns hard errors that would invalidate later phases (e.g. missing root hub).
 
-If `/arc-grimoire-validate-structure` reports missing or stale managed scaffold files, copy the current files from `ARCANA_HOME/formulae/grimoire/` before continuing:
+If `/grm-validate-structure` reports missing or stale managed scaffold files, copy the current files from `ARCANA_HOME/formulae/grimoire/` before continuing:
 
 | Grimoire file | Source of truth |
 |---|---|
@@ -82,7 +82,7 @@ Do not mechanically replace grimoire-authored files such as the root README, roo
 
 ### Phase 3: Semantic analysis
 
-Run `/arc-grimoire-analyze-semantics` and incorporate its output:
+Run `/grm-analyze-semantics` and incorporate its output:
 
 - Naming clarity scores per chapter
 - Terminology drift (`config` vs `configuration`, etc.)
@@ -133,7 +133,7 @@ Defer anything that touches >10 files or rewrites stable chapter names - surface
 
 ### Phase 6: Re-validate
 
-Re-run the Phase 1 validators. All must pass. Re-run `/arc-grimoire-analyze-semantics` if Phase 5 made significant renames; confirm scores improved.
+Re-run the Phase 1 validators. All must pass. Re-run `/grm-analyze-semantics` if Phase 5 made significant renames; confirm scores improved.
 
 ## Non-negotiable rules
 
@@ -181,7 +181,7 @@ Surface in chat (do not write report files):
 
 ## Related
 
-- Mechanical: `/arc-grimoire-validate-structure`, `/arc-validate-links`, `/arc-grimoire-validate-boundaries`
-- Semantic: `/arc-grimoire-analyze-semantics`
-- Authoring: `/arc-grimoire-create-chapter`
+- Mechanical: `/grm-validate-structure`, `/grm-validate-format`, `/grm-validate-links`, `/grm-validate-boundaries`
+- Semantic: `/grm-analyze-semantics`
+- Authoring: `/grm-create-chapter`
 - Arcana counterpart (maintainer only): `/arc-improve`

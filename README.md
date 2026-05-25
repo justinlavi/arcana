@@ -55,11 +55,14 @@ Knowledge and skills compound: the better your documentation, the smarter your s
 
 Arcana ships universal operations every grimoire inherits:
 
-- **`/arc-grimoire-ingest <source>`** — file a source under `sources/`, scan existing chapters, propose page updates, apply them, append to `log.md`.
-- **`/arc-grimoire-file-answer`** — promote a chat answer (analysis, comparison, derived insight) into a properly-frontmattered wiki page so it doesn't evaporate into chat history.
-- **`/arc-grimoire-lint`** — health-check the wiki: orphans, stale claims (>90 days unverified), ghost references (entities mentioned often but lacking a page), contradictions, missing cross-references.
-- **`/arc-grimoire-improve`** — comprehensive normalize-and-optimize pass.
-- **`/arc-grimoire-create-chapter`**, **`/arc-grimoire-analyze-semantics`** — and more.
+- **`/grm-ingest <source>`** — file a source under `sources/`, scan existing chapters, propose page updates, apply them, append to `log.md`.
+- **`/grm-file-answer`** — promote a chat answer (analysis, comparison, derived insight) into a properly-frontmattered wiki page so it doesn't evaporate into chat history.
+- **`/grm-lint`** — health-check the wiki: orphans, stale claims (>90 days unverified), ghost references (entities mentioned often but lacking a page), contradictions, missing cross-references.
+- **`/grm-improve`** — comprehensive normalize-and-optimize pass.
+- **`/grm-register-skills`** — refresh Arcana skills plus the active grimoire's own skills.
+- **`/grm-create-chapter`**, **`/grm-analyze-semantics`** — and more.
+
+Arcana command families are prefix-explicit: `/arc-*` acts on Arcana/platform surfaces, `/grm-*` acts on an active grimoire, `/arc-library-*` acts on `~/grimoires/library.json`, `/arc-agent-*` acts on agent configuration, and `/arc-workspace-*` intentionally spans the local workspace. Full rules live in [docs/skill_schema.md](docs/skill_schema.md).
 
 The human curates sources and asks questions. The LLM does the bookkeeping.
 
@@ -70,7 +73,7 @@ The human curates sources and asks questions. The LLM does the bookkeeping.
 Arcana is the engine that powers all your grimoires. You install it once; your grimoires reference it forever.
 
 **Arcana provides** (shared across every grimoire):
-- `/arc-*` skills for creating, improving, validating, and managing grimoires
+- `/arc-*` platform skills and `/grm-*` universal grimoire skills
 - The page schema (`type`, `authority`, `sources`, `last_verified` frontmatter) that makes wikis machine-checkable
 - Formula templates for scaffolding new grimoires, chapters, and pages
 - Validation rites: structure, naming, format, links, frontmatter, orphans, provenance, security, semantics, skill-refs, boundaries
@@ -91,7 +94,7 @@ When you update Arcana, all your grimoires benefit — because they reference it
 
 Arcana registers skills to:
 
-- **Claude Code** — full skill registration; Arcana's `/arc-*` commands plus each grimoire's own grimoire commands
+- **Claude Code** — full skill registration; Arcana's `/arc-*` and `/grm-*` commands plus each grimoire's own commands
 - **Codex / ChatGPT** — pointer-only registration from the same source files
 - **GitHub Copilot, Cursor** — via the agent instruction block injected into `CLAUDE.md` / `AGENTS.md`
 
@@ -103,9 +106,9 @@ Arcana registers skills to:
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
 ```
 
-The summoning rite installs **Arcana** — the framework — configures your AI agents, and registers the `/arc-*` skill set. If you have existing grimoires hosted on GitHub or GitLab, the rite can discover and clone them too. Otherwise, skip straight to building your first grimoire from scratch after Arcana is up.
+The summoning rite installs **Arcana** — the framework — configures your AI agents, and registers the `/arc-*` and `/grm-*` skill sets. If you have existing grimoires hosted on GitHub or GitLab, the rite can discover and clone them too. Otherwise, skip straight to building your first grimoire from scratch after Arcana is up.
 
-Open a new agent session and run `/arc-help` to see every available command, or run `/arc-grimoire-create` to start your first grimoire.
+Open a new agent session and run `/arc-help` to see every available command, or run `/grm-create` to start your first grimoire.
 
 -> [Full installation guide](docs/installation.md) - [5-minute smoke test](docs/installation.md#verify-your-install-5-minute-smoke-test)
 
@@ -164,6 +167,7 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 | [Installation](docs/installation.md) | One-command setup, manual setup, 5-minute smoke test, troubleshooting |
 | [Agent Configuration](docs/agent_configuration.md) | Claude Code, Codex, Copilot, Cursor |
 | [Skill Catalog](docs/skills.md) | Every `/arc-*` command with descriptions |
+| [Skill Schema](docs/skill_schema.md) | Command-family naming rules |
 | [Operating Model](docs/operating_model.md) | Three-layer model and routing |
 | [Page Schema](docs/page_schema.md) | Frontmatter spec for every page |
 | [Obsidian Setup](docs/obsidian.md) | Open as a vault; graph-view color groups |

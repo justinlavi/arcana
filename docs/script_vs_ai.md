@@ -145,7 +145,7 @@ done
 sed -n '/^## Core Concepts/,/^---$/p' docs/reference.md > /tmp/terminology.txt
 
 # ✅ GOOD: AI analyzes using that data
-/arc-grimoire-analyze-semantics
+/grm-analyze-semantics
 # AI reads reference, understands context, suggests improvements intelligently
 ```
 
@@ -315,8 +315,8 @@ Pick by the same rule that applies to rites vs invocations themselves:
 
 | If the skill's job is | Pick this backing | Examples |
 |---|---|---|
-| Mechanical, deterministic, no judgment required | Rite-backed | `/arc-skills-register`, `/arc-library-sync`, `/arc-clean`, every `/arc-validate-*` |
-| Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/arc-grimoire-create`, `/arc-grimoire-improve`, `/arc-improve`, `/arc-help` |
+| Mechanical, deterministic, no judgment required | Rite-backed | `/arc-agent-register-skills`, `/arc-library-sync`, `/arc-workspace-clean`, every `/arc-validate-*` |
+| Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/grm-create`, `/grm-improve`, `/arc-improve`, `/arc-help` |
 | Both — the rite gathers data, the AI interprets | **Both, in that order**: skill body runs the rite first, then loads an invocation that reads the rite's output | `/arc-validate-semantics` could evolve into this if/when the analysis judgment grows beyond the rite's pattern check |
 
 Two anti-patterns to avoid:

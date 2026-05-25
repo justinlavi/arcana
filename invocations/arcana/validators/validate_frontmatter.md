@@ -7,7 +7,7 @@ authority: grimoire
 last_verified: 2026-05-12
 ---
 
-# Validate Frontmatter
+# Validate Arcana Frontmatter
 
 ## Purpose
 
@@ -24,10 +24,10 @@ Mechanically check every authored page's YAML frontmatter against the canonical 
 Or directly:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_frontmatter.py [--grimoire <path>]
+python3 ARCANA_HOME/rites/validate_frontmatter.py
 ```
 
-Without `--grimoire`, the rite validates Arcana. For a grimoire, pass its root explicitly, for example `--grimoire .` from that grimoire directory.
+For an active grimoire, use `/grm-validate-frontmatter`.
 
 ## What gets checked
 
@@ -45,8 +45,7 @@ In short:
 ## When to run
 
 - After creating or editing any page.
-- As a phase of `/arc-improve` and `/arc-grimoire-improve`.
-- As a phase of `/arc-grimoire-lint`.
+- As a phase of `/arc-improve`.
 - As a pre-commit / pre-release gate.
 
 ## Common failures and fixes

@@ -2,7 +2,7 @@
 type: playbook
 title: "Analyze Semantics"
 aliases: ["analyze-semantics", "naming-audit"]
-tags: [arcana/invocations, type/playbook, scope/domain]
+tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-12
 ---
@@ -20,7 +20,7 @@ This is the AI counterpart to `/arc-validate-semantics`, which only mechanically
 From a registered grimoire directory:
 
 ```
-/arc-grimoire-analyze-semantics
+/grm-analyze-semantics
 ```
 
 Flags:
@@ -38,7 +38,7 @@ Verify the working directory is a registered grimoire (check `~/grimoires/librar
 - After major refactors
 - When users or AI agents struggle to find or route to knowledge
 - Quarterly grimoire quality review
-- As Phase 2.5 of `/arc-grimoire-improve` (auto-invoked)
+- As Phase 2.5 of `/grm-improve` (auto-invoked)
 
 ## Workflow
 
@@ -136,6 +136,6 @@ Surface the report in the chat. Do not write files unless the user asks.
 ## Related
 
 - **Mechanical counterpart**: `/arc-validate-semantics` (hyphenated path examples in prose)
-- **Apply changes**: `/arc-grimoire-improve`
-- **Structure validation**: `/arc-grimoire-validate-structure`
-- **Boundary validation**: `/arc-grimoire-validate-boundaries`
+- **Apply changes**: `/grm-improve`
+- **Structure validation**: `/grm-validate-structure`
+- **Boundary validation**: `/grm-validate-boundaries`

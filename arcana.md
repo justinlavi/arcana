@@ -7,7 +7,7 @@ tags: [arcana/root, type/hub, hub/root]
 
 # Arcana
 
-Meta-knowledge about Grimoire itself — invocations, formulae, rites, and governance. For domain knowledge, route to your grimoire's own root hub instead.
+Meta-knowledge about Arcana itself — invocations, formulae, rites, and governance. For grimoire knowledge, route to the grimoire's own root hub instead.
 
 Arcana is the engine. Every grimoire references it; nothing copies it.
 
@@ -25,6 +25,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 - [docs/installation.md](docs/installation.md) — Summoning rite, manual install, 5-minute smoke test
 - [docs/agent_configuration.md](docs/agent_configuration.md) — Per-agent setup (Claude / Codex / Copilot)
 - [docs/skills.md](docs/skills.md) — Canonical Arcana skill catalog (auto-generated)
+- [docs/skill_schema.md](docs/skill_schema.md) — Command-family skill naming schema
 - [docs/reference.md](docs/reference.md) — Terminology, library/manifest schemas, path keys, formula placeholders
 - [docs/operating_model.md](docs/operating_model.md) — Storage layers and routing
 - [docs/page_schema.md](docs/page_schema.md) — Frontmatter spec for every page
@@ -39,15 +40,17 @@ How Arcana is laid out — for the rules themselves, follow the links:
 
 **Grimoire (grimoire operations)** — see [invocations/grimoire/grimoire.md](invocations/grimoire/grimoire.md):
 
-- [create_grimoire.md](invocations/grimoire/create_grimoire.md) — `/arc-grimoire-create`
-- [create_chapter.md](invocations/grimoire/create_chapter.md) — `/arc-grimoire-create-chapter`
-- [ingest.md](invocations/grimoire/ingest.md) — `/arc-grimoire-ingest`
-- [file_answer.md](invocations/grimoire/file_answer.md) — `/arc-grimoire-file-answer`
-- [lint.md](invocations/grimoire/lint.md) — `/arc-grimoire-lint`
-- [improve_grimoire.md](invocations/grimoire/improve_grimoire.md) — `/arc-grimoire-improve`
-- [analyze_semantics.md](invocations/grimoire/analyze_semantics.md) — `/arc-grimoire-analyze-semantics`
-- [validate_structure.md](invocations/grimoire/validate_structure.md) — `/arc-grimoire-validate-structure`
-- [validate_boundaries.md](invocations/grimoire/validate_boundaries.md) — `/arc-grimoire-validate-boundaries`
+- [create_grimoire.md](invocations/grimoire/create_grimoire.md) — `/grm-create`
+- [create_chapter.md](invocations/grimoire/create_chapter.md) — `/grm-create-chapter`
+- [register_skills.md](invocations/grimoire/register_skills.md) — `/grm-register-skills`
+- [ingest.md](invocations/grimoire/ingest.md) — `/grm-ingest`
+- [file_answer.md](invocations/grimoire/file_answer.md) — `/grm-file-answer`
+- [lint.md](invocations/grimoire/lint.md) — `/grm-lint`
+- [improve_grimoire.md](invocations/grimoire/improve_grimoire.md) — `/grm-improve`
+- [analyze_semantics.md](invocations/grimoire/analyze_semantics.md) — `/grm-analyze-semantics`
+- [validate_structure.md](invocations/grimoire/validate_structure.md) — `/grm-validate-structure`
+- [validate_boundaries.md](invocations/grimoire/validate_boundaries.md) — `/grm-validate-boundaries`
+- Validators hub: [invocations/grimoire/validators/validators.md](invocations/grimoire/validators/validators.md)
 
 **Arcana (maintainer only)** — see [invocations/arcana/arcana.md](invocations/arcana/arcana.md):
 
@@ -55,11 +58,28 @@ How Arcana is laid out — for the rules themselves, follow the links:
 - Validators hub: [invocations/arcana/validators/validators.md](invocations/arcana/validators/validators.md)
 - Quality hub: [invocations/arcana/quality/quality.md](invocations/arcana/quality/quality.md)
 
-**Meta** — see [invocations/meta/meta.md](invocations/meta/meta.md):
+**Agent** — see [invocations/agent/agent.md](invocations/agent/agent.md):
 
-- [help.md](invocations/meta/help.md) — `/arc-help`
-- [update_agent_block.md](invocations/meta/update_agent_block.md) — `/arc-agent-update`
+- [register_skills.md](invocations/agent/register_skills.md) — `/arc-agent-register-skills`
+- [update_agent_block.md](invocations/agent/update_agent_block.md) — `/arc-agent-update`
+
+**Library** — see [invocations/library/library.md](invocations/library/library.md):
+
+- [sync.md](invocations/library/sync.md) — `/arc-library-sync`
+- [adopt.md](invocations/library/adopt.md) — `/arc-library-adopt`
+
+**Workspace** — see [invocations/workspace/workspace.md](invocations/workspace/workspace.md):
+
+- [clean.md](invocations/workspace/clean.md) — `/arc-workspace-clean`
+
+**Help**:
+
+- [help.md](invocations/help/help.md) — `/arc-help`
+
+**Meta support** — see [invocations/meta/meta.md](invocations/meta/meta.md):
+
 - [base_invocation.md](invocations/meta/base_invocation.md)
+- [grimoire_directory_guard.md](invocations/meta/grimoire_directory_guard.md)
 
 ## Formulae
 

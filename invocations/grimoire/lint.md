@@ -2,7 +2,7 @@
 type: playbook
 title: "Lint Grimoire"
 aliases: ["lint", "domain-lint", "health-check"]
-tags: [arcana/invocations, type/playbook, scope/domain]
+tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-12
 ---
@@ -20,7 +20,7 @@ This is the LLM-wiki "lint" pass: keeps the wiki maintained as it grows.
 From the active grimoire's root:
 
 ```
-/arc-grimoire-lint
+/grm-lint
 ```
 
 Flags:
@@ -97,7 +97,7 @@ python3 ARCANA_HOME/rites/append_log.py \
   --grimoire . \
   --op lint \
   --title "<short summary>" \
-  --skill /arc-grimoire-lint \
+  --skill /grm-lint \
   --field orphans=<n> \
   --field stale=<n> \
   --field ghost-refs=<n> \
@@ -135,7 +135,7 @@ Surface in chat:
 
 ## Related
 
-- Mechanical: `/arc-validate-structure`, `/arc-validate-frontmatter`, `/arc-validate-links`, `/arc-validate-orphans`, `/arc-validate-provenance`
-- Semantic / naming: `/arc-grimoire-analyze-semantics`
+- Mechanical: `/grm-validate-structure`, `/grm-validate-frontmatter`, `/grm-validate-links`, `/grm-validate-orphans`, `/grm-validate-provenance`
+- Semantic / naming: `/grm-analyze-semantics`
 - Page schema: `ARCANA_HOME/docs/page_schema.md`
-- Comprehensive grimoire pass: `/arc-grimoire-improve` (lint runs as one phase of improve)
+- Comprehensive grimoire pass: `/grm-improve` (lint runs as one phase of improve)

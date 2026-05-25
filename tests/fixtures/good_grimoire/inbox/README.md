@@ -16,7 +16,7 @@ This directory is the place to drop **mixed content that needs to be sorted**: z
 
 ## How content leaves here
 
-Run `/arc-grimoire-ingest` (no argument sweeps `inbox/`). The skill walks the folder and, for each file, proposes a classification - confirmed in chat - then moves the file:
+Run `/grm-ingest` (no argument sweeps `inbox/`). The skill walks the folder and, for each file, proposes a classification - confirmed in chat - then moves the file:
 
 | Classification | Destination | Notes |
 |---|---|---|
@@ -29,5 +29,5 @@ After absorption the `ingest` skill appends a single log entry to `log.md` summa
 ## What does NOT belong here
 
 - Files you want to keep around as immutable references -> `sources/` directly.
-- Authored wiki content you've already written -> `chapters/` directly (use `/arc-grimoire-create-chapter` if you want scaffolding).
+- Authored wiki content you've already written -> `chapters/` directly (use `/grm-create-chapter` if you want scaffolding).
 - Operating state from another tool (caches, indexes, build artifacts).

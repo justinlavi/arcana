@@ -20,15 +20,26 @@ ARCANA_ROOT = default_arcana_root()
 REQUIRED_DIRS = [
     "docs",
     "invocations/grimoire",
+    "invocations/grimoire/validators",
     "invocations/arcana",
     "invocations/arcana/quality",
     "invocations/arcana/validators",
+    "invocations/agent",
+    "invocations/help",
+    "invocations/library",
     "invocations/meta",
+    "invocations/workspace",
     "formulae",
     "formulae/grimoire",
     "rites",
     "resources",
     "skills",
+    "skills/arcana",
+    "skills/grimoire",
+    "skills/agent",
+    "skills/library",
+    "skills/workspace",
+    "skills/help",
 ]
 
 REQUIRED_FILES = [
@@ -58,10 +69,15 @@ FORBIDDEN_GRIMOIRE_LAYER_PATHS = [
 # Folders whose hub file must exist with the folder-name convention.
 HUB_DIRS = [
     "invocations/grimoire",
+    "invocations/grimoire/validators",
     "invocations/arcana",
     "invocations/arcana/quality",
     "invocations/arcana/validators",
+    "invocations/agent",
+    "invocations/help",
+    "invocations/library",
     "invocations/meta",
+    "invocations/workspace",
 ]
 
 

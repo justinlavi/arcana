@@ -26,7 +26,7 @@ from pathlib import Path
 from _lib import default_arcana_root, load_manifest
 
 REQUIRED_DIRS = ["sources", "chapters"]
-RECOMMENDED_DIRS = ["inbox"]  # Warn-only; inbox/ is the transient drop zone for /arc-grimoire-ingest
+RECOMMENDED_DIRS = ["inbox"]  # Warn-only; inbox/ is the transient drop zone for /grm-ingest
 # grimoire.json is validated separately (step 1); the root hub is checked in step 3.
 REQUIRED_FILES_BY_CONVENTION = ["README.md", "log.md"]
 MANAGED_SCAFFOLD_FILES = [
@@ -100,7 +100,7 @@ def main():
     # 4b. Recommended directories (warn but don't fail).
     for d in RECOMMENDED_DIRS:
         if not (root / d).is_dir():
-            print(f"  MISSING  directory: {d}/  - drop zone for /arc-grimoire-ingest")
+            print(f"  MISSING  directory: {d}/  - drop zone for /grm-ingest")
             errors += 1
         else:
             print(f"  OK       {d}/")

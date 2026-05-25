@@ -9,7 +9,7 @@ last_verified: 2026-05-15
 
 # Grimoire Directory Guard
 
-Shared precondition for every Arcana skill that mutates or analyzes an active grimoire (`/arc-grimoire-*` operations that act on `cwd`). Skills include this fragment via `!cat` so the guard contract stays single-sourced.
+Shared precondition for every Arcana skill that mutates or analyzes an active grimoire (`/grm-*` operations that act on `cwd`). Skills include this fragment via `!cat` so the guard contract stays single-sourced.
 
 **Before doing anything else**, verify the current working directory is a registered grimoire:
 

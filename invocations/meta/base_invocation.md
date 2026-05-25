@@ -11,7 +11,7 @@ last_verified: 2026-05-13
 
 A reusable, opinionated workflow for the most common Grimoire operation: "the user gave me a goal, I need to read sources, distill what's stable, write it as a wiki page, and wire it into the routing tree."
 
-This is **not** a slash command. It's a starting template for new invocations whose work fits the four-phase pattern. If a domain operation needs different phases (e.g. ingestion is handled by `/arc-grimoire-ingest`, lint by `/arc-grimoire-lint`), use the relevant dedicated invocation instead. For the structural skeleton of a brand-new invocation file, copy `formulae/invocation.formula.md`.
+This is **not** a slash command. It's a starting template for new invocations whose work fits the four-phase pattern. If a grimoire operation needs different phases (e.g. ingestion is handled by `/grm-ingest`, lint by `/grm-lint`), use the relevant dedicated invocation instead. For the structural skeleton of a brand-new invocation file, copy `formulae/invocation.formula.md`.
 
 The magical/practical boundary, page schema, hub convention, and storage layers are documented elsewhere; this file references them rather than restating.
 
@@ -30,7 +30,7 @@ Anything you author following this template must conform to:
 Use this four-phase template when:
 
 - The user has a goal that requires reading external material and producing a single canonical wiki page.
-- No more specific invocation applies (`/arc-grimoire-ingest` for filing a source, `/arc-grimoire-file-answer` for promoting a chat answer, `/arc-grimoire-create-chapter` for scaffolding a new chapter).
+- No more specific invocation applies (`/grm-ingest` for filing a source, `/grm-file-answer` for promoting a chat answer, `/grm-create-chapter` for scaffolding a new chapter).
 
 ## When NOT to follow this pattern
 

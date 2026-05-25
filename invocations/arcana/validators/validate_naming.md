@@ -11,7 +11,7 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-Enforce snake_case naming convention for Arcana files and directories.
+Enforce Arcana naming conventions for files, directories, and skill command slugs.
 
 ## Invocation
 
@@ -48,6 +48,10 @@ The rite checks:
 - ✅ Valid: `validate_structure.py`, `validate.py`
 - ❌ Invalid: `validate-structure.py`, `validateStructure.py`
 
+**Skill folders** (must live under a declared command family and use kebab-case):
+- ✅ Valid: `skills/arcana/validate-links`, `skills/grimoire/validate-links`, `skills/agent/register-skills`
+- ❌ Invalid: `skills/validate-links`, `skills/arcana_validate_links`, `skills/grimoire/validate_links`
+
 **Allowed exceptions**:
 - `README.md`, `CHANGELOG.md`, hub, `CLAUDE.md`, `LICENSE.md` (all caps)
 - `IMPLEMENTATION_PLAN.md` (special planning documents)
@@ -78,11 +82,18 @@ Check that examples in documentation also use snake_case:
 - File references: `templates/example_template.md`
 - Directory paths: `scripts/helper_scripts/`
 
+Check that skill examples follow [docs/skill_schema.md](../../../docs/skill_schema.md):
+- `/arc-*` for Arcana itself and platform support
+- `/grm-*` for active grimoires
+- `/arc-library-*`, `/arc-agent-*`, and `/arc-workspace-*` for support targets
+
 ## Outputs
 
 **Console output**:
 - Hyphenated filenames with paths
 - CamelCase filenames with paths
+- Skill frontmatter/folder mismatch
+- Skill files outside declared command-family folders
 - Exit code: 0 (compliant) or 1 (violations found)
 
 **On success**:

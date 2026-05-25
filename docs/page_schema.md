@@ -71,7 +71,7 @@ last_verified: 2026-05-12
 | `tags` | every page | Use `/`-separated namespaces: `chapter/<name>`, `type/<type>`, `domain/<...>`. Drives Dataview and Obsidian tag panes. |
 | `sources` | required for `authority: external` and `authority: hybrid` | Paths or URLs. At least one entry must resolve. Validator checks `sources/...` paths exist on disk. |
 | `authority` | every page except `hub` / `log-entry` | One of the three values above. |
-| `last_verified` | every page except `hub` / `log-entry` | ISO date the page was last hand-verified or auto-checked. `/arc-grimoire-lint` flags pages older than the configured stale window. |
+| `last_verified` | every page except `hub` / `log-entry` | ISO date the page was last hand-verified or auto-checked. `/grm-lint` flags pages older than the configured stale window. |
 
 ### Required-fields matrix
 
@@ -180,7 +180,7 @@ last_verified: 2026-05-12
 6. `last_verified` is a parseable `YYYY-MM-DD` date.
 7. `tags` and `aliases` are YAML lists of plain strings.
 
-The `/arc-validate-frontmatter` skill wraps this rite for Arcana itself; `/arc-grimoire-validate-structure` calls it as part of structural validation in grimoires.
+The `/arc-validate-frontmatter` skill validates Arcana itself; `/grm-validate-frontmatter` validates an active grimoire.
 
 ---
 

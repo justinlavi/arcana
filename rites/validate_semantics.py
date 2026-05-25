@@ -6,7 +6,7 @@ What this rite checks (mechanical, deterministic):
   `file-name.md` written in prose should use snake_case (Arcana convention).
 
 What this rite does NOT do: intelligent semantic analysis (naming quality,
-discoverability, organization). For that, use /arc-grimoire-analyze-semantics.
+discoverability, organization). For that, use /grm-analyze-semantics.
 Filename naming is enforced separately by validate_naming.py.
 
 Usage: python3 rites/validate_semantics.py
@@ -95,7 +95,7 @@ def main():
         print("Semantic validation passed.")
         print()
         print("For intelligent semantic analysis (naming quality, discoverability):")
-        print("   /arc-grimoire-analyze-semantics")
+        print("   /grm-analyze-semantics")
         print()
         return 0
 

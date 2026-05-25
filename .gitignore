@@ -24,7 +24,7 @@ desktop.ini
 .cache/
 .claude/
 *.codex
-agent/
+/agent/
 
 # Python bytecode and caches
 __pycache__/

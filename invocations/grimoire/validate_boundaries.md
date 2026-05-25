@@ -18,11 +18,11 @@ Canonical definition and full term mapping: [`docs/reference.md`](../../docs/ref
 ## Invocation
 
 ```
-/arc-grimoire-validate-boundaries          # validate active grimoire (cwd)
-/arc-grimoire-validate-boundaries --arcana # also scan Arcana itself (strictest)
+/grm-validate-boundaries          # validate active grimoire (cwd)
+/grm-validate-boundaries --arcana # also scan Arcana itself (strictest)
 ```
 
-Also runs as part of `/arc-grimoire-improve` and `/arc-improve`.
+Also runs as part of `/grm-improve` and `/arc-improve`.
 
 ## When to cast
 
@@ -33,7 +33,7 @@ Also runs as part of `/arc-grimoire-improve` and `/arc-improve`.
 ## Rules enforced
 
 1. **No magical directories in grimoires.** `invocations/`, `formulae/`, `rites/` exist only inside Arcana. Grimoire equivalents: `templates/`, `scripts/`, `snippets/`, `configs/`, `policies/`, `guides/`, `recipes/`, `playbooks/` - whatever fits the subject.
-2. **No magical terminology in chapter prose.** Phrases like "perform the invocation" or "consult the formula" belong in Arcana docs only. Referencing Arcana by name (e.g. "run `/arc-grimoire-improve`") is fine.
+2. **No magical terminology in chapter prose.** Phrases like "perform the invocation" or "consult the formula" belong in Arcana docs only. Referencing Arcana by name (e.g. "run `/grm-improve`") is fine.
 3. **No platform-specific assumptions in shared content.** Slack, SharePoint, Confluence, Teams, Jira, GitHub etc. should be generic ("communication channel", "document repository", "issue tracker") unless documenting an actual integration.
 4. **No prescriptive team/department buzzwords in shared chapters.** Don't write "the HR team owns this" in shared content unless the grimoire is itself an HR grimoire (in which case department naming is the subject and is fine). Words like HR, Marketing, Legal, Sales, Finance get scrubbed when they're acting as scope assumptions about the *reader*, not the *content*.
 5. **Generic example names in Arcana.** When Arcana shows examples, use the canonical pair `cooking-grimoire` (personal) and `hr-grimoire` (workplace). For sub-examples use `Alice/Bob`, `Project Alpha`, `{your-grimoire}`. Real company/product/person names only when documenting an actual integration. (Grimoires may use whatever real names their subject requires.)
@@ -114,6 +114,6 @@ For each violation, report file, line, offending text, and suggested fix. Group 
 
 - **Reference**: [`docs/reference.md`](../../docs/reference.md) A "The Magical Boundary" (canonical rules and term mapping)
 - **Operating model**: [`docs/operating_model.md`](../../docs/operating_model.md) (why the boundary exists)
-- **Semantic naming**: `/arc-grimoire-analyze-semantics` (judgment-based naming review)
+- **Semantic naming**: `/grm-analyze-semantics` (judgment-based naming review)
 - **Orchestrator (Arcana)**: `/arc-improve`
-- **Orchestrator (domain)**: `/arc-grimoire-improve`
+- **Orchestrator (grimoire)**: `/grm-improve`

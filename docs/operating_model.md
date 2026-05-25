@@ -20,7 +20,7 @@ A grimoire's content is organized into layers that work together:
 | Layer | Directory | Owner | Purpose |
 |---|---|---|---|
 | Sources | `sources/` | LLM reads, never modifies | Immutable artifacts: articles, transcripts, papers, screenshots. Citation-stable. |
-| Inbox | `inbox/` | LLM and user both write | Transient drop zone for mixed content awaiting classification. Cleared on `/arc-grimoire-ingest`. |
+| Inbox | `inbox/` | LLM and user both write | Transient drop zone for mixed content awaiting classification. Cleared on `/grm-ingest`. |
 | Wiki | `chapters/`, root hub | LLM authors and maintains | Synthesized knowledge with frontmatter (`type`, `authority`, `sources`, `last_verified`) |
 | Schema | `grimoire.json` + injected agent block | User co-evolves | Tells the agent how to operate this grimoire |
 

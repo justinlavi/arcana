@@ -1,0 +1,62 @@
+---
+type: playbook
+title: "Register Active Grimoire Skills"
+aliases: ["register-grimoire-skills", "refresh-active-grimoire-skills"]
+tags: [arcana/invocations, type/playbook, scope/grimoire]
+authority: grimoire
+last_verified: 2026-05-25
+---
+
+# Invocation: Register Active Grimoire Skills
+
+## Purpose
+
+Register Arcana-shipped skills and the active grimoire's own skills into supported agent skill directories.
+
+Use this day-to-day when the user is working inside one grimoire and has added, renamed, or edited that grimoire's `skills/` directory. It refreshes Arcana command families at the same time so the agent remains aligned after Arcana updates, but it does not scan or clean skills for every installed grimoire.
+
+## Invocation
+
+```
+/grm-register-skills
+```
+
+## Preconditions
+
+!`cat ARCANA_HOME/invocations/meta/grimoire_directory_guard.md`
+
+## Workflow
+
+### 1. Run the registration rite for the active grimoire
+
+From the active grimoire root:
+
+```bash
+python3 ARCANA_HOME/rites/register_skills.py --grimoire .
+```
+
+On Windows, use `python` instead of `python3`.
+
+### 2. Report the result
+
+Tell the user how many Arcana and active-grimoire skills were registered, how many stale registrations were cleaned, and which agent targets were written.
+
+### 3. Optional flags
+
+Preview without writing:
+
+```bash
+python3 ARCANA_HOME/rites/register_skills.py --grimoire . --dry-run
+```
+
+Target one supported agent:
+
+```bash
+python3 ARCANA_HOME/rites/register_skills.py --grimoire . --agent codex
+python3 ARCANA_HOME/rites/register_skills.py --grimoire . --agent claude
+```
+
+## Related
+
+- Global registration: [`../agent/register_skills.md`](../agent/register_skills.md)
+- Agent configuration: [`../../docs/agent_configuration.md`](../../docs/agent_configuration.md)

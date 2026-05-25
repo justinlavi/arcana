@@ -4,11 +4,15 @@
 
 Breaking semantic cleanup:
 
-- Replaced Arcana's command prefix from `/grm-*` to `/arc-*`.
-- Renamed grimoire-management commands from `/grm-domain-*` to `/arc-grimoire-*`.
+- Split Arcana-shipped commands into two command families: `/arc-*` for Arcana/platform operations and `/grm-*` for universal grimoire operations.
+- Renamed old grimoire-management commands from `/grm-domain-*` to `/grm-*`.
 - Replaced Arcana's root `grimoire.json` with `arcana.json`; Arcana is now modeled as the framework, not a grimoire.
 - Replaced grimoire manifest `namespace` fields with `skill_prefix`.
-- Renamed Arcana skill source folders to match the new command grammar, such as `skills/grimoire-ingest/` and `skills/validate-all/`.
+- Renamed Arcana skill source folders to match the new command grammar, such as `skills/grimoire/ingest/` and `skills/arcana/validate-all/`.
+- Added a canonical command-family skill schema and enforcement in `validate_naming.py`; Arcana source skills now live under `skills/<family>/<slug>/`.
+- Mirrored the command-family schema in `invocations/`, moving agent, library, help, and workspace operations out of `meta/` and leaving `meta/` for shared fragments.
+- Added `/grm-register-skills` for refreshing Arcana skills plus the active grimoire's own skills without scanning every installed grimoire.
+- Split shared validators into explicit Arcana and grimoire-facing skills, e.g. `/arc-validate-frontmatter` and `/grm-validate-frontmatter`, without compatibility aliases.
 - Renamed `validate_domain_structure.py` to `validate_grimoire_structure.py`.
 - Renamed the Arcana path placeholder from `GRIMOIRE_ARCANA` to `ARCANA_HOME`.
 - Updated Japan Grimoire to the new manifest and command vocabulary.
@@ -17,7 +21,7 @@ Breaking semantic cleanup:
 - Added `/arc-validate-encoding` to reject invalid UTF-8, BOMs, CRLF drift, mojibake markers, and known repair artifacts while allowing intentional Unicode.
 - Added the same Git/editor guardrails to the grimoire formula so newly created grimoires inherit stable encoding and newline policy.
 - Made `rites/templates/grimoire_block.md` the only Grimoire agent-block source; source bootstrap downloads it and release binaries bundle it instead of relying on an inline copy.
-- Extended `/arc-grimoire-improve` and `validate_grimoire_structure.py` to treat current Arcana-managed scaffold files as part of grimoire upgrade/structure compliance.
+- Extended `/grm-improve` and `validate_grimoire_structure.py` to treat current Arcana-managed scaffold files as part of grimoire upgrade/structure compliance.
 - Removed Arcana's static grimoire catalog entirely; `~/grimoires/library.json` is the only persistent grimoire registry, and remote grimoires are discovered only from an explicit GitHub/GitLab scope.
 - Hardened encoding validation against numeric range question-mark artifacts, and made skill registration write generated skill files as UTF-8/LF.
 - Hardened the Summoning Rite binary builder so PyInstaller failures report a clear error instead of a traceback.

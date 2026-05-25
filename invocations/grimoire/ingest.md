@@ -2,7 +2,7 @@
 type: playbook
 title: "Ingest Source"
 aliases: ["ingest", "domain-ingest"]
-tags: [arcana/invocations, type/playbook, scope/domain]
+tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-13
 ---
@@ -19,14 +19,14 @@ Bring external content into a grimoire. The skill is polymorphic - it accepts a 
 
 `sources/` and `chapters/` are the destinations. `inbox/` is the (optional) staging area.
 
-For a one-off chat answer with no source artifact, use `/arc-grimoire-file-answer` instead.
+For a one-off chat answer with no source artifact, use `/grm-file-answer` instead.
 
 ## Invocation
 
 ```
-/arc-grimoire-ingest                # no arg: sweep inbox/ if it exists
-/arc-grimoire-ingest <file>         # single source artifact
-/arc-grimoire-ingest <folder>       # walk that folder, classify each file
+/grm-ingest                # no arg: sweep inbox/ if it exists
+/grm-ingest <file>         # single source artifact
+/grm-ingest <folder>       # walk that folder, classify each file
 ```
 
 If the user provides only a description, ask for a source location (or instruct them to drop into `inbox/`) before continuing.
@@ -34,7 +34,7 @@ If the user provides only a description, ask for a source location (or instruct 
 ## Preconditions
 
 1. Working directory must be a registered grimoire (its key in `~/grimoires/library.json`). Refuse for Arcana itself.
-2. `sources/` and `log.md` must exist at the grimoire root. If missing, instruct the user to re-scaffold or run `/arc-grimoire-validate-structure`.
+2. `sources/` and `log.md` must exist at the grimoire root. If missing, instruct the user to re-scaffold or run `/grm-validate-structure`.
 3. `inbox/` is optional. If the user invokes with no argument and no `inbox/` exists, ask whether to create one or to point at a specific path.
 
 ## Modes
@@ -101,7 +101,7 @@ python3 ARCANA_HOME/rites/append_log.py \
   --grimoire . \
   --op ingest \
   --title "<short description>" \
-  --skill /arc-grimoire-ingest \
+  --skill /grm-ingest \
   --field source="<inbox or path or single-file>" \
   --field pages-created=<n> \
   --field pages-updated=<n> \
@@ -150,5 +150,5 @@ Surface in chat:
 - Page schema: `ARCANA_HOME/docs/page_schema.md`
 - Source formula: `ARCANA_HOME/formulae/source.formula.md`
 - Page formula: `ARCANA_HOME/formulae/page.formula.md`
-- Lint after a batch of ingests: `/arc-grimoire-lint`
-- Promote a chat answer (no source) into a page: `/arc-grimoire-file-answer`
+- Lint after a batch of ingests: `/grm-lint`
+- Promote a chat answer (no source) into a page: `/grm-file-answer`

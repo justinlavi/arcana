@@ -1,13 +1,13 @@
 ---
 type: reference
-title: "Grimoire Reference Guide"
+title: "Arcana Reference Guide"
 aliases: ["terminology", "glossary", "reference"]
 tags: [type/reference, arcana/docs]
 authority: grimoire
 last_verified: 2026-05-12
 ---
 
-# Grimoire Reference Guide
+# Arcana Reference Guide
 
 **Terminology, symbols, and conventions for Arcana**
 
@@ -15,13 +15,13 @@ last_verified: 2026-05-12
 
 ## ⚡ The Magical Boundary ⚡
 
-**IMPORTANT**: Grimoire has two layers with different terminology:
+**IMPORTANT**: Arcana and grimoires have two vocabulary layers with different jobs:
 
 ### 🔮 The System (Context) = Magical
-When **using** or **talking about** Grimoire itself:
+When **using** Arcana or talking about the framework layer:
 - Use playful, magical language
 - "Perform an invocation", "consult your grimoire", "Arcana"
-- AI agents should embody a helpful wizard when operating Grimoire
+- AI agents may use the magical vocabulary when operating Arcana-managed workflows
 
 ### 📝 The Content = Practical
 When **creating knowledge** inside chapters:
@@ -34,7 +34,7 @@ When **creating knowledge** inside chapters:
 **Why?** Discoverability and clarity. A cook searches for "sourdough recipe" not "bread formula".
 
 ### AI Agents
-- **Magical language** for Grimoire operations: "performing invocation", "consulting grimoire", "routing to chapter", `/arc-*` skills
+- **Magical language** for Arcana-managed operations: "performing invocation", "consulting grimoire", "routing to chapter", `/arc-*` skills
 - **Practical language** for content creation: standard domain terminology, real folder names (`templates/`, `scripts/`), no magical terms in chapter content
 - The magic is in the **system**, not the **content**
 
@@ -68,9 +68,11 @@ Page template: `ARCANA_HOME/formulae/page.formula.md`
 
 ## Skills
 
-The current Arcana skill catalog lives in **[skills.md](skills.md)** (auto-generated from each `skills/<slug>/SKILL.md`). To enumerate every skill installed for an agent — Arcana plus every grimoire — invoke `/arc-help`.
+The current Arcana skill catalog lives in **[skills.md](skills.md)** (auto-generated from each Arcana `skills/<family>/<slug>/SKILL.md`). To enumerate every skill installed for an agent — Arcana plus every grimoire — invoke `/arc-help`.
 
-Skill names use skill prefixes: Arcana ships `arc-*` (declared in `arcana/arcana.json`); each grimoire ships `{skill prefix}-*` from its own manifest. Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<slug>` and the registration rite substitutes the skill prefix at install time. Skills register to `~/.claude/skills/` (Claude Code) and `~/.codex/skills/` (Codex/ChatGPT, pointer-only).
+Skill names use command-family prefixes: Arcana ships `arc-*` for platform operations and `grm-*` for universal grimoire operations. Each grimoire ships `{skill prefix}-*` from its own manifest. The canonical schema is [skill_schema.md](skill_schema.md).
+
+Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` and the registration rite substitutes the command-family or grimoire skill prefix at install time. Skills register to `~/.claude/skills/` (Claude Code) and `~/.codex/skills/` (Codex/ChatGPT, pointer-only).
 
 ---
 
@@ -127,13 +129,23 @@ Arcana is not a grimoire and uses `arcana.json` instead:
   "name": "arcana",
   "kind": "arcana",
   "skill_prefix": "arc",
+  "skill_families": {
+    "arcana": {"skill_prefix": "arc", "path": "skills/arcana", "slug_prefix": ""},
+    "grimoire": {"skill_prefix": "grm", "path": "skills/grimoire", "slug_prefix": ""},
+    "agent": {"skill_prefix": "arc", "path": "skills/agent", "slug_prefix": "agent"},
+    "library": {"skill_prefix": "arc", "path": "skills/library", "slug_prefix": "library"},
+    "workspace": {"skill_prefix": "arc", "path": "skills/workspace", "slug_prefix": "workspace"},
+    "help": {"skill_prefix": "arc", "path": "skills/help", "slug_prefix": ""}
+  },
   "description": "Framework for creating and maintaining grimoires"
 }
 ```
 
+`skill_prefix` remains as the default Arcana prefix for tooling that needs a compact identity, while `skill_families` defines the user-facing command families that Arcana itself ships.
+
 **Why not in the library?** The grimoire owns its own identity. A cloned grimoire knows its skill prefix without needing a library entry, the registration rite reads skill prefix directly from the grimoire, and there is no way for library and grimoire to drift out of sync.
 
-When creating a new grimoire, `/arc-grimoire-create` prompts for the skill prefix and writes `grimoire.json` as part of scaffolding.
+When creating a new grimoire, `/grm-create` prompts for the skill prefix and writes `grimoire.json` as part of scaffolding.
 
 ---
 
@@ -196,6 +208,6 @@ Arcana and every grimoire use the same repository text standard:
 - Unicode is allowed when useful for readability, including emoji, em dashes, arrows, and box-drawing characters.
 - Mojibake and repair artifacts are not allowed.
 
-This is enforced by `.gitattributes`, `.editorconfig`, and `/arc-validate-encoding`.
+This is enforced by `.gitattributes`, `.editorconfig`, `/arc-validate-encoding`, and `/grm-validate-encoding`.
 
 ---

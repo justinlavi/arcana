@@ -349,7 +349,7 @@ def main():
         ok(f"Library written: {library_path}")
         print()
         print("  Re-register skills to pick up any new grimoires:")
-        print("    /arc-skills-register")
+        print("    /arc-agent-register-skills")
         print()
 
     sys.exit(0)

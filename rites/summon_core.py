@@ -699,12 +699,20 @@ def register_skills(log):
 
     claude_skills_dir = Path.home() / ".claude" / "skills"
     codex_skills_dir = Path.home() / ".codex" / "skills"
-    claude_count = len(list(claude_skills_dir.glob("arc-*"))) if claude_skills_dir.is_dir() else 0
-    codex_count = len(list(codex_skills_dir.glob("arc-*"))) if codex_skills_dir.is_dir() else 0
+    claude_count = (
+        len(list(claude_skills_dir.glob("arc-*"))) +
+        len(list(claude_skills_dir.glob("grm-*")))
+        if claude_skills_dir.is_dir() else 0
+    )
+    codex_count = (
+        len(list(codex_skills_dir.glob("arc-*"))) +
+        len(list(codex_skills_dir.glob("grm-*")))
+        if codex_skills_dir.is_dir() else 0
+    )
     log.ok(f"Skills registered: {claude_count} to {claude_skills_dir}, {codex_count} to {codex_skills_dir}")
     if claude_count == 0 and codex_count == 0:
         log.warn(
-            "No /arc-* skills landed in either agent directory - "
+            "No /arc-* or /grm-* skills landed in either agent directory - "
             "this usually means neither Claude Code nor Codex is set up on this machine."
         )
         log.warn(f"Run `mkdir -p ~/.claude/skills ~/.codex/skills && python3 {register_script}` after installing your agent of choice.")
@@ -816,7 +824,7 @@ def _print_cli_summary(mode, installed_keys, skills_ok):
     print()
     if mode == "arcana_only":
         print("  Grimoires: none cloned - Arcana only.")
-        print("  To create your first grimoire, open an agent session and run: /arc-grimoire-create")
+        print("  To create your first grimoire, open an agent session and run: /grm-create")
     elif installed_keys:
         print("  Installed grimoires:")
         for key in installed_keys:

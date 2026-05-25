@@ -7,6 +7,7 @@ Exit codes: 0 = success, 1 = violations found
 
 import re
 import sys
+import json
 from pathlib import Path
 
 from _lib import default_arcana_root, ok, warn
@@ -19,6 +20,7 @@ UPPERCASE_EXCEPTIONS = {"README.md", "CHANGELOG.md", "CONTRIBUTING.md",
 
 
 SKIP_DIRS = {"sources", ".git", "tests"}
+ARCANA_MANIFEST = ARCANA_ROOT / "arcana.json"
 
 
 def check_naming(glob_pattern, label, ext):
@@ -51,6 +53,118 @@ def check_naming(glob_pattern, label, ext):
     return errors
 
 
+def parse_skill_name(skill_file):
+    content = skill_file.read_text(encoding="utf-8", errors="replace")
+    match = re.search(r"(?m)^name:\s*(.+)$", content)
+    return match.group(1).strip() if match else ""
+
+
+def load_skill_families():
+    """Return Arcana skill families declared in arcana.json."""
+    try:
+        metadata = json.loads(ARCANA_MANIFEST.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        warn(f"Could not read arcana.json skill_families: {exc}")
+        return []
+
+    default_prefix = metadata.get("skill_prefix", "arc")
+    raw_families = metadata.get("skill_families", {})
+    if not isinstance(raw_families, dict) or not raw_families:
+        warn("arcana.json missing skill_families")
+        return []
+
+    families = []
+    for name, config in raw_families.items():
+        if not isinstance(config, dict):
+            warn(f"skill_families.{name} must be an object")
+            continue
+        rel_path = config.get("path", "")
+        if not rel_path:
+            warn(f"skill_families.{name} missing path")
+            continue
+        families.append({
+            "name": name,
+            "path": ARCANA_ROOT / rel_path,
+            "rel_path": Path(rel_path),
+            "skill_prefix": config.get("skill_prefix", default_prefix),
+            "slug_prefix": config.get("slug_prefix", ""),
+        })
+    return families
+
+
+def check_skill_schema():
+    errors = 0
+    violations = 0
+    skills_dir = ARCANA_ROOT / "skills"
+
+    print("Checking skill naming schema...")
+    if not skills_dir.is_dir():
+        warn("Missing skills/ directory")
+        return 1
+
+    families = load_skill_families()
+    if not families:
+        warn("No valid skill families declared")
+        return 1
+
+    expected_top_dirs = {family["rel_path"].parts[1] for family in families}
+    for folder in sorted(p for p in skills_dir.iterdir() if p.is_dir()):
+        if folder.name not in expected_top_dirs:
+            warn(f"Unexpected skill family directory: {folder.relative_to(ARCANA_ROOT)}")
+            errors += 1
+            violations += 1
+            continue
+
+    for family in families:
+        family_dir = family["path"]
+        if not family_dir.is_dir():
+            warn(f"Missing skill family directory: {family_dir.relative_to(ARCANA_ROOT)}")
+            errors += 1
+            violations += 1
+            continue
+
+        for folder in sorted(p for p in family_dir.iterdir() if p.is_dir()):
+            skill_file = folder / "SKILL.md"
+            if not skill_file.is_file():
+                warn(f"Missing SKILL.md: {folder.relative_to(ARCANA_ROOT)}")
+                errors += 1
+                violations += 1
+                continue
+
+            command_slug = (
+                f"{family['slug_prefix']}-{folder.name}"
+                if family["slug_prefix"]
+                else folder.name
+            )
+            expected_name = f"{{{{SKILL_PREFIX}}}}-{command_slug}"
+            actual_name = parse_skill_name(skill_file)
+            if actual_name != expected_name:
+                warn(
+                    f"Skill name mismatch: {skill_file.relative_to(ARCANA_ROOT)} "
+                    f"(expected `{expected_name}`, got `{actual_name}`)"
+                )
+                errors += 1
+                violations += 1
+
+        direct_skill = family_dir / "SKILL.md"
+        if direct_skill.exists():
+            warn(f"Skill family has direct SKILL.md; expected nested skill folders: {direct_skill.relative_to(ARCANA_ROOT)}")
+            errors += 1
+            violations += 1
+
+    for skill_file in sorted(skills_dir.rglob("SKILL.md")):
+        if any(skill_file.is_relative_to(family["path"]) for family in families):
+            continue
+        warn(f"SKILL.md is outside declared skill families: {skill_file.relative_to(ARCANA_ROOT)}")
+        errors += 1
+        violations += 1
+
+    if violations == 0:
+        ok("All skills follow the command-family naming schema")
+    print()
+    return errors
+
+
 def main():
     errors = 0
 
@@ -62,6 +176,7 @@ def main():
 
     errors += check_naming("*.md", "markdown file", "md")
     errors += check_naming("*.py", "Python script", "py")
+    errors += check_skill_schema()
 
     print("==================================")
     if errors == 0:
