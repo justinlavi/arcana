@@ -4,14 +4,16 @@ title: "Improve Arcana"
 aliases: ["improve-arcana", "arcana-improve"]
 tags: [arcana/invocations, type/playbook, scope/arcana]
 authority: grimoire
-last_verified: 2026-05-12
+last_verified: 2026-05-25
 ---
 
 # Invocation: Improve Arcana
 
 ## Purpose
 
-Maintainer-only orchestrator for Arcana itself. Sequences the validator suite, the rite quality check, and the documentation quality pass - applies fixes, re-validates, and reports.
+Maintainer-only orchestrator for Arcana itself. Combines mechanical
+validation with judgment-based architecture, rite, and documentation review;
+applies low-risk fixes; re-validates; and reports deferred design work.
 
 For grimoires use `/grm-improve`. This invocation only audits Arcana.
 
@@ -27,7 +29,9 @@ Run from the Arcana directory. Safe to rerun at any time.
 
 - Before an Arcana release or version bump
 - After bulk doc/feature changes
+- After command-family, scaffold, installer, or validator changes
 - When something feels stale, repetitive, or out of sync
+- When Arcana feels correct but harder to explain or navigate than it should
 
 ## Workflow
 
@@ -43,7 +47,8 @@ python3 rites/validate.py --summary    # summary-only output
 
 Equivalent skill: `/arc-validate-all`.
 
-This runs every validator (structure, naming, format, links, security, semantics, skill-refs, boundaries) and aggregates results. Individual skills exist for targeted reruns; the orchestrator is the default entry point.
+This runs every mechanical validator and aggregates results. Individual skills
+exist for targeted reruns; the orchestrator is the default entry point.
 
 ### Phase 2: Triage violations
 
@@ -54,13 +59,27 @@ Review the aggregated output:
 - **Security hits**: treat as blocking. Investigate every credential pattern and unsafe construct before continuing.
 - **Boundary violations**: invocations / formulae / rites belong in Arcana only. Move violators or rewrite.
 
-Re-run `python3 rites/validate.py` after fixes until clean.
+Re-run `python3 rites/validate.py` after fixes until clean. Judgment work
+starts from a mechanically stable tree so the AI spends context on design,
+not basic breakage.
 
-### Phase 3: Rite quality
+### Phase 3: Architecture quality
+
+Cast the whole-repo architecture review:
+
+- [`quality/review_architecture.md`](quality/review_architecture.md)
+
+This is the AI-heavy pass. It inventories every surface, builds a
+source-of-truth map, reviews naming and folder boundaries, checks AI-agent
+read paths, and looks for scalability risks. Apply local fixes directly; defer
+large moves, public command changes, or generated-output rewrites with a clear
+benefit and blast radius.
+
+### Phase 4: Rite quality
 
 Follow the rite-specific quality check at [`quality/validate_rites.md`](quality/validate_rites.md). It's a judgment-based invocation (no dedicated skill - it runs as part of this orchestrator) that inspects rite scripts for style, error handling, exit codes, and idempotency. Apply fixes and re-run the validator suite from Phase 1.
 
-### Phase 4: Documentation quality
+### Phase 5: Documentation quality
 
 Cast the documentation improvement invocation:
 
@@ -74,9 +93,10 @@ Apply the fixes it surfaces. Prefer:
 - Generated views over hand-maintained lists (see `rites/sync_docs.py` for the pattern).
 - Splitting overloaded docs; deleting docs nothing else needs.
 
-### Phase 5: Re-validate
+### Phase 6: Re-validate
 
-After applying documentation fixes, run the validator suite once more:
+After applying architecture, rite, and documentation fixes, run the validator
+suite once more:
 
 ```bash
 python3 rites/validate.py
@@ -84,7 +104,7 @@ python3 rites/validate.py
 
 Link anchors, skill references, and structure checks are the most likely to break from a documentation reshuffle.
 
-### Phase 6: Sync generated docs
+### Phase 7: Sync generated docs
 
 If anything that feeds an auto-generated index changed (skills, invocation catalog, chapters):
 
@@ -94,20 +114,27 @@ python3 rites/sync_docs.py --apply
 
 Then re-run validators a final time.
 
-### Phase 7: Version & changelog
+### Phase 8: Version & changelog
 
 If the pass produced user-visible changes:
 
 - Update `CHANGELOG.md` at the Arcana root.
-- Confirm version numbers are consistent across files.
+- Before the current version is tagged as final, update that version's entry
+  in place as the current architecture. After a version is tagged final,
+  collect future changes under `[Unreleased]` until the next release entry is
+  cut.
+- Confirm version numbers are consistent across `VERSION`, `CHANGELOG.md`, and
+  release docs.
 - For breaking changes: document the migration path and announce to domain leads.
 
 ## Phase dependencies
 
 - Phase 2 depends on Phase 1 output.
-- Phase 4 should happen after Phase 1 is clean - judgment work is wasted if mechanical issues are still masking real problems.
-- Phase 5 must run after Phase 4 (link anchors drift when docs move).
-- Phase 6 must run before Phase 5's final clean check if generated indexes changed.
+- Phase 3 should happen after Phase 1 is clean - judgment work is wasted if mechanical issues are still masking real problems.
+- Phase 5 should happen after Phase 3 so documentation cleanup can use the architecture review's source-of-truth map.
+- Phase 6 must run after Phases 3-5 (link anchors drift when docs move).
+- If Phase 7 changes generated docs, rerun Phase 6 afterward.
+- Phase 8 happens last so the changelog describes the final validated state.
 
 ## Non-negotiable rules
 
@@ -117,16 +144,22 @@ If the pass produced user-visible changes:
 4. **Magical boundary** - invocations, formulae, rites live ONLY in Arcana.
 5. **Semantic versioning** - strict; reflected in `CHANGELOG.md`.
 6. **Path conventions** - cross-grimoire references use root placeholders (`ARCANA_HOME/`, `GRIMOIRE_{DOMAIN}/`), never `../`.
+7. **Single source of truth** - every repeated fact is either a short navigation summary, generated view, intentional release snapshot, or a bug.
+8. **AI efficiency** - preserve deterministic read paths; prefer one hub, one invocation, and only the needed canonical docs for common tasks.
 
 ## Scope
 
 In scope:
 
 - Root: hub, `README.md`, `CHANGELOG.md`
+- Root config and project files: `arcana.json`, `VERSION`, `pyproject.toml`, `CONTRIBUTING.md`, `.editorconfig`, `.gitattributes`, `.gitignore`
 - `docs/*.md`
 - `invocations/arcana/`, `invocations/grimoire/`, `invocations/agent/`, `invocations/library/`, `invocations/workspace/`, `invocations/help/`, and `invocations/meta/`
 - `formulae/*.formula.md` and `formulae/grimoire/` (the master template)
 - `rites/*.py`
+- `skills/<family>/<slug>/SKILL.md`
+- `tests/` fixtures and validator coverage
+- `.github/` release automation and `.obsidian/` shareable settings
 - `resources/`
 
 Out of scope: grimoires (use `/grm-improve`).
@@ -136,12 +169,15 @@ Out of scope: grimoires (use `/grm-improve`).
 Apply fixes directly to Arcana files. Report to the user (do not write to disk):
 
 - Validator pass/fail summary
+- Architecture review summary (source-of-truth issues, naming/boundary findings, AI-efficiency findings)
 - Fixes applied (counts by category)
 - Documentation duplication / clarity fixes applied
 - Remaining items needing human follow-up
 - Whether `CHANGELOG.md` should be updated
 
-Only create new documentation files for major version bumps, breaking changes, or migration guides.
+Only create new documentation files when they create a reusable canonical home,
+support a major version or breaking change, or prevent a recurring quality pass
+from being re-explained in chat.
 
 ## Maintainer checklist
 
@@ -153,6 +189,7 @@ Before:
 After:
 
 - [ ] Validator suite green
+- [ ] Architecture review completed or explicitly skipped with reason
 - [ ] Generated docs synced (`rites/sync_docs.py --apply`)
 - [ ] Smoke-test key skills: `/grm-create`, `/arc-help`, `/grm-improve`
 - [ ] `CHANGELOG.md` updated if changes are user-visible
@@ -162,6 +199,7 @@ After:
 
 - All validators (orchestrated): `/arc-validate-all` - `python3 rites/validate.py`
 - Individual validators: see `invocations/arcana/validators/validators.md`
+- Architecture quality: [`quality/review_architecture.md`](quality/review_architecture.md)
 - Rite quality: [`quality/validate_rites.md`](quality/validate_rites.md)
 - Documentation quality: [`quality/improve_documentation.md`](quality/improve_documentation.md)
 - Doc generator: `rites/sync_docs.py`

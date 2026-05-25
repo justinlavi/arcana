@@ -36,6 +36,7 @@ Run them all in one shot: `/arc-validate-all`. See [`validators/validators.md`](
 
 Manual passes for things validators can't measure:
 
+- [`quality/review_architecture.md`](quality/review_architecture.md) - whole-repo architecture and source-of-truth audit
 - [`quality/improve_documentation.md`](quality/improve_documentation.md) - duplication and clarity audit
 - [`quality/validate_rites.md`](quality/validate_rites.md) - rite-specific quality checks
 

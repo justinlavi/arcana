@@ -4,7 +4,7 @@ title: "Arcana Governance"
 aliases: ["governance", "release-policy"]
 tags: [type/reference, arcana/docs]
 authority: grimoire
-last_verified: 2026-05-19
+last_verified: 2026-05-25
 ---
 
 # Arcana Governance
@@ -47,8 +47,8 @@ The role is transferable — record handovers in the CHANGELOG.
 Include in Arcana if it applies to **every** grimoire that references it:
 
 - **Documentation**: README, installation, quickstart, operating model, reference, governance.
-- **Invocations**: grimoire operations (create-grimoire, create-chapter, improve), Arcana maintenance (validators, quality), meta (help).
-- **Formulae**: chapter-index, page, invocation, grimoire scaffolding.
+- **Invocations**: grimoire operations, Arcana maintenance, agent configuration, library management, workspace operations, help, and shared meta fragments.
+- **Formulae**: grimoire scaffold, chapter hubs, pages, sources, log entries, and invocation skeletons.
 - **Rites**: validation, registration, library sync, etc.
 - **Resources**: branding assets.
 
@@ -100,8 +100,6 @@ The current version lives in three places:
 4. Add a `CHANGELOG.md` entry. Use the `### Removed (breaking)` heading and write a migration recipe inline.
 5. If the change requires user-side action (e.g. running a migration rite), state the command explicitly.
 6. Commit (`BREAKING:` prefix), tag, push.
-
-For an example of a clean breaking-change entry, see the `~/grimoire/` → `~/grimoires/` rename in `CHANGELOG.md`.
 
 ---
 

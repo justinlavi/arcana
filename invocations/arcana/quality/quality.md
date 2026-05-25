@@ -11,8 +11,9 @@ Judgment-based invocations for improving Arcana quality beyond what mechanical v
 
 ## Available
 
+- **[review_architecture.md](review_architecture.md)** - Review Arcana's whole layout, source-of-truth boundaries, naming, scalability, and AI-agent efficiency.
 - **[improve_documentation.md](improve_documentation.md)** — Find duplication and clarity issues across docs and invocations. Decide canonical homes; replace duplicates with links.
-- **[validate_rites.md](validate_rites.md)** — Rite-specific quality checks (shellcheck, portability, error handling, docstrings). Complements the security validator.
+- **[validate_rites.md](validate_rites.md)** — Rite-specific quality checks (portability, error handling, docstrings). Complements the security validator.
 
 ## When to use
 

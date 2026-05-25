@@ -118,7 +118,7 @@ Skills are pointer files. The skill itself contains no logic - it dispatches to 
 ## Pull request expectations
 
 - One concern per PR. Mixing a doc rewrite with a validator change makes review hard.
-- Update [CHANGELOG.md](CHANGELOG.md) under an `## [Unreleased]` heading.
+- Update [CHANGELOG.md](CHANGELOG.md). Before the current version is tagged as final, edit that version's entry in place; after a final tag, collect new changes under `## [Unreleased]`.
 - Bump [VERSION](VERSION) only as part of an explicit release PR.
 - If you touched user-facing behavior, mention what a downstream grimoire owner has to do to adopt the change.
 

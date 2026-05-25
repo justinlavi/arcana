@@ -144,7 +144,7 @@ substitutes them when installing skills into agent directories.
 
 | Skill | Purpose |
 |---|---|
-| `/arc-improve` | Maintainer workflow for improving Arcana itself. |
+| `/arc-improve` | Maintainer workflow for improving Arcana itself through validation plus architecture, rite, and documentation quality review. |
 | `/arc-validate-all` | Run the full Arcana validator suite. |
 | `/arc-validate-encoding` | Validate UTF-8, LF line endings, BOMs, mojibake markers, and repair artifacts in Arcana. |
 | `/arc-validate-format` | Validate Markdown formatting in Arcana. |
@@ -219,6 +219,23 @@ Mechanical rites are independently invocable and orchestrated by
 
 The orchestrator runs sequentially, in parallel, or in smart mode against
 working-tree changes.
+
+### Maintenance model
+
+`/arc-improve` is Arcana's maintainer entry point. It starts with the
+mechanical validator suite, then runs judgment-based quality passes for:
+
+- Whole-repository architecture: layout, naming, source-of-truth boundaries,
+  AI-agent read paths, scalability, and future maintainability.
+- Rite quality: script purpose, error handling, exit codes, idempotency,
+  portability, and auditability.
+- Documentation quality: duplication, clarity, canonical homes, generated
+  views, and user-facing navigation.
+
+The architecture pass lives in
+`invocations/arcana/quality/review_architecture.md`. It treats every Arcana
+surface as in scope: root files, docs, invocations, formulae, rites, skills,
+tests, release automation, Obsidian settings, and resources.
 
 ### Shared library
 
@@ -355,6 +372,8 @@ settings Arcana validates.
 - `docs/governance.md` - maintenance and versioning.
 - `docs/release.md` - release workflow.
 - `docs/skills.md` - generated Arcana skill catalog.
+- `invocations/arcana/quality/review_architecture.md` - judgment-based
+  whole-repo architecture review used by `/arc-improve`.
 
 ### Public readiness
 
