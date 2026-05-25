@@ -52,6 +52,8 @@ python3 ~/grimoires/arcana/rites/register_skills.py --grimoire . # Arcana + acti
 
 Invoke `/arc-agent-register-skills` for a global refresh of Arcana plus every installed grimoire. Invoke `/grm-register-skills` from inside one grimoire to refresh Arcana plus that active grimoire only. The summoning rite runs the global registration for you on install.
 
+For the normal "bring this machine up to date" workflow, run `/grm-update-arcana` from inside a grimoire. It pulls Arcana, validates it, refreshes the local library, updates agent integration when needed, re-registers skills, and checks the active grimoire against the current structure rules.
+
 For Codex/ChatGPT, the registered directory must contain only `SKILL.md` — never bundle scripts, references, or copies of invocation content. The skill remains a thin pointer to Arcana invocations or rites.
 
 ---
@@ -118,6 +120,9 @@ To register new or updated skills in the active grimoire, run `/grm-register-ski
 
 **Agent doesn't see new skills**
 - Run `/grm-register-skills` from the active grimoire, or `/arc-agent-register-skills` for a global refresh. Then open a new agent session (Claude Code / Codex caches skill listings).
+
+**Arcana may be stale**
+- Run `/grm-update-arcana` from inside a registered grimoire.
 
 **Agent has stale Grimoire routing instructions**
 - Run `/arc-agent-update`. It compares existing agent instruction files against the canonical block and updates only the Grimoire section.

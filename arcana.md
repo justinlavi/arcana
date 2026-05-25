@@ -42,6 +42,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 
 - [create_grimoire.md](invocations/grimoire/create_grimoire.md) — `/grm-create`
 - [create_chapter.md](invocations/grimoire/create_chapter.md) — `/grm-create-chapter`
+- [update_arcana.md](invocations/grimoire/update_arcana.md) — `/grm-update-arcana`
 - [register_skills.md](invocations/grimoire/register_skills.md) — `/grm-register-skills`
 - [ingest.md](invocations/grimoire/ingest.md) — `/grm-ingest`
 - [file_answer.md](invocations/grimoire/file_answer.md) — `/grm-file-answer`

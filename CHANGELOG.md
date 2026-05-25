@@ -12,6 +12,7 @@ Breaking semantic cleanup:
 - Added a canonical command-family skill schema and enforcement in `validate_naming.py`; Arcana source skills now live under `skills/<family>/<slug>/`.
 - Mirrored the command-family schema in `invocations/`, moving agent, library, help, and workspace operations out of `meta/` and leaving `meta/` for shared fragments.
 - Added `/grm-register-skills` for refreshing Arcana skills plus the active grimoire's own skills without scanning every installed grimoire.
+- Added `/grm-update-arcana` as a one-command normal-user workflow for pulling Arcana, validating it, refreshing agent integration, registering skills, and checking active-grimoire compatibility.
 - Split shared validators into explicit Arcana and grimoire-facing skills, e.g. `/arc-validate-frontmatter` and `/grm-validate-frontmatter`, without compatibility aliases.
 - Renamed `validate_domain_structure.py` to `validate_grimoire_structure.py`.
 - Renamed the Arcana path placeholder from `GRIMOIRE_ARCANA` to `ARCANA_HOME`.

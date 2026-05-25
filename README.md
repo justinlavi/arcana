@@ -59,6 +59,7 @@ Arcana ships universal operations every grimoire inherits:
 - **`/grm-file-answer`** — promote a chat answer (analysis, comparison, derived insight) into a properly-frontmattered wiki page so it doesn't evaporate into chat history.
 - **`/grm-lint`** — health-check the wiki: orphans, stale claims (>90 days unverified), ghost references (entities mentioned often but lacking a page), contradictions, missing cross-references.
 - **`/grm-improve`** — comprehensive normalize-and-optimize pass.
+- **`/grm-update-arcana`** — pull the latest Arcana and refresh the local agent/skill setup.
 - **`/grm-register-skills`** — refresh Arcana skills plus the active grimoire's own skills.
 - **`/grm-create-chapter`**, **`/grm-analyze-semantics`** — and more.
 

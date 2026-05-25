@@ -64,6 +64,7 @@ invoke `/arc-help`.
 | [`/grm-lint`](../skills/grimoire/lint/SKILL.md) | Health-check the active grimoire - orphans, stale claims, ghost references, contradictions, missing cross-refs |
 | [`/grm-register-skills`](../skills/grimoire/register-skills/SKILL.md) | Register Arcana skills and the active grimoire's own skills into supported agent skill directories |
 | [`/grm-repair-links`](../skills/grimoire/repair-links/SKILL.md) | Promote filename-only wikilinks to canonical full-path form across the active grimoire |
+| [`/grm-update-arcana`](../skills/grimoire/update-arcana/SKILL.md) | Update Arcana, refresh agent integration, re-register skills, and check active-grimoire compatibility |
 
 ## Grimoire validation
 

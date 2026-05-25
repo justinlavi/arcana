@@ -22,13 +22,13 @@ The families are declared in `arcana.json`.
 | Family | Prefix | Use For | Example |
 |---|---|---|---|
 | `arcana` | `arc` | Arcana platform and maintainer operations | `/arc-validate-links` |
-| `grimoire` | `grm` | Universal operations on the active grimoire | `/grm-validate-links` |
+| `grimoire` | `grm` | Universal operations from the active grimoire context | `/grm-validate-links` |
 | `library` | `arc` | Operations that affect `~/grimoires/library.json` | `/arc-library-sync` |
 | `agent` | `arc` | Operations that affect agent files or agent skill directories | `/arc-agent-update` |
 | `workspace` | `arc` | Operations that intentionally affect Arcana plus installed grimoires | `/arc-workspace-clean` |
 | `help` | `arc` | Skill discovery and help | `/arc-help` |
 
-Normal grimoires still declare exactly one `skill_prefix` in `grimoire.json`, such as `jpn` or `oly`. Arcana is special because it ships both platform commands and universal grimoire commands.
+Normal grimoires still declare exactly one `skill_prefix` in `grimoire.json`, such as `jpn` or `oly`. Arcana is special because it ships both platform commands and universal grimoire-context commands.
 
 ## Source Names
 
@@ -39,6 +39,8 @@ name: {{SKILL_PREFIX}}-<registered-slug>
 ```
 
 The registration rite substitutes `{{SKILL_PREFIX}}` with the command family's prefix. For example, `skills/grimoire/validate-links/SKILL.md` declares `{{SKILL_PREFIX}}-validate-links` and registers as `/grm-validate-links`.
+
+Some `/grm-*` commands intentionally maintain Arcana from the active grimoire context. For example, `/grm-update-arcana` updates Arcana, refreshes agent integration, and then checks the active grimoire against the updated framework. Keep these rare and name the external target explicitly.
 
 ## Reusable Rites
 

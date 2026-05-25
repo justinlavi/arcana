@@ -15,6 +15,7 @@ Grimoire operations - invocations that create or improve a grimoire (not Arcana 
 |---|---|---|
 | [create_grimoire.md](create_grimoire.md) | `/grm-create` | Create a new grimoire (AI-guided; scaffolds root hub, README, manifest, sources/, log.md, chapters) |
 | [create_chapter.md](create_chapter.md) | `/grm-create-chapter` | Add a knowledge chapter to the active grimoire |
+| [update_arcana.md](update_arcana.md) | `/grm-update-arcana` | Pull the latest Arcana, refresh agent integration, re-register skills, and check active-grimoire compatibility |
 | [register_skills.md](register_skills.md) | `/grm-register-skills` | Register Arcana skills and the active grimoire's own skills |
 | [ingest.md](ingest.md) | `/grm-ingest` | File a source artifact under sources/ and update affected wiki pages |
 | [file_answer.md](file_answer.md) | `/grm-file-answer` | Promote a chat answer into a properly-frontmattered wiki page |
@@ -33,8 +34,9 @@ Grimoire operations - invocations that create or improve a grimoire (not Arcana 
 3. **File**: `/grm-file-answer` to promote substantive chat answers back into the wiki.
 4. **Lint**: `/grm-lint` periodically - orphans, stale claims, ghost references, contradictions.
 5. **Improve**: `/grm-improve` for a comprehensive normalize-and-optimize pass.
-6. **Refresh skills**: `/grm-register-skills` after editing the active grimoire's `skills/`.
-7. **Audit**: invoke individual analysis/validation skills as needed.
+6. **Update Arcana**: `/grm-update-arcana` when the local Arcana install may be stale.
+7. **Refresh skills**: `/grm-register-skills` after editing the active grimoire's `skills/`.
+8. **Audit**: invoke individual analysis/validation skills as needed.
 
 ## Related
 
