@@ -122,11 +122,21 @@ should_prefer_source_for_linux_gui() {
 
 verify_checksum() {
     local checksum="$1"
+    local normalized="$checksum.normalized"
+    local check_file="$checksum"
+
+    # Windows-built checksum assets may contain CRLF. GNU sha256sum under
+    # Git Bash can treat the carriage return as part of the filename, so
+    # normalize before verification. This keeps older published assets usable.
+    if command -v tr &>/dev/null; then
+        tr -d '\r' < "$checksum" > "$normalized"
+        check_file="$normalized"
+    fi
 
     if command -v sha256sum &>/dev/null; then
-        sha256sum -c "$checksum"
+        sha256sum -c "$check_file"
     elif command -v shasum &>/dev/null; then
-        shasum -a 256 -c "$checksum"
+        shasum -a 256 -c "$check_file"
     else
         echo "  [WARN]  sha256sum/shasum not found - skipping checksum verification"
         return 0

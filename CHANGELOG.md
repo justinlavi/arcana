@@ -27,6 +27,7 @@ Breaking semantic cleanup:
 - Hardened encoding validation against numeric range question-mark artifacts, and made skill registration write generated skill files as UTF-8/LF.
 - Hardened the Summoning Rite binary builder so PyInstaller failures report a clear error instead of a traceback.
 - Fixed the Summoning Rite bootstrap on Windows Git Bash so `MINGW*` / `MSYS*` / `CYGWIN*` platforms resolve to the Windows `.zip` release asset and run `grimoire-summon.exe`.
+- Normalized Summoning Rite checksum verification so Windows-published CRLF `.sha256` assets verify correctly under Git Bash, and made future checksum files write LF.
 - Clarified the grimoire-first installation path in the installation guide.
 - Extended format validation to scan grimoire roots, catch unclosed fenced code blocks, and reject backtick-style Markdown tree branch markers.
 

@@ -163,7 +163,11 @@ def main():
     asset_name = f"{binary_base}-{platform_id()}"
     archive = archive_file(binary, output_dir, asset_name)
     checksum = output_dir / f"{archive.name}.sha256"
-    checksum.write_text(f"{sha256_file(archive)}  {archive.name}\n", encoding="utf-8")
+    checksum.write_text(
+        f"{sha256_file(archive)}  {archive.name}\n",
+        encoding="utf-8",
+        newline="\n",
+    )
 
     print()
     print(f"Built:    {binary}")
