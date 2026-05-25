@@ -8,6 +8,8 @@
   deferred S-tier architecture work found during `/arc-improve`.
 - Added `formulae/grimoire/scaffold_contract.json` as the shared grimoire
   scaffold inventory consumed by creation, audit, validation, and tests.
+- Added structured validator diagnostics through `--format json` and
+  `--format jsonl` on every Arcana validator and the validator orchestrator.
 
 ### Changed
 
@@ -16,6 +18,8 @@
   summaries.
 - Updated `/grm-create`, `/grm-improve`, and `/grm-validate-structure` to use
   the scaffold contract for managed grimoire scaffold files.
+- Updated `rites/validate.py` to aggregate validator reports from structured
+  diagnostics instead of validator prose.
 
 ## [1.0.0] - 2026-05-25
 

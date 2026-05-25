@@ -25,6 +25,7 @@ import sys
 from pathlib import Path
 
 from _lib import default_arcana_root, load_manifest
+from diagnostics import DiagnosticReporter, add_output_format_arg
 from scaffold_contract import (
     ScaffoldContractError,
     json_requirements,
@@ -40,21 +41,28 @@ def main():
     parser = argparse.ArgumentParser(description="Validate grimoire structure")
     parser.add_argument("--grimoire", type=Path, default=Path.cwd(),
                         help="Grimoire root (default: cwd)")
+    add_output_format_arg(parser)
     args = parser.parse_args()
     root = args.grimoire.expanduser().resolve()
     arcana_root = default_arcana_root()
     formula_root = arcana_root / "formulae" / "grimoire"
+    human = args.format == "human"
+    reporter = DiagnosticReporter("validate_grimoire_structure", root)
 
-    print()
-    print("Validating Grimoire Structure")
-    print("==================================")
-    print(f"Grimoire root: {root}")
-    print()
+    if human:
+        print()
+        print("Validating Grimoire Structure")
+        print("==================================")
+        print(f"Grimoire root: {root}")
+        print()
 
-    errors = 0
     try:
         scaffold_contract = load_scaffold_contract(arcana_root)
     except ScaffoldContractError as exc:
+        reporter.error("GRIMOIRE_STRUCTURE_CONTRACT_READ", str(exc))
+        if not human:
+            reporter.emit(args.format)
+            return reporter.exit_code()
         print(f"  WARN     {exc}")
         print()
         print("==================================")
@@ -62,51 +70,66 @@ def main():
         return 1
 
     for contract_error in validate_contract_against_formula(scaffold_contract, formula_root):
-        print(f"  WARN     scaffold contract error: {contract_error}")
-        errors += 1
+        reporter.error("GRIMOIRE_STRUCTURE_CONTRACT", contract_error)
+        if human:
+            print(f"  WARN     scaffold contract error: {contract_error}")
 
     # 1. Manifest must exist, parse, and declare both 'name' and a valid skill_prefix.
     if not (root / "grimoire.json").is_file():
-        print(f"  MISSING  grimoire.json")
-        errors += 1
+        reporter.error("GRIMOIRE_STRUCTURE_MISSING_MANIFEST", "missing grimoire.json", path="grimoire.json")
+        if human:
+            print(f"  MISSING  grimoire.json")
         grimoire_name = root.name
     else:
         manifest, manifest_errors = load_manifest(root)
         if manifest is None:
             # Parse failure - load_manifest reports the cause in errors[0].
-            print(f"  WARN     {manifest_errors[0]}")
-            errors += 1
+            reporter.error("GRIMOIRE_STRUCTURE_INVALID_MANIFEST", manifest_errors[0], path="grimoire.json")
+            if human:
+                print(f"  WARN     {manifest_errors[0]}")
             grimoire_name = root.name
         else:
             grimoire_name = manifest.get("name", root.name)
             for err_msg in manifest_errors:
-                print(f"  WARN     {err_msg}")
-                errors += 1
-            print(f"  OK       grimoire.json (name={grimoire_name})")
+                reporter.error("GRIMOIRE_STRUCTURE_INVALID_MANIFEST", err_msg, path="grimoire.json")
+                if human:
+                    print(f"  WARN     {err_msg}")
+            if human:
+                print(f"  OK       grimoire.json (name={grimoire_name})")
 
     # 2. Required root files (other than the dynamic hub name).
     for f in required_customized_files(scaffold_contract):
         if not (root / f).is_file():
-            print(f"  MISSING  file: {f}")
-            errors += 1
+            reporter.error("GRIMOIRE_STRUCTURE_MISSING_FILE", f"missing file: {f}", path=f)
+            if human:
+                print(f"  MISSING  file: {f}")
         else:
-            print(f"  OK       {f}")
+            if human:
+                print(f"  OK       {f}")
 
     # 3. Root hub.
     root_hub = root / f"{grimoire_name}.md"
     if not root_hub.is_file():
-        print(f"  MISSING  root hub: {grimoire_name}.md")
-        errors += 1
+        reporter.error(
+            "GRIMOIRE_STRUCTURE_MISSING_ROOT_HUB",
+            f"missing root hub: {grimoire_name}.md",
+            path=f"{grimoire_name}.md",
+        )
+        if human:
+            print(f"  MISSING  root hub: {grimoire_name}.md")
     else:
-        print(f"  OK       {grimoire_name}.md")
+        if human:
+            print(f"  OK       {grimoire_name}.md")
 
     # 4. Required scaffold directories.
     for d in required_directories(scaffold_contract):
         if not (root / d).is_dir():
-            print(f"  MISSING  directory: {d}")
-            errors += 1
+            reporter.error("GRIMOIRE_STRUCTURE_MISSING_DIR", f"missing directory: {d}", path=d)
+            if human:
+                print(f"  MISSING  directory: {d}")
         else:
-            print(f"  OK       {d}/")
+            if human:
+                print(f"  OK       {d}/")
 
     # 5. Hub files inside chapters/ (folder-name convention, recursive).
     # Asset folders (templates/, snippets/, scripts/, configs/, examples/, tasks/)
@@ -124,8 +147,9 @@ def main():
 
     chapters = root / "chapters"
     if chapters.is_dir():
-        print()
-        print("Checking chapter hubs (folder-name convention)...")
+        if human:
+            print()
+            print("Checking chapter hubs (folder-name convention)...")
         for folder in sorted(p for p in chapters.rglob("*") if p.is_dir()):
             if is_asset_folder(folder, root):
                 continue
@@ -134,10 +158,16 @@ def main():
             if not hub.is_file():
                 has_md = any(p.suffix == ".md" for p in folder.rglob("*.md") if p.is_file())
                 if has_md:
-                    print(f"  MISSING  hub: {rel}/{folder.name}.md")
-                    errors += 1
+                    reporter.error(
+                        "GRIMOIRE_STRUCTURE_MISSING_CHAPTER_HUB",
+                        f"missing hub: {rel}/{folder.name}.md",
+                        path=f"{rel}/{folder.name}.md",
+                    )
+                    if human:
+                        print(f"  MISSING  hub: {rel}/{folder.name}.md")
             else:
-                print(f"  OK       {rel}/{folder.name}.md")
+                if human:
+                    print(f"  OK       {rel}/{folder.name}.md")
 
     # 6. sources/ must not contain any wiki content (sanity).
     sources_dir = root / "sources"
@@ -145,66 +175,98 @@ def main():
         # A non-immutable artifact would be a `chapters/` folder under sources/
         forbidden = list(sources_dir.glob("chapters"))
         if forbidden:
-            print(f"  WARN     sources/chapters exists - sources/ is for immutable artifacts, not wiki content")
-            errors += 1
+            reporter.error(
+                "GRIMOIRE_STRUCTURE_SOURCES_CHAPTERS",
+                "sources/chapters exists; sources/ is for immutable artifacts",
+                path="sources/chapters",
+            )
+            if human:
+                print(f"  WARN     sources/chapters exists - sources/ is for immutable artifacts, not wiki content")
 
     # 7. Managed scaffold files should match the current Arcana formulae.
     # These files are operational support files, not grimoire-specific content.
     # Root README, root hub, grimoire.json, and log.md are intentionally not
     # compared because they are customized during grimoire creation.
     if formula_root.is_dir():
-        print()
-        print("Checking managed scaffold files against current Arcana formulae...")
+        if human:
+            print()
+            print("Checking managed scaffold files against current Arcana formulae...")
         for rel in managed_scaffold_files(scaffold_contract):
             expected = formula_root / rel
             actual = root / rel
             if not expected.is_file():
-                print(f"  WARN     Arcana formula missing managed scaffold: {rel}")
-                errors += 1
+                reporter.error(
+                    "GRIMOIRE_STRUCTURE_FORMULA_MISSING_MANAGED",
+                    f"Arcana formula missing managed scaffold: {rel}",
+                    path=rel,
+                )
+                if human:
+                    print(f"  WARN     Arcana formula missing managed scaffold: {rel}")
             elif not actual.is_file():
-                print(f"  MISSING  managed scaffold: {rel}")
-                errors += 1
+                reporter.error("GRIMOIRE_STRUCTURE_MISSING_MANAGED", f"missing managed scaffold: {rel}", path=rel)
+                if human:
+                    print(f"  MISSING  managed scaffold: {rel}")
             elif not filecmp.cmp(expected, actual, shallow=False):
-                print(f"  STALE    managed scaffold differs from Arcana formula: {rel}")
-                errors += 1
+                reporter.error(
+                    "GRIMOIRE_STRUCTURE_STALE_MANAGED",
+                    f"managed scaffold differs from Arcana formula: {rel}",
+                    path=rel,
+                    hint=f"Copy from ARCANA_HOME/formulae/grimoire/{rel}.",
+                )
+                if human:
+                    print(f"  STALE    managed scaffold differs from Arcana formula: {rel}")
             else:
-                print(f"  OK       {rel}")
+                if human:
+                    print(f"  OK       {rel}")
     else:
-        print(f"  WARN     Arcana formula root missing: {formula_root}")
-        errors += 1
+        reporter.error("GRIMOIRE_STRUCTURE_FORMULA_ROOT_MISSING", f"Arcana formula root missing: {formula_root}")
+        if human:
+            print(f"  WARN     Arcana formula root missing: {formula_root}")
 
     # 8. JSON requirements from the scaffold contract.
     for requirement in json_requirements(scaffold_contract):
         rel = requirement["path"]
         actual = root / rel
         if not actual.is_file():
-            print(f"  WARN     {rel} missing")
-            errors += 1
+            reporter.error("GRIMOIRE_STRUCTURE_JSON_MISSING", f"{rel} missing", path=rel)
+            if human:
+                print(f"  WARN     {rel} missing")
             continue
         try:
             cfg = json.loads(actual.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError) as exc:
-            print(f"  WARN     {rel} unreadable: {exc}")
-            errors += 1
+            reporter.error("GRIMOIRE_STRUCTURE_JSON_UNREADABLE", f"{rel} unreadable: {exc}", path=rel)
+            if human:
+                print(f"  WARN     {rel} unreadable: {exc}")
             continue
 
         for key, expected_value in requirement["required_values"].items():
             actual_value = cfg.get(key)
             if actual_value != expected_value:
-                print(
-                    f"  WARN     {rel} must set {key!r} to {expected_value!r} "
-                    f"(got {actual_value!r})"
+                reporter.error(
+                    "GRIMOIRE_STRUCTURE_JSON_VALUE",
+                    f"{rel} must set {key!r} to {expected_value!r} (got {actual_value!r})",
+                    path=rel,
                 )
-                errors += 1
+                if human:
+                    print(
+                        f"  WARN     {rel} must set {key!r} to {expected_value!r} "
+                        f"(got {actual_value!r})"
+                    )
             else:
-                print(f"  OK       {rel} ({key}={expected_value!r})")
+                if human:
+                    print(f"  OK       {rel} ({key}={expected_value!r})")
+
+    if not human:
+        reporter.emit(args.format)
+        return reporter.exit_code()
 
     print()
     print("==================================")
-    if errors == 0:
+    if reporter.error_count() == 0:
         print("Grimoire structure validation passed")
         return 0
-    print(f"Grimoire structure validation failed with {errors} issue(s)")
+    print(f"Grimoire structure validation failed with {reporter.error_count()} issue(s)")
     return 1
 
 

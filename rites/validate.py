@@ -12,12 +12,15 @@ Exit codes: 0 = all passed, 1 = one or more failed
 """
 
 import argparse
+import json
 import os
 import re
 import subprocess
 import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
+
+from diagnostics import add_output_format_arg, human_label, human_location
 
 RITE_DIR = Path(__file__).resolve().parent
 ARCANA_ROOT = Path(os.environ.get("ARCANA_HOME", RITE_DIR.parent))
@@ -39,13 +42,36 @@ RITES = [
 
 
 def run_rite(name):
-    """Run a single validation rite. Returns (name, success, output)."""
+    """Run a single validation rite. Returns (name, success, report)."""
     result = subprocess.run(
-        [sys.executable, str(RITE_DIR / name)],
+        [sys.executable, str(RITE_DIR / name), "--format", "json"],
         capture_output=True, text=True,
         env={**os.environ, "ARCANA_HOME": str(ARCANA_ROOT)},
     )
-    return name, result.returncode == 0, result.stdout + result.stderr
+    try:
+        report = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        report = {
+            "validator": Path(name).stem,
+            "status": "fail",
+            "root": str(ARCANA_ROOT),
+            "checked": {},
+            "summary": {"errors": 1, "warnings": 0, "diagnostics": 1},
+            "diagnostics": [
+                {
+                    "code": "VALIDATE_INVALID_VALIDATOR_REPORT",
+                    "severity": "error",
+                    "path": str(RITE_DIR / name),
+                    "line": None,
+                    "message": "validator did not emit a valid JSON diagnostic report",
+                    "hint": (result.stdout + result.stderr)[-2000:],
+                    "validator": "validate",
+                    "docs_reference": "invocations/arcana/validators/validators.md",
+                }
+            ],
+        }
+    report["returncode"] = result.returncode
+    return name, result.returncode == 0, report
 
 
 def git_changed_files():
@@ -117,49 +143,100 @@ def determine_smart_rites():
     return [r for r in RITES if r in needed] if needed else list(RITES)
 
 
-def run_sequential(rites, summary_only=False):
+def render_diagnostics(report):
+    for diagnostic in report.get("diagnostics", []):
+        label = human_label(diagnostic.get("severity", "error"))
+        location = human_location(diagnostic)
+        code = diagnostic.get("code", "UNKNOWN")
+        print(f"  [{label}] {code} {location}: {diagnostic.get('message', '')}")
+        hint = diagnostic.get("hint")
+        if hint:
+            print(f"          hint: {hint}")
+
+
+def empty_suite_report(rites, reports):
+    failed = sum(1 for report in reports if report.get("returncode", 1) != 0)
+    errors = sum(report.get("summary", {}).get("errors", 0) for report in reports)
+    warnings = sum(report.get("summary", {}).get("warnings", 0) for report in reports)
+    diagnostics = sum(report.get("summary", {}).get("diagnostics", 0) for report in reports)
+    return {
+        "validator": "validate",
+        "status": "fail" if failed else "pass",
+        "root": str(ARCANA_ROOT),
+        "checked": {"validators": len(rites)},
+        "summary": {
+            "failed_validators": failed,
+            "errors": errors,
+            "warnings": warnings,
+            "diagnostics": diagnostics,
+        },
+        "reports": reports,
+    }
+
+
+def emit_suite_report(report, output_format):
+    if output_format == "json":
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return
+    if output_format == "jsonl":
+        for validator_report in report["reports"]:
+            for diagnostic in validator_report.get("diagnostics", []):
+                print(json.dumps(diagnostic, sort_keys=True))
+        print(json.dumps({"type": "summary", **report["summary"]}, sort_keys=True))
+
+
+def run_sequential(rites, summary_only=False, output_format="human"):
     """Run rites sequentially. Returns number of failures."""
     failed = 0
+    reports = []
+    human = output_format == "human"
 
-    if not summary_only:
+    if human and not summary_only:
         print("Running Arcana Validations")
         print("=======================================")
         print()
 
     for rite in rites:
-        if not summary_only:
+        if human and not summary_only:
             print(f"Running {rite}...")
             print("----------------------------------------")
 
-        name, ok, output = run_rite(rite)
+        name, ok, report = run_rite(rite)
+        reports.append(report)
 
-        if not summary_only:
-            print(output, end="")
+        if human and not summary_only:
+            render_diagnostics(report)
         else:
-            if ok:
-                print(f"  {rite}")
-            else:
-                print(f"  {rite} FAILED")
+            if human:
+                if ok:
+                    print(f"  {rite}")
+                else:
+                    print(f"  {rite} FAILED")
 
         if not ok:
-            if summary_only:
-                pass
             failed += 1
 
-    if not summary_only:
+    suite_report = empty_suite_report(rites, reports)
+    if not human:
+        emit_suite_report(suite_report, output_format)
+
+    if human and not summary_only:
         print()
         print("=======================================")
 
     return failed
 
 
-def run_parallel(rites):
+def run_parallel(rites, output_format="human"):
     """Run rites in parallel. Returns number of failures."""
     failed = 0
+    reports = []
+    human = output_format == "human"
 
-    print("Running Arcana Validations in Parallel")
-    print("==========================================")
-    print()
+    if human:
+        print("Running Arcana Validations in Parallel")
+        print("==========================================")
+        print()
 
     results_dir = RITE_DIR / ".artifacts"
     results_dir.mkdir(parents=True, exist_ok=True)
@@ -167,19 +244,28 @@ def run_parallel(rites):
     with ProcessPoolExecutor() as executor:
         futures = {executor.submit(run_rite, r): r for r in rites}
         for future in as_completed(futures):
-            name, ok, output = future.result()
+            name, ok, report = future.result()
+            reports.append(report)
 
             log_path = results_dir / f"{Path(name).stem}.log"
-            log_path.write_text(output)
+            log_path.write_text(json.dumps(report, indent=2, sort_keys=True))
 
-            if ok:
-                print(f"  {name}")
-            else:
-                print(f"  {name} FAILED")
+            if human:
+                if ok:
+                    print(f"  {name}")
+                else:
+                    print(f"  {name} FAILED")
+                    render_diagnostics(report)
+            if not ok:
                 failed += 1
 
-    print()
-    print("==========================================")
+    suite_report = empty_suite_report(rites, reports)
+    if not human:
+        emit_suite_report(suite_report, output_format)
+
+    if human:
+        print()
+        print("==========================================")
     return failed
 
 
@@ -190,34 +276,55 @@ def main():
     group.add_argument("--smart", action="store_true", help="Show which validators are relevant")
     group.add_argument("--auto", action="store_true", help="Smart + auto-execute")
     group.add_argument("--summary", action="store_true", help="Summary-only output")
+    add_output_format_arg(parser)
     args = parser.parse_args()
 
     if args.smart:
         smart = determine_smart_rites()
-        print("Smart Validation - Recommended:")
-        for r in smart:
-            print(f"  {r}")
-        print()
-        print("Run with --auto to execute, or individually: python3 rites/<name>.py")
+        if args.format == "human":
+            print("Smart Validation - Recommended:")
+            for r in smart:
+                print(f"  {r}")
+            print()
+            print("Run with --auto to execute, or individually: python3 rites/<name>.py")
+        else:
+            report = {
+                "validator": "validate",
+                "status": "pass",
+                "root": str(ARCANA_ROOT),
+                "checked": {"selected_validators": len(smart)},
+                "summary": {
+                    "failed_validators": 0,
+                    "errors": 0,
+                    "warnings": 0,
+                    "diagnostics": 0,
+                },
+                "selected_validators": smart,
+                "reports": [],
+            }
+            emit_suite_report(report, args.format)
         return 0
 
     if args.auto:
         smart = determine_smart_rites()
-        print(f"Smart Validation - Running {len(smart)} relevant validator(s)")
-        print()
-        failed = run_sequential(smart)
+        if args.format == "human":
+            print(f"Smart Validation - Running {len(smart)} relevant validator(s)")
+            print()
+        failed = run_sequential(smart, output_format=args.format)
     elif args.parallel:
-        failed = run_parallel(RITES)
+        failed = run_parallel(RITES, output_format=args.format)
     elif args.summary:
-        failed = run_sequential(RITES, summary_only=True)
+        failed = run_sequential(RITES, summary_only=True, output_format=args.format)
     else:
-        failed = run_sequential(RITES)
+        failed = run_sequential(RITES, output_format=args.format)
 
     if failed == 0:
-        print("All validations passed")
+        if args.format == "human":
+            print("All validations passed")
         return 0
     else:
-        print(f"{failed} validation(s) failed")
+        if args.format == "human":
+            print(f"{failed} validation(s) failed")
         return 1
 
 

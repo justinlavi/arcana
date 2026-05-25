@@ -33,8 +33,8 @@ from _lib import (
     iter_pages,
     parse_frontmatter,
     resolve_grimoire_arg,
-    warn,
 )
+from diagnostics import DiagnosticReporter, add_output_format_arg
 
 # Folders whose .md files require schema-compliant frontmatter.
 SCAN_DIRS = ["docs", "invocations", "formulae", "chapters"]
@@ -77,31 +77,46 @@ def is_template(rel_path):
     return any(rel_path.startswith(d + "/") or rel_path == d for d in FORMULA_TEMPLATE_DIRS)
 
 
-def check_file(path, grimoire_root):
-    """Return list of violation strings for a single file."""
+def check_file(path, grimoire_root, reporter):
+    """Add frontmatter diagnostics for a single file."""
     rel = str(path.relative_to(grimoire_root))
-    violations = []
 
     try:
         content = path.read_text(encoding="utf-8", errors="replace")
     except OSError as exc:
-        return [f"{rel}: could not read ({exc})"]
+        reporter.error("FRONTMATTER_READ_ERROR", f"could not read ({exc})", path=rel)
+        return
 
     if not FRONTMATTER_RE.match(content):
-        return [f"{rel}: missing or malformed YAML frontmatter (must start with `---`)"]
+        reporter.error(
+            "FRONTMATTER_MISSING",
+            "missing or malformed YAML frontmatter (must start with `---`)",
+            path=rel,
+            docs_reference="docs/page_schema.md",
+        )
+        return
 
     fields = parse_frontmatter(content)
     type_ = fields.get("type", "")
 
     if not type_:
-        violations.append(f"{rel}: missing `type:` in frontmatter")
-        return violations
+        reporter.error(
+            "FRONTMATTER_MISSING_TYPE",
+            "missing `type:` in frontmatter",
+            path=rel,
+            docs_reference="docs/page_schema.md",
+        )
+        return
 
     if type_ not in VALID_TYPES:
-        violations.append(
-            f"{rel}: invalid type '{type_}' (must be one of {sorted(VALID_TYPES)})"
+        reporter.error(
+            "FRONTMATTER_INVALID_TYPE",
+            f"invalid type '{type_}'",
+            path=rel,
+            hint=f"Must be one of {sorted(VALID_TYPES)}.",
+            docs_reference="docs/page_schema.md",
         )
-        return violations
+        return
 
     template = is_template(rel)
     required, _optional = required_fields_for(type_)
@@ -112,21 +127,32 @@ def check_file(path, grimoire_root):
             # only `type` is enforced for templates (already validated above).
             if template:
                 continue
-            violations.append(f"{rel}: missing required field `{field}` for type='{type_}'")
+            reporter.error(
+                "FRONTMATTER_MISSING_REQUIRED",
+                f"missing required field `{field}` for type='{type_}'",
+                path=rel,
+                docs_reference="docs/page_schema.md",
+            )
 
     if "authority" in fields and fields["authority"]:
         if fields["authority"] not in VALID_AUTHORITIES:
-            violations.append(
-                f"{rel}: invalid authority '{fields['authority']}' "
-                f"(must be one of {sorted(VALID_AUTHORITIES)})"
+            reporter.error(
+                "FRONTMATTER_INVALID_AUTHORITY",
+                f"invalid authority '{fields['authority']}'",
+                path=rel,
+                hint=f"Must be one of {sorted(VALID_AUTHORITIES)}.",
+                docs_reference="docs/page_schema.md",
             )
         else:
             authority = fields["authority"]
             if authority in ("external", "hybrid"):
                 src = fields.get("sources") or []
                 if not src and not template:
-                    violations.append(
-                        f"{rel}: authority='{authority}' requires non-empty `sources:`"
+                    reporter.error(
+                        "FRONTMATTER_MISSING_SOURCES",
+                        f"authority='{authority}' requires non-empty `sources:`",
+                        path=rel,
+                        docs_reference="docs/page_schema.md",
                     )
 
     if "sources" in fields and isinstance(fields["sources"], list):
@@ -134,56 +160,82 @@ def check_file(path, grimoire_root):
             if isinstance(src, str) and src.startswith("sources/"):
                 src_path = grimoire_root / src
                 if not src_path.exists() and not template:
-                    violations.append(
-                        f"{rel}: sources entry '{src}' does not resolve under sources/"
+                    reporter.error(
+                        "FRONTMATTER_SOURCE_MISSING",
+                        f"sources entry '{src}' does not resolve under sources/",
+                        path=rel,
+                        hint="Create the source artifact or update the source pointer.",
+                        docs_reference="docs/page_schema.md",
                     )
 
     if "last_verified" in fields and fields["last_verified"]:
         v = fields["last_verified"]
         if isinstance(v, str) and not template:
             if not DATE_RE.match(v):
-                violations.append(f"{rel}: last_verified '{v}' must be YYYY-MM-DD")
+                reporter.error(
+                    "FRONTMATTER_INVALID_DATE_FORMAT",
+                    f"last_verified '{v}' must be YYYY-MM-DD",
+                    path=rel,
+                    docs_reference="docs/page_schema.md",
+                )
             else:
                 try:
                     datetime.date.fromisoformat(v)
                 except ValueError:
-                    violations.append(f"{rel}: last_verified '{v}' is not a valid date")
+                    reporter.error(
+                        "FRONTMATTER_INVALID_DATE",
+                        f"last_verified '{v}' is not a valid date",
+                        path=rel,
+                        docs_reference="docs/page_schema.md",
+                    )
 
     for field in ("tags", "aliases"):
         if field in fields and not isinstance(fields[field], list):
-            violations.append(f"{rel}: `{field}:` must be a YAML list")
-
-    return violations
+            reporter.error(
+                "FRONTMATTER_LIST_REQUIRED",
+                f"`{field}:` must be a YAML list",
+                path=rel,
+                docs_reference="docs/page_schema.md",
+            )
 
 
 def main():
     parser = argparse.ArgumentParser(description="Validate page frontmatter")
     add_grimoire_arg(parser)
+    add_output_format_arg(parser)
     args = parser.parse_args()
     grimoire_root = resolve_grimoire_arg(args.grimoire)
+    human = args.format == "human"
+    reporter = DiagnosticReporter("validate_frontmatter", grimoire_root)
 
-    print()
-    print("Validating Page Frontmatter")
-    print("==================================")
-    print(f"Grimoire root: {grimoire_root}")
-    print()
+    if human:
+        print()
+        print("Validating Page Frontmatter")
+        print("==================================")
+        print(f"Grimoire root: {grimoire_root}")
+        print()
 
-    total_violations = 0
     files_checked = 0
 
     for path in iter_pages(grimoire_root, SCAN_DIRS, exempt_filenames=EXEMPT_FILENAMES):
         files_checked += 1
-        violations = check_file(path, grimoire_root)
-        for v in violations:
-            warn(v)
-            total_violations += 1
+        before = len(reporter.diagnostics)
+        check_file(path, grimoire_root, reporter)
+        if human:
+            for diagnostic in reporter.diagnostics[before:]:
+                print(f"  [ERROR] {diagnostic.path}: {diagnostic.message}")
+
+    checked = {"files": files_checked}
+    if not human:
+        reporter.emit(args.format, checked=checked)
+        return reporter.exit_code()
 
     print()
     print(f"Files checked:    {files_checked}")
-    print(f"Violations found: {total_violations}")
+    print(f"Violations found: {reporter.error_count()}")
     print()
 
-    if total_violations == 0:
+    if reporter.error_count() == 0:
         print("Frontmatter validation passed")
         return 0
     print("Frontmatter validation failed")

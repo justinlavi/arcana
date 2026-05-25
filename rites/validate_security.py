@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 from _lib import default_arcana_root, ok, warn
+from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ARCANA_ROOT = default_arcana_root()
 
@@ -25,16 +26,24 @@ SKIP_DIRS = {"rites", "invocations/arcana/validators", "invocations/arcana/quali
 
 
 def main():
-    errors = 0
+    import argparse
 
-    print()
-    print("Validating Arcana Security")
-    print("==================================")
-    print(f"Arcana root: {ARCANA_ROOT}")
-    print()
+    parser = argparse.ArgumentParser(description="Security scanning for Arcana files")
+    add_output_format_arg(parser)
+    args = parser.parse_args()
+    human = args.format == "human"
+    reporter = DiagnosticReporter("validate_security", ARCANA_ROOT)
+
+    if human:
+        print()
+        print("Validating Arcana Security")
+        print("==================================")
+        print(f"Arcana root: {ARCANA_ROOT}")
+        print()
 
     # Scan for forbidden patterns
-    print("Scanning for potential credentials...")
+    if human:
+        print("Scanning for potential credentials...")
     cred_found = 0
 
     for path in sorted(ARCANA_ROOT.rglob("*")):
@@ -54,18 +63,26 @@ def main():
 
         for pattern, label in FORBIDDEN_PATTERNS:
             for match in pattern.finditer(content):
-                print()
-                print(f"  CRED   Found potential {label}: {rel}")
-                print(f"         Match: {match.group()[:80]}")
+                reporter.error(
+                    "SECURITY_CREDENTIAL_PATTERN",
+                    f"found potential {label}",
+                    path=rel,
+                    hint=f"Match: {match.group()[:80]}",
+                )
+                if human:
+                    print()
+                    print(f"  CRED   Found potential {label}: {rel}")
+                    print(f"         Match: {match.group()[:80]}")
                 cred_found += 1
-                errors += 1
 
-    if cred_found == 0:
+    if human and cred_found == 0:
         ok("No potential credentials found")
-    print()
+    if human:
+        print()
 
     # Check Python scripts for unsafe patterns
-    print("Checking for unsafe script patterns...")
+    if human:
+        print("Checking for unsafe script patterns...")
     unsafe = 0
 
     rites_dir = ARCANA_ROOT / "rites"
@@ -77,25 +94,42 @@ def main():
             content = path.read_text(errors="replace")
 
             if "eval(" in content:
-                warn(f"Script uses eval() (security risk): {path.relative_to(ARCANA_ROOT)}")
+                reporter.error(
+                    "SECURITY_EVAL",
+                    "script uses eval()",
+                    path=path,
+                    hint="Use explicit parsing or dispatch instead.",
+                )
+                if human:
+                    warn(f"Script uses eval() (security risk): {path.relative_to(ARCANA_ROOT)}")
                 unsafe += 1
-                errors += 1
 
             if "exec(" in content and "__name__" not in content:
-                warn(f"Script uses exec() (security risk): {path.relative_to(ARCANA_ROOT)}")
+                reporter.error(
+                    "SECURITY_EXEC",
+                    "script uses exec()",
+                    path=path,
+                    hint="Use explicit APIs instead.",
+                )
+                if human:
+                    warn(f"Script uses exec() (security risk): {path.relative_to(ARCANA_ROOT)}")
                 unsafe += 1
-                errors += 1
 
-    if unsafe == 0:
+    if human and unsafe == 0:
         ok("No unsafe script patterns found")
-    print()
+    if human:
+        print()
+
+    if not human:
+        reporter.emit(args.format, checked={"credential_hits": cred_found, "unsafe_hits": unsafe})
+        return reporter.exit_code()
 
     print("==================================")
-    if errors == 0:
+    if reporter.error_count() == 0:
         print("Security validation passed")
         return 0
     else:
-        print(f"Security validation failed with {errors} issues")
+        print(f"Security validation failed with {reporter.error_count()} issues")
         return 1
 
 

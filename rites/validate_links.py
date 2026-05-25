@@ -28,6 +28,7 @@ from _lib import (
     strip_code_blocks,
     wikilink_target_body,
 )
+from diagnostics import DiagnosticReporter, add_output_format_arg
 
 SKIP_DIRS = {
     "invocations/arcana/validators",
@@ -70,19 +71,22 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="Validate internal links and wikilinks")
     add_grimoire_arg(parser)
+    add_output_format_arg(parser)
     args = parser.parse_args()
     grimoire_root = resolve_grimoire_arg(args.grimoire)
+    human = args.format == "human"
+    reporter = DiagnosticReporter("validate_links", grimoire_root)
 
-    errors = 0
-    warnings = 0
+    files_checked = 0
 
-    print()
-    print("Validating Internal Links and Wikilinks")
-    print("==================================")
-    print(f"Grimoire root: {grimoire_root}")
-    print()
+    if human:
+        print()
+        print("Validating Internal Links and Wikilinks")
+        print("==================================")
+        print(f"Grimoire root: {grimoire_root}")
+        print()
 
-    print("Scanning markdown files for broken links and wikilinks...")
+        print("Scanning markdown files for broken links and wikilinks...")
 
     for path in sorted(grimoire_root.rglob("*.md")):
         rel = str(path.relative_to(grimoire_root))
@@ -100,6 +104,7 @@ def main():
         total = len(lines)
         if total == 0:
             continue
+        files_checked += 1
 
         scanable = strip_code_blocks(content)
 
@@ -129,10 +134,16 @@ def main():
                 pass
 
             if not resolved.exists():
-                print(f"  BROKEN  {rel}:")
-                print(f"          Link: {link}")
-                print(f"          Resolved to: {resolved}")
-                errors += 1
+                reporter.error(
+                    "LINK_MARKDOWN_BROKEN",
+                    f"markdown link does not resolve: {link}",
+                    path=rel,
+                    hint=f"Resolved to: {resolved}",
+                )
+                if human:
+                    print(f"  BROKEN  {rel}:")
+                    print(f"          Link: {link}")
+                    print(f"          Resolved to: {resolved}")
 
         # Wikilinks
         for wl_match in WIKILINK_RE.finditer(scanable):
@@ -141,31 +152,49 @@ def main():
                 continue
             resolved = resolve_wikilink(target, grimoire_root)
             if resolved is None:
-                print(f"  BROKEN  {rel}:")
-                print(f"          Wikilink: [[{target}]] (must resolve as a repository path; aliases and filename-only targets are invalid)")
-                errors += 1
+                reporter.error(
+                    "LINK_WIKILINK_BROKEN",
+                    f"wikilink does not resolve as a repository path: [[{target}]]",
+                    path=rel,
+                    hint="Use a full-path wikilink target relative to the grimoire root.",
+                    docs_reference="docs/obsidian.md",
+                )
+                if human:
+                    print(f"  BROKEN  {rel}:")
+                    print(f"          Wikilink: [[{target}]] (must resolve as a repository path; aliases and filename-only targets are invalid)")
                 continue
 
             display = wikilink_display_text(target)
             if display and label_key(display) != label_key(resolved.stem):
                 expected = resolved.stem.replace("_", " ").replace("-", " ")
-                print(f"  WARN    {rel}:")
-                print(f"          Wikilink: [[{target}]]")
-                print(f"          Display label should be target filename only: \"{expected}\"")
-                warnings += 1
+                reporter.warning(
+                    "LINK_LABEL_VERBOSE",
+                    f"display label should be target filename only: \"{expected}\"",
+                    path=rel,
+                    hint=f"Wikilink: [[{target}]]",
+                    docs_reference="docs/obsidian.md",
+                )
+                if human:
+                    print(f"  WARN    {rel}:")
+                    print(f"          Wikilink: [[{target}]]")
+                    print(f"          Display label should be target filename only: \"{expected}\"")
+
+    checked = {"files": files_checked}
+    if not human:
+        reporter.emit(args.format, checked=checked)
+        return reporter.exit_code()
 
     print()
-
     print("==================================")
-    if errors == 0:
+    if reporter.error_count() == 0:
         print("Link validation passed (no broken links or wikilinks found)")
-        if warnings:
-            print(f"Link label warnings: {warnings}")
+        if reporter.warning_count():
+            print(f"Link label warnings: {reporter.warning_count()}")
         return 0
     else:
-        print(f"Link validation failed with {errors} broken link(s)")
-        if warnings:
-            print(f"Link label warnings: {warnings}")
+        print(f"Link validation failed with {reporter.error_count()} broken link(s)")
+        if reporter.warning_count():
+            print(f"Link label warnings: {reporter.warning_count()}")
         return 1
 
 

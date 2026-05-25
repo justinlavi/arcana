@@ -10,4 +10,5 @@ def test_numeric_range_repair_artifacts_are_caught(tmp_path: Path):
     violations = check_file(path, tmp_path)
 
     assert violations
-    assert "numeric range repair artifact" in violations[0]
+    assert violations[0].code == "ENCODING_REPAIR_ARTIFACT"
+    assert "numeric range repair artifact" in violations[0].message

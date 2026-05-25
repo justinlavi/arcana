@@ -47,7 +47,6 @@ Priority labels:
 
 | ID | Priority | Item | Primary owner | Why deferred |
 |---|---|---|---|---|
-| ST-001 | P1 | Structured validator diagnostics | `rites/validate*.py`, `rites/_lib.py` | Touches every validator and public validation output. |
 | ST-003 | P1 | Skill registration ownership and prefix-collision safety | `rites/register_skills.py`, agent skill dirs | Mutates user agent directories; cleanup rules need careful ownership boundaries. |
 | ST-004 | P1 | Summoning Rite behavior contract and GUI/core parity | `rites/summon*`, `.github/`, install docs | Installer behavior spans shell, Python, GUI, release assets, and docs. |
 | ST-005 | P2 | Mutating rite plan/apply/idempotency profile | mutating rites and invocations | Broad behavioral standard across multiple write-capable rites. |
@@ -56,70 +55,6 @@ Priority labels:
 | ST-008 | P2 | Grimoire validation orchestrator and profiles | grimoire validators, `/grm-improve` | Would add or reshape public validation workflow. |
 | ST-009 | P3 | Richer generated skill catalog | `rites/sync_docs.py`, `docs/skills.md` | Best implemented after ST-006 defines the command contract. |
 | ST-010 | P3 | Source wrapper and provenance boundary clarification | source formula, provenance docs/validators | Needs design judgment before adding mechanical checks. |
-
-## ST-001: Structured Validator Diagnostics
-
-Priority: P1
-
-Status: Deferred
-
-Primary owner: `rites/_lib.py`, `rites/validate.py`, `rites/validate_*.py`,
-`tests/test_validators_against_fixtures.py`
-
-Current evidence:
-
-- Arcana has many validators with independent human-readable output:
-  `rites/validate_structure.py`, `rites/validate_frontmatter.py`,
-  `rites/validate_links.py`, `rites/validate_grimoire_structure.py`, and
-  peers.
-- `rites/validate.py` aggregates pass/fail status, but individual diagnostics
-  are not represented as one stable object shape.
-- Tests mostly assert exit codes and selected substrings, which is useful but
-  not enough for editor integrations, issue reports, or AI repair loops.
-
-Finding:
-
-Validators are correct, but their output is mostly prose. That makes failures
-harder to paste into an issue, harder for agents to repair deterministically,
-and harder to consume from editors or future automation.
-
-Desired S-tier endpoint:
-
-- A shared diagnostic object, likely in `rites/_lib.py` or a small
-  `rites/diagnostics.py` helper.
-- Each diagnostic has stable fields: `code`, `severity`, `path`, optional
-  `line`, `message`, optional `hint`, `validator`, and optional
-  `docs_reference`.
-- Validators can emit human-readable text by default and JSON or JSONL with a
-  flag such as `--format json`.
-- `rites/validate.py` can aggregate structured diagnostics without parsing
-  each validator's prose.
-- Tests assert diagnostic codes, not only strings.
-
-First implementable slice:
-
-1. Add the diagnostic helper and human formatter.
-2. Migrate two validators with different shapes, such as
-   `validate_frontmatter.py` and `validate_links.py`.
-3. Add tests for default output, JSON output, and orchestrator aggregation.
-4. Document the convention in `docs/script_vs_ai.md` or the validator hub.
-
-Blast radius:
-
-High within the validator suite. The public CLI output must remain friendly,
-and any JSON flag should be additive rather than breaking existing workflows.
-
-Validation profile:
-
-- `python rites/validate.py --parallel`
-- `python -m pytest tests/test_validators_against_fixtures.py`
-- New focused tests for structured diagnostics and orchestrator aggregation.
-
-Read-path delta:
-
-Agents diagnosing validation failures would no longer infer from prose. They
-could read one machine-shaped report, map codes to docs, and apply focused
-repairs.
 
 ## ST-003: Skill Registration Ownership And Prefix-Collision Safety
 
@@ -571,14 +506,12 @@ create a wrapper, cite a raw file, or cite an external URL.
 
 ## Suggested Implementation Sequence
 
-1. ST-001 first if the next work touches validators broadly. It improves every
-   future repair loop.
-2. ST-006 before adding or reshaping public commands. It prevents command
+1. ST-006 before adding or reshaping public commands. It prevents command
    surface drift.
-3. ST-003 after ST-005 or alongside its first slice, because registration is
+2. ST-003 after ST-005 or alongside its first slice, because registration is
    the highest-risk mutating rite.
-4. ST-004 as its own focused pass before the next installer/release push.
-5. ST-008 after ST-006, because adding `grm-validate-all` would expand the
+3. ST-004 as its own focused pass before the next installer/release push.
+4. ST-008 after ST-006, because adding `grm-validate-all` would expand the
    public command surface.
 
 ## Update Triggers

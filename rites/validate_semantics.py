@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 
 from _lib import default_arcana_root, ok, warn
+from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ARCANA_ROOT = default_arcana_root()
 
@@ -58,9 +59,10 @@ def scan_markdown_files(root, predicate):
                 break  # one report per file is enough
 
 
-def check_hyphenated_examples():
+def check_hyphenated_examples(reporter, human):
     """Report any markdown file containing hyphenated path examples in body text."""
-    print("Checking for hyphenated path examples...")
+    if human:
+        print("Checking for hyphenated path examples...")
     found = 0
 
     def is_hyphenated_body_line(line):
@@ -69,23 +71,44 @@ def check_hyphenated_examples():
         return HYPHEN_PATTERN.search(line) is not None
 
     for rel, lineno, _line in scan_markdown_files(ARCANA_ROOT, is_hyphenated_body_line):
-        warn(f"Hyphenated example: {rel}:{lineno}")
+        reporter.error(
+            "SEMANTICS_HYPHENATED_EXAMPLE",
+            "hyphenated path example should use snake_case",
+            path=rel,
+            line=lineno,
+        )
+        if human:
+            warn(f"Hyphenated example: {rel}:{lineno}")
         found += 1
 
-    if found == 0:
+    if human and found == 0:
         ok("No hyphenated examples found")
-    print()
+    if human:
+        print()
     return found
 
 
 def main():
-    print()
-    print("Validate Arcana Semantics")
-    print("====================================")
-    print(f"Arcana root: {ARCANA_ROOT}")
-    print()
+    import argparse
 
-    hyphen_count = check_hyphenated_examples()
+    parser = argparse.ArgumentParser(description="Validate Arcana semantics")
+    add_output_format_arg(parser)
+    args = parser.parse_args()
+    human = args.format == "human"
+    reporter = DiagnosticReporter("validate_semantics", ARCANA_ROOT)
+
+    if human:
+        print()
+        print("Validate Arcana Semantics")
+        print("====================================")
+        print(f"Arcana root: {ARCANA_ROOT}")
+        print()
+
+    hyphen_count = check_hyphenated_examples(reporter, human)
+
+    if not human:
+        reporter.emit(args.format, checked={"hyphenated_paths": hyphen_count})
+        return reporter.exit_code()
 
     print("====================================")
     print(f"Hyphenated paths:   {hyphen_count}")

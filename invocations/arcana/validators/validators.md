@@ -11,6 +11,18 @@ Mechanical, deterministic checks against the Arcana repository. Each validator h
 
 For the aggregate command, see [validate_all.md](validate_all.md).
 
+Each validator supports structured diagnostics:
+
+```bash
+python3 ../../../rites/<validator>.py --format json
+python3 ../../../rites/<validator>.py --format jsonl
+```
+
+Every diagnostic carries `code`, `severity`, `path`, `line`, `message`,
+`hint`, `validator`, and `docs_reference`. The default human output is for
+terminal use; JSON and JSONL are for agents, editor integrations, and issue
+reports.
+
 ## Available
 
 | Validator | Skill | What it checks |
@@ -35,6 +47,7 @@ python3 ../../../rites/validate.py            # sequential, default
 python3 ../../../rites/validate.py --parallel  # concurrent
 python3 ../../../rites/validate.py --smart     # only validators relevant to git changes
 python3 ../../../rites/validate.py --auto      # smart + execute
+python3 ../../../rites/validate.py --format json
 ```
 
 Or invoke `/arc-validate-all`, whose workflow home is [validate_all.md](validate_all.md).

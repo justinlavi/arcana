@@ -26,6 +26,7 @@ from _lib import (
     resolve_grimoire_arg,
     warn,
 )
+from diagnostics import DiagnosticReporter, add_output_format_arg
 
 SCAN_DIRS = ["chapters", "docs", "invocations"]
 EXEMPT_FILENAMES = {"README.md", "CHANGELOG.md", "log.md", "VERSION"}
@@ -35,16 +36,19 @@ SKIP_DIRS = {"sources", "formulae", ".git"}
 def main():
     parser = argparse.ArgumentParser(description="Validate page provenance")
     add_grimoire_arg(parser)
+    add_output_format_arg(parser)
     args = parser.parse_args()
     root = resolve_grimoire_arg(args.grimoire)
+    human = args.format == "human"
+    reporter = DiagnosticReporter("validate_provenance", root)
 
-    print()
-    print("Validating Provenance")
-    print("==================================")
-    print(f"Grimoire root: {root}")
-    print()
+    if human:
+        print()
+        print("Validating Provenance")
+        print("==================================")
+        print(f"Grimoire root: {root}")
+        print()
 
-    violations = 0
     pages_checked = 0
 
     for path in iter_pages(root, SCAN_DIRS, exempt_filenames=EXEMPT_FILENAMES, skip_dirs=SKIP_DIRS):
@@ -60,32 +64,62 @@ def main():
         rel = path.relative_to(root)
         sources = fm.get("sources") or []
         if not isinstance(sources, list):
-            warn(f"{rel}: `sources:` must be a YAML list")
-            violations += 1
+            reporter.error(
+                "PROVENANCE_SOURCES_LIST_REQUIRED",
+                "`sources:` must be a YAML list",
+                path=rel,
+                docs_reference="docs/page_schema.md",
+            )
+            if human:
+                warn(f"{rel}: `sources:` must be a YAML list")
             continue
         if not sources:
-            warn(f"{rel}: authority='{authority}' but no `sources:` listed")
-            violations += 1
+            reporter.error(
+                "PROVENANCE_MISSING_SOURCES",
+                f"authority='{authority}' but no `sources:` listed",
+                path=rel,
+                docs_reference="docs/page_schema.md",
+            )
+            if human:
+                warn(f"{rel}: authority='{authority}' but no `sources:` listed")
             continue
         for src in sources:
             if not isinstance(src, str) or not src:
                 continue
             if src.startswith("inbox/"):
-                warn(f"{rel}: source '{src}' points at inbox/ (transient - pages must cite sources/ instead)")
-                violations += 1
+                reporter.error(
+                    "PROVENANCE_INBOX_SOURCE",
+                    f"source '{src}' points at inbox/",
+                    path=rel,
+                    hint="Pages must cite sources/ or external URLs.",
+                    docs_reference="docs/operating_model.md",
+                )
+                if human:
+                    warn(f"{rel}: source '{src}' points at inbox/ (transient - pages must cite sources/ instead)")
                 continue
             if src.startswith("sources/"):
                 target = root / src
                 if not target.exists():
-                    warn(f"{rel}: source '{src}' does not resolve under sources/")
-                    violations += 1
+                    reporter.error(
+                        "PROVENANCE_SOURCE_MISSING",
+                        f"source '{src}' does not resolve under sources/",
+                        path=rel,
+                        docs_reference="docs/page_schema.md",
+                    )
+                    if human:
+                        warn(f"{rel}: source '{src}' does not resolve under sources/")
+
+    checked = {"external_or_hybrid_pages": pages_checked}
+    if not human:
+        reporter.emit(args.format, checked=checked)
+        return reporter.exit_code()
 
     print()
     print(f"Pages with external/hybrid authority: {pages_checked}")
-    print(f"Provenance violations:               {violations}")
+    print(f"Provenance violations:               {reporter.error_count()}")
     print()
 
-    if violations == 0:
+    if reporter.error_count() == 0:
         print("Provenance validation passed")
         return 0
     print("Provenance validation failed")

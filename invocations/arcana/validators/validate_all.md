@@ -24,6 +24,7 @@ Mechanical equivalent:
 
 ```bash
 python3 ARCANA_HOME/rites/validate.py
+python3 ARCANA_HOME/rites/validate.py --format json
 ```
 
 On Windows, use `python` instead of `python3`.
@@ -36,6 +37,7 @@ On Windows, use `python` instead of `python3`.
    - `--summary` - show only pass/fail status per validator.
    - `--smart` - inspect git changes and list relevant validators.
    - `--auto` - run the validators selected by `--smart`.
+   - `--format json` or `--format jsonl` - emit structured diagnostics.
 3. Report aggregate pass/fail status and the failing validator names.
 4. If a validator fails, route to that validator's invocation leaf for fix
    guidance, then re-run the orchestrator.

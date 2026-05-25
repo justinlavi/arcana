@@ -21,6 +21,7 @@ import sys
 from pathlib import Path
 
 from _lib import default_arcana_root, ok, warn
+from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ARCANA_ROOT = default_arcana_root()
 SKILLS_DIR = ARCANA_ROOT / "skills"
@@ -57,12 +58,14 @@ def read_frontmatter_name(skill_file):
     return match.group(1).strip() if match else ""
 
 
-def load_skill_families():
+def load_skill_families(reporter, human):
     """Return Arcana command-family definitions from arcana.json."""
     try:
         metadata = json.loads(ARCANA_MANIFEST.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        warn(f"Could not read arcana.json: {exc}")
+        reporter.error("SKILL_REFS_MANIFEST_READ", f"could not read arcana.json: {exc}", path="arcana.json")
+        if human:
+            warn(f"Could not read arcana.json: {exc}")
         return []
 
     default_prefix = metadata.get("skill_prefix", "arc")
@@ -82,11 +85,11 @@ def load_skill_families():
     return families
 
 
-def discover_skill_commands():
+def discover_skill_commands(reporter, human):
     """Return the set of valid slash commands shipped by Arcana."""
     commands = set()
     prefixes = set()
-    for family in load_skill_families():
+    for family in load_skill_families(reporter, human):
         prefixes.add(family["skill_prefix"])
         family_dir = family["path"]
         if not family_dir.is_dir():
@@ -129,19 +132,30 @@ def scan_for_skill_refs(prefixes):
 
 
 def main():
-    print()
-    print("Validate Skill References")
-    print("====================================")
-    print(f"Arcana root:    {ARCANA_ROOT}")
-    print(f"Skills dir:     {SKILLS_DIR}")
-    print()
+    import argparse
 
-    valid_commands, prefixes = discover_skill_commands()
-    print(f"Skill prefixes: {', '.join(f'{prefix}-' for prefix in sorted(prefixes))}")
-    print(f"Discovered {len(valid_commands)} valid Arcana-shipped skill(s).")
-    print()
+    parser = argparse.ArgumentParser(description="Validate Arcana skill references")
+    add_output_format_arg(parser)
+    args = parser.parse_args()
+    human = args.format == "human"
+    reporter = DiagnosticReporter("validate_skill_refs", ARCANA_ROOT)
 
-    print("Scanning markdown for Arcana-shipped slash-command references...")
+    if human:
+        print()
+        print("Validate Skill References")
+        print("====================================")
+        print(f"Arcana root:    {ARCANA_ROOT}")
+        print(f"Skills dir:     {SKILLS_DIR}")
+        print()
+
+    valid_commands, prefixes = discover_skill_commands(reporter, human)
+    if human:
+        print(f"Skill prefixes: {', '.join(f'{prefix}-' for prefix in sorted(prefixes))}")
+        print(f"Discovered {len(valid_commands)} valid Arcana-shipped skill(s).")
+        print()
+
+    if human:
+        print("Scanning markdown for Arcana-shipped slash-command references...")
     dangling = []
     seen_pairs = set()
     for rel, lineno, full in scan_for_skill_refs(prefixes):
@@ -153,17 +167,37 @@ def main():
             continue
         seen_pairs.add(key)
         dangling.append((rel, lineno, full))
-        warn(f"{rel}:{lineno}  references {full}  (no source SKILL.md)")
+        reporter.error(
+            "SKILL_REFS_DANGLING",
+            f"references {full} with no source SKILL.md",
+            path=rel,
+            line=lineno,
+            hint="Create the source skill or update the reference.",
+        )
+        if human:
+            warn(f"{rel}:{lineno}  references {full}  (no source SKILL.md)")
 
-    if not dangling:
+    if human and not dangling:
         ok("All Arcana-shipped skill references resolve to existing skills.")
-    print()
+    if human:
+        print()
+
+    if not human:
+        reporter.emit(
+            args.format,
+            checked={
+                "valid_commands": len(valid_commands),
+                "references": len(seen_pairs),
+                "dangling_references": len(dangling),
+            },
+        )
+        return reporter.exit_code()
 
     print("====================================")
     print(f"Dangling skill references: {len(dangling)}")
     print()
 
-    if not dangling:
+    if not dangling and reporter.error_count() == 0:
         return 0
     print("Either create the missing skill or update the reference.")
     print("If a skill was renamed, update the docs that reference it.")

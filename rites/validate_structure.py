@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 from _lib import default_arcana_root
+from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ARCANA_ROOT = default_arcana_root()
 
@@ -88,61 +89,99 @@ def hub_path(rel_dir):
 
 
 def main():
-    errors = 0
+    import argparse
 
-    print()
-    print("Validating Arcana Structure")
-    print("==================================")
-    print(f"Arcana root: {ARCANA_ROOT}")
-    print()
+    parser = argparse.ArgumentParser(description="Validate Arcana structure completeness")
+    add_output_format_arg(parser)
+    args = parser.parse_args()
+    human = args.format == "human"
+    reporter = DiagnosticReporter("validate_structure", ARCANA_ROOT)
 
-    print("Checking required directories...")
+    if human:
+        print()
+        print("Validating Arcana Structure")
+        print("==================================")
+        print(f"Arcana root: {ARCANA_ROOT}")
+        print()
+
+    if human:
+        print("Checking required directories...")
     for d in REQUIRED_DIRS:
         path = ARCANA_ROOT / d
         if not path.is_dir():
-            print(f"  MISSING  directory: {d}")
-            errors += 1
+            reporter.error("STRUCTURE_MISSING_DIR", f"missing directory: {d}", path=d)
+            if human:
+                print(f"  MISSING  directory: {d}")
         else:
-            print(f"  OK       {d}")
-    print()
+            if human:
+                print(f"  OK       {d}")
+    if human:
+        print()
 
-    print("Checking required files...")
+    if human:
+        print("Checking required files...")
     for f in REQUIRED_FILES:
         path = ARCANA_ROOT / f
         if not path.is_file():
-            print(f"  MISSING  file: {f}")
-            errors += 1
+            reporter.error("STRUCTURE_MISSING_FILE", f"missing file: {f}", path=f)
+            if human:
+                print(f"  MISSING  file: {f}")
         else:
-            print(f"  OK       {f}")
-    print()
+            if human:
+                print(f"  OK       {f}")
+    if human:
+        print()
 
-    print("Checking Arcana root excludes grimoire layers...")
+    if human:
+        print("Checking Arcana root excludes grimoire layers...")
     for rel in FORBIDDEN_GRIMOIRE_LAYER_PATHS:
         path = ARCANA_ROOT / rel
         if path.exists():
-            print(f"  FORBIDDEN root path: {rel} (grimoire layer belongs in formulae/grimoire/)")
-            errors += 1
+            reporter.error(
+                "STRUCTURE_FORBIDDEN_GRIMOIRE_LAYER",
+                "grimoire layer belongs in formulae/grimoire/",
+                path=rel,
+            )
+            if human:
+                print(f"  FORBIDDEN root path: {rel} (grimoire layer belongs in formulae/grimoire/)")
         else:
-            print(f"  OK       no {rel}")
-    print()
+            if human:
+                print(f"  OK       no {rel}")
+    if human:
+        print()
 
-    print("Checking router hub files (folder-name convention)...")
+    if human:
+        print("Checking router hub files (folder-name convention)...")
     for d in HUB_DIRS:
         hub = hub_path(d)
         rel = hub.relative_to(ARCANA_ROOT)
         if not hub.is_file():
-            print(f"  MISSING  hub file: {rel}")
-            errors += 1
+            reporter.error("STRUCTURE_MISSING_HUB", f"missing hub file: {rel}", path=rel)
+            if human:
+                print(f"  MISSING  hub file: {rel}")
         else:
-            print(f"  OK       {rel}")
-    print()
+            if human:
+                print(f"  OK       {rel}")
+    if human:
+        print()
+
+    if not human:
+        reporter.emit(
+            args.format,
+            checked={
+                "required_directories": len(REQUIRED_DIRS),
+                "required_files": len(REQUIRED_FILES),
+                "hub_directories": len(HUB_DIRS),
+            },
+        )
+        return reporter.exit_code()
 
     print("==================================")
-    if errors == 0:
+    if reporter.error_count() == 0:
         print("Structure validation passed")
         return 0
     else:
-        print(f"Structure validation failed with {errors} errors")
+        print(f"Structure validation failed with {reporter.error_count()} errors")
         return 1
 
 

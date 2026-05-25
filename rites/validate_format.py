@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 
 from _lib import add_grimoire_arg, ok, resolve_grimoire_arg, warn
+from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ROOT = None
 
@@ -103,7 +104,7 @@ def unclosed_code_fences(content):
 
 
 def backtick_tree_branches(content):
-    """Return pipe-tree lines that use legacy `-- branch markers."""
+    """Return pipe-tree lines that use backtick branch markers."""
     for line_number, line in enumerate(content.splitlines(), 1):
         if BACKTICK_TREE_BRANCH_RE.match(line):
             yield line_number, line
@@ -114,21 +115,25 @@ def main():
 
     parser = argparse.ArgumentParser(description=__doc__)
     add_grimoire_arg(parser)
+    add_output_format_arg(parser)
     args = parser.parse_args()
 
     ROOT = resolve_grimoire_arg(args.grimoire)
-    errors = 0
+    human = args.format == "human"
+    reporter = DiagnosticReporter("validate_format", ROOT)
 
-    print()
-    print("Validating Markdown, Invocation, Formula, and Hub Format")
-    print("==================================")
-    print(f"Root: {ROOT}")
-    print()
+    if human:
+        print()
+        print("Validating Markdown, Invocation, Formula, and Hub Format")
+        print("==================================")
+        print(f"Root: {ROOT}")
+        print()
 
     invocations_dir = ROOT / "invocations"
 
     # 1. Invocation files (non-hub) must follow the invocation schema.
-    print("Checking invocation format compliance...")
+    if human:
+        print("Checking invocation format compliance...")
     inv_violations = 0
 
     # Pattern templates and shared fragments aren't standalone invocations.
@@ -146,19 +151,26 @@ def main():
 
             for pattern, label in INVOCATION_REQUIRED_SECTIONS:
                 if not re.search(pattern, content, re.MULTILINE):
-                    if file_errors == 0:
+                    if human and file_errors == 0:
                         warn(f"Format violations in: {path.relative_to(ROOT)}")
-                    print(f"          Missing section: {label}")
+                    reporter.error(
+                        "FORMAT_MISSING_INVOCATION_SECTION",
+                        f"missing section: {label}",
+                        path=path,
+                    )
+                    if human:
+                        print(f"          Missing section: {label}")
                     file_errors += 1
                     inv_violations += 1
-                    errors += 1
 
-    if inv_violations == 0:
+    if human and inv_violations == 0:
         ok("All invocations have required sections")
-    print()
+    if human:
+        print()
 
     # 2. Hub files must be thin routers.
-    print(f"Checking hub files are thin routers (< {HUB_MAX_LINES} lines)...")
+    if human:
+        print(f"Checking hub files are thin routers (< {HUB_MAX_LINES} lines)...")
     hub_violations = 0
 
     if invocations_dir.is_dir():
@@ -167,17 +179,24 @@ def main():
                 continue
             lines = len(path.read_text(errors="replace").splitlines())
             if lines > HUB_MAX_LINES:
-                warn(f"Hub too long ({lines} lines, should be < {HUB_MAX_LINES}): "
-                     f"{path.relative_to(ROOT)}")
+                reporter.error(
+                    "FORMAT_HUB_TOO_LONG",
+                    f"hub too long ({lines} lines, should be < {HUB_MAX_LINES})",
+                    path=path,
+                )
+                if human:
+                    warn(f"Hub too long ({lines} lines, should be < {HUB_MAX_LINES}): "
+                         f"{path.relative_to(ROOT)}")
                 hub_violations += 1
-                errors += 1
 
-    if hub_violations == 0:
+    if human and hub_violations == 0:
         ok("All hub files are appropriately sized")
-    print()
+    if human:
+        print()
 
     # 3. Formulae must have a title heading.
-    print("Checking formula format...")
+    if human:
+        print("Checking formula format...")
     formula_violations = 0
 
     formulae_dir = ROOT / "formulae"
@@ -185,36 +204,51 @@ def main():
         for path in sorted(formulae_dir.rglob("*.md")):
             content = path.read_text(errors="replace")
             if not re.search(r"^# ", content, re.MULTILINE):
-                warn(f"Formula missing title heading: {path.relative_to(ROOT)}")
+                reporter.error(
+                    "FORMAT_FORMULA_MISSING_TITLE",
+                    "formula missing title heading",
+                    path=path,
+                )
+                if human:
+                    warn(f"Formula missing title heading: {path.relative_to(ROOT)}")
                 formula_violations += 1
-                errors += 1
 
-    if formula_violations == 0:
+    if human and formula_violations == 0:
         ok("All formulae have proper format")
-    print()
+    if human:
+        print()
 
     # 4. Markdown table delimiter rows must use 3+ hyphens per cell.
-    print("Checking markdown table delimiter rows...")
+    if human:
+        print("Checking markdown table delimiter rows...")
     table_violations = 0
 
     for path in markdown_files(ROOT):
         content = path.read_text(encoding="utf-8", errors="replace")
         for line_number, line in short_table_delimiter_rows(content):
-            if table_violations == 0:
+            if human and table_violations == 0:
                 print()
-            warn(
-                f"Short table delimiter row: {path.relative_to(ROOT)}:"
-                f"{line_number} `{line}`"
+            reporter.error(
+                "FORMAT_SHORT_TABLE_DELIMITER",
+                f"short table delimiter row: `{line}`",
+                path=path,
+                line=line_number,
             )
+            if human:
+                warn(
+                    f"Short table delimiter row: {path.relative_to(ROOT)}:"
+                    f"{line_number} `{line}`"
+                )
             table_violations += 1
-            errors += 1
 
-    if table_violations == 0:
+    if human and table_violations == 0:
         ok("All markdown table delimiter rows use 3+ hyphens")
-    print()
+    if human:
+        print()
 
     # 5. Fenced code blocks must close.
-    print("Checking fenced code blocks...")
+    if human:
+        print("Checking fenced code blocks...")
     fence_violations = 0
 
     for path in markdown_files(ROOT):
@@ -222,41 +256,68 @@ def main():
         violation = unclosed_code_fences(content)
         if violation:
             line_number, fence = violation
-            warn(
-                f"Unclosed code fence: {path.relative_to(ROOT)}:"
-                f"{line_number} `{fence}`"
+            reporter.error(
+                "FORMAT_UNCLOSED_CODE_FENCE",
+                f"unclosed code fence `{fence}`",
+                path=path,
+                line=line_number,
             )
+            if human:
+                warn(
+                    f"Unclosed code fence: {path.relative_to(ROOT)}:"
+                    f"{line_number} `{fence}`"
+                )
             fence_violations += 1
-            errors += 1
 
-    if fence_violations == 0:
+    if human and fence_violations == 0:
         ok("All fenced code blocks are closed")
-    print()
+    if human:
+        print()
 
     # 6. Directory tree examples use pipe branch markers, not backticks.
-    print("Checking Markdown tree branch markers...")
+    if human:
+        print("Checking Markdown tree branch markers...")
     tree_violations = 0
 
     for path in markdown_files(ROOT):
         content = path.read_text(encoding="utf-8", errors="replace")
         for line_number, line in backtick_tree_branches(content):
-            warn(
-                f"Backtick tree branch marker: {path.relative_to(ROOT)}:"
-                f"{line_number} `{line}`"
+            reporter.error(
+                "FORMAT_TREE_BACKTICK_MARKER",
+                f"backtick tree branch marker: `{line}`",
+                path=path,
+                line=line_number,
             )
+            if human:
+                warn(
+                    f"Backtick tree branch marker: {path.relative_to(ROOT)}:"
+                    f"{line_number} `{line}`"
+                )
             tree_violations += 1
-            errors += 1
 
-    if tree_violations == 0:
+    if human and tree_violations == 0:
         ok("All Markdown tree examples use pipe branch markers")
-    print()
+    if human:
+        print()
+
+    checked = {
+        "invocation_violations": inv_violations,
+        "hub_violations": hub_violations,
+        "formula_violations": formula_violations,
+        "table_violations": table_violations,
+        "fence_violations": fence_violations,
+        "tree_violations": tree_violations,
+    }
+    if not human:
+        reporter.emit(args.format, checked=checked)
+        return reporter.exit_code()
 
     print("==================================")
-    if errors == 0:
+    if reporter.error_count() == 0:
         print("Format validation passed")
         return 0
     else:
-        print(f"Format validation failed with {errors} issues")
+        print(f"Format validation failed with {reporter.error_count()} issues")
         return 1
 
 

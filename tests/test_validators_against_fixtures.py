@@ -12,6 +12,7 @@ parsing, exit codes, or stdout flushing is caught.
 import subprocess
 import sys
 import shutil
+import json
 from pathlib import Path
 
 import pytest
@@ -25,10 +26,10 @@ BAD_LINKS = FIXTURES / "bad_links"
 WARN_LABELS = FIXTURES / "warn_labels"
 
 
-def _run(script: str, grimoire: Path) -> subprocess.CompletedProcess:
+def _run(script: str, grimoire: Path, *extra_args: str) -> subprocess.CompletedProcess:
     """Invoke a validator against a fixture grimoire."""
     return subprocess.run(
-        [sys.executable, str(RITES / script), "--grimoire", str(grimoire)],
+        [sys.executable, str(RITES / script), "--grimoire", str(grimoire), *extra_args],
         capture_output=True,
         text=True,
         timeout=30,
@@ -76,6 +77,17 @@ def test_bad_frontmatter_is_caught():
     assert "last_verified" in out
 
 
+def test_bad_frontmatter_structured_diagnostics_have_codes():
+    result = _run("validate_frontmatter.py", BAD_FRONT, "--format", "json")
+
+    assert result.returncode != 0
+    report = json.loads(result.stdout)
+    codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+    assert "FRONTMATTER_INVALID_AUTHORITY" in codes
+    assert "FRONTMATTER_INVALID_DATE_FORMAT" in codes
+    assert "FRONTMATTER_MISSING_TYPE" in codes
+
+
 def test_bad_links_is_caught():
     result = _run("validate_links.py", BAD_LINKS)
     assert result.returncode != 0, (
@@ -89,6 +101,16 @@ def test_bad_links_is_caught():
     assert "no-such-wikilink" in out
 
 
+def test_bad_links_structured_diagnostics_have_codes():
+    result = _run("validate_links.py", BAD_LINKS, "--format", "json")
+
+    assert result.returncode != 0
+    report = json.loads(result.stdout)
+    codes = [diagnostic["code"] for diagnostic in report["diagnostics"]]
+    assert "LINK_MARKDOWN_BROKEN" in codes
+    assert "LINK_WIKILINK_BROKEN" in codes
+
+
 def test_verbose_wikilink_label_warns_without_failing():
     result = _run("validate_links.py", WARN_LABELS)
     assert result.returncode == 0, (
@@ -97,6 +119,16 @@ def test_verbose_wikilink_label_warns_without_failing():
     )
     assert "WARN" in result.stdout
     assert "Display label should be target filename only" in result.stdout
+
+
+def test_verbose_wikilink_label_structured_warning_does_not_fail():
+    result = _run("validate_links.py", WARN_LABELS, "--format", "json")
+
+    assert result.returncode == 0
+    report = json.loads(result.stdout)
+    assert report["summary"]["errors"] == 0
+    assert report["summary"]["warnings"] == 1
+    assert report["diagnostics"][0]["code"] == "LINK_LABEL_VERBOSE"
 
 
 def test_structure_validator_catches_stale_obsidian_graph(tmp_path):
@@ -132,3 +164,20 @@ def test_full_validator_suite_passes_against_arcana():
         f"--- stdout (tail) ---\n{result.stdout[-2000:]}\n"
         f"--- stderr (tail) ---\n{result.stderr[-1000:]}"
     )
+
+
+def test_full_validator_suite_emits_structured_aggregate_report():
+    result = subprocess.run(
+        [sys.executable, str(RITES / "validate.py"), "--format", "json"],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+
+    assert result.returncode == 0
+    report = json.loads(result.stdout)
+    assert report["validator"] == "validate"
+    assert report["status"] == "pass"
+    assert report["checked"]["validators"] == 12
+    assert len(report["reports"]) == 12
+    assert {validator_report["validator"] for validator_report in report["reports"]}
