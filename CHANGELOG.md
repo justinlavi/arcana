@@ -16,6 +16,8 @@
   the validated Summoning Rite behavior contract.
 - Added `rites/data/agent_targets.json` and `docs/agent_targets.md` as the
   validated registry for agent instruction files and skill registration modes.
+- Added `/grm-validate-all`, backed by `rites/validate.py --grimoire`, as the
+  full deterministic validation profile for active grimoires.
 - Added structured validator diagnostics through `--format json` and
   `--format jsonl` on every Arcana validator and the validator orchestrator.
 
@@ -27,7 +29,7 @@
 - Updated `/grm-create`, `/grm-improve`, and `/grm-validate-structure` to use
   the scaffold contract for managed grimoire scaffold files.
 - Updated `rites/validate.py` to aggregate validator reports from structured
-  diagnostics instead of validator prose.
+  diagnostics and to support Arcana and grimoire validation profiles.
 - Updated `/arc-validate-skill-refs` to verify command-surface coverage,
   workflow owners, guard paths, rite paths, mutation profiles, and validation
   profiles for every Arcana-shipped public command.
@@ -41,6 +43,8 @@
 - Updated skill registration, Summoning Rite agent injection, GUI settings,
   diagnostics, source bootstrap, and release bundling to read agent targets
   from the registry.
+- Updated grimoire improvement, lint, and update workflows to route mechanical
+  health checks through the grimoire validation profile.
 
 ## [1.0.0] - 2026-05-25
 
@@ -223,6 +227,7 @@ substitutes them when installing skills into agent directories.
 | `/grm-repair-links` | Promote filename-only wikilinks to canonical full-path form. |
 | `/grm-register-skills` | Register Arcana skills plus the active grimoire's own skills. |
 | `/grm-update-arcana` | Pull/update Arcana, validate it, refresh agent integration, register skills, and check active-grimoire health. |
+| `/grm-validate-all` | Run the full deterministic validator profile against the active grimoire. |
 | `/grm-validate-boundaries` | Ensure grimoires do not use Arcana-only system terminology. |
 | `/grm-validate-encoding` | Validate UTF-8/LF policy in the active grimoire. |
 | `/grm-validate-format` | Validate Markdown formatting in the active grimoire. |
@@ -234,7 +239,9 @@ substitutes them when installing skills into agent directories.
 | `/grm-validate-structure` | Validate grimoire structure and Arcana-managed scaffold files. |
 
 Focused Arcana validators and grimoire validators are separate skills. The
-aggregate `/arc-validate-all` is the default Arcana validation entry point.
+aggregate `/arc-validate-all` is the default Arcana validation entry point;
+`/grm-validate-all` is the default active-grimoire mechanical validation entry
+point.
 
 ### Validation suite
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Unified validation orchestrator - runs all validation rites.
+"""Unified validation orchestrator - runs Arcana or grimoire validation rites.
 
 Usage:
     python3 rites/validate.py              # sequential (default)
     python3 rites/validate.py --parallel   # parallel execution
+    python3 rites/validate.py --grimoire <path>
     python3 rites/validate.py --smart      # git-aware: only run validators relevant to changed files
     python3 rites/validate.py --auto       # smart + auto-execute
     python3 rites/validate.py --summary    # sequential, summary-only output
@@ -25,7 +26,7 @@ from diagnostics import add_output_format_arg, human_label, human_location
 RITE_DIR = Path(__file__).resolve().parent
 ARCANA_ROOT = Path(os.environ.get("ARCANA_HOME", RITE_DIR.parent))
 
-RITES = [
+ARCANA_RITES = [
     "validate_structure.py",
     "validate_encoding.py",
     "validate_portability.py",
@@ -40,11 +41,30 @@ RITES = [
     "validate_security.py",
 ]
 
+GRIMOIRE_RITES = [
+    "validate_grimoire_structure.py",
+    "validate_encoding.py",
+    "validate_portability.py",
+    "validate_format.py",
+    "validate_frontmatter.py",
+    "validate_links.py",
+    "validate_orphans.py",
+    "validate_provenance.py",
+]
 
-def run_rite(name):
+RITES = ARCANA_RITES
+
+
+def run_rite(name, profile="arcana", target_root=None):
     """Run a single validation rite. Returns (name, success, report)."""
+    target_root = target_root or ARCANA_ROOT
+    command = [sys.executable, str(RITE_DIR / name)]
+    if profile == "grimoire":
+        command.extend(["--grimoire", str(target_root)])
+    command.extend(["--format", "json"])
+
     result = subprocess.run(
-        [sys.executable, str(RITE_DIR / name), "--format", "json"],
+        command,
         capture_output=True, text=True,
         env={**os.environ, "ARCANA_HOME": str(ARCANA_ROOT)},
     )
@@ -54,7 +74,7 @@ def run_rite(name):
         report = {
             "validator": Path(name).stem,
             "status": "fail",
-            "root": str(ARCANA_ROOT),
+            "root": str(target_root),
             "checked": {},
             "summary": {"errors": 1, "warnings": 0, "diagnostics": 1},
             "diagnostics": [
@@ -74,29 +94,33 @@ def run_rite(name):
     return name, result.returncode == 0, report
 
 
-def git_changed_files():
-    """Get list of changed files from git."""
+def git_changed_files(root):
+    """Get list of changed files from git, relative to the target root."""
     try:
         result = subprocess.run(
             ["git", "diff", "--name-only", "HEAD"],
-            capture_output=True, text=True, cwd=str(ARCANA_ROOT),
+            capture_output=True, text=True, cwd=str(root),
         )
         if result.returncode == 0 and result.stdout.strip():
             return result.stdout.strip().splitlines()
         result = subprocess.run(
             ["git", "ls-files"],
-            capture_output=True, text=True, cwd=str(ARCANA_ROOT),
+            capture_output=True, text=True, cwd=str(root),
         )
         return result.stdout.strip().splitlines() if result.returncode == 0 else []
     except FileNotFoundError:
         return []
 
 
-def determine_smart_rites():
+def determine_smart_rites(profile="arcana", target_root=None):
     """Determine which validators to run based on changed files."""
-    changed = git_changed_files()
+    target_root = target_root or ARCANA_ROOT
+    changed = git_changed_files(target_root)
     if not changed:
-        return list(RITES)
+        return list(GRIMOIRE_RITES if profile == "grimoire" else ARCANA_RITES)
+
+    if profile == "grimoire":
+        return determine_smart_grimoire_rites(changed, target_root)
 
     needed = set()
     # Portability and encoding scan path/content globally.
@@ -104,7 +128,7 @@ def determine_smart_rites():
         needed.add("validate_portability.py")
         needed.add("validate_encoding.py")
     for f in changed:
-        path = ARCANA_ROOT / f
+        path = target_root / f
         if not path.exists():
             continue
 
@@ -140,7 +164,38 @@ def determine_smart_rites():
         if f.startswith("skills/"):
             needed.add("validate_skill_refs.py")
 
-    return [r for r in RITES if r in needed] if needed else list(RITES)
+    return [r for r in ARCANA_RITES if r in needed] if needed else list(ARCANA_RITES)
+
+
+def determine_smart_grimoire_rites(changed, target_root):
+    """Determine grimoire validators to run based on changed files."""
+    needed = set()
+    if changed:
+        needed.add("validate_portability.py")
+        needed.add("validate_encoding.py")
+
+    for f in changed:
+        path = target_root / f
+        if not path.exists():
+            continue
+
+        if (
+            f in {"grimoire.json", "README.md", "log.md"}
+            or f.startswith((".obsidian/", "chapters/", "sources/", "inbox/"))
+        ):
+            needed.add("validate_grimoire_structure.py")
+
+        if f.endswith(".md"):
+            needed.add("validate_format.py")
+            needed.add("validate_frontmatter.py")
+            needed.add("validate_links.py")
+            needed.add("validate_orphans.py")
+            needed.add("validate_provenance.py")
+
+        if f.startswith("sources/"):
+            needed.add("validate_provenance.py")
+
+    return [r for r in GRIMOIRE_RITES if r in needed] if needed else list(GRIMOIRE_RITES)
 
 
 def render_diagnostics(report):
@@ -154,15 +209,16 @@ def render_diagnostics(report):
             print(f"          hint: {hint}")
 
 
-def empty_suite_report(rites, reports):
+def empty_suite_report(rites, reports, profile, target_root):
     failed = sum(1 for report in reports if report.get("returncode", 1) != 0)
     errors = sum(report.get("summary", {}).get("errors", 0) for report in reports)
     warnings = sum(report.get("summary", {}).get("warnings", 0) for report in reports)
     diagnostics = sum(report.get("summary", {}).get("diagnostics", 0) for report in reports)
     return {
         "validator": "validate",
+        "profile": profile,
         "status": "fail" if failed else "pass",
-        "root": str(ARCANA_ROOT),
+        "root": str(target_root),
         "checked": {"validators": len(rites)},
         "summary": {
             "failed_validators": failed,
@@ -185,15 +241,22 @@ def emit_suite_report(report, output_format):
         print(json.dumps({"type": "summary", **report["summary"]}, sort_keys=True))
 
 
-def run_sequential(rites, summary_only=False, output_format="human"):
+def profile_label(profile):
+    """Return a human-facing validation target label."""
+    return "Grimoire" if profile == "grimoire" else "Arcana"
+
+
+def run_sequential(rites, summary_only=False, output_format="human", profile="arcana", target_root=None):
     """Run rites sequentially. Returns number of failures."""
+    target_root = target_root or ARCANA_ROOT
     failed = 0
     reports = []
     human = output_format == "human"
 
     if human and not summary_only:
-        print("Running Arcana Validations")
+        print(f"Running {profile_label(profile)} Validations")
         print("=======================================")
+        print(f"Target: {target_root}")
         print()
 
     for rite in rites:
@@ -201,7 +264,7 @@ def run_sequential(rites, summary_only=False, output_format="human"):
             print(f"Running {rite}...")
             print("----------------------------------------")
 
-        name, ok, report = run_rite(rite)
+        name, ok, report = run_rite(rite, profile=profile, target_root=target_root)
         reports.append(report)
 
         if human and not summary_only:
@@ -216,7 +279,7 @@ def run_sequential(rites, summary_only=False, output_format="human"):
         if not ok:
             failed += 1
 
-    suite_report = empty_suite_report(rites, reports)
+    suite_report = empty_suite_report(rites, reports, profile, target_root)
     if not human:
         emit_suite_report(suite_report, output_format)
 
@@ -227,22 +290,27 @@ def run_sequential(rites, summary_only=False, output_format="human"):
     return failed
 
 
-def run_parallel(rites, output_format="human"):
+def run_parallel(rites, output_format="human", profile="arcana", target_root=None):
     """Run rites in parallel. Returns number of failures."""
+    target_root = target_root or ARCANA_ROOT
     failed = 0
     reports = []
     human = output_format == "human"
 
     if human:
-        print("Running Arcana Validations in Parallel")
+        print(f"Running {profile_label(profile)} Validations in Parallel")
         print("==========================================")
+        print(f"Target: {target_root}")
         print()
 
     results_dir = RITE_DIR / ".artifacts"
     results_dir.mkdir(parents=True, exist_ok=True)
 
     with ProcessPoolExecutor() as executor:
-        futures = {executor.submit(run_rite, r): r for r in rites}
+        futures = {
+            executor.submit(run_rite, r, profile, target_root): r
+            for r in rites
+        }
         for future in as_completed(futures):
             name, ok, report = future.result()
             reports.append(report)
@@ -259,7 +327,7 @@ def run_parallel(rites, output_format="human"):
             if not ok:
                 failed += 1
 
-    suite_report = empty_suite_report(rites, reports)
+    suite_report = empty_suite_report(rites, reports, profile, target_root)
     if not human:
         emit_suite_report(suite_report, output_format)
 
@@ -270,7 +338,12 @@ def run_parallel(rites, output_format="human"):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Unified Arcana validation orchestrator")
+    parser = argparse.ArgumentParser(description="Unified Arcana and grimoire validation orchestrator")
+    parser.add_argument(
+        "--grimoire",
+        type=Path,
+        help="Validate a grimoire root with the grimoire validator profile",
+    )
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--parallel", action="store_true", help="Run validators in parallel")
     group.add_argument("--smart", action="store_true", help="Show which validators are relevant")
@@ -278,9 +351,12 @@ def main():
     group.add_argument("--summary", action="store_true", help="Summary-only output")
     add_output_format_arg(parser)
     args = parser.parse_args()
+    profile = "grimoire" if args.grimoire else "arcana"
+    target_root = args.grimoire.expanduser().resolve() if args.grimoire else ARCANA_ROOT
+    rites = GRIMOIRE_RITES if profile == "grimoire" else ARCANA_RITES
 
     if args.smart:
-        smart = determine_smart_rites()
+        smart = determine_smart_rites(profile, target_root)
         if args.format == "human":
             print("Smart Validation - Recommended:")
             for r in smart:
@@ -290,8 +366,9 @@ def main():
         else:
             report = {
                 "validator": "validate",
+                "profile": profile,
                 "status": "pass",
-                "root": str(ARCANA_ROOT),
+                "root": str(target_root),
                 "checked": {"selected_validators": len(smart)},
                 "summary": {
                     "failed_validators": 0,
@@ -306,17 +383,17 @@ def main():
         return 0
 
     if args.auto:
-        smart = determine_smart_rites()
+        smart = determine_smart_rites(profile, target_root)
         if args.format == "human":
             print(f"Smart Validation - Running {len(smart)} relevant validator(s)")
             print()
-        failed = run_sequential(smart, output_format=args.format)
+        failed = run_sequential(smart, output_format=args.format, profile=profile, target_root=target_root)
     elif args.parallel:
-        failed = run_parallel(RITES, output_format=args.format)
+        failed = run_parallel(rites, output_format=args.format, profile=profile, target_root=target_root)
     elif args.summary:
-        failed = run_sequential(RITES, summary_only=True, output_format=args.format)
+        failed = run_sequential(rites, summary_only=True, output_format=args.format, profile=profile, target_root=target_root)
     else:
-        failed = run_sequential(RITES, output_format=args.format)
+        failed = run_sequential(rites, output_format=args.format, profile=profile, target_root=target_root)
 
     if failed == 0:
         if args.format == "human":

@@ -13,6 +13,7 @@ Mechanical validators that operate on the resolved active grimoire. Each wraps a
 
 | Invocation | Skill | Checks |
 |---|---|---|
+| [validate_all.md](validate_all.md) | `/grm-validate-all` | Full deterministic grimoire validator profile |
 | [validate_encoding.md](validate_encoding.md) | `/grm-validate-encoding` | UTF-8, LF line endings, BOMs, mojibake markers, repair artifacts |
 | [validate_format.md](validate_format.md) | `/grm-validate-format` | Markdown tables, code fences, tree examples |
 | [validate_frontmatter.md](validate_frontmatter.md) | `/grm-validate-frontmatter` | Page frontmatter schema |

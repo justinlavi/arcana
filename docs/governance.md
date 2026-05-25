@@ -139,7 +139,7 @@ Arcana files must **not**:
 Each grimoire is responsible for:
 
 1. **Its own content**: chapters, skills, manifest. Use Arcana's `/grm-create-chapter` and the page formula for new pages.
-2. **Staying in step with Arcana**: pull updates periodically; run `/grm-validate-structure` after pulling.
+2. **Staying in step with Arcana**: pull updates periodically; run `/grm-validate-all` after pulling.
 3. **Reporting issues** in Arcana itself (broken invocations, formula bugs, validator false positives).
 
 Grimoires must **not**:
@@ -147,7 +147,7 @@ Grimoires must **not**:
 - ❌ Copy Arcana files into their own repo (reference instead).
 - ❌ Modify Arcana files directly. Propose changes to the maintainer of the Arcana fork they use.
 - ❌ Create chapters / formulae / rites in Arcana folder names (`invocations/`, `formulae/`, `rites/`) inside their own grimoire — those folder names are reserved for Arcana.
-- ❌ Ignore breaking-change announcements. Re-run `/grm-validate-structure` after a major Arcana version bump.
+- ❌ Ignore breaking-change announcements. Re-run `/grm-validate-all` after a major Arcana version bump.
 
 ---
 

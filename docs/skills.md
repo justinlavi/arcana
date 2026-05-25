@@ -70,6 +70,7 @@ invoke `/arc-help`.
 
 | Skill | Description |
 |---|---|
+| [`/grm-validate-all`](../skills/grimoire/validate-all/SKILL.md) | Run the full deterministic validator profile against the active grimoire |
 | [`/grm-validate-boundaries`](../skills/grimoire/validate-boundaries/SKILL.md) | Validate magical boundary compliance - grimoires must not borrow Arcana's system terminology |
 | [`/grm-validate-encoding`](../skills/grimoire/validate-encoding/SKILL.md) | Validate UTF-8, LF line endings, BOMs, mojibake markers, and repair artifacts in the active grimoire |
 | [`/grm-validate-format`](../skills/grimoire/validate-format/SKILL.md) | Validate Markdown formatting in the active grimoire |

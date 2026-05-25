@@ -47,67 +47,8 @@ Priority labels:
 
 | ID | Priority | Item | Primary owner | Why deferred |
 |---|---|---|---|---|
-| ST-008 | P2 | Grimoire validation orchestrator and profiles | grimoire validators, `/grm-improve` | Would add or reshape public validation workflow. |
 | ST-009 | P3 | Richer generated skill catalog | `rites/sync_docs.py`, `docs/skills.md` | Needs catalog rendering and tests against the command-surface contract. |
 | ST-010 | P3 | Source wrapper and provenance boundary clarification | source formula, provenance docs/validators | Needs design judgment before adding mechanical checks. |
-
-## ST-008: Grimoire Validation Orchestrator And Profiles
-
-Priority: P2
-
-Status: Deferred
-
-Primary owner: `rites/validate_*.py`, grimoire validator invocations,
-`invocations/grimoire/improve_grimoire.md`, `skills/grimoire/validate-*`
-
-Current evidence:
-
-- Arcana has `/arc-validate-all` backed by `rites/validate.py`.
-- Grimoire validation exists as individual `/grm-validate-*` skills and as
-  phases inside `/grm-improve`.
-- There is not yet a first-class grimoire equivalent that says "run the full
-  deterministic grimoire validator profile" outside the broader improvement
-  workflow.
-
-Finding:
-
-The active-grimoire validation story works, but it is less direct than the
-Arcana validation story. S-tier parity would make grimoire audits easier for
-humans, agents, CI, and future skill registration.
-
-Desired S-tier endpoint:
-
-- A grimoire validation orchestrator or profile mode that runs deterministic
-  grimoire validators against an active grimoire.
-- Clear distinction between mechanical validation profiles and judgment
-  workflows such as `/grm-improve`, `/grm-lint`, and
-  `/grm-analyze-semantics`.
-- Optional public skill such as `grm-validate-all`, if the command-surface
-  matrix approves adding it.
-- Tests against good and bad fixture grimoires.
-
-First implementable slice:
-
-1. Decide whether to extend `rites/validate.py` with a grimoire profile or add
-   a separate orchestrator.
-2. Add tests against existing fixtures.
-3. Only then add a public skill and invocation leaf.
-
-Blast radius:
-
-Medium-high because it may add a public command and change the recommended
-grimoire maintenance path.
-
-Validation profile:
-
-- New orchestrator tests.
-- Existing validator fixture tests.
-- `python rites/validate.py --parallel`
-
-Read-path delta:
-
-Agents maintaining a grimoire can run one mechanical profile before deciding
-whether deeper judgment work is needed.
 
 ## ST-009: Richer Generated Skill Catalog
 
@@ -209,10 +150,8 @@ create a wrapper, cite a raw file, or cite an external URL.
 
 ## Suggested Implementation Sequence
 
-1. ST-008 before adding `grm-validate-all`; any new command must update
-   `rites/data/command_surface.json`.
-2. ST-009 can now render richer metadata from the command-surface contract.
-3. ST-010 after the validation and catalog contracts settle.
+1. ST-009 can now render richer metadata from the command-surface contract.
+2. ST-010 after the validation and catalog contracts settle.
 
 ## Update Triggers
 

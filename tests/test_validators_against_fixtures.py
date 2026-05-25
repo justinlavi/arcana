@@ -44,11 +44,14 @@ def _run(script: str, grimoire: Path, *extra_args: str) -> subprocess.CompletedP
 @pytest.mark.parametrize(
     "script",
     [
+        "validate_encoding.py",
+        "validate_format.py",
         "validate_frontmatter.py",
+        "validate_grimoire_structure.py",
         "validate_links.py",
         "validate_orphans.py",
+        "validate_portability.py",
         "validate_provenance.py",
-        "validate_grimoire_structure.py",
     ],
 )
 def test_good_grimoire_passes(script):
@@ -181,3 +184,51 @@ def test_full_validator_suite_emits_structured_aggregate_report():
     assert report["checked"]["validators"] == 12
     assert len(report["reports"]) == 12
     assert {validator_report["validator"] for validator_report in report["reports"]}
+
+
+def test_grimoire_validator_suite_passes_good_fixture():
+    result = subprocess.run(
+        [sys.executable, str(RITES / "validate.py"), "--grimoire", str(GOOD), "--format", "json"],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+
+    assert result.returncode == 0
+    report = json.loads(result.stdout)
+    assert report["validator"] == "validate"
+    assert report["profile"] == "grimoire"
+    assert report["status"] == "pass"
+    assert report["checked"]["validators"] == 8
+    assert len(report["reports"]) == 8
+    assert {validator_report["validator"] for validator_report in report["reports"]} == {
+        "validate_grimoire_structure",
+        "validate_encoding",
+        "validate_portability",
+        "validate_format",
+        "validate_frontmatter",
+        "validate_links",
+        "validate_orphans",
+        "validate_provenance",
+    }
+
+
+def test_grimoire_validator_suite_fails_bad_fixture():
+    result = subprocess.run(
+        [sys.executable, str(RITES / "validate.py"), "--grimoire", str(BAD_FRONT), "--format", "json"],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+
+    assert result.returncode != 0
+    report = json.loads(result.stdout)
+    assert report["profile"] == "grimoire"
+    assert report["status"] == "fail"
+    assert report["summary"]["failed_validators"] >= 1
+    failing = {
+        validator_report["validator"]
+        for validator_report in report["reports"]
+        if validator_report["status"] == "fail"
+    }
+    assert "validate_frontmatter" in failing

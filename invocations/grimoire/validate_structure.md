@@ -108,5 +108,6 @@ This prevents Ctrl-clicking unresolved full-path wikilinks from creating recursi
 ## Related Docs
 
 - `docs/operating_model.md`
+- `invocations/grimoire/validators/validate_all.md`
 - `formulae/grimoire/`
 - `rites/validate_grimoire_structure.py`

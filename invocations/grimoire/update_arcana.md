@@ -84,10 +84,10 @@ If a marked block exists and differs, replace only the marked block. If the bloc
 
 ### 7. Check active-grimoire health
 
-Run the current Arcana structure validator against the active grimoire:
+Run the current deterministic grimoire validator profile against the active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/validate.py --grimoire GRIMOIRE_ROOT --summary
 ```
 
 If it reports missing or stale managed scaffold files, tell the user that Arcana updated successfully but the grimoire needs `/grm-improve` to apply scaffold/schema upgrades. Do not perform broad grimoire edits inside this command.

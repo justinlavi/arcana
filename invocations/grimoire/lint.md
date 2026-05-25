@@ -39,11 +39,7 @@ Flags:
 Run these against `GRIMOIRE_ROOT` and capture output:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT
-python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT
-python3 ARCANA_HOME/rites/validate_links.py --grimoire GRIMOIRE_ROOT
-python3 ARCANA_HOME/rites/validate_orphans.py --grimoire GRIMOIRE_ROOT
-python3 ARCANA_HOME/rites/validate_provenance.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/validate.py --grimoire GRIMOIRE_ROOT
 ```
 
 Stop and report if structure or frontmatter has hard errors — they invalidate later phases.
@@ -135,7 +131,7 @@ Surface in chat:
 
 ## Related
 
-- Mechanical: `/grm-validate-structure`, `/grm-validate-frontmatter`, `/grm-validate-links`, `/grm-validate-orphans`, `/grm-validate-provenance`
+- Mechanical: `/grm-validate-all`
 - Semantic / naming: `/grm-analyze-semantics`
 - Page schema: `ARCANA_HOME/docs/page_schema.md`
 - Comprehensive grimoire pass: `/grm-improve` (lint runs as one phase of improve)

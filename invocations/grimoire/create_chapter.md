@@ -146,7 +146,7 @@ python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROO
 python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT
 ```
 
-Or invoke `/grm-validate-structure` for the integrated structural pass.
+Or invoke `/grm-validate-all` for the full mechanical pass.
 
 ---
 

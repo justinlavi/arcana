@@ -285,7 +285,7 @@
       "mutation_profile": "judgment_gated",
       "mutation_behavior": "Audits and may edit active-grimoire scaffold files, hubs, links, routing, and chapter organization.",
       "log_behavior": "Appends active-grimoire log entries for applied improvements when files change.",
-      "validation_profile": "Run /grm-validate-structure, /grm-validate-format, /grm-validate-links before and after edits.",
+      "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT before and after edits; run /grm-validate-boundaries as the judgment boundary pass.",
       "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
     },
     {
@@ -315,7 +315,7 @@
       "mutation_profile": "judgment_gated",
       "mutation_behavior": "Runs mechanical validators and judgment passes; applies only approved fixes.",
       "log_behavior": "Appends one lint entry to the active grimoire log.md when fixes are applied.",
-      "validation_profile": "python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_orphans.py --grimoire GRIMOIRE_ROOT; python rites/validate_provenance.py --grimoire GRIMOIRE_ROOT",
+      "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT",
       "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
     },
     {
@@ -360,7 +360,22 @@
       "mutation_profile": "judgment_gated",
       "mutation_behavior": "May pull Arcana with git --ff-only, reconcile the library, register skills, and refresh marked agent blocks.",
       "log_behavior": "Does not append grimoire logs.",
-      "validation_profile": "python rites/validate.py --summary; python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT",
+      "validation_profile": "python rites/validate.py --summary; python rites/validate.py --grimoire GRIMOIRE_ROOT --summary",
+      "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
+    },
+    {
+      "command": "/grm-validate-all",
+      "family": "grimoire",
+      "skill_source": "skills/grimoire/validate-all/SKILL.md",
+      "invocation": "invocations/grimoire/validators/validate_all.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "rite",
+      "rite_owner": "rites/validate.py",
+      "preconditions": ["Registered active grimoire"],
+      "mutation_profile": "read_only",
+      "mutation_behavior": "Runs the deterministic grimoire validator profile; parallel mode may refresh transient rite artifacts.",
+      "log_behavior": "Does not append grimoire logs.",
+      "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT --parallel",
       "generated_docs_impact": "Listed by docs/skills.md through skill frontmatter; rerun python rites/sync_docs.py --apply after frontmatter changes."
     },
     {

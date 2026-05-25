@@ -51,11 +51,9 @@ Before editing the grimoire:
 
 ### Phase 1: Mechanical validation and scaffold drift
 
-Invoke and collect output from:
-
-- `/grm-validate-structure` - directory layout, required hub files, managed scaffold drift
-- `/grm-validate-format` - Markdown tables, fences, and tree examples
-- `/grm-validate-links` - internal markdown links resolve
+Invoke `/grm-validate-all` and collect the deterministic validator report. It
+covers structure, encoding, portability, format, frontmatter, links, orphans,
+and provenance.
 
 Stop and report if any validator returns hard errors that would invalidate later phases (e.g. missing root hub).
 
@@ -178,7 +176,8 @@ Surface in chat (do not write report files):
 
 ## Related
 
-- Mechanical: `/grm-validate-structure`, `/grm-validate-format`, `/grm-validate-links`, `/grm-validate-boundaries`
+- Mechanical: `/grm-validate-all`
+- Judgment boundary pass: `/grm-validate-boundaries`
 - Semantic: `/grm-analyze-semantics`
 - Authoring: `/grm-create-chapter`
 - Arcana counterpart (maintainer only): `/arc-improve`

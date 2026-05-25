@@ -54,6 +54,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 - [lint.md](invocations/grimoire/lint.md) — `/grm-lint`
 - [improve_grimoire.md](invocations/grimoire/improve_grimoire.md) — `/grm-improve`
 - [analyze_semantics.md](invocations/grimoire/analyze_semantics.md) — `/grm-analyze-semantics`
+- [validate_all.md](invocations/grimoire/validators/validate_all.md) — `/grm-validate-all`
 - [validate_structure.md](invocations/grimoire/validate_structure.md) — `/grm-validate-structure`
 - [validate_boundaries.md](invocations/grimoire/validate_boundaries.md) — `/grm-validate-boundaries`
 - Validators hub: [invocations/grimoire/validators/validators.md](invocations/grimoire/validators/validators.md)

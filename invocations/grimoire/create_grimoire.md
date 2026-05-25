@@ -194,7 +194,7 @@ python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
 python3 ARCANA_HOME/rites/validate_links.py --grimoire .
 ```
 
-Or invoke `/grm-validate-structure` for the integrated structural pass.
+Or invoke `/grm-validate-all` for the full mechanical pass.
 
 If the relevant agent instruction file already includes the Grimoire block, also test routing by asking the agent: `"What chapters exist in {{grimoire_name}}?"`
 
