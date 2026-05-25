@@ -7,7 +7,7 @@ authority: grimoire
 last_verified: 2026-05-12
 ---
 
-# 🔮 Invocation: Validate Arcana Links
+# Invocation: Validate Arcana Links
 
 ## Purpose
 
@@ -16,7 +16,7 @@ Detect broken internal references and links in Arcana documentation.
 ## Invocation
 
 ```
-/grm-arcana-validate-links
+/arc-validate-links
 ```
 
 ## When to Cast
@@ -49,7 +49,7 @@ It also warns when a wikilink's display label repeats parent-folder context inst
 
 **Link types skipped**:
 - External URLs: `https://`, `http://`, `mailto:`
-- Named keys: `GRIMOIRE_ARCANA/`, `GRIMOIRE_{DOMAIN}/`
+- Named keys: `ARCANA_HOME/`, `GRIMOIRE_{DOMAIN}/`
 - Anchor-only links: `#section`
 
 ### Step 3: Fix Broken Links
@@ -57,18 +57,18 @@ It also warns when a wikilink's display label repeats parent-folder context inst
 For each broken link:
 
 1. **Determine cause**:
-   - File was renamed? Update link to new name
-   - File was moved? Update path
-   - File was deleted? Remove link or restore file
-   - Typo in link? Correct spelling
+  - File was renamed? Update link to new name
+  - File was moved? Update path
+  - File was deleted? Remove link or restore file
+  - Typo in link? Correct spelling
 
 2. **Update link**:
    ```markdown
    <!-- Before (broken) -->
-   [quickstart](old_quickstart.md)
+   `quickstart -> old_quickstart.md`
 
    <!-- After (fixed) -->
-   [quickstart](quickstart.md)
+   `quickstart -> docs/quickstart.md`
    ```
 
 3. **Verify fix**:
@@ -95,15 +95,15 @@ When fixing links, check for related cross-references:
 
 **On success**:
 ```
-✅ Link validation passed (no broken links found)
+ Link validation passed (no broken links found)
 ```
 
 **On broken links**:
 ```
-❌ Broken link in invocations/grimoire/create_chapter.md:
+ Broken link in invocations/grimoire/create_chapter.md:
    Link: ../quickstart.md
    Resolved to: invocations/quickstart.md
-❌ Link validation failed with 1 broken links
+ Link validation failed with 1 broken links
 ```
 
 ## Link Best Practices
@@ -124,10 +124,10 @@ When fixing links, check for related cross-references:
 
 **Arcana → Arcana**:
 ```markdown
-[reference](GRIMOIRE_ARCANA/docs/reference.md)
+[reference](ARCANA_HOME/docs/reference.md)
 ```
 
-**Arcana → Domain**:
+**Arcana → Grimoire**:
 ```markdown
 [chapter](cooking-grimoire/chapters/breads/sourdough.md)
 ```
@@ -138,29 +138,29 @@ Wikilink targets must be repository-root relative paths. The `.md` suffix is opt
 When using display text, use only the target filename stem, normalized for reading. The path already supplies parent context.
 
 ```markdown
-✅ [[chapters/breads/sourdough|sourdough]]
-✅ [[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|overview]]
-✅ [[README]]
-❌ [[sourdough]]
-❌ [[bread alias]]
-❌ [[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|fukuoka kyoto tokyo trip overview]]
+ [[chapters/breads/sourdough|sourdough]]
+ [[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|overview]]
+ [[README]]
+ [[sourdough]]
+ [[bread alias]]
+ [[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|fukuoka kyoto tokyo trip overview]]
 ```
 
 ### Include File Extensions
 
 **Always use .md extension for markdown links**:
 ```markdown
-✅ [file](path/file.md)
-❌ [file](path/file)
+ [file](path/file.md)
+ [file](path/file)
 ```
 
 ### Avoid Absolute Paths
 
 **Don't hardcode deployment paths**:
 ```markdown
-❌ [file](/home/user/arcana/file.md)
-✅ [file](../file.md)
-✅ [file](GRIMOIRE_ARCANA/file.md)
+ [file](/home/user/arcana/file.md)
+ [file](../file.md)
+ [file](ARCANA_HOME/file.md)
 ```
 
 ## Troubleshooting

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "arcana-grimoire"
 version = "1.0.0"
-description = "Engine for grimoires — structured, AI-navigable knowledge bases the LLM keeps current."
+description = "Engine for grimoires - structured, AI-navigable knowledge bases the LLM keeps current."
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
@@ -28,7 +28,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-# Test suite — pytest + a fixture grimoire under tests/.
+# Test suite - pytest + a fixture grimoire under tests/.
 dev = [
     "pytest>=7.0",
 ]
@@ -59,7 +59,7 @@ Changelog = "https://github.com/justinlavi/arcana/blob/main/CHANGELOG.md"
 # Arcana is a knowledge-base + scripts repository, not a pip-installable
 # library. The pyproject.toml exists to declare the dependency groups (`dev`,
 # `gui`, `build`) that release tooling and contributors install on top of a
-# stock Python — nobody is meant to `import arcana_grimoire`. Tell setuptools
+# stock Python - nobody is meant to `import arcana_grimoire`. Tell setuptools
 # explicitly that there are no packages to ship so it doesn't try to
 # auto-discover and choke on rites/, skills/, sources/, etc.
 [tool.setuptools]

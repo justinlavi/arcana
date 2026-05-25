@@ -3,7 +3,7 @@
 
 Sister module to `summon.py` (the dispatcher) and `summon_core.py` (the
 install engine). This module is imported lazily by summon.py only when the
-user is in GUI mode — headless installs never touch DearPyGui.
+user is in GUI mode  headless installs never touch DearPyGui.
 
 The main entry point is `run_gui(args)`. Everything else (settings
 persistence, background workers with cancellation, theme system, the four
@@ -57,12 +57,12 @@ from summon_core import (
 #
 # Tabbed UI with threaded background workers, live log streaming, cancellation,
 # settings persistence, and full coverage of the underlying rite scripts:
-#   - Install:    discover (GitHub/GitLab) + select + install Arcana + grimoires
-#   - Manage:     list installed + per-row update/remove/re-register, library
+#  - Install:    discover (GitHub/GitLab) + select + install Arcana + grimoires
+#  - Manage:     list installed + per-row update/remove/re-register, library
 #                 sync (dry-run/apply), adopt unmanaged directories
-#   - Settings:   custom Arcana URL, agent file targets, skip-skills toggle,
-#                 theme — persisted to ~/.config/grimoire/summon.json
-#   - Diagnostics: environment dump + downloadable bundle
+#  - Settings:   custom Arcana URL, agent file targets, skip-skills toggle,
+#                 theme  persisted to ~/.config/grimoire/summon.json
+#  - Diagnostics: environment dump + downloadable bundle
 #
 # All long operations run in Worker threads; log lines flow through a
 # thread-safe queue drained on the DPG main thread per frame. Cancellation
@@ -112,7 +112,7 @@ def _import_sister_scripts():
     Tries the rites/ dir of THIS script first (running from inside an
     installed Arcana clone or a dev checkout), then falls back to the
     installed Arcana's rites/ dir. The fallback is what makes the bootstrap
-    flow work — the curl|bash bootstrap drops only summon.py into a temp
+    flow work  the curl|bash bootstrap drops only summon.py into a temp
     dir, but the user's already-installed ~/grimoires/arcana/rites/ has
     the full set of sister scripts.
     """
@@ -312,7 +312,7 @@ def install_arcana_cancellable(arcana_url, log, cancel_event, proc_slot):
         return False
 
     if (ARCANA_DIR / ".git").is_dir():
-        log.info("Arcana already installed — pulling latest...")
+        log.info("Arcana already installed - pulling latest...")
         ok, _ = git_cancellable(
             "-C", str(ARCANA_DIR), "pull", "--ff-only",
             log=log, proc_slot=proc_slot,
@@ -320,7 +320,7 @@ def install_arcana_cancellable(arcana_url, log, cancel_event, proc_slot):
         if ok:
             log.ok(f"Arcana updated: {ARCANA_DIR}")
         else:
-            log.warn("Arcana pull failed (local changes?) — skipping update")
+            log.warn("Arcana pull failed (local changes?) - skipping update")
             log.ok(f"Arcana exists: {ARCANA_DIR}")
     elif arcana_url:
         log.info(f"Cloning Arcana from {arcana_url}...")
@@ -331,7 +331,7 @@ def install_arcana_cancellable(arcana_url, log, cancel_event, proc_slot):
         if ok:
             log.ok(f"Arcana cloned to {ARCANA_DIR}")
         else:
-            log.err("Failed to clone Arcana — check network and git credentials")
+            log.err("Failed to clone Arcana - check network and git credentials")
             return False
     else:
         if ARCANA_DIR.is_dir():
@@ -353,7 +353,7 @@ def install_grimoire_cancellable(key, entry, log, cancel_event, proc_slot):
         return False
 
     if (target / ".git").is_dir():
-        log.info(f"{name} already installed — pulling latest...")
+        log.info(f"{name} already installed - pulling latest...")
         ok, _ = git_cancellable(
             "-C", str(target), "pull", "--ff-only",
             log=log, proc_slot=proc_slot,
@@ -361,11 +361,11 @@ def install_grimoire_cancellable(key, entry, log, cancel_event, proc_slot):
         if ok:
             log.ok(f"{name} updated: {target}")
         else:
-            log.warn(f"{name} pull failed (local changes?) — skipping update")
+            log.warn(f"{name} pull failed (local changes?) - skipping update")
             log.ok(f"{name} exists: {target}")
         return True
     elif target.is_dir():
-        log.warn(f"{name} directory exists but is not a git repo — skipping")
+        log.warn(f"{name} directory exists but is not a git repo - skipping")
         return True
     else:
         log.info(f"Cloning {name} from {url}...")
@@ -408,12 +408,12 @@ def finalize_install_with_settings(installed_keys, library, log, settings):
 
 
 # ---------------------------------------------------------------------------
-# Worker functions — receive (log, cancel_event, proc_slot, **kwargs)
+# Worker functions  receive (log, cancel_event, proc_slot, **kwargs)
 # ---------------------------------------------------------------------------
 
 
 class _ResolveArgs:
-    """Stub for resolve_arcana_url() which expects argparse-Namespace shape."""
+    """Stub for resolve_arcana_url() which expects argparse skill-prefix shape."""
     def __init__(self, arcana_url=None):
         self.arcana_url = arcana_url
 
@@ -428,7 +428,7 @@ def _worker_discover(scope_url, token, log, cancel_event, proc_slot, **_kw):
             if k not in entries:
                 entries[k] = v
     elif not scope_url:
-        log.info("No scope URL — using static library only")
+        log.info("No scope URL  using static library only")
     log.ok(f"Total available: {len(entries)} grimoire(s)")
     return {"entries": entries, "count": len(entries)}
 
@@ -470,11 +470,11 @@ def _worker_install_full(arcana_url, library, keys, log, cancel_event, proc_slot
     installed = []
     for key in keys:
         if cancel_event.is_set():
-            log.warn("Cancelled — stopping after current grimoire")
+            log.warn("Cancelled  stopping after current grimoire")
             break
         entry = library.get("grimoires", {}).get(key)
         if not entry:
-            log.warn(f"Skipping {key} — not in library")
+            log.warn(f"Skipping {key}  not in library")
             continue
         if install_grimoire_cancellable(key, entry, log, cancel_event, proc_slot):
             installed.append(key)
@@ -541,7 +541,7 @@ def _worker_register_skills(log, cancel_event, proc_slot, **_kw):
     """Re-run skill registration for all grimoires."""
     settings = load_settings()
     if settings.get("skip_skill_registration"):
-        log.warn("Skill registration is disabled in Settings — running anyway as explicit action")
+        log.warn("Skill registration is disabled in Settings  running anyway as explicit action")
     ok = register_skills(log)
     return {"ok": ok}
 
@@ -589,7 +589,7 @@ def _worker_sync_library(apply, log, cancel_event, proc_slot, **_kw):
     }
 
 
-def _worker_adopt(directory, namespace, name, description, log, cancel_event, proc_slot, **_kw):
+def _worker_adopt(directory, skill_prefix, name, description, log, cancel_event, proc_slot, **_kw):
     """Adopt an unmanaged directory by writing grimoire.json."""
     _, adopt_grimoire = _import_sister_scripts()
     home = GRIMOIRES_HOME
@@ -602,8 +602,8 @@ def _worker_adopt(directory, namespace, name, description, log, cancel_event, pr
         log.err(f"Directory does not exist: {target}")
         return {"ok": False}
 
-    if not adopt_grimoire.NAMESPACE_RE.fullmatch(namespace):
-        log.err(f"Invalid namespace '{namespace}' (must match {adopt_grimoire.NAMESPACE_RE.pattern})")
+    if not adopt_grimoire.SKILL_PREFIX_RE.fullmatch(skill_prefix):
+        log.err(f"Invalid skill_prefix '{skill_prefix}' (must match {adopt_grimoire.SKILL_PREFIX_RE.pattern})")
         return {"ok": False}
 
     manifest_path = target / "grimoire.json"
@@ -611,16 +611,16 @@ def _worker_adopt(directory, namespace, name, description, log, cancel_event, pr
         log.err(f"grimoire.json already exists at {manifest_path}")
         return {"ok": False}
 
-    existing = adopt_grimoire.find_existing_namespaces(home)
-    if namespace in existing:
-        log.err(f"Namespace '{namespace}' is already used by '{existing[namespace]}'")
-        return {"ok": False, "collision_with": existing[namespace]}
+    existing = adopt_grimoire.find_existing_skill_prefixes(home)
+    if skill_prefix in existing:
+        log.err(f"Skill prefix '{skill_prefix}' is already used by '{existing[skill_prefix]}'")
+        return {"ok": False, "collision_with": existing[skill_prefix]}
 
     final_name = name or target.name
-    final_desc = description or f"{final_name} domain grimoire"
+    final_desc = description or f"{final_name} grimoire"
     manifest = {
         "name": final_name,
-        "namespace": namespace,
+        "skill_prefix": skill_prefix,
         "description": final_desc,
     }
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
@@ -649,7 +649,7 @@ def scan_installed():
         if not info:
             continue
         info["name"] = g["manifest"].get("name", g["key"])
-        info["namespace"] = g["manifest"].get("namespace", "")
+        info["skill_prefix"] = g["manifest"].get("skill_prefix", "")
         info["description"] = g["manifest"].get("description", "")
         if g["online_path"] and not info.get("online_path"):
             info["online_path"] = g["online_path"]
@@ -663,7 +663,7 @@ def _grimoire_status(path, is_arcana=False):
     info = {
         "key": path.name,
         "name": path.name,
-        "namespace": "arcana" if is_arcana else "",
+        "skill_prefix": "arc" if is_arcana else "",
         "description": "",
         "path": str(path),
         "online_path": "",
@@ -681,17 +681,17 @@ def _grimoire_status(path, is_arcana=False):
     ok, status = git("-C", str(path), "status", "--porcelain")
     if ok and status: info["dirty"] = True
 
-    manifest = path / "grimoire.json"
+    manifest = path / ("arcana.json" if is_arcana else "grimoire.json")
     if manifest.is_file():
         try:
             m = json.loads(manifest.read_text())
             info["name"] = m.get("name", info["name"])
-            info["namespace"] = m.get("namespace", info["namespace"])
+            info["skill_prefix"] = m.get("skill_prefix", info["skill_prefix"])
             info["description"] = m.get("description", "")
         except (json.JSONDecodeError, OSError):
             pass
     elif is_arcana:
-        info["description"] = "Arcana — the Grimoire framework"
+        info["description"] = "Arcana  the Grimoire framework"
     return info
 
 
@@ -741,7 +741,7 @@ def _collect_diagnostics():
 
 def _format_diagnostics_bundle(diag):
     lines = [
-        "Grimoire Summon — diagnostic bundle",
+        "Grimoire Summon  diagnostic bundle",
         f"Generated: {datetime.now().isoformat()}",
         "",
     ]
@@ -776,34 +776,34 @@ def _ensure_dearpygui():
         )
 
 
-# Palette derived from arcana_icon_1024.png — pinks / purples / indigos.
+# Palette derived from arcana_icon_1024.png  pinks / purples / indigos.
 # Surfaces are intentionally desaturated dark gray-purple (NOT full indigo),
-# so the magenta primary buttons and pink section headers — the actual
-# signature colors of the icon — remain the loudest things on screen.
+# so the magenta primary buttons and pink section headers  the actual
+# signature colors of the icon  remain the loudest things on screen.
 # Log levels keep the conventional terminal scheme (white/green/yellow/red)
 # for instant recognition.
 GUI_COLORS = {
-    # ---- Surfaces — three tiers: window > card > inner ----
+    # ---- Surfaces  three tiers: window > card > inner ----
     # Each tier nudges saturation slightly higher so cards feel lifted,
     # but all stay in the dark-gray-with-a-hint-of-purple zone.
-    "bg":              (12, 10, 18),     # window — near-black, faint cool tint
-    "bg_card":         (22, 18, 32),     # section cards — neutral dark
-    "bg_card_alt":     (30, 24, 42),     # nested lists / log — one step up
-    "bg_input":        (18, 14, 26),     # input fields — minimal tint
-    "bg_input_hov":    (42, 30, 60),     # hover — purple wakes up
+    "bg":              (12, 10, 18),     # window  near-black, faint cool tint
+    "bg_card":         (22, 18, 32),     # section cards  neutral dark
+    "bg_card_alt":     (30, 24, 42),     # nested lists / log - one step up
+    "bg_input":        (18, 14, 26),     # input fields  minimal tint
+    "bg_input_hov":    (42, 30, 60),     # hover  purple wakes up
     "border":          (60, 42, 90),     # softer purple, less saturated
-    "border_strong":   (137, 12, 158),   # icon's magenta — focus accent
+    "border_strong":   (137, 12, 158),   # icon's magenta  focus accent
     # ---- Text ----
     "text":            (235, 230, 240),  # warm near-white
     "text_muted":      (145, 132, 170),  # muted gray-purple (secondary)
-    "text_title":      (231, 100, 208),  # signature bright pink — primary headers
-    "text_section_b":  (200, 80, 195),   # magenta — Discover, Library drift
-    "text_section_c":  (175, 130, 225),  # lavender — Preview, Settings B, Adopt
-    "text_section_d":  (255, 150, 215),  # pale pink — Diagnostics
+    "text_title":      (231, 100, 208),  # signature bright pink  primary headers
+    "text_section_b":  (200, 80, 195),   # magenta  Discover, Library drift
+    "text_section_c":  (175, 130, 225),  # lavender  Preview, Settings B, Adopt
+    "text_section_d":  (255, 150, 215),  # pale pink  Diagnostics
     "accent":          (231, 100, 208),
     "accent_hover":    (255, 150, 215),
     # ---- Primary action (Install, Discover, Save, Apply, Adopt) ----
-    # The strongest color on screen — the eye lands here.
+    # The strongest color on screen  the eye lands here.
     "btn_primary":     (137, 12, 158),   # icon's dark magenta
     "btn_primary_hov": (180, 35, 200),
     "btn_primary_act": (108, 0, 128),
@@ -813,14 +813,14 @@ GUI_COLORS = {
     "btn_secondary":     (40, 32, 56),
     "btn_secondary_hov": (60, 48, 86),
     "btn_secondary_act": (32, 26, 48),
-    # ---- Danger (Remove, Cancel) — warm red, distinct from magenta ----
+    # ---- Danger (Remove, Cancel)  warm red, distinct from magenta ----
     "btn_danger":      (200, 70, 90),
     "btn_danger_hov":  (225, 95, 115),
     "btn_danger_act":  (170, 50, 70),
     # ---- Misc ----
     "separator":       (60, 42, 90),     # match border
     "checkmark":       (231, 100, 208),
-    # ---- Log line colors — terminal-conventional, slightly tuned to palette ----
+    # ---- Log line colors  terminal-conventional, slightly tuned to palette ----
     "log_info":        (235, 230, 240),  # match body text (warm white)
     "log_ok":          (95, 230, 130),   # green
     "log_warn":        (255, 200, 60),   # yellow
@@ -838,10 +838,10 @@ GUI_COLORS = {
 #
 # All values are in pre-scale (1.0) pixels. They are calibrated against the
 # theme styles set in _build_grimoire_theme:
-#     FramePadding:  8 x 6     → adds ~12 to each input/button height
-#     ItemSpacing:   10 x 8    → adds ~8 between stacked items
-#     WindowPadding: 18 x 16   → outer card padding
-#     font:          ~18px     → one text row ≈ 24 (font + spacing)
+#     FramePadding:  8 x 6     -> adds ~12 to each input/button height
+#     ItemSpacing:   10 x 8    -> adds ~8 between stacked items
+#     WindowPadding: 18 x 16   -> outer card padding
+#     font:          ~18px     -> one text row ~24 (font + spacing)
 # Tweak these together with the theme; everything else derives from them.
 #
 # Run-time sizing is preferred where possible (button widths via
@@ -869,10 +869,10 @@ class M:
     CARD_PAD   = 28
 
     # ---- Inner scroll boxes (lists, log) ----
-    LIST_S     = 150   # short — drift box
-    LIST_M     = 220   # medium — discoverable grimoires
-    LIST_L     = 280   # large — installed grimoires
-    LIST_XL    = 360   # extra-large — diagnostics
+    LIST_S     = 150   # short - drift box
+    LIST_M     = 220   # medium - discoverable grimoires
+    LIST_L     = 280   # large - installed grimoires
+    LIST_XL    = 360   # extra-large - diagnostics
 
     # ---- Viewport defaults ----
     # Sized to fit the Install tab fully visible (3 sections + button + log)
@@ -898,13 +898,13 @@ class M:
 
     # ---- Common input widths (where -1 / -N is not applicable) ----
     SCOPE_INPUT_TRAIL = 130  # space reserved for the Discover button + gap
-    INPUT_M           = 220  # Adopt: namespace input
+    INPUT_M           = 220  # Adopt: skill prefix input
     INPUT_L           = 280  # Adopt: directory / name / desc inputs
     SEARCH_W          = 280  # log + grimoire search inputs
 
 
 def px(v, scale):
-    """Pre-scale pixel → actual pixel int. Use everywhere a DPG dim is set."""
+    """Pre-scale pixel -> actual pixel int. Use everywhere a DPG dim is set."""
     return int(round(v * scale))
 
 
@@ -941,7 +941,7 @@ def btn_w(dpg, label, scale, pad=None, min_w=None):
 
 
 def _compute_dpi_scale():
-    """Best-effort DPI scale factor. 1.0 on standard 1080p, ~1.5–2.0 on 4K."""
+    """Best-effort DPI scale factor. 1.0 on standard 1080p, ~1.5-2.0 on 4K."""
     override = os.environ.get("GRIMOIRE_GUI_SCALE", "").strip()
     if override:
         try:
@@ -1053,7 +1053,7 @@ def _build_grimoire_theme(dpg, palette):
 
 
 def _build_button_themes(dpg):
-    """Per-intent button color themes — bind via dpg.bind_item_theme on a button.
+    """Per-intent button color themes - bind via dpg.bind_item_theme on a button.
 
     The default global theme already paints buttons in the "primary" purple,
     so most call sites don't need to touch this. Use "secondary" for
@@ -1076,7 +1076,7 @@ def _build_button_themes(dpg):
     themes["secondary"] = make(c["btn_secondary"], c["btn_secondary_hov"], c["btn_secondary_act"])
     themes["danger"]    = make(c["btn_danger"],    c["btn_danger_hov"],    c["btn_danger_act"])
 
-    # Card theme — bordered child windows used to wrap each section.
+    # Card theme - bordered child windows used to wrap each section.
     with dpg.theme() as card_theme:
         with dpg.theme_component(dpg.mvChildWindow):
             dpg.add_theme_color(dpg.mvThemeCol_ChildBg, c["bg_card"])
@@ -1086,7 +1086,7 @@ def _build_button_themes(dpg):
             dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 14, 12)
     themes["card"] = card_theme
 
-    # Inner list theme — slightly different bg for nested list child_windows
+    # Inner list theme - slightly different bg for nested list child_windows
     # (grimoire selection list, installed list, drift, diagnostics, log).
     # The mvAll component overrides the global ItemSpacing.y of 8px down to
     # 2px so line-by-line content (log lines, drift entries, diag rows)
@@ -1108,7 +1108,7 @@ def _build_button_themes(dpg):
 
 
 def _bind_btn(state, item, kind):
-    """Bind a per-intent button theme. kind ∈ {primary, secondary, danger}."""
+    """Bind a per-intent button theme. kind in {primary, secondary, danger}."""
     theme = state.button_themes.get(kind)
     if theme:
         state.dpg.bind_item_theme(item, theme)
@@ -1135,17 +1135,17 @@ def _section(dpg, state, label, color_key="text_title", icon="◆", height=None)
         with _section(dpg, state, "Source", icon="◆", height=80):
             dpg.add_text("...")
 
-    `height` is the inner card height in pre-scale pixels — explicit because
+    `height` is the inner card height in pre-scale pixels - explicit because
     DPG's `autosize_y=True` is unreliable when the card contains other
     fixed-height child windows (it falls back to filling available space,
     which makes short sections look like vertical voids). Pick a height that
     matches the content; rule of thumb in pre-scale pixels:
-      - text row     ≈ 24
-      - input/button ≈ 32
-      - checkbox     ≈ 28
-      - separator    ≈ 12
-      - inner spacer ≈ 8
-      - card chrome  ≈ 28  (top+bottom padding + border)
+      - text row     ~24
+      - input/button ~32
+      - checkbox     ~28
+      - separator    ~12
+      - inner spacer ~8
+      - card chrome  ~28  (top+bottom padding + border)
       - then add the height of any nested child_window verbatim.
     """
     c = GUI_COLORS
@@ -1156,7 +1156,7 @@ def _section(dpg, state, label, color_key="text_title", icon="◆", height=None)
         dpg.add_text(label, color=c[color_key])
     # Underline accent
     dpg.add_separator()
-    # Bordered card body — explicit height; autosize_y is too brittle in DPG.
+    # Bordered card body - explicit height; autosize_y is too brittle in DPG.
     card_kwargs = dict(border=True, width=-1, no_scrollbar=True)
     if height is not None:
         card_kwargs["height"] = int(round(height * scale))
@@ -1294,14 +1294,14 @@ def _select_gui_env():
     ok, hw_err = _probe_gui()
     if ok:
         return {}, "hardware OpenGL"
-    print(f"  [INFO]  Hardware OpenGL probe failed ({hw_err}) — retrying with software rendering")
+    print(f"  [INFO]  Hardware OpenGL probe failed ({hw_err}) - retrying with software rendering")
     ok, sw_err = _probe_gui(extra_env=_GUI_SW_RENDER_ENV)
     if ok:
         return dict(_GUI_SW_RENDER_ENV), "software OpenGL (Mesa llvmpipe)"
     return None, (
         f"no usable OpenGL/GLX context "
         f"(hardware: {hw_err}; software: {sw_err}). "
-        f"If you're on Wayland, install XWayland — "
+        f"If you're on Wayland, install XWayland - "
         f"`sudo pacman -S xorg-xwayland` on Arch, "
         f"`sudo apt install xwayland` on Debian/Ubuntu. "
         f"Otherwise ensure Mesa is installed."
@@ -1309,7 +1309,7 @@ def _select_gui_env():
 
 
 # ---------------------------------------------------------------------------
-# Tag namespace
+# Tag skill_prefix
 # ---------------------------------------------------------------------------
 
 # Centralized so refactors stay sane. Use string concatenation for per-row
@@ -1462,7 +1462,7 @@ def spawn_worker(state, title, fn, kwargs):
     worker = Worker(run_id, title, fn, kwargs, rq)
     state.active_run = worker
     worker.start()
-    state.dpg.set_value(TAG.LOG_ACTIVE, f"  ▶  {title}")
+    state.dpg.set_value(TAG.LOG_ACTIVE, f"    {title}")
     state.dpg.configure_item(TAG.LOG_CANCEL, show=True)
     return worker
 
@@ -1471,7 +1471,7 @@ def cancel_active_run(state):
     if state.active_run:
         try:
             state.active_run.cancel()
-            state.dpg.set_value(TAG.LOG_ACTIVE, f"  ⏸  Cancelling...")
+            state.dpg.set_value(TAG.LOG_ACTIVE, f"    Cancelling...")
         except Exception:
             pass
 
@@ -1494,12 +1494,12 @@ _LEVEL_PILL = {
     "OK":    "OK   ",
     "WARN":  "WARN ",
     "ERROR": "ERROR",
-    "LINE":  "     ",   # blank — raw output keeps no pill
+    "LINE":  "     ",   # blank - raw output keeps no pill
 }
 
 
 def _format_log_line(ev):
-    """Plain-text formatter — used for clipboard/file save only.
+    """Plain-text formatter - used for clipboard/file save only.
 
     On-screen rendering uses per-line colored widgets; this stays for
     'Save to file' so saved logs stay readable in any editor.
@@ -1537,7 +1537,7 @@ def _add_log_widget(state, ev):
     with dpg.group(parent=TAG.LOG_LINES, horizontal=True):
         dpg.add_text(f"[{ts}]", color=c["log_ts"])
         if ev["level"] == "LINE":
-            # Raw subprocess output — no pill, muted color, full message
+            # Raw subprocess output - no pill, muted color, full message
             dpg.add_text(ev["msg"], color=color)
         else:
             dpg.add_text(pill, color=color)
@@ -1561,7 +1561,7 @@ def render_log(state):
         # history is still in state.log_lines and exported on Save.
         c = GUI_COLORS
         with dpg.group(parent=TAG.LOG_LINES, horizontal=True):
-            dpg.add_text(f"... ({len(matching) - _LOG_VISIBLE_CAP} older line(s) hidden — Save to export full log) ...",
+            dpg.add_text(f"... ({len(matching) - _LOG_VISIBLE_CAP} older line(s) hidden - Save to export full log) ...",
                          color=c["text_muted"])
         matching = matching[-_LOG_VISIBLE_CAP:]
     for ev in matching:
@@ -1613,7 +1613,7 @@ def _on_run_done(state, worker):
     if rq.cancelled:
         msg = f"  ✗  {title} (cancelled)"
     elif rq.error:
-        msg = f"  ⚠  {title} (error — see log)"
+        msg = f"  ⚠  {title} (error - see log)"
     else:
         msg = f"  ✓  {title} (done)"
     state.dpg.set_value(TAG.LOG_ACTIVE, msg)
@@ -1622,12 +1622,12 @@ def _on_run_done(state, worker):
     summary = rq.summary
     if isinstance(summary, dict):
         if "entries" in summary:
-            # Discovery finished — populate selection list
+            # Discovery finished - populate selection list
             state.discovered = summary["entries"]
             state.selected = set(state.discovered.keys())
             populate_install_list(state)
         if summary.get("ok") and (summary.get("installed") is not None or "skills_ok" in summary):
-            # An install completed — refresh installed list
+            # An install completed - refresh installed list
             try:
                 state.installed = scan_installed()
                 populate_installed_list(state)
@@ -1691,7 +1691,7 @@ def _build_install_tab(dpg, state):
                 callback=lambda *_: _on_discover(state),
             )
             _bind_btn(state, disc_btn, "primary")
-        dpg.add_text("Token (optional — auto-detects from env / git credentials):",
+        dpg.add_text("Token (optional - auto-detects from env / git credentials):",
                      color=c["text_muted"])
         dpg.add_input_text(
             tag=TAG.INSTALL_TOKEN,
@@ -1772,7 +1772,7 @@ def _render_preview(state):
     if "codex" in targets:
         items.append(("codex", "Inject Grimoire block into ~/.codex/AGENTS.md"))
     if not skip:
-        items.append(("skills", "Register /grm-* and namespace skills to agent skills/ dirs"))
+        items.append(("skills", "Register /arc-* and skill prefix skills to agent skills/ dirs"))
     c = GUI_COLORS
     for pill, text in items:
         with dpg.group(parent=TAG.INSTALL_PREVIEW, horizontal=True):
@@ -1817,7 +1817,7 @@ def populate_install_list(state):
         label = e.get("name", key)
         desc = e.get("description", "")
         if desc:
-            label = f"{label} — {desc}"
+            label = f"{label} - {desc}"
         tag = f"{TAG.INSTALL_GRIM_CHECK_PREFIX}::{key}"
         if dpg.does_item_exist(tag):
             dpg.delete_item(tag)
@@ -1988,7 +1988,7 @@ def _build_manage_tab(dpg, state):
                                    hint="my-existing-folder",
                                    width=px(M.INPUT_L, scale))
             with dpg.group():
-                dpg.add_text("Namespace", color=c["text_muted"])
+                dpg.add_text("Skill prefix", color=c["text_muted"])
                 dpg.add_input_text(tag=TAG.MANAGE_ADOPT_NS,
                                    hint="lowercase, e.g. cook",
                                    width=px(M.INPUT_M, scale))
@@ -2035,12 +2035,12 @@ def populate_installed_list(state):
         with dpg.group(parent=TAG.MANAGE_INSTALLED_LIST):
             with dpg.group(horizontal=True):
                 dpg.add_text(g.get("name", g["key"]), color=c["text_title"])
-                if g.get("namespace"):
-                    dpg.add_text(f"  ({g['namespace']})", color=c["text_muted"])
+                if g.get("skill_prefix"):
+                    dpg.add_text(f"  ({g['skill_prefix']})", color=c["text_muted"])
                 if g.get("dirty"):
-                    dpg.add_text("  • dirty", color=c["log_err"])
+                    dpg.add_text("   dirty", color=c["log_err"])
                 else:
-                    dpg.add_text("  • clean", color=c["log_ok"])
+                    dpg.add_text("   clean", color=c["log_ok"])
             if g.get("description"):
                 dpg.add_text(g["description"], color=c["text_muted"], wrap=-1)
             with dpg.group(horizontal=True):
@@ -2049,7 +2049,7 @@ def populate_installed_list(state):
                 if g.get("branch"):
                     dpg.add_text(f"branch: {g['branch']}", color=c["text_muted"])
                 if g.get("last_commit"):
-                    dpg.add_text(f"  · {g['last_commit']}", color=c["text_muted"])
+                    dpg.add_text(f"   {g['last_commit']}", color=c["text_muted"])
             with dpg.group(horizontal=True):
                 key = g["key"]
                 upd = dpg.add_button(label="Update",
@@ -2078,7 +2078,7 @@ def _confirm_remove(state, key, name):
         state.dpg, state.scale,
         f"Remove {name}?",
         f"This will delete ~/grimoires/{key}/ and the matching entry in library.json.\n\n"
-        f"The git remote is unaffected — you can re-clone later.",
+        f"The git remote is unaffected - you can re-clone later.",
         on_ok=_on, danger=True, ok_label="Remove",
     )
 
@@ -2092,11 +2092,11 @@ def _bulk_update(state):
         ok_count = 0
         for k in keys:
             if cancel_event.is_set():
-                log.warn("Cancelled — stopping after current grimoire")
+                log.warn("Cancelled - stopping after current grimoire")
                 break
             target = ARCANA_DIR if k == "arcana" else GRIMOIRES_HOME / k
             if not (target / ".git").is_dir():
-                log.warn(f"{k} not a git repo — skipping")
+                log.warn(f"{k} not a git repo - skipping")
                 continue
             log.info(f"Updating {k}...")
             ok, _ = git_cancellable("-C", str(target), "pull", "--ff-only",
@@ -2113,18 +2113,18 @@ def _bulk_update(state):
 
 def _on_adopt(state):
     directory = state.dpg.get_value(TAG.MANAGE_ADOPT_DIR).strip()
-    namespace = state.dpg.get_value(TAG.MANAGE_ADOPT_NS).strip()
+    skill_prefix = state.dpg.get_value(TAG.MANAGE_ADOPT_NS).strip()
     name = state.dpg.get_value(TAG.MANAGE_ADOPT_NAME).strip()
     desc = state.dpg.get_value(TAG.MANAGE_ADOPT_DESC).strip()
-    if not directory or not namespace:
+    if not directory or not skill_prefix:
         show_modal(state.dpg, state.scale, "Required fields",
-                   "Directory and namespace are required.",
+                   "Directory and skill prefix are required.",
                    on_ok=None, ok_label="OK", cancel_label="")
         return
     spawn_worker(
         state, f"Adopt {directory}",
         _worker_adopt,
-        {"directory": directory, "namespace": namespace,
+        {"directory": directory, "skill_prefix": skill_prefix,
          "name": name, "description": desc},
     )
 
@@ -2137,7 +2137,7 @@ def populate_drift(state, summary):
     c = GUI_COLORS
     drift = summary.get("drift_count", 0)
     if drift == 0:
-        dpg.add_text("No drift — library is in sync with disk.",
+        dpg.add_text("No drift - library is in sync with disk.",
                      parent=TAG.MANAGE_DRIFT, color=c["log_ok"])
     else:
         dpg.add_text(f"Drift items: {drift}", parent=TAG.MANAGE_DRIFT, color=c["text_title"])
@@ -2146,7 +2146,7 @@ def populate_drift(state, summary):
             return
         dpg.add_text(label, parent=TAG.MANAGE_DRIFT, color=c["text"])
         for item in items:
-            dpg.add_text(f"  • {item}", parent=TAG.MANAGE_DRIFT, color=c["text_muted"])
+            dpg.add_text(f"   {item}", parent=TAG.MANAGE_DRIFT, color=c["text_muted"])
     add_section("Missing from library:", summary.get("missing"))
     add_section("Stale entries:",        summary.get("stale"))
     add_section("Mismatched paths:",     summary.get("mismatched"))
@@ -2283,7 +2283,7 @@ def _save_diag_bundle(state):
 
 def _build_header(dpg, state):
     """Branding-only header. Activity status lives in the log panel header
-    below — it has more breathing room and is logically tied to the log
+    below - it has more breathing room and is logically tied to the log
     itself, so the brand stays uncluttered as run titles change."""
     c = GUI_COLORS
     with dpg.group(horizontal=True):
@@ -2433,7 +2433,7 @@ def run_gui(args):
             _build_log_panel(dpg, state)
 
         dpg.create_viewport(
-            title="Arcana — Summoning Rite",
+            title="Arcana - Summoning Rite",
             width=px(M.VIEWPORT_W, scale),
             height=px(M.VIEWPORT_H, scale),
             min_width=px(M.VIEWPORT_W_MIN, scale),

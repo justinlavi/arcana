@@ -7,7 +7,7 @@ authority: grimoire
 last_verified: 2026-05-12
 ---
 
-# 🔮 Invocation: Validate Arcana Naming
+# Invocation: Validate Arcana Naming
 
 ## Purpose
 
@@ -16,7 +16,7 @@ Enforce snake_case naming convention for Arcana files and directories.
 ## Invocation
 
 ```
-/grm-arcana-validate-naming
+/arc-validate-naming
 ```
 
 ## When to Cast
@@ -62,9 +62,9 @@ For each violation found:
    ```
 
 2. **Update all references** to the renamed file:
-   - Search for old filename in markdown links
-   - Update import/include statements
-   - Fix cross-references in other docs
+  - Search for old filename in markdown links
+  - Update import/include statements
+  - Fix cross-references in other docs
 
 3. **Test links**:
    ```bash
@@ -87,16 +87,16 @@ Check that examples in documentation also use snake_case:
 
 **On success**:
 ```
-✅ All markdown files use proper naming
-✅ All shell scripts use proper naming
-✅ Naming validation passed
+ All markdown files use proper naming
+ All shell scripts use proper naming
+ Naming validation passed
 ```
 
 **On violations**:
 ```
-⚠️  Hyphenated filename (should use snake_case): invocations/grimoire/create-chapter.md
-⚠️  CamelCase filename (should use snake_case): docs/quickStart.md
-⚠️  Naming validation found 2 issues
+  Hyphenated filename (should use snake_case): invocations/grimoire/create-chapter.md
+  CamelCase filename (should use snake_case): docs/quickStart.md
+  Naming validation found 2 issues
 ```
 
 ## Naming Convention Rationale
@@ -135,5 +135,5 @@ git mv old-name.md new_name.md
 grep -r "old-name.md" . --include="*.md"
 
 # Commit rename separately from content changes
-git commit -m "Rename: old-name.md → new_name.md (snake_case)"
+git commit -m "Rename: old-name.md -> new_name.md (snake_case)"
 ```

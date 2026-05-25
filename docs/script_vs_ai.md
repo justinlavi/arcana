@@ -145,7 +145,7 @@ done
 sed -n '/^## Core Concepts/,/^---$/p' docs/reference.md > /tmp/terminology.txt
 
 # ✅ GOOD: AI analyzes using that data
-/grm-domain-analyze-semantics
+/arc-grimoire-analyze-semantics
 # AI reads reference, understands context, suggests improvements intelligently
 ```
 
@@ -217,9 +217,9 @@ find invocations/ -name "*.md" ! -name "$(basename "$(pwd)").md" | wc -l   # lea
                     │ Provides data to
                     ▼
 ┌─────────────────────────────────────────────┐
-│  INVOCATION: improve_arcana.md            │
+│  INVOCATION: improve_arcana.md              │
 │  ────────────────────────────────────────   │
-│  • Runs rites to gather data              │
+│  • Runs rites to gather data                │
 │  • AI analyzes the results                  │
 │  • AI determines if issues are real         │
 │  • AI suggests specific fixes               │
@@ -292,7 +292,7 @@ Ask: "Does this require understanding context and meaning?"
 ## Summary
 
 | Aspect | Rites (Scripts) | Invocations (AI) |
-|--------|------------------|-------------|
+|-------|-----------------|------------|
 | **Purpose** | Simple, fast, deterministic | Contextual, intelligent, adaptive |
 | **Tasks** | Find, count, check, extract | Analyze, judge, suggest, improve |
 | **Context** | None needed | Essential |
@@ -313,15 +313,15 @@ Every Arcana skill delegates to one of two backing implementations:
 
 Pick by the same rule that applies to rites vs invocations themselves:
 
-| If the skill's job is… | Pick this backing | Examples |
+| If the skill's job is | Pick this backing | Examples |
 |---|---|---|
-| Mechanical, deterministic, no judgment required | Rite-backed | `/grm-skills-register`, `/grm-library-sync`, `/grm-arcana-clean`, every `/grm-arcana-validate-*` |
-| Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/grm-domain-create-grimoire`, `/grm-domain-improve`, `/grm-arcana-improve`, `/grm-meta-help` |
-| Both — the rite gathers data, the AI interprets | **Both, in that order**: skill body runs the rite first, then loads an invocation that reads the rite's output | `/grm-arcana-validate-semantics` could evolve into this if/when the analysis judgment grows beyond the rite's pattern check |
+| Mechanical, deterministic, no judgment required | Rite-backed | `/arc-skills-register`, `/arc-library-sync`, `/arc-clean`, every `/arc-validate-*` |
+| Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/arc-grimoire-create`, `/arc-grimoire-improve`, `/arc-improve`, `/arc-help` |
+| Both — the rite gathers data, the AI interprets | **Both, in that order**: skill body runs the rite first, then loads an invocation that reads the rite's output | `/arc-validate-semantics` could evolve into this if/when the analysis judgment grows beyond the rite's pattern check |
 
 Two anti-patterns to avoid:
 
-- A rite-backed skill whose body has prose instructions for the AI to interpret. If you find yourself writing "and then decide whether…" in a SKILL.md, the skill is judgment work — make it invocation-backed.
+- A rite-backed skill whose body has prose instructions for the AI to interpret. If you find yourself writing "and then decide whether..." in a SKILL.md, the skill is judgment work — make it invocation-backed.
 - An invocation-backed skill whose invocation just `!cat`s a script's help output. If the work is "run a thing and report the result," skip the invocation and have the skill call the rite directly.
 
 When a skill grows beyond a thin pointer, the right response is almost always to push the new logic *down* into a rite or invocation, not *up* into the SKILL.md body. The skill stays portable across agent platforms; the invocation/rite is where complexity lives.

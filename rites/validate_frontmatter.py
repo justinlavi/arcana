@@ -15,7 +15,7 @@ checks:
   6. `last_verified:` parses as YYYY-MM-DD.
   7. `tags:` and `aliases:` are YAML lists of plain strings.
 
-SKILL.md files are exempt — they use a different agent-defined schema.
+SKILL.md files are exempt - they use a different agent-defined schema.
 
 Usage: python3 rites/validate_frontmatter.py
 Exit codes: 0 = no violations, 1 = violations found

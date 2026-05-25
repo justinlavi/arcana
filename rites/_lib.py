@@ -2,7 +2,7 @@
 
 Centralizes the patterns that every validator and library utility needs:
 frontmatter parsing, markdown link/code-fence helpers, the canonical logger,
-grimoire-root resolution, manifest / library loading, and the namespace regex.
+grimoire-root resolution, manifest / library loading, and the skill_prefix regex.
 
 New rites should import from here rather than redefining these primitives.
 """
@@ -19,20 +19,20 @@ from typing import Iterable, Optional
 
 
 # ---------------------------------------------------------------------------
-# Regexes — shared across validators
+# Regexes - shared across validators
 # ---------------------------------------------------------------------------
 
 FRONTMATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 LINK_RE = re.compile(r"\]\(([^)]+)\)")
 WIKILINK_RE = re.compile(r"\[\[([^\]\n]+)\]\]")
 CODE_FENCE_RE = re.compile(r"^```")
-NAMESPACE_RE = re.compile(r"^[a-z][a-z0-9]*$")
+SKILL_PREFIX_RE = re.compile(r"^[a-z][a-z0-9]*$")
 SKILL_SLUG_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 # ---------------------------------------------------------------------------
-# Logging — uniform `[LEVEL]` prefix in 2-space indent
+# Logging - uniform `[LEVEL]` prefix in 2-space indent
 # ---------------------------------------------------------------------------
 
 
@@ -58,12 +58,12 @@ def err(msg: str) -> None:
 
 
 def default_arcana_root() -> Path:
-    """Return the Arcana root: GRIMOIRE_ARCANA env var, else this file's parent.parent.
+    """Return the Arcana root: ARCANA_HOME env var, else this file's parent.parent.
 
     Validators and rites that operate on Arcana itself use this as their fallback
     when no `--grimoire` flag is supplied.
     """
-    return Path(os.environ.get("GRIMOIRE_ARCANA", Path(__file__).resolve().parent.parent))
+    return Path(os.environ.get("ARCANA_HOME", Path(__file__).resolve().parent.parent))
 
 
 def add_grimoire_arg(parser: argparse.ArgumentParser, flag: str = "--grimoire") -> None:
@@ -71,13 +71,13 @@ def add_grimoire_arg(parser: argparse.ArgumentParser, flag: str = "--grimoire") 
 
     The default is `default_arcana_root()`, so a script invoked without args
     operates on Arcana itself; passing `--grimoire ~/grimoires/cooking-grimoire`
-    points the same script at any domain grimoire.
+    points the same script at any grimoire.
     """
     parser.add_argument(
         flag,
         type=Path,
         default=default_arcana_root(),
-        help="Grimoire root (default: GRIMOIRE_ARCANA env var or rites parent)",
+        help="Grimoire root (default: ARCANA_HOME env var or rites parent)",
     )
 
 
@@ -102,11 +102,11 @@ def parse_frontmatter(text: str) -> dict:
         key: "quoted value"
         key: [a, b, "c"]
         key:
-          - item
-          - item
+         - item
+         - item
 
     Returns `dict[str, str | list[str]]`. Lines that don't match any form are
-    ignored — the parser is forgiving by design (it's a linter helper, not a
+    ignored - the parser is forgiving by design (it's a linter helper, not a
     full YAML implementation).
     """
     match = FRONTMATTER_RE.match(text)
@@ -122,7 +122,7 @@ def parse_frontmatter(text: str) -> dict:
             current_list_key = None
             continue
 
-        # Multi-line list continuation (`  - item`)
+        # Multi-line list continuation (` - item`)
         if current_list_key is not None and re.match(r"^\s+-\s+", raw_line):
             value = raw_line.split("-", 1)[1].strip().strip("'\"")
             fields[current_list_key].append(value)
@@ -203,7 +203,7 @@ def resolve_wikilink_path(body: str, root: Path) -> Optional[Path]:
     Multi-dot filenames are supported: ``[[path/to/plugin_ICD.template]]``
     resolves to ``path/to/plugin_ICD.template.md``. The convention covers
     capitalized acronym suffixes (ICD, IDD, SDK) and role suffixes
-    (``.template``, ``.example``) that domain grimoires use deliberately.
+    (``.template``, ``.example``) that grimoires use deliberately.
     """
     if not body:
         return None
@@ -246,8 +246,8 @@ def load_manifest(directory: Path) -> tuple[Optional[dict], list]:
     is missing or unparseable; otherwise it's the parsed JSON regardless of
     validation outcome (so callers can still inspect partial data).
 
-    Validation covers the universal fields: `name`, `namespace` (must match
-    `NAMESPACE_RE`). Callers needing stricter checks (e.g. namespace
+    Validation covers the universal fields: `name`, `skill_prefix` (must match
+    `SKILL_PREFIX_RE`). Callers needing stricter checks (e.g. skill_prefix
     collisions across grimoires) compose on top.
     """
     manifest_file = directory / "grimoire.json"
@@ -262,14 +262,14 @@ def load_manifest(directory: Path) -> tuple[Optional[dict], list]:
 
     errors = []
     name = metadata.get("name", "")
-    namespace = metadata.get("namespace", "")
+    skill_prefix = metadata.get("skill_prefix", "")
     if not name:
         errors.append("grimoire.json missing 'name' field")
-    if not namespace:
-        errors.append("grimoire.json missing 'namespace' field")
-    elif not NAMESPACE_RE.fullmatch(namespace):
+    if not skill_prefix:
+        errors.append("grimoire.json missing 'skill_prefix' field")
+    elif not SKILL_PREFIX_RE.fullmatch(skill_prefix):
         errors.append(
-            f"invalid namespace '{namespace}' (must match {NAMESPACE_RE.pattern})"
+            f"invalid skill_prefix '{skill_prefix}' (must match {SKILL_PREFIX_RE.pattern})"
         )
 
     return metadata, errors

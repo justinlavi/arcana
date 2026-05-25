@@ -1,4 +1,4 @@
-"""Unit tests for rites/_lib.py — the shared validator/utility library."""
+"""Unit tests for rites/_lib.py - the shared validator/utility library."""
 
 from pathlib import Path
 
@@ -83,7 +83,7 @@ def test_load_manifest_reads_good_fixture():
     metadata, errors = _lib.load_manifest(GOOD)
     assert errors == []
     assert metadata["name"] == "good_grimoire"
-    assert metadata["namespace"] == "good"
+    assert metadata["skill_prefix"] == "good"
 
 
 def test_load_manifest_returns_none_when_missing(tmp_path):
@@ -92,13 +92,13 @@ def test_load_manifest_returns_none_when_missing(tmp_path):
     assert errors == ["missing grimoire.json"]
 
 
-def test_load_manifest_flags_invalid_namespace(tmp_path):
+def test_load_manifest_flags_invalid_skill_prefix(tmp_path):
     (tmp_path / "grimoire.json").write_text(
-        '{"name": "x", "namespace": "BAD-NS"}'
+        '{"name": "x", "skill_prefix": "BAD-NS"}'
     )
     metadata, errors = _lib.load_manifest(tmp_path)
     assert metadata is not None
-    assert any("invalid namespace" in e for e in errors)
+    assert any("invalid skill_prefix" in e for e in errors)
 
 
 # ---------------------------------------------------------------------------
@@ -142,19 +142,19 @@ def test_iter_pages_respects_skip_dirs():
 # ---------------------------------------------------------------------------
 
 
-def test_namespace_regex_accepts_valid_slugs():
-    assert _lib.NAMESPACE_RE.fullmatch("grm")
-    assert _lib.NAMESPACE_RE.fullmatch("oly2")
+def test_skill_prefix_regex_accepts_valid_slugs():
+    assert _lib.SKILL_PREFIX_RE.fullmatch("arc")
+    assert _lib.SKILL_PREFIX_RE.fullmatch("oly2")
 
 
-def test_namespace_regex_rejects_invalid_slugs():
-    assert not _lib.NAMESPACE_RE.fullmatch("grm-bad")
-    assert not _lib.NAMESPACE_RE.fullmatch("Grm")
-    assert not _lib.NAMESPACE_RE.fullmatch("2grm")
+def test_skill_prefix_regex_rejects_invalid_slugs():
+    assert not _lib.SKILL_PREFIX_RE.fullmatch("arc-bad")
+    assert not _lib.SKILL_PREFIX_RE.fullmatch("Arc")
+    assert not _lib.SKILL_PREFIX_RE.fullmatch("2arc")
 
 
 def test_skill_slug_regex_accepts_kebab_case():
-    assert _lib.SKILL_SLUG_RE.fullmatch("arcana-validate-all")
+    assert _lib.SKILL_SLUG_RE.fullmatch("validate-all")
     assert _lib.SKILL_SLUG_RE.fullmatch("a")
 
 

@@ -24,6 +24,10 @@ INVOCATION_REQUIRED_SECTIONS = [
 ]
 
 HUB_MAX_LINES = 200
+SHORT_TABLE_DELIMITER_RE = re.compile(
+    r"^\|?\s*:?-{1,2}:?\s*(\|\s*:?-{1,2}:?\s*)+\|?\s*$"
+)
+FENCE_RE = re.compile(r"^\s*(```|~~~)")
 
 
 def is_hub(path):
@@ -37,6 +41,27 @@ SKIP_DIRS = {"sources"}
 def under_skip_dir(path):
     rel = path.relative_to(ARCANA_ROOT)
     return rel.parts and rel.parts[0] in SKIP_DIRS
+
+
+def short_table_delimiter_rows(content):
+    """Return lines where a Markdown table delimiter uses fewer than 3 hyphens."""
+    in_fence = False
+    fence = None
+
+    for line_number, line in enumerate(content.splitlines(), 1):
+        fence_match = FENCE_RE.match(line)
+        if fence_match:
+            marker = fence_match.group(1)
+            if not in_fence:
+                in_fence = True
+                fence = marker
+            elif marker == fence:
+                in_fence = False
+                fence = None
+            continue
+
+        if not in_fence and SHORT_TABLE_DELIMITER_RE.match(line):
+            yield line_number, line
 
 
 def main():
@@ -115,6 +140,29 @@ def main():
 
     if formula_violations == 0:
         ok("All formulae have proper format")
+    print()
+
+    # 4. Markdown table delimiter rows must use 3+ hyphens per cell.
+    print("Checking markdown table delimiter rows...")
+    table_violations = 0
+
+    for path in sorted(ARCANA_ROOT.rglob("*.md")):
+        if under_skip_dir(path):
+            continue
+
+        content = path.read_text(encoding="utf-8", errors="replace")
+        for line_number, line in short_table_delimiter_rows(content):
+            if table_violations == 0:
+                print()
+            warn(
+                f"Short table delimiter row: {path.relative_to(ARCANA_ROOT)}:"
+                f"{line_number} `{line}`"
+            )
+            table_violations += 1
+            errors += 1
+
+    if table_violations == 0:
+        ok("All markdown table delimiter rows use 3+ hyphens")
     print()
 
     print("==================================")

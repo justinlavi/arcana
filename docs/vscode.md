@@ -106,6 +106,6 @@ Either way — uninstall or user-level disable — workspace settings are not th
 
 ## Related
 
-- Obsidian-side config (parallel concern): `GRIMOIRE_ARCANA/docs/obsidian.md` — "Required app.json settings"
+- Obsidian-side config (parallel concern): `ARCANA_HOME/docs/obsidian.md` — "Required app.json settings"
 - Wikilink convention enforced by validators: same doc, "Full-path wikilinks" section
-- Bulk wikilink repair rite: `GRIMOIRE_ARCANA/rites/repair_links.py`
+- Bulk wikilink repair rite: `ARCANA_HOME/rites/repair_links.py`

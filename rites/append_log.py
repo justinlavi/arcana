@@ -4,13 +4,13 @@
 Format documented in formulae/log_entry.formula.md:
 
     ## [YYYY-MM-DD HH:MM] <op> | <title>
-    - skill: /<namespace>-<verb>
-    - <key>: <value>
+   - skill: /<skill_prefix>-<verb>
+   - <key>: <value>
     ...
 
 Usage:
     python3 rites/append_log.py --grimoire <path> --op <op> --title "<title>" \
-        [--skill /<namespace>-<verb>] [--field key=value ...]
+        [--skill /<skill_prefix>-<verb>] [--field key=value ...]
 
 Args:
     --grimoire   Path to the grimoire root (default: cwd)

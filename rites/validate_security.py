@@ -43,7 +43,7 @@ def main():
         if path.suffix not in (".md", ".py"):
             continue
 
-        rel = str(path.relative_to(ARCANA_ROOT))
+        rel = str(path.relative_to(ARCANA_ROOT)).replace("\\", "/")
         if any(rel.startswith(sd) for sd in SKIP_DIRS):
             continue
 

@@ -1,126 +1,110 @@
 ---
 type: playbook
-title: "Validate Domain Structure"
+title: "Validate Grimoire Structure"
 aliases: ["validate-structure-domain"]
 tags: [arcana/invocations, type/playbook, scope/domain]
 authority: grimoire
-last_verified: 2026-05-12
+last_verified: 2026-05-25
 ---
 
-# 📐 Invocation: Validate Grimoire Structure Compliance
+# Invocation: Validate Grimoire Structure Compliance
 
-## ⚡ Purpose
+## Purpose
 
-Validate grimoire chapter routers and page structure against Arcana formulae.
+Validate a grimoire's mechanical structure against current Arcana formulae.
 
 This invocation ensures:
-- Chapter routers follow `chapter_hub.formula.md`
-- Pages follow `page.formula.md`
-- Required sections are present
 
----
+- Required root files and directories exist
+- Root and chapter hubs follow the folder-name convention
+- `grimoire.json` declares `name` and `skill_prefix`
+- Managed scaffold files match the current Arcana formulae
+- Obsidian configuration uses absolute wikilink creation
 
 ## Preconditions
 
-Before executing, verify the current working directory is a registered domain grimoire (check `~/grimoires/library.json`). If it is not, list available grimoires and tell the user to `cd` to one. Arcana is not a grimoire. **Stop** if the check fails.
-
----
+Before executing, verify the current working directory is a registered grimoire (check `~/grimoires/library.json`). If it is not, list available grimoires and tell the user to `cd` to one. Arcana is not a grimoire. **Stop** if the check fails.
 
 ## When to Cast
 
 - After creating or editing chapters/pages
+- After pulling a newer Arcana version
 - During periodic grimoire quality reviews
+- Before running `/arc-grimoire-improve`
 - Before publishing or handoff
-
----
 
 ## Invocation
 
 From your grimoire directory, cast:
 
 ```
-/grm-domain-validate-structure
+/arc-grimoire-validate-structure
 ```
 
-Optional scopes:
+Mechanical equivalent:
 
+```bash
+python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire .
 ```
-/grm-domain-validate-structure --chapter=<chapter_name>
-/grm-domain-validate-structure --arcana
-```
-
----
-
-## Required Templates
-
-- Chapter routers: `formulae/chapter_hub.formula.md`
-- Pages: `formulae/page.formula.md`
-
----
 
 ## Validation Workflow
 
-### Phase 1: File Classification
+### Phase 1: Root Structure
 
-1. Identify chapter routers (`<chapter>/<chapter>.md`, excluding root/README-only contexts)
-2. Identify knowledge pages (`**/*.md` excluding routers and README docs)
+- Parse `grimoire.json`
+- Confirm `README.md`, `log.md`, and `<grimoire-name>.md`
+- Confirm `sources/`, `chapters/`, and `inbox/`
 
-### Phase 2: Chapter Router Checks
+### Phase 2: Managed Scaffold Drift
 
-Required sections:
-- `Purpose` (critical)
-- `When to Use` (critical)
-- `Routes` (critical)
-- `Related Chapters` (recommended)
+The following files are operational support files, not grimoire-specific authored content. They should match `ARCANA_HOME/formulae/grimoire/` exactly:
 
-### Phase 3: Page Checks
+- `.editorconfig`
+- `.gitattributes`
+- `.obsidian/app.json`
+- `inbox/README.md`
+- `sources/README.md`
 
-Every page should include:
-- `Purpose` (critical)
-- `When to Use` (critical)
-- `Primary Sources` (recommended for pages referencing external systems)
-- `Gotchas` (recommended)
-- `Related Docs` (recommended)
+If any are missing or stale, copy the current version from Arcana unless the user explicitly wants a custom local variant. Custom local variants should be rare because they create cross-platform and agent-behavior drift.
 
-### Phase 4: Content Quality Flags
+### Phase 3: Hub Convention
 
-- Pages with snapshot values but no extraction command: warning
-- Pages referencing external files that don't exist: warning
+For every folder under `chapters/` that contains Markdown content, confirm the hub file is `F/<basename(F)>.md`. Asset folders such as `templates/`, `snippets/`, `scripts/`, `configs/`, `assets/`, and `media/` are exempt.
 
----
+### Phase 4: Obsidian Configuration
+
+Confirm `.obsidian/app.json` sets:
+
+```json
+{
+  "newLinkFormat": "absolute",
+  "useMarkdownLinks": false
+}
+```
+
+This prevents Ctrl-clicking unresolved full-path wikilinks from creating recursive relative folder trees.
 
 ## Compliance Matrix
 
-### Chapter Routers
-
 | Check | Priority |
 |---|---|
-| Purpose | Critical |
-| When to Use | Critical |
-| Routes | Critical |
-| Related Chapters | Recommended |
-
-### Pages
-
-| Check | Priority |
-|---|---|
-| Purpose | Critical |
-| When to Use | Critical |
-| Primary Sources (when referencing external systems) | Recommended |
-| Gotchas | Recommended |
-| Related Docs | Recommended |
-
----
+| Manifest has `name` and `skill_prefix` | Critical |
+| Root hub exists and matches manifest `name` | Critical |
+| Required storage directories exist | Critical |
+| Managed scaffold files match Arcana formulae | Critical |
+| Chapter hubs follow folder-name convention | Critical |
+| Obsidian link config is absolute | Critical |
 
 ## Outputs
 
-- Compliance summary by chapter/page
-- Critical/recommended findings list
-- Suggested fixes
-
----
+- Structure pass/fail summary
+- Missing root files or directories
+- Missing or stale managed scaffold files
+- Missing chapter hubs
+- Obsidian configuration warnings
 
 ## Related Docs
 
 - `docs/operating_model.md`
-- `formulae/page.formula.md`
+- `formulae/grimoire/`
+- `rites/validate_grimoire_structure.py`

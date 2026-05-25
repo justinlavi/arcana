@@ -16,7 +16,7 @@ Security scanning for credentials, unsafe patterns, and shell script quality.
 ## Invocation
 
 ```
-/grm-arcana-validate-security
+/arc-validate-security
 ```
 
 ## When to Cast

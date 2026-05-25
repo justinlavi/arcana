@@ -12,7 +12,7 @@ Resolution order, first hit wins:
   (c) unique descendant of the source file's chapter root
   (d) globally unique match anywhere under ``chapters/``
 
-Ambiguous and unresolvable cases are reported and skipped — never guessed.
+Ambiguous and unresolvable cases are reported and skipped - never guessed.
 
 Defaults to dry-run; pass ``--apply`` to write changes. Exit codes: 0 = nothing
 to do or dry-run succeeded, 1 = any link was unresolvable / ambiguous (even
@@ -58,7 +58,7 @@ SKIP_FILES = {"operating_model.md"}
 
 PLACEHOLDER_TOKENS = [
     "{", "<", "invocation_name", "chapter_name", "file_name",
-    "GRIMOIRE_ARCANA", "GRIMOIRE_PATH", "ARCANA_PATH",
+    "ARCANA_HOME", "GRIMOIRE_PATH", "ARCANA_PATH",
     "Chapter Name", "Title", "Sub-topic", "filename",
     "related_page", "sub_topic", "related_chapter",
     "path/to/related", "path/url/system", "Source title",
@@ -80,7 +80,7 @@ def chapter_root_of(rel_path: Path) -> Optional[Path]:
 
 
 def build_basename_index(grimoire_root: Path) -> dict[str, list[Path]]:
-    """Map every markdown basename (no .md) → list of absolute paths."""
+    """Map every markdown basename (no .md) -> list of absolute paths."""
     index: dict[str, list[Path]] = {}
     chapters_dir = grimoire_root / "chapters"
     if not chapters_dir.is_dir():
@@ -163,7 +163,7 @@ def repair_line(
         body = wikilink_target_body(target)
         if "/" in body or not body:
             unresolvables.append(
-                f"  [SKIP]  {rel}:{line_no}: [[{target}]] — partial path or empty, not a simple basename"
+                f"  [SKIP]  {rel}:{line_no}: [[{target}]] - partial path or empty, not a simple basename"
             )
             continue
 
@@ -185,12 +185,12 @@ def repair_line(
         if chosen is None:
             if not candidates:
                 unresolvables.append(
-                    f"  [MISS] {rel}:{line_no}: [[{target}]] — no file named {body}.md anywhere in chapters/"
+                    f"  [MISS] {rel}:{line_no}: [[{target}]] - no file named {body}.md anywhere in chapters/"
                 )
             else:
                 cand_rels = [str(c.relative_to(grimoire_root)) for c in candidates]
                 ambis.append(
-                    f"  [AMBI] {rel}:{line_no}: [[{target}]] — {len(candidates)} candidates: {', '.join(cand_rels)}{fallback_note}"
+                    f"  [AMBI] {rel}:{line_no}: [[{target}]] - {len(candidates)} candidates: {', '.join(cand_rels)}{fallback_note}"
                 )
             continue
 
@@ -316,13 +316,13 @@ def main() -> int:
         print()
 
     if all_ambiguous:
-        print(f"Ambiguous — needs human resolution ({len(all_ambiguous)}):")
+        print(f"Ambiguous - needs human resolution ({len(all_ambiguous)}):")
         for line in all_ambiguous:
             print(line)
         print()
 
     if all_unresolvable:
-        print(f"Unresolvable — no target found ({len(all_unresolvable)}):")
+        print(f"Unresolvable - no target found ({len(all_unresolvable)}):")
         for line in all_unresolvable:
             print(line)
         print()
@@ -333,9 +333,9 @@ def main() -> int:
         f"ambiguous: {len(all_ambiguous)}; unresolvable: {len(all_unresolvable)}"
     )
     if args.apply and all_repairs:
-        ok(summary + " — applied")
+        ok(summary + " - applied")
     elif all_repairs:
-        info(summary + " — dry-run, pass --apply to write")
+        info(summary + " - dry-run, pass --apply to write")
     else:
         ok(summary)
 

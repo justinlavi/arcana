@@ -1,0 +1,6 @@
+{
+  "name": "arcana",
+  "kind": "arcana",
+  "skill_prefix": "arc",
+  "description": "Framework for creating and maintaining grimoires"
+}

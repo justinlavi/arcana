@@ -13,7 +13,7 @@ Arcana has four working layers. Almost every PR touches exactly one of them:
 | `docs/` | Framework documentation for humans | [docs/operating_model.md](docs/operating_model.md) |
 | `formulae/` | Templates copied when scaffolding new content | [formulae/page.formula.md](formulae/page.formula.md) |
 | `invocations/` | AI-guided workflow definitions referenced by skills | [invocations/meta/base_invocation.md](invocations/meta/base_invocation.md) |
-| `rites/` | Python automation — validators, library sync, installer | [rites/_lib.py](rites/_lib.py) |
+| `rites/` | Python automation - validators, library sync, installer | [rites/_lib.py](rites/_lib.py) |
 | `skills/` | Pointer files registered into agent skill directories | any `skills/*/SKILL.md` |
 
 If you're unsure where a change belongs, [docs/script_vs_ai.md](docs/script_vs_ai.md) explains the rite-vs-invocation split that drives most placement decisions.
@@ -28,7 +28,7 @@ cd arcana
 python3 -m pip install -e '.[dev]'
 ```
 
-Arcana's runtime is pure Python stdlib — no install-time dependencies. The `[dev]` extra pulls in `pytest` for the test suite. The `[gui]` and `[build]` extras are only needed for the summoning rite's GUI launcher and PyInstaller release builds respectively.
+Arcana's runtime is pure Python stdlib - no install-time dependencies. The `[dev]` extra pulls in `pytest` for the test suite. The `[gui]` and `[build]` extras are only needed for the summoning rite's GUI launcher and PyInstaller release builds respectively.
 
 ---
 
@@ -37,14 +37,14 @@ Arcana's runtime is pure Python stdlib — no install-time dependencies. The `[d
 Two suites guard every PR:
 
 ```bash
-# 1. Validators — structure, naming, frontmatter, links, security, etc.
+# 1. Validators - structure, naming, frontmatter, links, security, etc.
 python3 rites/validate.py
 
-# 2. Test suite — unit tests covering the rites/ layer
+# 2. Test suite - unit tests covering the rites/ layer
 pytest
 ```
 
-Both must pass. The validators are the same ones the `/grm-arcana-validate-all` skill runs.
+Both must pass. The validators are the same ones the `/arc-validate-all` skill runs.
 
 For faster feedback during iteration, run a single validator directly:
 
@@ -60,12 +60,12 @@ python3 rites/validate_links.py
 
 Every validator should:
 
-1. Import shared helpers from [rites/_lib.py](rites/_lib.py) — never reimplement frontmatter parsing, logging, manifest loading, or root resolution.
-2. Accept `--grimoire <path>` via `add_grimoire_arg(parser)`. Default to Arcana itself; allow domain grimoires too.
+1. Import shared helpers from [rites/_lib.py](rites/_lib.py) - never reimplement frontmatter parsing, logging, manifest loading, or root resolution.
+2. Accept `--grimoire <path>` via `add_grimoire_arg(parser)`. Default to Arcana itself; allow grimoires too.
 3. Exit `0` on clean, `1` on violations. Use `info` / `ok` / `warn` / `err` from `_lib` for output.
 4. Ship as a `validate_<aspect>.py` file under `rites/`.
-5. Get a corresponding skill folder under `skills/arcana-validate-<aspect>/SKILL.md` (pointer-only — see existing examples).
-6. Be added to the orchestrator [rites/validate.py](rites/validate.py) so `/grm-arcana-validate-all` picks it up.
+5. Get a corresponding skill folder under `skills/validate-<aspect>/SKILL.md` (pointer-only - see existing examples).
+6. Be added to the orchestrator [rites/validate.py](rites/validate.py) so `/arc-validate-all` picks it up.
 7. Get a covering test under `tests/test_validate_<aspect>.py` using the fixture grimoires under `tests/fixtures/`.
 
 The minimal skeleton:
@@ -86,12 +86,12 @@ def main():
 
 ## Adding a new skill
 
-Skills are pointer files. The skill itself contains no logic — it dispatches to an invocation or rite.
+Skills are pointer files. The skill itself contains no logic - it dispatches to an invocation or rite.
 
-1. Create `skills/<namespace>-<slug>/SKILL.md`. Arcana's namespace is `arcana` for maintainer-only commands and `domain` for commands the universal grimoire layer exposes.
-2. Use the `{{NAMESPACE}}-<slug>` template in the `name:` frontmatter — registration substitutes it.
+1. Create `skills/<slug>/SKILL.md`. The folder name is the command suffix after Arcana's `arc-` prefix.
+2. Use the `{{SKILL_PREFIX}}-<slug>` template in the `name:` frontmatter - registration substitutes `arc` from `arcana.json`.
 3. Mirror the frontmatter fields the surrounding skills use: `description`, `when_to_use`, `user-invocable`, `allowed-tools`. Add `disable-model-invocation: true` for destructive skills.
-4. Include the corresponding invocation under `invocations/` if the skill needs more than 5–10 lines of guidance.
+4. Include the corresponding invocation under `invocations/` if the skill needs more than 5-10 lines of guidance.
 5. Run [rites/sync_docs.py](rites/sync_docs.py) to regenerate [docs/skills.md](docs/skills.md).
 
 ---
@@ -99,7 +99,7 @@ Skills are pointer files. The skill itself contains no logic — it dispatches t
 ## Documentation changes
 
 - Each concept has one canonical home. Storage layers live in [docs/operating_model.md](docs/operating_model.md), the page schema lives in [docs/page_schema.md](docs/page_schema.md), and so on. Other docs link rather than duplicate.
-- All authored markdown carries YAML frontmatter — see [docs/page_schema.md](docs/page_schema.md). [rites/validate_frontmatter.py](rites/validate_frontmatter.py) enforces it.
+- All authored markdown carries YAML frontmatter - see [docs/page_schema.md](docs/page_schema.md). [rites/validate_frontmatter.py](rites/validate_frontmatter.py) enforces it.
 - Every folder has a hub file named after the folder. New folders need a new hub.
 - Internal links use markdown for cross-doc references and full-path `[[wikilinks]]` for hub-internal navigation. [rites/validate_links.py](rites/validate_links.py) checks both.
 
@@ -109,7 +109,7 @@ Skills are pointer files. The skill itself contains no logic — it dispatches t
 
 - Pure Python stdlib. Don't reach for third-party libraries; if you find yourself wanting one, open an issue first.
 - Snake_case for `.py` and `.md` paths (validator-enforced). Kebab-case for skill folder names and slash-command identifiers.
-- No comments restating what the code does — only the *why* when non-obvious.
+- No comments restating what the code does - only the *why* when non-obvious.
 - Keep new files small. If you find yourself writing a 500-line validator, look for what belongs in [rites/_lib.py](rites/_lib.py) instead.
 
 ---
@@ -127,10 +127,10 @@ Skills are pointer files. The skill itself contains no logic — it dispatches t
 
 - For bugs: include the validator output, your Arcana version (`cat VERSION`), and Python version.
 - For terminology or design questions: link the existing doc that confused you so it can be improved.
-- For new features: describe the use case before proposing an implementation. Arcana intentionally has a small surface and bias-to-shrink — additions need a clear earned-its-keep story.
+- For new features: describe the use case before proposing an implementation. Arcana intentionally has a small surface and bias-to-shrink - additions need a clear earned-its-keep story.
 
 ---
 
 ## Maintainer notes
 
-The `/grm-arcana-improve` and `/grm-arcana-validate-all` skills are the canonical maintenance entry points. Run them before tagging a release. Release workflow lives in [docs/release.md](docs/release.md).
+The `/arc-improve` and `/arc-validate-all` skills are the canonical maintenance entry points. Run them before tagging a release. Release workflow lives in [docs/release.md](docs/release.md).

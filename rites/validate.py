@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unified validation orchestrator — runs all validation rites.
+"""Unified validation orchestrator - runs all validation rites.
 
 Usage:
     python3 rites/validate.py              # sequential (default)
@@ -20,10 +20,11 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 RITE_DIR = Path(__file__).resolve().parent
-ARCANA_ROOT = Path(os.environ.get("GRIMOIRE_ARCANA", RITE_DIR.parent))
+ARCANA_ROOT = Path(os.environ.get("ARCANA_HOME", RITE_DIR.parent))
 
 RITES = [
     "validate_structure.py",
+    "validate_encoding.py",
     "validate_portability.py",
     "validate_naming.py",
     "validate_semantics.py",
@@ -42,7 +43,7 @@ def run_rite(name):
     result = subprocess.run(
         [sys.executable, str(RITE_DIR / name)],
         capture_output=True, text=True,
-        env={**os.environ, "GRIMOIRE_ARCANA": str(ARCANA_ROOT)},
+        env={**os.environ, "ARCANA_HOME": str(ARCANA_ROOT)},
     )
     return name, result.returncode == 0, result.stdout + result.stderr
 
@@ -72,9 +73,10 @@ def determine_smart_rites():
         return list(RITES)
 
     needed = set()
-    # Portability scans path segments themselves — any path change is a candidate.
+    # Portability and encoding scan path/content globally.
     if changed:
         needed.add("validate_portability.py")
+        needed.add("validate_encoding.py")
     for f in changed:
         path = ARCANA_ROOT / f
         if not path.exists():
@@ -96,7 +98,7 @@ def determine_smart_rites():
                 content = path.read_text(errors="replace")
                 if "](" in content or "[[" in content:
                     needed.add("validate_links.py")
-                if "/grm-" in content:
+                if "/arc-" in content:
                     needed.add("validate_skill_refs.py")
                 if content.startswith("---\n"):
                     needed.add("validate_frontmatter.py")

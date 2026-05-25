@@ -5,7 +5,7 @@ accepts a `--grimoire` flag. The bad_* fixtures must produce exit 1 from
 their corresponding validator(s).
 
 These tests exercise the validators exactly the way the orchestrator and
-domain-skill flows do — via subprocess invocation, so any breakage in argv
+grimoire-skill flows do - via subprocess invocation, so any breakage in argv
 parsing, exit codes, or stdout flushing is caught.
 """
 
@@ -35,7 +35,7 @@ def _run(script: str, grimoire: Path) -> subprocess.CompletedProcess:
 
 
 # ---------------------------------------------------------------------------
-# Good fixture — every domain-aware validator must exit 0
+# Good fixture - every grimoire-aware validator must exit 0
 # ---------------------------------------------------------------------------
 
 
@@ -46,7 +46,7 @@ def _run(script: str, grimoire: Path) -> subprocess.CompletedProcess:
         "validate_links.py",
         "validate_orphans.py",
         "validate_provenance.py",
-        "validate_domain_structure.py",
+        "validate_grimoire_structure.py",
     ],
 )
 def test_good_grimoire_passes(script):
@@ -58,7 +58,7 @@ def test_good_grimoire_passes(script):
 
 
 # ---------------------------------------------------------------------------
-# Bad fixtures — the corresponding validator must exit non-zero
+# Bad fixtures - the corresponding validator must exit non-zero
 # ---------------------------------------------------------------------------
 
 
@@ -99,7 +99,7 @@ def test_verbose_wikilink_label_warns_without_failing():
 
 
 # ---------------------------------------------------------------------------
-# Arcana itself — meta-test that the suite still passes against the live tree
+# Arcana itself - meta-test that the suite still passes against the live tree
 # ---------------------------------------------------------------------------
 
 

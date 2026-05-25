@@ -13,7 +13,7 @@ last_verified: 2026-05-12
 [What this invocation does, when to cast it]
 
 ## Invocation
-[How to trigger this invocation, e.g., "/grm-[skill-name]" via supported agent skills]
+[How to trigger this invocation, e.g., "/arc-[skill-name]" via supported agent skills]
 
 ## Prerequisites
 - [What the user needs to have ready]

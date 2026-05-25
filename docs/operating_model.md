@@ -20,7 +20,7 @@ A grimoire's content is organized into layers that work together:
 | Layer | Directory | Owner | Purpose |
 |---|---|---|---|
 | Sources | `sources/` | LLM reads, never modifies | Immutable artifacts: articles, transcripts, papers, screenshots. Citation-stable. |
-| Inbox | `inbox/` | LLM and user both write | Transient drop zone for mixed content awaiting classification. Cleared on `/grm-domain-ingest`. |
+| Inbox | `inbox/` | LLM and user both write | Transient drop zone for mixed content awaiting classification. Cleared on `/arc-grimoire-ingest`. |
 | Wiki | `chapters/`, root hub | LLM authors and maintains | Synthesized knowledge with frontmatter (`type`, `authority`, `sources`, `last_verified`) |
 | Schema | `grimoire.json` + injected agent block | User co-evolves | Tells the agent how to operate this grimoire |
 
@@ -47,7 +47,7 @@ Folder-named hubs make Obsidian's graph view legible (every node has a unique, m
 
 - A deterministic knowledge router for any knowledge-based work (code, documentation, policies, templates, processes, etc.).
 - A persistent, compounding artifact the LLM keeps current as new sources arrive.
-- **Minimal-read invariant:** every hop narrows the search; the path stops at the leaf that answers the question. Shallow when topics are flat (root hub → leaf), deeper when topics warrant nesting (root → chapter → sub-chapter → … → leaf). The invariant is "as few hops as the structure requires," not a fixed count.
+- **Minimal-read invariant:** every hop narrows the search; the path stops at the leaf that answers the question. Shallow when topics are flat (root hub -> leaf), deeper when topics warrant nesting (root -> chapter -> sub-chapter -> ... -> leaf). The invariant is "as few hops as the structure requires," not a fixed count.
 - Hubs are maps; leaf docs store invariants, stable patterns, and source pointers.
 - Keep canonical rules in one leaf and link/wikilink to it from related docs.
 
@@ -69,8 +69,8 @@ Folder-named hubs make Obsidian's graph view legible (every node has a unique, m
 
 ## Templates And Snippets
 - Chapter-local assets live with their chapter:
-  - `chapters/<chapter>/templates/`
-  - `chapters/<chapter>/snippets/`
+ - `chapters/<chapter>/templates/`
+ - `chapters/<chapter>/snippets/`
 - Use `chapters/shared/templates/` only for cross-chapter reusable assets.
 - Routers should point to concrete files (not "search" instructions).
 - **Templates are prescriptive standards**: they define how content should be structured across the grimoire (not drift sources).
@@ -102,7 +102,7 @@ Every knowledge page must declare one authority model:
 - Page role: policy/process authority + external source map.
 - Requires both change control and external pointers.
 
-**How to choose**: If changing source code/config in another repo changes truth → External. If editing this page is how truth changes → Grimoire. If both → Hybrid.
+**How to choose**: If changing source code/config in another repo changes truth -> External. If editing this page is how truth changes -> Grimoire. If both -> Hybrid.
 
 ### Content Type Taxonomy
 

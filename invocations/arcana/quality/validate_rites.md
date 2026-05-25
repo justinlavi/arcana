@@ -13,17 +13,17 @@ last_verified: 2026-05-12
 
 Judgment-based quality review of rite scripts (Python files under `rites/`). Covers error handling, exit codes, idempotency, portability, docstrings, and size limits.
 
-Pairs with `/grm-arcana-validate-security` (mechanical credential/unsafe-construct scan). This invocation is the human-judgment counterpart — no rite automates it. See [`docs/script_vs_ai.md`](../../../docs/script_vs_ai.md) for the split.
+Pairs with `/arc-validate-security` (mechanical credential/unsafe-construct scan). This invocation is the human-judgment counterpart - no rite automates it. See [`docs/script_vs_ai.md`](../../../docs/script_vs_ai.md) for the split.
 
 ## Invocation
 
-Runs as a phase of `/grm-arcana-improve`. No standalone slash command.
+Runs as a phase of `/arc-improve`. No standalone slash command.
 
 ## When to cast
 
 - After creating or modifying a rite
 - Before an Arcana release
-- During `/grm-arcana-improve`
+- During `/arc-improve`
 
 ## Workflow
 
@@ -45,7 +45,7 @@ Read each rite top-to-bottom and judge:
 - Non-obvious behaviour (env vars consumed, paths written, side effects) called out
 
 **Error handling**
-- No bare `except:` — catch specific exceptions
+- No bare `except:` - catch specific exceptions
 - File I/O wrapped or guarded; missing files produce a clear message, not a traceback
 - Subprocess calls check return codes (`subprocess.run(..., check=True)` or explicit branching)
 - External tool absence (e.g. `git`, `python3 -m`) degrades gracefully or fails with a remediation hint
@@ -62,7 +62,7 @@ Read each rite top-to-bottom and judge:
 - No accumulating side effects (appending to logs without rotation, etc.)
 
 **Portability**
-- Resolves Arcana root via `GRIMOIRE_ARCANA` env var with a sensible fallback (see existing rites for the pattern)
+- Resolves Arcana root via `ARCANA_HOME` env var with a sensible fallback (see existing rites for the pattern)
 - No hard-coded `/home/...` or user-specific paths
 - Uses `pathlib.Path` rather than string concatenation
 - No GNU-only CLI flags via subprocess (`grep -P`, `sed -i ''` differences) without a fallback
@@ -101,18 +101,18 @@ if not path.exists():
 
 ### 5. Apply fixes
 
-For each issue, edit the rite, re-run it on a clean tree to confirm exit 0, then re-run on a known-bad fixture (or temporary violation) to confirm exit 1. Run `/grm-arcana-validate-all` afterward to make sure nothing else regressed.
+For each issue, edit the rite, re-run it on a clean tree to confirm exit 0, then re-run on a known-bad fixture (or temporary violation) to confirm exit 1. Run `/arc-validate-all` afterward to make sure nothing else regressed.
 
 ## What this invocation is NOT
 
-- Not a security scan — that's `/grm-arcana-validate-security`
-- Not a structural / naming / link / format check — those are separate `/grm-arcana-validate-*` rites
+- Not a security scan - that's `/arc-validate-security`
+- Not a structural / naming / link / format check - those are separate `/arc-validate-*` rites
 - Not a benchmark suite. If a rite feels slow, profile it; otherwise leave performance alone
 
 ## Related
 
 - **Security scan**: [`../validators/validate_security.md`](../validators/validate_security.md)
-- **Validator suite**: `/grm-arcana-validate-all`
+- **Validator suite**: `/arc-validate-all`
 - **Script vs AI split**: [`../../../docs/script_vs_ai.md`](../../../docs/script_vs_ai.md)
 - **Rites directory**: [`rites/`](../../../rites/)
 - **Orchestrator**: [`../improve_arcana.md`](../improve_arcana.md)

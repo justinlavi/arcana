@@ -9,9 +9,9 @@ last_verified: 2026-05-12
 
 # Page Schema
 
-Every authored markdown page in a Grimoire (Arcana itself, or any domain grimoire) carries YAML frontmatter. This document is the canonical specification: what's required, what's optional, and what each field means.
+Every authored markdown page in a Grimoire (Arcana itself, or any grimoire) carries YAML frontmatter. This document is the canonical specification: what's required, what's optional, and what each field means.
 
-The `validate_frontmatter` rite enforces this schema mechanically. Any page that fails — missing required fields for its `type`, unknown `type`, malformed YAML — is a structural violation.
+The `validate_frontmatter` rite enforces this schema mechanically. Any page that fails - missing required fields for its `type`, unknown `type`, malformed YAML - is a structural violation.
 
 ---
 
@@ -71,7 +71,7 @@ last_verified: 2026-05-12
 | `tags` | every page | Use `/`-separated namespaces: `chapter/<name>`, `type/<type>`, `domain/<...>`. Drives Dataview and Obsidian tag panes. |
 | `sources` | required for `authority: external` and `authority: hybrid` | Paths or URLs. At least one entry must resolve. Validator checks `sources/...` paths exist on disk. |
 | `authority` | every page except `hub` / `log-entry` | One of the three values above. |
-| `last_verified` | every page except `hub` / `log-entry` | ISO date the page was last hand-verified or auto-checked. `/grm-domain-lint` flags pages older than the configured stale window. |
+| `last_verified` | every page except `hub` / `log-entry` | ISO date the page was last hand-verified or auto-checked. `/arc-grimoire-lint` flags pages older than the configured stale window. |
 
 ### Required-fields matrix
 
@@ -93,11 +93,11 @@ last_verified: 2026-05-12
 
 Tags use `/`-separated namespaces. The recommended top-level tags:
 
-- `chapter/<chapter_name>` — locates the page in the chapter taxonomy. Hubs include their own chapter tag.
-- `type/<type>` — mirrors the `type:` field; useful for Dataview cross-tag queries.
-- `domain/<...>` — domain-specific facets the grimoire owner defines (e.g. `domain/cmake`, `domain/build`, `domain/onboarding`).
-- `status/<state>` — optional lifecycle (`status/draft`, `status/stable`, `status/deprecated`).
-- `hub/<level>` — hub level: `hub/root` (grimoire root, one per grimoire), `hub/chapter` (top-level chapter hub), `hub/sub` (any deeper hub). Used by Obsidian graph color groups to make hubs visually distinct.
+- `chapter/<chapter_name>` - locates the page in the chapter taxonomy. Hubs include their own chapter tag.
+- `type/<type>` - mirrors the `type:` field; useful for Dataview cross-tag queries.
+- `domain/<...>` - domain-specific facets the grimoire owner defines (e.g. `domain/cmake`, `domain/build`, `domain/onboarding`).
+- `status/<state>` - optional lifecycle (`status/draft`, `status/stable`, `status/deprecated`).
+- `hub/<level>` - hub level: `hub/root` (grimoire root, one per grimoire), `hub/chapter` (top-level chapter hub), `hub/sub` (any deeper hub). Used by Obsidian graph color groups to make hubs visually distinct.
 
 Tags are flat strings inside YAML (Dataview-compatible). Avoid spaces; use `_` or `-` if needed.
 
@@ -158,7 +158,7 @@ last_verified: 2026-05-12
 ```yaml
 ---
 type: source
-title: "Tartine Bread — Lamination Chapter"
+title: "Tartine Bread - Lamination Chapter"
 tags: [chapter/sources, type/source]
 sources: ["sources/article-tartine-method.md"]
 authority: external
@@ -180,7 +180,7 @@ last_verified: 2026-05-12
 6. `last_verified` is a parseable `YYYY-MM-DD` date.
 7. `tags` and `aliases` are YAML lists of plain strings.
 
-The `/grm-arcana-validate-frontmatter` skill wraps this rite for Arcana itself; `/grm-domain-validate-structure` calls it as part of structural validation in domain grimoires.
+The `/arc-validate-frontmatter` skill wraps this rite for Arcana itself; `/arc-grimoire-validate-structure` calls it as part of structural validation in grimoires.
 
 ---
 
@@ -188,8 +188,8 @@ The `/grm-arcana-validate-frontmatter` skill wraps this rite for Arcana itself; 
 
 Three concrete payoffs:
 
-1. **Obsidian wikilinks** — full-path wikilinks such as `[[chapters/build_system/cmake|CMake]]` make routes explicit while still giving contributors readable labels.
-2. **Dataview** — `tags`, `last_verified`, and `authority` are queryable. Hubs can include Dataview blocks that auto-list their children, eliminating hand-maintained route lists.
-3. **Mechanical lint** — provenance (`sources:`), staleness (`last_verified`), orphan detection (cross-referenced with hub link analysis) all become rite-checkable instead of judgment calls.
+1. **Obsidian wikilinks** - full-path wikilinks such as `[[chapters/build_system/cmake|CMake]]` make routes explicit while still giving contributors readable labels.
+2. **Dataview** - `tags`, `last_verified`, and `authority` are queryable. Hubs can include Dataview blocks that auto-list their children, eliminating hand-maintained route lists.
+3. **Mechanical lint** - provenance (`sources:`), staleness (`last_verified`), orphan detection (cross-referenced with hub link analysis) all become rite-checkable instead of judgment calls.
 
 See `script_vs_ai.md` for the broader principle: structured metadata is what separates "the LLM can audit this" from "the human has to read every page."

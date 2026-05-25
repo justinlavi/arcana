@@ -1,5 +1,5 @@
 {
   "name": "bad_frontmatter",
-  "namespace": "bad",
+  "skill_prefix": "bad",
   "description": "Fixture grimoire whose pages deliberately violate the frontmatter schema."
 }

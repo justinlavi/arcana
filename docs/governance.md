@@ -13,13 +13,13 @@ last_verified: 2026-05-19
 
 Defines how **Arcana** itself is maintained, versioned, and updated to keep all installed grimoires in sync.
 
-This is for the *Arcana maintainer* — the person who owns the Arcana fork your domain grimoires reference. If you are only writing chapters in a domain grimoire, you don't need this document.
+This is for the *Arcana maintainer* - the person who owns the Arcana fork your grimoires reference. If you are only writing chapters in a grimoire, you don't need this document.
 
 ---
 
 ## Core Principle
 
-**Arcana is the single source of truth for the system.** Domain grimoires *reference* Arcana — they don't copy from it.
+**Arcana is the single source of truth for the system.** Grimoires *reference* Arcana - they don't copy from it.
 
 Updates to Arcana propagate to every grimoire that points at the same installation. Breaking changes follow a deprecation protocol so downstream grimoires can adapt.
 
@@ -47,7 +47,7 @@ The role is transferable — record handovers in the CHANGELOG.
 Include in Arcana if it applies to **every** grimoire that references it:
 
 - **Documentation**: README, installation, quickstart, operating model, reference, governance.
-- **Invocations**: domain operations (create-grimoire, create-chapter, improve), Arcana maintenance (validators, quality), meta (help).
+- **Invocations**: grimoire operations (create-grimoire, create-chapter, improve), Arcana maintenance (validators, quality), meta (help).
 - **Formulae**: chapter-index, page, invocation, grimoire scaffolding.
 - **Rites**: validation, registration, library sync, etc.
 - **Resources**: branding assets.
@@ -56,11 +56,11 @@ Include in Arcana if it applies to **every** grimoire that references it:
 
 Do **not** include in Arcana:
 
-- Chapters specific to one subject area (recipes, HR policies, codebase structure, …).
-- Skills specific to one domain (those live under `<grimoire>/skills/`, namespaced by the grimoire's manifest).
+- Chapters specific to one subject area (recipes, HR policies, codebase structure, ...).
+- Skills specific to one domain (those live under `<grimoire>/skills/`, prefixed by the grimoire's manifest).
 - Custom rites only one grimoire uses.
 - Real-world data: company names, project names, employee data, customer data, credentials.
-- Domain grimoire storage layers at Arcana root (`chapters/`, `sources/`, `inbox/`, `log.md`). Arcana keeps their templates under `formulae/grimoire/`.
+- Grimoire storage layers at Arcana root (`chapters/`, `sources/`, `inbox/`, `log.md`). Arcana keeps their templates under `formulae/grimoire/`.
 
 **Where these belong**: in the relevant `<grimoire>-grimoire/chapters/` or `<grimoire>-grimoire/skills/`.
 
@@ -87,7 +87,7 @@ The current version lives in three places:
 
 ### Patch / Minor
 
-1. Make changes; run `/grm-arcana-validate-all` (or `python3 rites/validate.py`).
+1. Make changes; run `/arc-validate-all` (or `python3 rites/validate.py`).
 2. Update `CHANGELOG.md`. Before the first tag for a version, edit that version's entry as the current state. After a version is tagged, collect future changes under `[Unreleased]` until the next release entry is cut.
 3. Commit (`fix:` for patch, `feat:` for minor).
 4. Tag and push when cutting the release.
@@ -124,7 +124,8 @@ Arcana files must:
 - ✅ Apply universally — no domain-specific content (see [What Belongs in Arcana](#what-belongs-in-arcana)).
 - ✅ Use generic example names (`cooking-grimoire`, `hr-grimoire`, `Domain A`, `Project Alpha`, `Alice/Bob`). Real product/company/person names appear only when documenting an actual integration.
 - ✅ Use relative paths inside the repo. Use `{{ARCANA_PATH}}` / `{{GRIMOIRE_PATH}}` placeholders in skill files; the registration rite resolves them.
-- ✅ Pass the full validator suite (`/grm-arcana-validate-all`) before commit.
+- ✅ Preserve the text file standard: UTF-8 without BOM, LF line endings, and no mojibake or repair artifacts. Unicode is allowed when it improves readability.
+- ✅ Pass the full validator suite (`/arc-validate-all`) before commit.
 
 Arcana files must **not**:
 
@@ -135,20 +136,20 @@ Arcana files must **not**:
 
 ---
 
-## Domain Grimoire Responsibilities
+## Grimoire Responsibilities
 
-Each domain grimoire is responsible for:
+Each grimoire is responsible for:
 
-1. **Its own content**: chapters, skills, manifest. Use Arcana's `/grm-domain-create-chapter` and the page formula for new pages.
-2. **Staying in step with Arcana**: pull updates periodically; run `/grm-domain-validate-structure` after pulling.
+1. **Its own content**: chapters, skills, manifest. Use Arcana's `/arc-grimoire-create-chapter` and the page formula for new pages.
+2. **Staying in step with Arcana**: pull updates periodically; run `/arc-grimoire-validate-structure` after pulling.
 3. **Reporting issues** in Arcana itself (broken invocations, formula bugs, validator false positives).
 
-Domain grimoires must **not**:
+Grimoires must **not**:
 
 - ❌ Copy Arcana files into their own repo (reference instead).
 - ❌ Modify Arcana files directly. Propose changes to the maintainer of the Arcana fork they use.
 - ❌ Create chapters / formulae / rites in Arcana folder names (`invocations/`, `formulae/`, `rites/`) inside their own grimoire — those folder names are reserved for Arcana.
-- ❌ Ignore breaking-change announcements. Re-run `/grm-domain-validate-structure` after a major Arcana version bump.
+- ❌ Ignore breaking-change announcements. Re-run `/arc-grimoire-validate-structure` after a major Arcana version bump.
 
 ---
 

@@ -11,14 +11,14 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-Maintainer-only orchestrator for Arcana itself. Sequences the validator suite, the rite quality check, and the documentation quality pass — applies fixes, re-validates, and reports.
+Maintainer-only orchestrator for Arcana itself. Sequences the validator suite, the rite quality check, and the documentation quality pass - applies fixes, re-validates, and reports.
 
-For domain grimoires use `/grm-domain-improve`. This invocation only audits Arcana.
+For grimoires use `/arc-grimoire-improve`. This invocation only audits Arcana.
 
 ## Invocation
 
 ```
-/grm-arcana-improve
+/arc-improve
 ```
 
 Run from the Arcana directory. Safe to rerun at any time.
@@ -33,7 +33,7 @@ Run from the Arcana directory. Safe to rerun at any time.
 
 ### Phase 1: Run the validator suite
 
-Use the orchestrator rite — do **not** invoke each `/grm-arcana-validate-*` skill one at a time:
+Use the orchestrator rite - do **not** invoke each `/arc-validate-*` skill one at a time:
 
 ```bash
 python3 rites/validate.py              # sequential
@@ -41,7 +41,7 @@ python3 rites/validate.py --parallel   # faster
 python3 rites/validate.py --summary    # summary-only output
 ```
 
-Equivalent skill: `/grm-arcana-validate-all`.
+Equivalent skill: `/arc-validate-all`.
 
 This runs every validator (structure, naming, format, links, security, semantics, skill-refs, boundaries) and aggregates results. Individual skills exist for targeted reruns; the orchestrator is the default entry point.
 
@@ -58,7 +58,7 @@ Re-run `python3 rites/validate.py` after fixes until clean.
 
 ### Phase 3: Rite quality
 
-Follow the rite-specific quality check at [`quality/validate_rites.md`](quality/validate_rites.md). It's a judgment-based invocation (no dedicated skill — it runs as part of this orchestrator) that inspects rite scripts for style, error handling, exit codes, and idempotency. Apply fixes and re-run the validator suite from Phase 1.
+Follow the rite-specific quality check at [`quality/validate_rites.md`](quality/validate_rites.md). It's a judgment-based invocation (no dedicated skill - it runs as part of this orchestrator) that inspects rite scripts for style, error handling, exit codes, and idempotency. Apply fixes and re-run the validator suite from Phase 1.
 
 ### Phase 4: Documentation quality
 
@@ -66,7 +66,7 @@ Cast the documentation improvement invocation:
 
 - [`quality/improve_documentation.md`](quality/improve_documentation.md)
 
-This invocation covers both **duplication** (same fact in two places, copy-pasted file trees, drifting lists) and **clarity** (jargon, unclear antecedents, structural overload). It is judgment-based — no slash command — and is intended to run as part of this orchestrator.
+This invocation covers both **duplication** (same fact in two places, copy-pasted file trees, drifting lists) and **clarity** (jargon, unclear antecedents, structural overload). It is judgment-based - no slash command - and is intended to run as part of this orchestrator.
 
 Apply the fixes it surfaces. Prefer:
 
@@ -105,18 +105,18 @@ If the pass produced user-visible changes:
 ## Phase dependencies
 
 - Phase 2 depends on Phase 1 output.
-- Phase 4 should happen after Phase 1 is clean — judgment work is wasted if mechanical issues are still masking real problems.
+- Phase 4 should happen after Phase 1 is clean - judgment work is wasted if mechanical issues are still masking real problems.
 - Phase 5 must run after Phase 4 (link anchors drift when docs move).
 - Phase 6 must run before Phase 5's final clean check if generated indexes changed.
 
 ## Non-negotiable rules
 
-1. **Universal only** — no domain-specific content in Arcana.
-2. **Backward compatible** — don't break existing domain grimoires.
-3. **Canonical examples only** — `cooking-grimoire` (personal), `hr-grimoire` (workplace); plus `Alice/Bob`, `Project Alpha`, `{your-grimoire}` for sub-examples. No real product/company names, no industry-narrowing assumptions.
-4. **Magical boundary** — invocations, formulae, rites live ONLY in Arcana.
-5. **Semantic versioning** — strict; reflected in `CHANGELOG.md`.
-6. **Path conventions** — cross-grimoire references use root placeholders (`GRIMOIRE_ARCANA/`, `GRIMOIRE_{DOMAIN}/`), never `../`.
+1. **Universal only** - no domain-specific content in Arcana.
+2. **Backward compatible** - don't break existing grimoires.
+3. **Canonical examples only** - `cooking-grimoire` (personal), `hr-grimoire` (workplace); plus `Alice/Bob`, `Project Alpha`, `{your-grimoire}` for sub-examples. No real product/company names, no industry-narrowing assumptions.
+4. **Magical boundary** - invocations, formulae, rites live ONLY in Arcana.
+5. **Semantic versioning** - strict; reflected in `CHANGELOG.md`.
+6. **Path conventions** - cross-grimoire references use root placeholders (`ARCANA_HOME/`, `GRIMOIRE_{DOMAIN}/`), never `../`.
 
 ## Scope
 
@@ -129,7 +129,7 @@ In scope:
 - `rites/*.py`
 - `resources/`
 
-Out of scope: domain grimoires (use `/grm-domain-improve`).
+Out of scope: grimoires (use `/arc-grimoire-improve`).
 
 ## Deliverables
 
@@ -154,15 +154,15 @@ After:
 
 - [ ] Validator suite green
 - [ ] Generated docs synced (`rites/sync_docs.py --apply`)
-- [ ] Smoke-test key skills: `/grm-domain-create-grimoire`, `/grm-meta-help`, `/grm-domain-improve`
+- [ ] Smoke-test key skills: `/arc-grimoire-create`, `/arc-help`, `/arc-grimoire-improve`
 - [ ] `CHANGELOG.md` updated if changes are user-visible
 - [ ] Breaking changes announced to domain leads
 
 ## Related
 
-- All validators (orchestrated): `/grm-arcana-validate-all` — `python3 rites/validate.py`
+- All validators (orchestrated): `/arc-validate-all` - `python3 rites/validate.py`
 - Individual validators: see `invocations/arcana/validators/validators.md`
 - Rite quality: [`quality/validate_rites.md`](quality/validate_rites.md)
 - Documentation quality: [`quality/improve_documentation.md`](quality/improve_documentation.md)
 - Doc generator: `rites/sync_docs.py`
-- Domain grimoire equivalent: `/grm-domain-improve`
+- Grimoire equivalent: `/arc-grimoire-improve`

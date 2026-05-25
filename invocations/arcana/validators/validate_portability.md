@@ -16,13 +16,13 @@ Detect filesystem-portability violations in any grimoire path — specifically t
 ## Invocation
 
 ```
-/grm-arcana-validate-portability
+/arc-validate-portability
 ```
 
 Or directly:
 
 ```bash
-python3 GRIMOIRE_ARCANA/rites/validate_portability.py [--grimoire <path>]
+python3 ARCANA_HOME/rites/validate_portability.py [--grimoire <path>]
 ```
 
 ## What it rejects
@@ -49,7 +49,7 @@ The cheap fix is to catch the bad path before it ever lands in the repository.
 
 ## When to run
 
-- As part of the full validator suite (`/grm-arcana-validate-all`).
+- As part of the full validator suite (`/arc-validate-all`).
 - Before pushing a chapter that introduces placeholder-driven template files.
 - After bulk renames or template scaffolding.
 - After ingesting external content whose filenames you don't control.
@@ -66,5 +66,5 @@ Do not work around the validator by suppressing the warning — the path *will* 
 ## Related
 
 - Full validator suite hub: [[invocations/arcana/validators/validators|validators]]
-- Aggregate runner: [[invocations/arcana/validators/validate_all|validate_all]]
+- Aggregate runner: [[invocations/arcana/validators/validators|validators]]
 - Naming convention validator (snake_case / kebab-case): [[invocations/arcana/validators/validate_naming|validate_naming]]

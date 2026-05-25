@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Validates filesystem portability — no Windows-reserved characters in paths.
+"""Validates filesystem portability  no Windows-reserved characters in paths.
 
 On Windows, the characters < > : " | ? * are reserved and cannot appear in
 file or directory names. `git checkout` aborts on encounter ("invalid path"),
-leaving the working tree partially populated — a state the summon rite cannot
+leaving the working tree partially populated  a state the summon rite cannot
 recover from on subsequent attempts. This validator catches the issue before
 any Windows consumer attempts to clone the grimoire.
 
@@ -30,7 +30,7 @@ RESERVED_BASENAMES = frozenset({
     *(f"LPT{i}" for i in range(1, 10)),
 })
 
-# Top-level directories to skip — not part of the working-tree distribution.
+# Top-level directories to skip  not part of the working-tree distribution.
 SKIP_TOP_LEVEL = {".git"}
 
 

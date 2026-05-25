@@ -1,3 +1,3 @@
-# Activity Log — Bad Frontmatter Fixture
+# Activity Log - Bad Frontmatter Fixture
 
 ---

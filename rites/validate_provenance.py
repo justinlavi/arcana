@@ -71,7 +71,7 @@ def main():
             if not isinstance(src, str) or not src:
                 continue
             if src.startswith("inbox/"):
-                warn(f"{rel}: source '{src}' points at inbox/ (transient — pages must cite sources/ instead)")
+                warn(f"{rel}: source '{src}' points at inbox/ (transient - pages must cite sources/ instead)")
                 violations += 1
                 continue
             if src.startswith("sources/"):

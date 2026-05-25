@@ -94,10 +94,10 @@ Public curl flow:
 On Linux with a detected display session, `GRIMOIRE_SUMMON_BINARY=auto` skips steps 2-4 and goes straight to source mode. Use `GRIMOIRE_SUMMON_BINARY=always` to test the Linux release binary directly.
 
 Binary controls:
-- `GRIMOIRE_SUMMON_BINARY=auto` — default. Piped scripts try release binaries except Linux GUI sessions; local scripts use source.
-- `GRIMOIRE_SUMMON_BINARY=always` — force release binary lookup.
-- `GRIMOIRE_SUMMON_BINARY=never` — force Python source bootstrap.
-- `GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0` — download from a specific release tag instead of `latest`.
+- `GRIMOIRE_SUMMON_BINARY=auto` - default. Piped scripts try release binaries except Linux GUI sessions; local scripts use source.
+- `GRIMOIRE_SUMMON_BINARY=always` - force release binary lookup.
+- `GRIMOIRE_SUMMON_BINARY=never` - force Python source bootstrap.
+- `GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0` - download from a specific release tag instead of `latest`.
 
 Example test command for a repeatedly overwritten prerelease:
 

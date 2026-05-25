@@ -16,10 +16,10 @@ Verify Arcana directory structure, required files, and organizational integrity.
 ## Invocation
 
 ```
-/grm-arcana-validate-structure
+/arc-validate-structure
 ```
 
-To validate a **domain grimoire's** structure instead, use `/grm-domain-validate-structure` — that one operates on the active grimoire directory rather than on Arcana.
+To validate a **grimoire's** structure instead, use `/arc-grimoire-validate-structure` - that one operates on the active grimoire directory rather than on Arcana.
 
 ## When to Cast
 
@@ -46,7 +46,7 @@ python3 rites/validate_structure.py
 - ✅ All required directories found (docs, invocations/*, formulae, rites, resources, skills, formulae/grimoire)
 - ✅ All required files exist (the root hub, README.md, CHANGELOG.md, docs/*.md)
 - ✅ All invocation directories have a hub file (invocations/grimoire/, invocations/arcana/, invocations/meta/)
-- ✅ Domain grimoire layers (`chapters/`, `sources/`, `inbox/`, `log.md`) exist in `formulae/grimoire/`, not at Arcana root
+- ✅ Grimoire layers (`chapters/`, `sources/`, `inbox/`, `log.md`) exist in `formulae/grimoire/`, not at Arcana root
 
 ### Step 3: Handle Errors
 

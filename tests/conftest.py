@@ -1,4 +1,4 @@
-"""Pytest configuration — make `from _lib import ...` work in tests."""
+"""Pytest configuration - make `from _lib import ...` work in tests."""
 
 import sys
 from pathlib import Path

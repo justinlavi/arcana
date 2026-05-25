@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Validates that every `/grm-*` skill reference in Arcana resolves to a real skill.
+"""Validates that every `/arc-*` skill reference in Arcana resolves to a real skill.
 
 Scans all markdown files in Arcana for slash-command references matching
-the namespace prefix (default: `grm-`) and ensures the referenced skill
-folder exists under `skills/`. Catches drift like:
+the `arc-` prefix and ensures the referenced skill folder exists under
+`skills/`. Catches drift like:
 
-  - A doc mentioning `/grm-arcana-foo` after the skill was deleted/renamed.
-  - A new skill mentioned in prose before its `skills/` folder is created.
+ - A doc mentioning `/arc-grimoire-foo` after the skill was deleted/renamed.
+ - A new skill mentioned in prose before its `skills/` folder is created.
 
-Domain-grimoire skill references (e.g. `/oly-...`) are NOT validated here —
+Grimoire skill references (e.g. `/jpn-...`) are NOT validated here;
 they live in their own grimoire repos. This is an Arcana-internal check.
 
 Usage: python3 rites/validate_skill_refs.py
@@ -24,22 +24,21 @@ from _lib import default_arcana_root, ok, warn
 ARCANA_ROOT = default_arcana_root()
 SKILLS_DIR = ARCANA_ROOT / "skills"
 
-# Arcana's own namespace, declared in arcana/grimoire.json. Hard-coded here
-# rather than parsed because validators must run even if the manifest is
-# malformed (validate_structure handles that).
-ARCANA_NAMESPACE = "grm"
+# Arcana's own skill prefix, hard-coded so this validator can run even if
+# arcana.json is malformed (validate_structure handles that).
+ARCANA_SKILL_PREFIX = "arc"
 
-# Match `/grm-<slug>` references. Boundaries: not preceded by another word
+# Match `/arc-<slug>` references. Boundaries: not preceded by another word
 # char, must end at a word boundary. Captures the slug (without prefix).
 SKILL_REF_RE = re.compile(
-    r"(?<![A-Za-z0-9_/-])/" + ARCANA_NAMESPACE + r"-([a-z][a-z0-9-]*)\b"
+    r"(?<![A-Za-z0-9_/-])/" + ARCANA_SKILL_PREFIX + r"-([a-z][a-z0-9-]*)\b"
 )
 
 # Tokens that, when they immediately follow the matched slug, indicate a
 # wildcard/placeholder rather than a concrete skill reference. Examples:
-#   /grm-arcana-validate-*       (wildcard summary)
-#   /grm-arcana-validate-<name>  (placeholder for prose)
-#   /grm-arcana-validate-{slug}  (variable substitution)
+#   /arc-validate-*       (wildcard summary)
+#   /arc-validate-<name>  (placeholder for prose)
+#   /arc-validate-{slug}  (variable substitution)
 PLACEHOLDER_SUFFIXES = ("-*", "-<", "-{")
 
 # Files that intentionally mention not-yet-existing or hypothetical skill
@@ -51,7 +50,7 @@ SKIP_FILES = {
 
 SKIP_DIRS = {
     "formulae",  # template placeholders
-    "skills/arcana-validate-skill-refs",  # the validator's own examples
+    "skills/validate-skill-refs",  # the validator's own examples
     "sources",  # imported source artifacts
 }
 
@@ -67,11 +66,11 @@ def discover_skill_slugs():
 
 
 def scan_for_skill_refs():
-    """Yield (file_rel, lineno, full_command, slug) for each /grm-* reference."""
+    """Yield (file_rel, lineno, full_command, slug) for each /arc-* reference."""
     for path in sorted(ARCANA_ROOT.rglob("*.md")):
         if path.name in SKIP_FILES:
             continue
-        rel = str(path.relative_to(ARCANA_ROOT))
+        rel = str(path.relative_to(ARCANA_ROOT)).replace("\\", "/")
         if any(rel.startswith(sd) for sd in SKIP_DIRS):
             continue
         try:
@@ -80,7 +79,7 @@ def scan_for_skill_refs():
             continue
         for lineno, line in enumerate(content.splitlines(), start=1):
             for match in SKILL_REF_RE.finditer(line):
-                # Skip wildcard/placeholder forms — they're prose, not refs.
+                # Skip wildcard/placeholder forms - they're prose, not refs.
                 tail = line[match.end() : match.end() + 2]
                 if any(tail.startswith(s) for s in PLACEHOLDER_SUFFIXES):
                     continue
@@ -95,20 +94,20 @@ def main():
     print("====================================")
     print(f"Arcana root:    {ARCANA_ROOT}")
     print(f"Skills dir:     {SKILLS_DIR}")
-    print(f"Namespace:      {ARCANA_NAMESPACE}-")
+    print(f"Skill prefix:   {ARCANA_SKILL_PREFIX}-")
     print()
 
     valid_slugs = discover_skill_slugs()
     print(f"Discovered {len(valid_slugs)} valid skill(s) under skills/.")
     print()
 
-    print("Scanning markdown for /grm-* references...")
+    print("Scanning markdown for /arc-* references...")
     dangling = []
     seen_pairs = set()
     for rel, lineno, full, slug in scan_for_skill_refs():
         if slug in valid_slugs:
             continue
-        # Deduplicate (file, slug) pairs — one report per file per slug.
+        # Deduplicate (file, slug) pairs - one report per file per slug.
         key = (rel, slug)
         if key in seen_pairs:
             continue
@@ -117,7 +116,7 @@ def main():
         warn(f"{rel}:{lineno}  references {full}  (no skills/{slug}/SKILL.md)")
 
     if not dangling:
-        ok("All /grm-* references resolve to existing skills.")
+        ok("All /arc-* references resolve to existing skills.")
     print()
 
     print("====================================")

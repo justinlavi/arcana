@@ -16,7 +16,7 @@ Validate invocation and formula format compliance (required sections and schema)
 ## Invocation
 
 ```
-/grm-arcana-validate-format
+/arc-validate-format
 ```
 
 ## When to Cast
@@ -66,14 +66,14 @@ Validates hub files are **thin routers**:
 ## Available Invocations
 
 ### Creation
-- **[create_grimoire.md](create_grimoire.md)** - Create new domain grimoire
+- **[create_grimoire.md](create_grimoire.md)** - Create new grimoire
 - **[create_chapter.md](create_chapter.md)** - Add knowledge chapter
 ```
 
 **Example of thick router** (❌ wrong):
 ```markdown
 ### create_grimoire.md
-**Invocation**: /grm-domain-create-grimoire
+**Invocation**: /arc-grimoire-create
 **Purpose**: Long description here...
 **What it does**: Detailed workflow...
 [This duplicates invocation file content - violation]
@@ -144,7 +144,7 @@ For each format violation:
 
 ## Invocation
 ```
-/grm-meta-help
+/arc-help
 ```
 
 ## When to Cast

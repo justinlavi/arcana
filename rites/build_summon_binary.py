@@ -121,6 +121,11 @@ def main():
         sep = ";" if platform.system().lower() == "windows" else ":"
         pyinstaller_args += ["--add-data", f"{resources_dir}{sep}resources"]
 
+    templates_dir = ROOT / "rites" / "templates"
+    if templates_dir.is_dir():
+        sep = ";" if platform.system().lower() == "windows" else ":"
+        pyinstaller_args += ["--add-data", f"{templates_dir}{sep}rites/templates"]
+
     # Platform-native executable icon (Windows .exe icon / macOS .app icon).
     # Only used if a native-format file exists alongside the PNGs; we don't
     # auto-convert to keep the build dependency surface tiny.

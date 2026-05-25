@@ -3,8 +3,8 @@
 
 Resolves two link forms:
 
-  1. Standard markdown links: `[text](path/to/file.md)` — relative or root-anchored.
-  2. Wikilinks: `[[path/to/page|display text]]` — resolved only as a
+  1. Standard markdown links: `[text](path/to/file.md)` - relative or root-anchored.
+  2. Wikilinks: `[[path/to/page|display text]]` - resolved only as a
      repository-root relative path, with `.md` optional.
 
 Warns when wikilink display text repeats ancestor context instead of matching
@@ -40,7 +40,7 @@ SKIP_DIRS = {
 SKIP_FILES = {"operating_model.md"}
 
 PLACEHOLDER_TOKENS = ["{", "<", "invocation_name", "chapter_name", "file_name",
-                      "GRIMOIRE_ARCANA", "GRIMOIRE_PATH", "ARCANA_PATH",
+                      "ARCANA_HOME", "GRIMOIRE_PATH", "ARCANA_PATH",
                       "Chapter Name", "Title", "Sub-topic", "filename",
                       "related_page", "sub_topic", "related_chapter",
                       "path/to/related", "path/url/system", "Source title"]

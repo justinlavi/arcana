@@ -6,7 +6,7 @@ via either a relative-path markdown link or a full-path wikilink.
 
 Pages that are themselves entry points are excluded from the orphan check:
   * the grimoire root hub (`<grimoire>/<grimoire>.md`)
-  * folder hubs (`<folder>/<folder>.md`) — they appear in their parent hub's tree
+  * folder hubs (`<folder>/<folder>.md`)  they appear in their parent hub's tree
   * `log.md`, `README.md`, `CHANGELOG.md`
   * everything under `sources/`
 
@@ -115,7 +115,7 @@ def main():
     if not orphans:
         print("  OK    No orphan pages found")
     else:
-        print(f"  {len(orphans)} orphan page(s) — no other page links to them:")
+        print(f"  {len(orphans)} orphan page(s)  no other page links to them:")
         for o in sorted(orphans):
             print(f"  ORPHAN  {o}")
 

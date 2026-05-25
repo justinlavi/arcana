@@ -11,17 +11,17 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-Manual, judgment-based pass over Arcana docs and invocations to find duplication and clarity issues. Pairs with the mechanical validators (`/grm-arcana-validate-*`) — validators answer "is it correct?", this invocation answers "is it excellent?"
+Manual, judgment-based pass over Arcana docs and invocations to find duplication and clarity issues. Pairs with the mechanical validators (`/arc-validate-*`) — validators answer "is it correct?", this invocation answers "is it excellent?"
 
 ## Invocation
 
-Runs as a phase of `/grm-arcana-improve`. There is no standalone slash command — the work is judgment-based and benefits from the broader context the orchestrator provides.
+Runs as a phase of `/arc-improve`. There is no standalone slash command — the work is judgment-based and benefits from the broader context the orchestrator provides.
 
 ## When to cast
 
 - Before an Arcana release
 - After bulk doc changes or feature additions
-- As part of `/grm-arcana-improve` (this invocation is one phase)
+- As part of `/arc-improve` (this invocation is one phase)
 - When something feels repetitive, unclear, or hard to navigate
 
 ## Workflow
@@ -47,9 +47,9 @@ grep -rh "^## " --include="*.md" | sort | uniq -cd | sort -rn | head -20
 
 For each hit, decide:
 
-- **Intentional**: different audiences genuinely need the same info → keep both, but link them so future edits propagate
-- **Drift risk**: same data should be sourced from one place → move to a canonical home and link from the rest, OR add a generator (see [`rites/sync_docs.py`](../../../rites/sync_docs.py) for the pattern)
-- **Stale**: one is wrong → fix or delete the wrong one
+- **Intentional**: different audiences genuinely need the same info -> keep both, but link them so future edits propagate
+- **Drift risk**: same data should be sourced from one place -> move to a canonical home and link from the rest, OR add a generator (see [`rites/sync_docs.py`](../../../rites/sync_docs.py) for the pattern)
+- **Stale**: one is wrong -> fix or delete the wrong one
 
 ### 2. Find clarity issues
 
@@ -84,7 +84,7 @@ For each issue:
 
 1. Decide the canonical home for the content.
 2. Edit the canonical and replace duplicates with links.
-3. Run the validator suite (`/grm-arcana-validate-all`) to make sure structural and link checks still pass.
+3. Run the validator suite (`/arc-validate-all`) to make sure structural and link checks still pass.
 4. If you moved a section, update any docs that linked to its old anchor.
 
 ## What this invocation is NOT
@@ -94,7 +94,7 @@ For each issue:
 
 ## Related
 
-- **Validators**: [`validators/validators.md`](../validators/validators.md) and `/grm-arcana-validate-all`
+- **Validators**: [`validators/validators.md`](../validators/validators.md) and `/arc-validate-all`
 - **Rite quality**: [`validate_rites.md`](validate_rites.md) (rite-specific checks; complementary)
 - **Doc generator**: [`rites/sync_docs.py`](../../../rites/sync_docs.py) (the pattern for replacing prose-as-data with single-source views)
 - **Orchestrator**: [`improve_arcana.md`](../improve_arcana.md)

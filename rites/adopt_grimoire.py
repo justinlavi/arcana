@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-"""Adopt an unmanaged directory under ~/grimoires/ as a domain grimoire.
+"""Adopt an unmanaged directory under ~/grimoires/ as a grimoire.
 
 Writes a `grimoire.json` manifest into the target directory so the
-registration and library rites recognize it. Validates the namespace
+registration and library rites recognize it. Validates the skill_prefix
 isn't already used by another grimoire.
 
-After adopting, run `/grm-library-sync --apply` to register the grimoire
-in the local library, then `/grm-skills-register` if it ships skills.
+After adopting, run `/arc-library-sync --apply` to register the grimoire
+in the local library, then `/arc-skills-register` if it ships skills.
 
 Usage:
-    python3 adopt_grimoire.py <directory> --namespace <ns> [--description "<desc>"]
+    python3 adopt_grimoire.py <directory> --skill-prefix <prefix> [--description "<desc>"]
                                           [--name <name>] [--home <path>]
 
 Args:
-    <directory>   — directory name under ~/grimoires/ (e.g. "lus-grimoire")
+    <directory>   - directory name under ~/grimoires/ (e.g. "lus-grimoire")
                     or absolute path
-    --namespace   — short lowercase slug for skill prefix (^[a-z][a-z0-9]*$)
-    --description — one-line description (defaults to a placeholder)
-    --name        — canonical name (defaults to the directory name)
-    --home        — override grimoire home (default: ~/grimoires)
+    --skill-prefix   - short lowercase slug for the skill prefix (^[a-z][a-z0-9]*$)
+    --description - one-line description (defaults to a placeholder)
+    --name        - canonical name (defaults to the directory name)
+    --home        - override grimoire home (default: ~/grimoires)
 
 Exit codes: 0 = manifest written, 1 = validation failed, 2 = collision
 """
@@ -28,13 +28,13 @@ import json
 import sys
 from pathlib import Path
 
-from _lib import NAMESPACE_RE, err, info, ok
+from _lib import SKILL_PREFIX_RE, err, info, ok
 
 DEFAULT_HOME = Path.home() / "grimoires"
 
 
-def find_existing_namespaces(home):
-    """Return {namespace: directory_name} for every grimoire already manifested."""
+def find_existing_skill_prefixes(home):
+    """Return {skill_prefix: directory_name} for every grimoire already manifested."""
     found = {}
     if not home.is_dir():
         return found
@@ -46,7 +46,7 @@ def find_existing_namespaces(home):
             data = json.loads(manifest.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             continue
-        ns = data.get("namespace", "")
+        ns = data.get("skill_prefix", "")
         if ns:
             found[ns] = child.name
     return found
@@ -55,7 +55,12 @@ def find_existing_namespaces(home):
 def main():
     parser = argparse.ArgumentParser(description="Adopt an unmanaged grimoire")
     parser.add_argument("directory", help="Directory name under home (e.g. lus-grimoire) or absolute path")
-    parser.add_argument("--namespace", required=True, help="Short lowercase slug for skill prefix")
+    parser.add_argument(
+        "--skill-prefix",
+        dest="skill_prefix",
+        required=True,
+        help="Short lowercase slug for the skill prefix",
+    )
     parser.add_argument("--description", default="", help="One-line description")
     parser.add_argument("--name", default="", help="Canonical name (defaults to directory name)")
     parser.add_argument("--home", type=Path, default=DEFAULT_HOME, help=f"Grimoire home (default: {DEFAULT_HOME})")
@@ -80,34 +85,34 @@ def main():
 
     info(f"Target:      {target}")
 
-    # Validate namespace.
-    if not NAMESPACE_RE.fullmatch(args.namespace):
-        err(f"Invalid namespace '{args.namespace}' (must match {NAMESPACE_RE.pattern})")
+    # Validate skill_prefix.
+    if not SKILL_PREFIX_RE.fullmatch(args.skill_prefix):
+        err(f"Invalid skill_prefix '{args.skill_prefix}' (must match {SKILL_PREFIX_RE.pattern})")
         return 1
-    info(f"Namespace:   {args.namespace}")
+    info(f"Skill prefix: {args.skill_prefix}")
 
     # Refuse to overwrite an existing manifest.
     manifest_path = target / "grimoire.json"
     if manifest_path.is_file():
         err(f"grimoire.json already exists at {manifest_path}")
-        info("To re-namespace an adopted grimoire, edit the manifest by hand.")
+        info("To change an adopted grimoire's skill prefix, edit the manifest by hand.")
         return 1
 
-    # Detect namespace collisions across home.
-    existing = find_existing_namespaces(home)
-    if args.namespace in existing:
+    # Detect skill_prefix collisions across home.
+    existing = find_existing_skill_prefixes(home)
+    if args.skill_prefix in existing:
         err(
-            f"Namespace '{args.namespace}' is already used by '{existing[args.namespace]}'. "
-            "Pick a different namespace."
+            f"Skill prefix '{args.skill_prefix}' is already used by '{existing[args.skill_prefix]}'. "
+            "Pick a different skill prefix."
         )
         return 2
 
     name = args.name or target.name
-    description = args.description or f"{name} domain grimoire"
+    description = args.description or f"{name} grimoire"
 
     manifest = {
         "name": name,
-        "namespace": args.namespace,
+        "skill_prefix": args.skill_prefix,
         "description": description,
     }
 
@@ -116,8 +121,8 @@ def main():
     print()
 
     print("  Next steps:")
-    print("    1. Run /grm-library-sync to verify, then --apply to register.")
-    print("    2. If this grimoire ships skills, run /grm-skills-register.")
+    print("    1. Run /arc-library-sync to verify, then --apply to register.")
+    print("    2. If this grimoire ships skills, run /arc-skills-register.")
     print()
     return 0
 

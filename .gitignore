@@ -1,10 +1,14 @@
-# OS and editor noise
+# OS files
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Editor scratch files
 *~
 *.swp
 *.swo
+
+# VS Code: ignore local workspace state, allow shared tasks/debug config
 .vscode/*
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -16,31 +20,46 @@ desktop.ini
 !.obsidian/core-plugins.json
 !.obsidian/community-plugins.json
 
-# Local agent and tool state
+# Local agent/tool state
 .cache/
 .claude/
 *.codex
 agent/
 
-# Python runtime and local environments
+# Python bytecode and caches
 __pycache__/
 *.py[cod]
 *.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# Python local environments
 .python-version
 .venv/
 venv/
 env/
-.pytest_cache/
 
-# Build and release output
+# Python packaging metadata
+*.egg-info/
+pip-wheel-metadata/
+
+# Build/release output
 build/
 dist/
 *.spec
 
-# Validation and generated reports
+# Validation artifacts
 .artifacts/
 **/reports/
+
+# Coverage output
 **/coverage/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
 coverage.info
 lcov.info
 

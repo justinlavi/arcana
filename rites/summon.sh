@@ -1,6 +1,6 @@
 #!/bin/bash
 # rites/summon.sh
-# Grimoire Summoning Rite — Bootstrap (Linux/Mac)
+# Grimoire Summoning Rite - Bootstrap (Linux/Mac)
 #
 # Prefers a GitHub Release binary when run from the public curl command,
 # then falls back to the Python source bootstrap when needed.
@@ -13,12 +13,12 @@ set -euo pipefail
 DEFAULT_ARCANA_URL="https://github.com/justinlavi/arcana.git"
 DEFAULT_ARCANA_REF="main"
 
-: "${GRIMOIRE_ARCANA_URL:=$DEFAULT_ARCANA_URL}"
-: "${GRIMOIRE_ARCANA_REF:=$DEFAULT_ARCANA_REF}"
+: "${ARCANA_URL:=$DEFAULT_ARCANA_URL}"
+: "${ARCANA_REF:=$DEFAULT_ARCANA_REF}"
 : "${GRIMOIRE_SUMMON_PY_DEPS:=${XDG_CACHE_HOME:-$HOME/.cache}/grimoire/summon-python}"
 : "${GRIMOIRE_SUMMON_BINARY:=auto}"
 : "${GRIMOIRE_SUMMON_RELEASE_TAG:=latest}"
-export GRIMOIRE_ARCANA_URL
+export ARCANA_URL
 export GRIMOIRE_SUMMON_PY_DEPS
 
 TEMP_DIR=""
@@ -35,7 +35,7 @@ derive_raw_base() {
     fi
 }
 
-: "${GRIMOIRE_ARCANA_RAW_BASE:=$(derive_raw_base "$GRIMOIRE_ARCANA_URL" "$GRIMOIRE_ARCANA_REF")}"
+: "${ARCANA_RAW_BASE:=$(derive_raw_base "$ARCANA_URL" "$ARCANA_REF")}"
 
 download_file() {
     local url="$1"
@@ -127,7 +127,7 @@ verify_checksum() {
     elif command -v shasum &>/dev/null; then
         shasum -a 256 -c "$checksum"
     else
-        echo "  [WARN]  sha256sum/shasum not found — skipping checksum verification"
+        echo "  [WARN]  sha256sum/shasum not found - skipping checksum verification"
         return 0
     fi
 }
@@ -140,7 +140,7 @@ should_try_binary() {
         return 0
     fi
     if should_prefer_source_for_linux_gui "$@"; then
-        echo "  [INFO]  Linux GUI session detected — using Python source launcher"
+        echo "  [INFO]  Linux GUI session detected - using Python source launcher"
         return 1
     fi
     [[ ! -f "$SCRIPT_SOURCE" ]]
@@ -169,7 +169,7 @@ try_release_binary() {
         return 1
     fi
 
-    repo_base="$(repo_http_base "$GRIMOIRE_ARCANA_URL")"
+    repo_base="$(repo_http_base "$ARCANA_URL")"
     download_base="$(release_download_base "$repo_base" "$GRIMOIRE_SUMMON_RELEASE_TAG")"
     asset="grimoire-summon-$platform.tar.gz"
     checksum="$asset.sha256"
@@ -180,25 +180,25 @@ try_release_binary() {
 
     echo "  [INFO]  Trying release binary: $asset"
     if ! download_file "$download_base/$asset" "$binary_temp/$asset"; then
-        echo "  [INFO]  Release binary unavailable — falling back to Python source"
+        echo "  [INFO]  Release binary unavailable - falling back to Python source"
         rm -rf "$binary_temp"
         return 1
     fi
 
     if download_file "$download_base/$checksum" "$binary_temp/$checksum"; then
         if ! (cd "$binary_temp" && verify_checksum "$checksum"); then
-            echo "  [WARN]  Release binary checksum failed — falling back to Python source"
+            echo "  [WARN]  Release binary checksum failed - falling back to Python source"
             rm -rf "$binary_temp"
             return 1
         fi
     else
-        echo "  [WARN]  Release checksum unavailable — falling back to Python source"
+        echo "  [WARN]  Release checksum unavailable - falling back to Python source"
         rm -rf "$binary_temp"
         return 1
     fi
 
     if ! tar -xzf "$binary_temp/$asset" -C "$bin_dir"; then
-        echo "  [WARN]  Could not extract release binary — falling back to Python source"
+        echo "  [WARN]  Could not extract release binary - falling back to Python source"
         rm -rf "$binary_temp"
         return 1
     fi
@@ -208,7 +208,7 @@ try_release_binary() {
         chmod +x "$binary" 2>/dev/null || true
     fi
     if [[ ! -x "$binary" ]]; then
-        echo "  [WARN]  Release binary is not executable — falling back to Python source"
+        echo "  [WARN]  Release binary is not executable - falling back to Python source"
         rm -rf "$binary_temp"
         return 1
     fi
@@ -221,7 +221,7 @@ try_release_binary() {
         rm -rf "$binary_temp"
         exit 0
     fi
-    echo "  [WARN]  Release binary exited abnormally — falling back to Python source"
+    echo "  [WARN]  Release binary exited abnormally - falling back to Python source"
     rm -rf "$binary_temp"
     return 1
 }
@@ -237,16 +237,18 @@ else
     fi
     TEMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/grimoire-summon.XXXXXX")"
     SCRIPT_DIR="$TEMP_DIR/rites"
-    mkdir -p "$SCRIPT_DIR"
+    mkdir -p "$SCRIPT_DIR/templates"
     echo "  [INFO]  Downloading summoning companion scripts..."
-    # summon.py is the dispatcher and summon_core.py is the install engine —
-    # both are always needed. summon_gui.py is only needed when the GUI runs,
-    # so skip it for --cli/-h/--help to keep the source bootstrap minimal.
-    download_file "$GRIMOIRE_ARCANA_RAW_BASE/rites/summon.py" "$SCRIPT_DIR/summon.py"
-    download_file "$GRIMOIRE_ARCANA_RAW_BASE/rites/summon_core.py" "$SCRIPT_DIR/summon_core.py"
+    # summon.py is the dispatcher and summon_core.py is the install engine.
+    # The Grimoire block template is canonical and must travel with source
+    # bootstrap installs. summon_gui.py is only needed when the GUI runs, so
+    # skip it for --cli/-h/--help to keep the source bootstrap minimal.
+    download_file "$ARCANA_RAW_BASE/rites/summon.py" "$SCRIPT_DIR/summon.py"
+    download_file "$ARCANA_RAW_BASE/rites/summon_core.py" "$SCRIPT_DIR/summon_core.py"
+    download_file "$ARCANA_RAW_BASE/rites/templates/grimoire_block.md" "$SCRIPT_DIR/templates/grimoire_block.md"
     if should_download_gui_source "$@"; then
-        download_file "$GRIMOIRE_ARCANA_RAW_BASE/rites/summon_gui.py" "$SCRIPT_DIR/summon_gui.py" || \
-            echo "  [WARN]  summon_gui.py download failed — GUI mode will fall back to CLI"
+        download_file "$ARCANA_RAW_BASE/rites/summon_gui.py" "$SCRIPT_DIR/summon_gui.py" || \
+            echo "  [WARN]  summon_gui.py download failed - GUI mode will fall back to CLI"
     fi
 fi
 
@@ -303,7 +305,7 @@ prompt_yes() {
         printf "%s [y/N]: " "$prompt" > /dev/tty
         IFS= read -r response < /dev/tty || response=""
     else
-        echo "  [WARN]  No interactive terminal available — not installing dependencies"
+        echo "  [WARN]  No interactive terminal available - not installing dependencies"
         return 1
     fi
 
@@ -392,11 +394,11 @@ if should_prepare_gui_deps "$@"; then
                 if "$PYTHON" -m pip --version &>/dev/null; then
                     echo "  [OK]    pip installed"
                 else
-                    echo "  [WARN]  pip not available — GUI may fall back to CLI"
+                    echo "  [WARN]  pip not available - GUI may fall back to CLI"
                     echo "  [INFO]  To enable app mode manually, run: $(pip_install_hint "$PKG_MGR")"
                 fi
             else
-                echo "  [WARN]  pip install skipped — GUI may fall back to CLI"
+                echo "  [WARN]  pip install skipped - GUI may fall back to CLI"
                 echo "  [INFO]  To enable app mode manually, run: $(pip_install_hint "$PKG_MGR")"
             fi
         fi
@@ -407,13 +409,13 @@ if should_prepare_gui_deps "$@"; then
                 if "$PYTHON" -m pip install --upgrade --target "$GRIMOIRE_SUMMON_PY_DEPS" dearpygui 2>/dev/null; then
                     echo "  [OK]    Dear PyGui installed"
                 else
-                    echo "  [WARN]  Could not install Dear PyGui — GUI may fall back to CLI"
+                    echo "  [WARN]  Could not install Dear PyGui - GUI may fall back to CLI"
                 fi
             else
-                echo "  [WARN]  Dear PyGui install skipped — GUI will fall back to CLI"
+                echo "  [WARN]  Dear PyGui install skipped - GUI will fall back to CLI"
             fi
         else
-            echo "  [WARN]  pip unavailable — GUI may fall back to CLI"
+            echo "  [WARN]  pip unavailable - GUI may fall back to CLI"
         fi
     else
         echo "  [OK]    Dear PyGui available"
@@ -433,9 +435,9 @@ export PYTHONPATH="$GRIMOIRE_SUMMON_PY_DEPS${PYTHONPATH:+:$PYTHONPATH}"
 # Setting DISPLAY=:0 blindly when only WAYLAND_DISPLAY is set causes GLFW
 # to attempt an X connection that doesn't exist, producing GLX init failures.
 # The Python bootstrap probes GL compatibility at runtime and falls back to
-# CLI automatically — no manual DISPLAY override needed here.
+# CLI automatically - no manual DISPLAY override needed here.
 if [[ -z "${DISPLAY:-}" && ( -n "${WAYLAND_DISPLAY:-}" || "${XDG_SESSION_TYPE:-}" == "wayland" ) ]]; then
-    echo "  [INFO]  Wayland session detected — display compatibility will be probed at runtime"
+    echo "  [INFO]  Wayland session detected - display compatibility will be probed at runtime"
 fi
 
 echo ""

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Arcana Summoning Rite — installs Arcana and optionally clones grimoires.
+"""Arcana Summoning Rite - installs Arcana and optionally clones grimoires.
 
 Usage:
     python3 summon.py [--arcana-url URL] [--scope URL] [--cli] [--gui]
@@ -19,7 +19,7 @@ Options:
     -h, --help         Show this help message
 
 Environment variables:
-    GRIMOIRE_ARCANA_URL  Same as --arcana-url (flag takes precedence)
+    ARCANA_URL  Same as --arcana-url (flag takes precedence)
     GRIMOIRE_SCOPE       Same as --scope (flag takes precedence)
     GITLAB_TOKEN         GitLab personal access token for private instances
     GITHUB_TOKEN         GitHub token for private orgs
@@ -54,7 +54,7 @@ def _detect_gui_mode(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Arcana Summoning Rite — install Arcana and optionally clone grimoires"
+        description="Arcana Summoning Rite - install Arcana and optionally clone grimoires"
     )
     parser.add_argument(
         "--arcana-url",
@@ -72,7 +72,7 @@ def main():
 
     if use_gui:
         try:
-            # Lazy import — keeps headless installs from needing DearPyGui at all.
+            # Lazy import keeps headless installs from needing DearPyGui at all.
             from summon_gui import run_gui
             run_gui(args)
         except Exception as e:

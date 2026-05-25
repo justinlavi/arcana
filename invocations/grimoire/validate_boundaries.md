@@ -11,18 +11,18 @@ last_verified: 2026-05-15
 
 ## Purpose
 
-Judgment-based scan that enforces the magical/practical boundary: magical terminology (Invocation, Formula, Rite, Grimoire, `/grm-*`) is reserved for Arcana's system layer; domain grimoires use practical terminology (templates, scripts, snippets, guides).
+Judgment-based scan that enforces the magical/practical boundary: magical terminology (Invocation, Formula, Rite, Grimoire, `/arc-*`) is reserved for Arcana's system layer; grimoires use practical terminology (templates, scripts, snippets, guides).
 
-Canonical definition and full term mapping: [`docs/reference.md`](../../docs/reference.md) § "The Magical Boundary". Do not redefine the rules here — read that section first, then apply it.
+Canonical definition and full term mapping: [`docs/reference.md`](../../docs/reference.md) A "The Magical Boundary". Do not redefine the rules here - read that section first, then apply it.
 
 ## Invocation
 
 ```
-/grm-domain-validate-boundaries          # validate active grimoire (cwd)
-/grm-domain-validate-boundaries --arcana # also scan Arcana itself (strictest)
+/arc-grimoire-validate-boundaries          # validate active grimoire (cwd)
+/arc-grimoire-validate-boundaries --arcana # also scan Arcana itself (strictest)
 ```
 
-Also runs as part of `/grm-domain-improve` and `/grm-arcana-improve`.
+Also runs as part of `/arc-grimoire-improve` and `/arc-improve`.
 
 ## When to cast
 
@@ -32,12 +32,12 @@ Also runs as part of `/grm-domain-improve` and `/grm-arcana-improve`.
 
 ## Rules enforced
 
-1. **No magical directories in domain grimoires.** `invocations/`, `formulae/`, `rites/` exist only inside Arcana. Domain equivalents: `templates/`, `scripts/`, `snippets/`, `configs/`, `policies/`, `guides/`, `recipes/`, `playbooks/` — whatever fits the subject.
-2. **No magical terminology in chapter prose.** Phrases like "perform the invocation" or "consult the formula" belong in Arcana docs only. Referencing Arcana by name (e.g. "run `/grm-domain-improve`") is fine.
+1. **No magical directories in grimoires.** `invocations/`, `formulae/`, `rites/` exist only inside Arcana. Grimoire equivalents: `templates/`, `scripts/`, `snippets/`, `configs/`, `policies/`, `guides/`, `recipes/`, `playbooks/` - whatever fits the subject.
+2. **No magical terminology in chapter prose.** Phrases like "perform the invocation" or "consult the formula" belong in Arcana docs only. Referencing Arcana by name (e.g. "run `/arc-grimoire-improve`") is fine.
 3. **No platform-specific assumptions in shared content.** Slack, SharePoint, Confluence, Teams, Jira, GitHub etc. should be generic ("communication channel", "document repository", "issue tracker") unless documenting an actual integration.
 4. **No prescriptive team/department buzzwords in shared chapters.** Don't write "the HR team owns this" in shared content unless the grimoire is itself an HR grimoire (in which case department naming is the subject and is fine). Words like HR, Marketing, Legal, Sales, Finance get scrubbed when they're acting as scope assumptions about the *reader*, not the *content*.
-5. **Generic example names in Arcana.** When Arcana shows examples, use the canonical pair `cooking-grimoire` (personal) and `hr-grimoire` (workplace). For sub-examples use `Alice/Bob`, `Project Alpha`, `{your-grimoire}`. Real company/product/person names only when documenting an actual integration. (Domain grimoires may use whatever real names their subject requires.)
-6. **Arcana is universal.** When `--arcana` is set, rules 1–5 apply at zero tolerance. No specific domains, platforms, hardcoded paths, or environment assumptions anywhere.
+5. **Generic example names in Arcana.** When Arcana shows examples, use the canonical pair `cooking-grimoire` (personal) and `hr-grimoire` (workplace). For sub-examples use `Alice/Bob`, `Project Alpha`, `{your-grimoire}`. Real company/product/person names only when documenting an actual integration. (Grimoires may use whatever real names their subject requires.)
+6. **Arcana is universal.** When `--arcana` is set, rules 1-5 apply at zero tolerance. No specific domains, platforms, hardcoded paths, or environment assumptions anywhere.
 
 ## Where the rules relax
 
@@ -51,7 +51,7 @@ Also runs as part of `/grm-domain-improve` and `/grm-arcana-improve`.
 find . -type d \( -name invocations -o -name formulae -o -name rites \) -not -path './.git/*'
 ```
 
-Inside a domain grimoire, any hit is a critical violation. Rename to the practical equivalent (rule 1) or, if it's genuine system-layer logic, move it to Arcana.
+Inside a grimoire, any hit is a critical violation. Rename to the practical equivalent (rule 1) or, if it's genuine system-layer logic, move it to Arcana.
 
 ### 2. Magical terminology in prose
 
@@ -59,7 +59,7 @@ Inside a domain grimoire, any hit is a critical violation. Rename to the practic
 grep -rniE 'invoke .*invocation|consult .*formula|perform .*rite|cast .*spell' chapters/ templates/ scripts/ 2>/dev/null
 ```
 
-Skip references to Arcana itself (`/grm-*` skill names, "see Arcana", etc.). Rewrite the rest in practical voice.
+Skip references to Arcana itself (`/arc-*` skill names, "see Arcana", etc.). Rewrite the rest in practical voice.
 
 ### 3. Platform / scope-assumption language in shared content
 
@@ -81,7 +81,7 @@ Skim the same files for real company / product / person names used as examples. 
 
 ### 5. Arcana mode (`--arcana`)
 
-Run all of the above against Arcana itself (`~/grimoires/arcana/`). Any violation is critical — Arcana must work for every domain, so it cannot mention any specific one.
+Run all of the above against Arcana itself (`~/grimoires/arcana/`). Any violation is critical - Arcana must work for every domain, so it cannot mention any specific one.
 
 ## Report format
 
@@ -106,14 +106,14 @@ For each violation, report file, line, offending text, and suggested fix. Group 
 
 | Scope | Tolerance |
 |---|---|
-| Arcana | Zero — every violation is critical |
-| Shared chapters in a domain grimoire | Strict — critical or warning |
-| `chapters/projects/` | Relaxed — warning or info, real names allowed |
+| Arcana | Zero - every violation is critical |
+| Shared chapters in a grimoire | Strict - critical or warning |
+| `chapters/projects/` | Relaxed - warning or info, real names allowed |
 
 ## Related
 
-- **Reference**: [`docs/reference.md`](../../docs/reference.md) § "The Magical Boundary" (canonical rules and term mapping)
+- **Reference**: [`docs/reference.md`](../../docs/reference.md) A "The Magical Boundary" (canonical rules and term mapping)
 - **Operating model**: [`docs/operating_model.md`](../../docs/operating_model.md) (why the boundary exists)
-- **Semantic naming**: `/grm-domain-analyze-semantics` (judgment-based naming review)
-- **Orchestrator (Arcana)**: `/grm-arcana-improve`
-- **Orchestrator (domain)**: `/grm-domain-improve`
+- **Semantic naming**: `/arc-grimoire-analyze-semantics` (judgment-based naming review)
+- **Orchestrator (Arcana)**: `/arc-improve`
+- **Orchestrator (domain)**: `/arc-grimoire-improve`

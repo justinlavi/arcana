@@ -28,7 +28,7 @@ This shape lets you scan recent activity with `grep '^## \[' log.md | tail -20`.
 
 Free-form bullet list, but include at minimum:
 
-- `- skill: /<namespace>-<verb>` (or `manual` if hand-edited)
+- `- skill: /<skill prefix>-<verb>` (or `manual` if hand-edited)
 - `- pages: ` comma-separated relative paths touched
 - For `ingest` / `file-answer`: `- source: sources/<filename>` or `- source: chat`
 
@@ -41,20 +41,20 @@ Free-form bullet list, but include at minimum:
 - pages: chapters/techniques/lamination.md, chapters/recipes/sourdough.md, chapters/techniques/techniques.md
 
 ## [2026-05-12 15:01] lint | quarterly health check
-- skill: /grm-domain-lint
+- skill: /arc-grimoire-lint
 - orphans: 0
 - stale (>90d): 3
 - missing-xref candidates: 2 ("autolyse", "windowpane test")
 
 ## [2026-05-13 09:14] file-answer | sourdough vs ciabatta comparison
-- skill: /grm-domain-file-answer
+- skill: /arc-grimoire-file-answer
 - source: chat
 - pages: chapters/comparisons/sourdough_vs_ciabatta.md (new), chapters/comparisons/comparisons.md
 ```
 
 ## Rules
 
-1. Append-only — never reorder or delete entries.
+1. Append-only - never reorder or delete entries.
 2. Local time, 24-hour clock, in `[YYYY-MM-DD HH:MM]` brackets.
 3. Operation tag matches the predefined set above so log analysis tooling stays simple.
-4. The first entry in any new grimoire is `create | <grimoire-name>` written by `/grm-domain-create-grimoire`.
+4. The first entry in any new grimoire is `create | <grimoire-name>` written by `/arc-grimoire-create`.

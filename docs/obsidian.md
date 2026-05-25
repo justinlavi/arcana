@@ -17,12 +17,12 @@ Arcana ships a recommended `.obsidian/graph.json` in every grimoire scaffold and
 
 ## Open the vault
 
-1. **Open Obsidian** → *Open another vault* → *Open folder as vault* → pick the grimoire's root directory (e.g. `~/grimoires/cooking-grimoire`).
+1. **Open Obsidian** -> *Open another vault* -> *Open folder as vault* -> pick the grimoire's root directory (e.g. `~/grimoires/cooking-grimoire`).
 2. Obsidian reads the bundled `.obsidian/graph.json` and `.obsidian/app.json` automatically.
-3. Open the grimoire root hub (`<grimoire>.md`) — that's the routing entry point.
+3. Open the grimoire root hub (`<grimoire>.md`) - that's the routing entry point.
 4. Open the **Graph view** (icon in the left sidebar, or `Ctrl/Cmd+G`).
 
-If your vault doesn't already have `.obsidian/graph.json` or `.obsidian/app.json`, copy them from `GRIMOIRE_ARCANA/formulae/grimoire/.obsidian/`.
+If your vault doesn't already have `.obsidian/graph.json` or `.obsidian/app.json`, copy them from `ARCANA_HOME/formulae/grimoire/.obsidian/`.
 
 ### Required app.json settings
 
@@ -37,12 +37,12 @@ Every grimoire ships an `.obsidian/app.json` with:
 
 These two settings are **mandatory**, not preferences:
 
-- **`newLinkFormat: "absolute"`** — Obsidian's default is `"shortest"`, which interprets `[[chapters/foo/bar]]` as a path *relative to the current note*. From `chapters/foo/bar.md` that resolves to `chapters/foo/bar/chapters/foo/bar.md` — and if it doesn't exist, Ctrl-click **silently creates a recursive directory tree** matching the link path. Setting `"absolute"` makes Obsidian treat full-path wikilinks as vault-root relative, matching the convention `validate_links` enforces.
-- **`useMarkdownLinks: false`** — Keep wikilinks as `[[...]]` instead of having Obsidian rewrite them to `[label](path)` on save. The rest of Arcana (validators, repair rite, ingest skills) assumes wikilink syntax.
+- **`newLinkFormat: "absolute"`** - Obsidian's default is `"shortest"`, which interprets `[[chapters/foo/bar]]` as a path *relative to the current note*. From `chapters/foo/bar.md` that resolves to `chapters/foo/bar/chapters/foo/bar.md` - and if it doesn't exist, Ctrl-click **silently creates a recursive directory tree** matching the link path. Setting `"absolute"` makes Obsidian treat full-path wikilinks as vault-root relative, matching the convention `validate_links` enforces.
+- **`useMarkdownLinks: false`** - Keep wikilinks as `[[...]]` instead of having Obsidian rewrite them to `[label](path)` on save. The rest of Arcana (validators, repair rite, ingest skills) assumes wikilink syntax.
 
 If you find a stray nested folder like `chapters/build_system/ci/chapters/build_system/ci/`, `newLinkFormat` was not set when someone Ctrl-clicked a wikilink. Delete the bogus tree, set the config, and reload the vault.
 
-**Note:** `app.json` only configures Obsidian. VS Code has its own wikilink handling and ignores this file — see `vscode.md` for the parallel setup (install Foam, disable MPE's wikilink syntax).
+**Note:** `app.json` only configures Obsidian. VS Code has its own wikilink handling and ignores this file - see `vscode.md` for the parallel setup (install Foam, disable MPE's wikilink syntax).
 
 ---
 
@@ -60,11 +60,11 @@ A vaporwave-leaning palette: pinks, purples, cyan, electric blue. Cool and high-
 | **Pale pink** | `#FFB3DE` | `["type":"reference"]` | Glossary / schema-style pages |
 | Default | (Obsidian default) | (everything else) | Concept and entity leaves |
 
-Open *Graph view → settings → Groups* to tweak colors or add new groups. The bundled queries use Obsidian's built-in search syntax:
+Open *Graph view -> settings -> Groups* to tweak colors or add new groups. The bundled queries use Obsidian's built-in search syntax:
 
-- `tag:#hub/root` — page has `hub/root` in its `tags:` frontmatter list.
-- `["type":"source"]` — page has `type: source` in its frontmatter.
-- `path:chapters/projects/` — files under that folder.
+- `tag:#hub/root` - page has `hub/root` in its `tags:` frontmatter list.
+- `["type":"source"]` - page has `type: source` in its frontmatter.
+- `path:chapters/projects/` - files under that folder.
 
 You can combine queries: `tag:#hub/chapter -path:chapters/projects/` colors only chapter hubs outside the projects folder.
 
@@ -72,25 +72,25 @@ You can combine queries: `tag:#hub/chapter -path:chapters/projects/` colors only
 
 ## Why each tag exists
 
-- **`hub/root`** — there's exactly one per grimoire; hot pink marks the entry point at a glance.
-- **`hub/chapter`** — top-level chapters (immediately under `chapters/`); cyan tells you "these are the grimoire's major branches."
-- **`hub/sub`** — any hub deeper than a top-level chapter; purple tells you "this is a sub-router, not a leaf." Hub depth is open-ended — a sub-hub can route to its own sub-hubs, and so on. The tag flattens all those depths into one visual class because the routing rules are identical at every level.
-- **`type/source`** — derived directly from a `sources/` artifact; lavender surfaces source-backed synthesis at a glance.
-- **`type/playbook`** — procedural; electric blue separates "things to do" from "things to know."
-- **`type/reference`** — definitional / schema-style; soft pink for the glossary class.
+- **`hub/root`** - there's exactly one per grimoire; hot pink marks the entry point at a glance.
+- **`hub/chapter`** - top-level chapters (immediately under `chapters/`); cyan tells you "these are the grimoire's major branches."
+- **`hub/sub`** - any hub deeper than a top-level chapter; purple tells you "this is a sub-router, not a leaf." Hub depth is open-ended - a sub-hub can route to its own sub-hubs, and so on. The tag flattens all those depths into one visual class because the routing rules are identical at every level.
+- **`type/source`** - derived directly from a `sources/` artifact; lavender surfaces source-backed synthesis at a glance.
+- **`type/playbook`** - procedural; electric blue separates "things to do" from "things to know."
+- **`type/reference`** - definitional / schema-style; soft pink for the glossary class.
 
 ---
 
 ## Other useful Obsidian features
 
-- **Backlinks pane** (`Ctrl/Cmd+Shift+B`) — every page lists who wikilinks to it.
-- **Dataview plugin** (community plugin) — runs queries against frontmatter (`type`, `tags`, `last_verified`, `authority`). Add a Dataview block to a chapter hub to auto-list its leaves filtered by `chapter/<name>` instead of hand-maintaining the routes section.
-- **Folder Notes plugin** (community plugin) — clicking a folder in the file explorer opens its `<folder>.md` hub. Aligns the file tree with the hub convention.
-- **Graph filters** — *Filters* tab in graph settings:
-  - Hide attachments: focus on pages.
-  - Hide orphans: temporarily hide unconnected pages while you triage.
-  - Search filter: e.g. `path:chapters/build_system/` to focus on one chapter.
-- **Local graph** (`Ctrl/Cmd+P` → *Open local graph*) — graph centered on the current page; great for chapter exploration.
+- **Backlinks pane** (`Ctrl/Cmd+Shift+B`) - every page lists who wikilinks to it.
+- **Dataview plugin** (community plugin) - runs queries against frontmatter (`type`, `tags`, `last_verified`, `authority`). Add a Dataview block to a chapter hub to auto-list its leaves filtered by `chapter/<name>` instead of hand-maintaining the routes section.
+- **Folder Notes plugin** (community plugin) - clicking a folder in the file explorer opens its `<folder>.md` hub. Aligns the file tree with the hub convention.
+- **Graph filters** - *Filters* tab in graph settings:
+ - Hide attachments: focus on pages.
+ - Hide orphans: temporarily hide unconnected pages while you triage.
+ - Search filter: e.g. `path:chapters/build_system/` to focus on one chapter.
+- **Local graph** (`Ctrl/Cmd+P` -> *Open local graph*) - graph centered on the current page; great for chapter exploration.
 
 ## Full-path wikilinks
 
@@ -112,7 +112,7 @@ Files may carry a capitalized acronym suffix or a role suffix before `.md`. Both
 | Role suffix | `plugin_ICD.template.md` | `[[chapters/documentation/icd/templates/plugin_ICD.template\|plugin_ICD.template]]` |
 | Both | `gcs.SDK.example.md` | `[[chapters/sdk/gcs.SDK.example\|gcs.SDK.example]]` |
 
-The resolver tries `<body>.md` first (the Obsidian default), then `<body>` as-given, so dots inside the stem do not block resolution. Use these patterns deliberately — they signal a deliverable kind (ICD, IDD, SDK) or a role (`.template`, `.example`) that's part of the page's identity, not arbitrary punctuation.
+The resolver tries `<body>.md` first (the Obsidian default), then `<body>` as-given, so dots inside the stem do not block resolution. Use these patterns deliberately - they signal a deliverable kind (ICD, IDD, SDK) or a role (`.template`, `.example`) that's part of the page's identity, not arbitrary punctuation.
 
 ---
 
@@ -123,15 +123,15 @@ Add a color group whenever you introduce a new structural distinction worth surf
 - A `status/deprecated` color (e.g. dim crimson) once you start lifecycle-tagging pages.
 - A `domain/<facet>` color when one cross-cutting concern needs visual emphasis.
 
-Stay opinionated about how many colors you ship — past ~8 groups the graph becomes a rainbow and the signal flattens. The default vaporwave palette (pink/cyan/purple/blue) leaves headroom: extra groups should pick muted or saturated outliers from the same family, not bright primaries that fight the existing ones.
+Stay opinionated about how many colors you ship - past ~8 groups the graph becomes a rainbow and the signal flattens. The default vaporwave palette (pink/cyan/purple/blue) leaves headroom: extra groups should pick muted or saturated outliers from the same family, not bright primaries that fight the existing ones.
 
 ---
 
 ## What is *not* Arcana's job
 
-- **Per-user UI state** — pane layout, recently opened files, plugin enablement choices. These live in `.obsidian/workspace.json` and friends, which are gitignored by default.
-- **Graph node positioning** — Obsidian computes layout dynamically; we don't pin positions.
-- **Plugin recommendations beyond the schema** — Dataview and Folder Notes are useful but optional. Arcana doesn't depend on either.
+- **Per-user UI state** - pane layout, recently opened files, plugin enablement choices. These live in `.obsidian/workspace.json` and friends, which are gitignored by default.
+- **Graph node positioning** - Obsidian computes layout dynamically; we don't pin positions.
+- **Plugin recommendations beyond the schema** - Dataview and Folder Notes are useful but optional. Arcana doesn't depend on either.
 
 ---
 

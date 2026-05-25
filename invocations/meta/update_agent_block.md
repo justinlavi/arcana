@@ -13,12 +13,12 @@ last_verified: 2026-05-18
 
 Refresh the Grimoire instruction block inside user agent instruction files, preserving all non-Grimoire content. This is AI-guided judgment work, not a pure mechanical rewrite: users often keep unrelated project, style, safety, or personal instructions in the same files.
 
-Canonical block: `GRIMOIRE_ARCANA/rites/templates/grimoire_block.md`.
+Canonical block: `ARCANA_HOME/rites/templates/grimoire_block.md`.
 
 ## Invocation
 
 ```
-/grm-meta-update-agent-block
+/arc-agent-update
 ```
 
 Optional user text may name explicit files to update.
@@ -38,7 +38,7 @@ Do not scan all of `$HOME` by default. If the user asks for "everything on this 
 
 ### 1. Load the canonical block
 
-Read `GRIMOIRE_ARCANA/rites/templates/grimoire_block.md`. This is the source of truth. Preserve it exactly when inserting or replacing, aside from surrounding blank lines needed to fit the target document.
+Read `ARCANA_HOME/rites/templates/grimoire_block.md`. This is the source of truth. Preserve it exactly when inserting or replacing, aside from surrounding blank lines needed to fit the target document.
 
 ### 2. Inspect each target
 
@@ -47,9 +47,9 @@ For each candidate file:
 1. If the file does not exist, skip it by default and report that it was absent.
 2. Read the full file before editing.
 3. Determine whether it contains a Grimoire block:
-   - Preferred: text between `<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->` and `<!-- END GRIMOIRE KNOWLEDGE BASE -->`.
-   - Legacy: a section headed `## Grimoire Knowledge Base`; the block runs until the next level-two heading (`## `) or end of file.
-   - Ambiguous: multiple Grimoire sections, malformed markers, or surrounding text that looks user-authored. Stop and ask before editing that file.
+  - Preferred: text between `<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->` and `<!-- END GRIMOIRE KNOWLEDGE BASE -->`.
+  - Legacy: a section headed `## Grimoire Knowledge Base`; the block runs until the next level-two heading (`## `) or end of file.
+  - Ambiguous: multiple Grimoire sections, malformed markers, or surrounding text that looks user-authored. Stop and ask before editing that file.
 
 ### 3. Patch conservatively
 
@@ -72,7 +72,7 @@ After editing each file:
 
 ### 5. Register skills if needed
 
-This skill updates instruction files only. If the user also needs newly added skills to appear in slash-command pickers, run or recommend `/grm-skills-register` separately.
+This skill updates instruction files only. If the user also needs newly added skills to appear in slash-command pickers, run or recommend `/arc-skills-register` separately.
 
 ## Safety Rules
 
@@ -85,6 +85,6 @@ This skill updates instruction files only. If the user also needs newly added sk
 
 ## Related
 
-- Canonical block: `GRIMOIRE_ARCANA/rites/templates/grimoire_block.md`
-- Agent configuration: `GRIMOIRE_ARCANA/docs/agent_configuration.md`
-- Skill registration: `/grm-skills-register`
+- Canonical block: `ARCANA_HOME/rites/templates/grimoire_block.md`
+- Agent configuration: `ARCANA_HOME/docs/agent_configuration.md`
+- Skill registration: `/arc-skills-register`

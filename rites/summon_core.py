@@ -46,42 +46,34 @@ SETTINGS_DEFAULTS = {
 
 
 def _load_grimoire_block():
-    """Load the canonical Grimoire instruction block."""
-    template_path = RITE_DIR / "templates" / "grimoire_block.md"
-    if template_path.is_file():
-        return "\n" + template_path.read_text(encoding="utf-8")
+    """Load the canonical Grimoire instruction block from the markdown template."""
+    candidates = []
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        bundle_root = Path(meipass)
+        candidates.extend(
+            [
+                bundle_root / "rites" / "templates" / "grimoire_block.md",
+                bundle_root / "templates" / "grimoire_block.md",
+            ]
+        )
+    candidates.extend(
+        [
+            RITE_DIR / "templates" / "grimoire_block.md",
+            REPO_ROOT / "rites" / "templates" / "grimoire_block.md",
+            ARCANA_DIR / "rites" / "templates" / "grimoire_block.md",
+        ]
+    )
 
-    # Inline fallback — kept in sync with rites/templates/grimoire_block.md.
-    return """
-<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->
-## Grimoire Knowledge Base
+    for template_path in candidates:
+        if template_path.is_file():
+            return "\n" + template_path.read_text(encoding="utf-8")
 
-**Library**: `~/grimoires/library.json` — read this file to resolve named grimoire keys and their on-disk paths.
-
-**Arcana key**: `GRIMOIRE_ARCANA` — resolved from the library or defaults to `~/grimoires/arcana/`.
-
-**Skills**: Arcana ships `/grm-*` skills (e.g. `/grm-meta-help`, `/grm-domain-ingest`, `/grm-domain-lint`, `/grm-domain-improve`). Each domain grimoire ships its own `/<namespace>-*` skills declared in its `grimoire.json`.
-
-### Hub convention
-
-For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. The grimoire root hub is `<grimoire>/<grimoire>.md`. A hub may route to sub-hubs, to leaf pages, or both — depth is open-ended. Routing follows hubs depth-first until a leaf answers the question; chains can be 2 hops (root -> leaf) or more (root -> chapter -> sub-chapter -> ... -> leaf), as deep as the topic warrants.
-
-### Storage layers
-
-- `sources/` — Immutable source artifacts. Read, never modify. Citation-stable.
-- `inbox/` — Optional transient drop zone for mixed content awaiting classification. Cleared by `/grm-domain-ingest`. Pages must not cite `inbox/` paths.
-- `chapters/` — LLM-authored knowledge pages with YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`); see `GRIMOIRE_ARCANA/docs/page_schema.md`.
-- `log.md` — Append-only activity log; entries prefixed `## [YYYY-MM-DD HH:MM] <op> | <title>`.
-
-### Routing
-
-1. Resolve the active grimoire from the working directory or project context.
-2. Open `<grimoire>/<grimoire>.md` for routing.
-3. Use full-path Obsidian wikilinks (`[[chapters/path/to/page|label]]`) for in-grimoire pointers; display labels name only the target filename. Cross-grimoire references use placeholders (`GRIMOIRE_ARCANA/...`).
-4. For Grimoire meta-knowledge: read `GRIMOIRE_ARCANA/arcana.md`.
-5. Do not modify Grimoire files unless a `/grm-*` skill, a domain skill, or explicit instruction asks for it.
-<!-- END GRIMOIRE KNOWLEDGE BASE -->
-"""
+    checked = ", ".join(str(path) for path in candidates)
+    raise FileNotFoundError(
+        "Could not find canonical Grimoire block template. "
+        f"Checked: {checked}"
+    )
 
 
 GRIMOIRE_BLOCK = _load_grimoire_block()
@@ -95,7 +87,7 @@ GRIMOIRE_BLOCK = _load_grimoire_block()
 class Logger:
     """Terminal logger with prefixed output.
 
-    Both this terminal logger and the GUI's GuiLogger expose the same surface —
+    Both this terminal logger and the GUI's GuiLogger expose the same surface
     info/ok/warn/err for tagged messages, plus `line()` for raw subprocess
     output that should appear in the user-visible log without a tag prefix.
     """
@@ -133,7 +125,7 @@ def system_python():
     """Return a usable Python executable for spawning sister scripts.
 
     In a frozen PyInstaller binary, `sys.executable` points at the binary
-    itself (e.g. `grimoire-summon`) — invoking it as a Python interpreter
+    itself (e.g. `grimoire-summon`) - invoking it as a Python interpreter
     just makes the binary's argparse choke on the script path. Probe the
     PATH for a real `python3` / `python` interpreter and prefer that;
     fall back to `sys.executable` only when not frozen.
@@ -190,7 +182,7 @@ def resolve_arcana_url(args):
     """Resolve the Arcana git URL from flag, env, local origin, or public default."""
     return (
         args.arcana_url
-        or os.environ.get("GRIMOIRE_ARCANA_URL", "")
+        or os.environ.get("ARCANA_URL", "")
         or detect_arcana_url()
         or DEFAULT_ARCANA_URL
     )
@@ -308,7 +300,7 @@ def _github_entry(repo):
     name = repo.get("name") or _library_key_from_repo_path(repo.get("full_name", ""))
     return {
         "name": name,
-        "description": repo.get("description") or "Domain grimoire",
+        "description": repo.get("description") or "Grimoire",
         "online_path": repo.get("clone_url", ""),
     }
 
@@ -317,7 +309,7 @@ def _gitlab_entry(project):
     path = project.get("path") or _library_key_from_repo_path(project.get("path_with_namespace", ""))
     return {
         "name": project.get("name", path),
-        "description": project.get("description") or "Domain grimoire",
+        "description": project.get("description") or "Grimoire",
         "online_path": project.get("http_url_to_repo", ""),
     }
 
@@ -373,7 +365,7 @@ def try_gitlab_discovery(host, scope, token, log):
         if err:
             log.warn(f"GitLab API failed: {err}")
             if not token:
-                log.warn("No credentials found — set GITLAB_TOKEN or configure git credential helper")
+                log.warn("No credentials found - set GITLAB_TOKEN or configure git credential helper")
             return {}
         return _gitlab_filter_grimoires(data, log)
 
@@ -399,7 +391,7 @@ def try_gitlab_discovery(host, scope, token, log):
 
     log.warn(f"GitLab API failed: {err}")
     if not token:
-        log.warn("No credentials found — set GITLAB_TOKEN or configure git credential helper")
+        log.warn("No credentials found - set GITLAB_TOKEN or configure git credential helper")
     return {}
 
 
@@ -436,7 +428,7 @@ def try_github_discovery(host, scope, token, log):
         if err:
             log.warn(f"GitHub API failed: {err}")
             if not token:
-                log.warn("No credentials found — set GITHUB_TOKEN or configure git credential helper")
+                log.warn("No credentials found - set GITHUB_TOKEN or configure git credential helper")
             return {}
     if not isinstance(data, list):
         log.warn(f"GitHub API returned unexpected response type: {type(data).__name__}")
@@ -489,7 +481,7 @@ def discover_grimoires(scope_url, log, explicit_token=""):
             log.ok(f"Discovered {len(entries)} grimoire(s) via GitHub API")
             return entries
 
-    log.err(f"No grimoires found at {scope_url} — check the URL, network, and auth tokens")
+    log.err(f"No grimoires found at {scope_url} - check the URL, network, and auth tokens")
     return {}
 
 
@@ -508,10 +500,10 @@ def check_git(log):
 
 
 # Top-level files we expect in a healthy working tree. If `.git/` exists but
-# none of these are checked out, the working tree is partial — most commonly
+# none of these are checked out, the working tree is partial - most commonly
 # because `git checkout` aborted on a path that's invalid on this OS (Windows
 # rejects names containing < > : " | ? *).
-WORKING_TREE_SENTINELS = ("README.md", "grimoire.json", "arcana.md")
+WORKING_TREE_SENTINELS = ("README.md", "arcana.json", "arcana.md")
 
 
 def working_tree_populated(target_dir):
@@ -524,7 +516,7 @@ def attempt_working_tree_recovery(target_dir, name, log):
 
     Returns True if recovery succeeded (sentinel present afterward), False otherwise.
     """
-    log.warn(f"{name}: .git/ present but working tree is partial — attempting recovery")
+    log.warn(f"{name}: .git/ present but working tree is partial - attempting recovery")
     ok, _ = git("-C", str(target_dir), "checkout", "HEAD", "--", ".", log=log)
     if ok and working_tree_populated(target_dir):
         log.ok(f"{name}: working tree recovered via `git checkout HEAD -- .`")
@@ -543,12 +535,12 @@ def install_arcana(arcana_url, log):
     """Clone or update Arcana."""
     log.info("Installing Arcana...")
     if (ARCANA_DIR / ".git").is_dir():
-        log.info("Arcana already installed — pulling latest...")
+        log.info("Arcana already installed - pulling latest...")
         ok, _ = git("-C", str(ARCANA_DIR), "pull", "--ff-only", log=log)
         if ok:
             log.ok(f"Arcana updated: {ARCANA_DIR}")
         else:
-            log.warn("Arcana pull failed (local changes?) — skipping update")
+            log.warn("Arcana pull failed (local changes?) - skipping update")
             log.ok(f"Arcana exists: {ARCANA_DIR}")
         if not working_tree_populated(ARCANA_DIR):
             if not attempt_working_tree_recovery(ARCANA_DIR, "Arcana", log):
@@ -557,7 +549,7 @@ def install_arcana(arcana_url, log):
         log.info(f"Cloning Arcana from {arcana_url}...")
         ok, _ = git("clone", arcana_url, str(ARCANA_DIR), log=log)
         if not ok:
-            log.err("Failed to clone Arcana — check network and git credentials")
+            log.err("Failed to clone Arcana - check network and git credentials")
             if (ARCANA_DIR / ".git").is_dir() and not working_tree_populated(ARCANA_DIR):
                 log.err(
                     "A partial clone was left at {0}. After resolving the cause, "
@@ -598,25 +590,25 @@ def install_grimoire(key, entry, log):
     target = GRIMOIRES_HOME / key
 
     if (target / ".git").is_dir():
-        log.info(f"{name} already installed — pulling latest...")
+        log.info(f"{name} already installed - pulling latest...")
         ok, _ = git("-C", str(target), "pull", "--ff-only", log=log)
         if ok:
             log.ok(f"{name} updated: {target}")
         else:
-            log.warn(f"{name} pull failed (local changes?) — skipping update")
+            log.warn(f"{name} pull failed (local changes?) - skipping update")
             log.ok(f"{name} exists: {target}")
         if not working_tree_populated(target):
             if not attempt_working_tree_recovery(target, name, log):
                 return False
         return True
     elif target.is_dir():
-        log.warn(f"{name} directory exists but is not a git repo — skipping")
+        log.warn(f"{name} directory exists but is not a git repo - skipping")
         return True
     else:
         log.info(f"Cloning {name} from {url}...")
         ok, _ = git("clone", url, str(target), log=log)
         if not ok:
-            log.err(f"Failed to clone {name} — check VPN and git credentials")
+            log.err(f"Failed to clone {name} - check VPN and git credentials")
             if (target / ".git").is_dir() and not working_tree_populated(target):
                 log.err(
                     f"A partial clone was left at {target}. After resolving "
@@ -721,12 +713,12 @@ def register_skills(log):
 
     claude_skills_dir = Path.home() / ".claude" / "skills"
     codex_skills_dir = Path.home() / ".codex" / "skills"
-    claude_count = len(list(claude_skills_dir.glob("grm-*"))) if claude_skills_dir.is_dir() else 0
-    codex_count = len(list(codex_skills_dir.glob("grm-*"))) if codex_skills_dir.is_dir() else 0
+    claude_count = len(list(claude_skills_dir.glob("arc-*"))) if claude_skills_dir.is_dir() else 0
+    codex_count = len(list(codex_skills_dir.glob("arc-*"))) if codex_skills_dir.is_dir() else 0
     log.ok(f"Skills registered: {claude_count} to {claude_skills_dir}, {codex_count} to {codex_skills_dir}")
     if claude_count == 0 and codex_count == 0:
         log.warn(
-            "No /grm-* skills landed in either agent directory — "
+            "No /arc-* skills landed in either agent directory - "
             "this usually means neither Claude Code nor Codex is set up on this machine."
         )
         log.warn(f"Run `mkdir -p ~/.claude/skills ~/.codex/skills && python3 {register_script}` after installing your agent of choice.")
@@ -837,14 +829,14 @@ def _print_cli_summary(mode, installed_keys, skills_ok):
     print("  Arcana:  ~/grimoires/arcana/")
     print()
     if mode == "arcana_only":
-        print("  Grimoires: none cloned — Arcana only.")
-        print("  To create your first grimoire, open an agent session and run: /grm-domain-create-grimoire")
+        print("  Grimoires: none cloned - Arcana only.")
+        print("  To create your first grimoire, open an agent session and run: /arc-grimoire-create")
     elif installed_keys:
         print("  Installed grimoires:")
         for key in installed_keys:
-            print(f"    - ~/grimoires/{key}/")
+            print(f"   - ~/grimoires/{key}/")
     else:
-        print("  Domain grimoires: none landed (clone failures — see log above).")
+        print("  Grimoires: none landed (clone failures - see log above).")
     print()
     print(f"  Local library: {LOCAL_LIBRARY}")
     print(f"  CLAUDE.md:     {CLAUDE_MD}")
@@ -853,12 +845,12 @@ def _print_cli_summary(mode, installed_keys, skills_ok):
     print("                 ~/.codex/skills/")
     print()
     if not skills_ok:
-        print("  *** Skill registration failed — see errors above. Re-run: ***")
+        print("  *** Skill registration failed - see errors above. Re-run: ***")
         print(f"      python3 {ARCANA_DIR / 'rites' / 'register_skills.py'}")
         print()
     print("  Next steps:")
     print("    1. Open a new Claude Code or Codex/ChatGPT session")
-    print("    2. Try: /grm-meta-help")
+    print("    2. Try: /arc-help")
     print()
 
 
@@ -931,7 +923,7 @@ def run_cli(args):
                     if install_grimoire(key, entry, log):
                         installed_keys.append(key)
                 if selected_keys and not installed_keys:
-                    log.warn("No grimoires were cloned successfully — continuing with Arcana-only install.")
+                    log.warn("No grimoires were cloned successfully - continuing with Arcana-only install.")
 
     print()
     skills_ok = finalize_install(installed_keys, library, log)

@@ -1,3 +1,3 @@
-# Activity Log — Bad Links Fixture
+# Activity Log - Bad Links Fixture
 
 ---

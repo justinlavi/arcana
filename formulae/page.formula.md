@@ -2,10 +2,10 @@
 type: concept
 title: "[Title]"
 aliases: []
-tags: []
+tags: [type/concept]
 sources: []
-authority: external
-last_verified: YYYY-MM-DD
+authority: grimoire
+last_verified: 1970-01-01
 ---
 
 <!--
@@ -39,7 +39,7 @@ Choose `authority:` from: external | grimoire | hybrid (see docs/page_schema.md)
 
 ## Gotchas
 
-[Common mistakes, edge cases — optional.]
+[Common mistakes, edge cases - optional.]
 
 ## Related
 

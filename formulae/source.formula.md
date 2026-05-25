@@ -1,11 +1,11 @@
 ---
 type: source
-title: "[Source title — article headline, podcast episode, paper title]"
+title: "[Source title - article headline, podcast episode, paper title]"
 aliases: []
 tags: [type/source]
 sources: ["[original URL or filesystem origin]"]
 authority: external
-last_verified: YYYY-MM-DD
+last_verified: 1970-01-01
 ---
 
 # [Source Title]
@@ -28,6 +28,6 @@ For binary or large sources (PDFs, audio, video): keep the binary in `sources/<s
 
 ## Wiki Pages Derived From This Source
 
-Filled by `/grm-domain-ingest` after processing. Do not edit by hand.
+Filled by `/arc-grimoire-ingest` after processing. Do not edit by hand.
 
 - (none yet)

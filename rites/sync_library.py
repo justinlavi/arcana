@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-"""Grimoire Library Sync — scan ~/grimoires/ and reconcile against the library.
+"""Grimoire Library Sync - scan ~/grimoires/ and reconcile against the library.
 
 Walks the grimoire home directory, identifies every valid grimoire (any
 subdirectory containing a well-formed grimoire.json), and compares the result
 against the local library at ~/grimoires/library.json.
 
 Reports four kinds of drift:
-  * Missing      — grimoire on disk but absent from the library
-  * Stale        — library entry whose local_path no longer exists
-  * Mismatched   — library entry whose local_path differs from where the
+  * Missing      - grimoire on disk but absent from the library
+  * Stale        - library entry whose local_path no longer exists
+  * Mismatched   - library entry whose local_path differs from where the
                    grimoire actually lives
-  * Unmanaged    — directory under ~/grimoires/ with no grimoire.json
+  * Unmanaged    - directory under ~/grimoires/ with no grimoire.json
                    (cannot be auto-registered; reported for cleanup)
 
 Also surfaces structural issues that don't block sync but warrant attention:
-  * Namespace collisions across grimoires
+  * Skill prefix collisions across grimoires
   * grimoire.json `name` differing from the directory name
 
 Defaults to a dry-run report. Pass --apply to write the reconciled library.
@@ -44,6 +44,7 @@ from _lib import (
 
 DEFAULT_HOME = Path.home() / "grimoires"
 ARCANA_NAME = "arcana"
+ARCANA_MANIFEST = "arcana.json"
 
 
 # ---------------------------------------------------------------------------
@@ -72,9 +73,9 @@ def scan_grimoire_home(home):
     """Walk home, classify each subdirectory.
 
     Returns a dict with three lists:
-        grimoires:  [{key, path, manifest, online_path}]   — domain grimoires
-        unmanaged:  [path]                                  — dirs without grimoire.json
-        warnings:   [str]                                   — non-fatal issues
+        grimoires:  [{key, path, manifest, online_path}]   - grimoires
+        unmanaged:  [path]                                  - dirs without grimoire.json
+        warnings:   [str]                                   - non-fatal issues
     """
     grimoires = []
     unmanaged = []
@@ -86,6 +87,8 @@ def scan_grimoire_home(home):
     for child in sorted(home.iterdir()):
         if not child.is_dir():
             continue
+        if child.name == ARCANA_NAME and (child / ARCANA_MANIFEST).is_file():
+            continue
 
         manifest, errors = load_manifest(child)
         if manifest is None:
@@ -95,10 +98,6 @@ def scan_grimoire_home(home):
         if errors:
             for e in errors:
                 warnings.append(f"{child.name}: {e}")
-            continue
-
-        # Skip Arcana itself — it is the engine, not a domain grimoire.
-        if manifest.get("name") == ARCANA_NAME:
             continue
 
         # Surface name/directory mismatches as warnings (use directory as key).
@@ -117,14 +116,14 @@ def scan_grimoire_home(home):
             }
         )
 
-    # Detect namespace collisions across grimoires.
+    # Detect skill_prefix collisions across grimoires.
     seen = {}
     for g in grimoires:
-        ns = g["manifest"].get("namespace")
+        ns = g["manifest"].get("skill_prefix")
         if ns in seen:
             warnings.append(
-                f"namespace collision: '{ns}' used by both "
-                f"'{seen[ns]}' and '{g['key']}' — skill registration will overwrite"
+                f"skill_prefix collision: '{ns}' used by both "
+                f"'{seen[ns]}' and '{g['key']}' - skill registration will overwrite"
             )
         else:
             seen[ns] = g["key"]
@@ -150,10 +149,10 @@ def diff_library(scan, library, home):
     """Compute drift between disk state and library.
 
     Returns a dict of lists:
-        missing     — keys on disk but not in library
-        stale       — keys in library whose path doesn't exist
-        mismatched  — keys whose library local_path differs from disk
-        ok          — keys present in both with matching paths
+        missing     - keys on disk but not in library
+        stale       - keys in library whose path doesn't exist
+        mismatched  - keys whose library local_path differs from disk
+        ok          - keys present in both with matching paths
     """
     disk_keys = {g["key"] for g in scan["grimoires"]}
     library_keys = set(library["grimoires"].keys())
@@ -269,9 +268,9 @@ def print_report(scan, diff, home, library_path, apply_mode):
         print()
 
     if scan["unmanaged"]:
-        print("  Unmanaged directories (no grimoire.json — won't be added):")
+        print("  Unmanaged directories (no grimoire.json - won't be added):")
         for path in scan["unmanaged"]:
-            info(f"{path.name}/  → add grimoire.json or move out of {home}")
+            info(f"{path.name}/  -> add grimoire.json or move out of {home}")
         print()
 
     print(f"  Found {len(scan['grimoires'])} valid grimoire(s) on disk.")
@@ -350,7 +349,7 @@ def main():
         ok(f"Library written: {library_path}")
         print()
         print("  Re-register skills to pick up any new grimoires:")
-        print("    /grm-skills-register")
+        print("    /arc-skills-register")
         print()
 
     sys.exit(0)

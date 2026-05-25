@@ -18,7 +18,7 @@ Judgment-based invocations for improving Arcana quality beyond what mechanical v
 
 - Before an Arcana release.
 - After bulk doc/rite changes.
-- As part of `/grm-arcana-improve` (these invocations are phases of that workflow).
+- As part of `/arc-improve` (these invocations are phases of that workflow).
 
 ## Related
 

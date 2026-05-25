@@ -2,6 +2,7 @@
 
 import io
 import sys
+from pathlib import Path
 
 import summon_core
 
@@ -31,3 +32,14 @@ def test_prompt_cli_mode_defaults_to_arcana_only_without_interactive_input(monke
     monkeypatch.setattr("builtins.open", fake_open)
 
     assert summon_core._prompt_cli_mode(scope_preselected=False) == "arcana_only"
+
+
+def test_grimoire_block_comes_from_canonical_template():
+    template = (
+        Path(__file__).resolve().parents[1]
+        / "rites"
+        / "templates"
+        / "grimoire_block.md"
+    )
+
+    assert summon_core.GRIMOIRE_BLOCK == "\n" + template.read_text(encoding="utf-8")

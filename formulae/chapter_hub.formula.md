@@ -21,11 +21,11 @@ Route here for questions about:
 
 Use full-path Obsidian wikilinks for in-grimoire pointers. The target is a repository-root relative path with the `.md` suffix optional.
 
-- [Sub-topic 1] → [[chapters/{{CHAPTER_NAME}}/sub_topic_1|sub-topic 1]]
-- [Sub-topic 2] → [[chapters/{{CHAPTER_NAME}}/sub_topic_2|sub-topic 2]]
-- [Sub-topic 3] → [[chapters/{{CHAPTER_NAME}}/sub_topic_3|sub-topic 3]]
+- [Sub-topic 1] -> [[chapters/{{CHAPTER_NAME}}/sub_topic_1|sub-topic 1]]
+- [Sub-topic 2] -> [[chapters/{{CHAPTER_NAME}}/sub_topic_2|sub-topic 2]]
+- [Sub-topic 3] -> [[chapters/{{CHAPTER_NAME}}/sub_topic_3|sub-topic 3]]
 
 ## Related Chapters
 
-- [Related chapter 1] → [[chapters/related_chapter_1/related_chapter_1|related chapter 1]]
-- [Related chapter 2] → [[chapters/related_chapter_2/related_chapter_2|related chapter 2]]
+- [Related chapter 1] -> [[chapters/related_chapter_1/related_chapter_1|related chapter 1]]
+- [Related chapter 2] -> [[chapters/related_chapter_2/related_chapter_2|related chapter 2]]

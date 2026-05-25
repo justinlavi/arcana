@@ -2,7 +2,7 @@
 type: hub
 title: "Arcana"
 aliases: ["arcana-root", "grimoire-arcana"]
-tags: [grimoire/grm, type/hub, hub/root]
+tags: [arcana/root, type/hub, hub/root]
 ---
 
 # Arcana
@@ -17,7 +17,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 
 - Routing: hub-per-folder, open-ended depth. Full rules in [docs/operating_model.md](docs/operating_model.md).
 - Frontmatter: type / authority / sources / last_verified. Spec in [docs/page_schema.md](docs/page_schema.md).
-- Arcana is the engine layer: `docs/`, `invocations/`, `formulae`, `rites`, `skills`, and `resources`. Domain grimoire layers (`chapters/`, `sources/`, `inbox/`, `log.md`) are scaffolded by [formulae/grimoire/](formulae/grimoire/), not kept at Arcana root.
+- Arcana is the engine layer: `docs/`, `invocations/`, `formulae`, `rites`, `skills`, and `resources`. Grimoire layers (`chapters/`, `sources/`, `inbox/`, `log.md`) are scaffolded by [formulae/grimoire/](formulae/grimoire/), not kept at Arcana root.
 
 ## Documentation
 
@@ -37,28 +37,28 @@ How Arcana is laid out — for the rules themselves, follow the links:
 
 ## Invocations
 
-**Grimoire (domain operations)** — see [invocations/grimoire/grimoire.md](invocations/grimoire/grimoire.md):
+**Grimoire (grimoire operations)** — see [invocations/grimoire/grimoire.md](invocations/grimoire/grimoire.md):
 
-- [create_grimoire.md](invocations/grimoire/create_grimoire.md) — `/grm-domain-create-grimoire`
-- [create_chapter.md](invocations/grimoire/create_chapter.md) — `/grm-domain-create-chapter`
-- [ingest.md](invocations/grimoire/ingest.md) — `/grm-domain-ingest`
-- [file_answer.md](invocations/grimoire/file_answer.md) — `/grm-domain-file-answer`
-- [lint.md](invocations/grimoire/lint.md) — `/grm-domain-lint`
-- [improve_grimoire.md](invocations/grimoire/improve_grimoire.md) — `/grm-domain-improve`
-- [analyze_semantics.md](invocations/grimoire/analyze_semantics.md) — `/grm-domain-analyze-semantics`
-- [validate_structure.md](invocations/grimoire/validate_structure.md) — `/grm-domain-validate-structure`
-- [validate_boundaries.md](invocations/grimoire/validate_boundaries.md) — `/grm-domain-validate-boundaries`
+- [create_grimoire.md](invocations/grimoire/create_grimoire.md) — `/arc-grimoire-create`
+- [create_chapter.md](invocations/grimoire/create_chapter.md) — `/arc-grimoire-create-chapter`
+- [ingest.md](invocations/grimoire/ingest.md) — `/arc-grimoire-ingest`
+- [file_answer.md](invocations/grimoire/file_answer.md) — `/arc-grimoire-file-answer`
+- [lint.md](invocations/grimoire/lint.md) — `/arc-grimoire-lint`
+- [improve_grimoire.md](invocations/grimoire/improve_grimoire.md) — `/arc-grimoire-improve`
+- [analyze_semantics.md](invocations/grimoire/analyze_semantics.md) — `/arc-grimoire-analyze-semantics`
+- [validate_structure.md](invocations/grimoire/validate_structure.md) — `/arc-grimoire-validate-structure`
+- [validate_boundaries.md](invocations/grimoire/validate_boundaries.md) — `/arc-grimoire-validate-boundaries`
 
 **Arcana (maintainer only)** — see [invocations/arcana/arcana.md](invocations/arcana/arcana.md):
 
-- [improve_arcana.md](invocations/arcana/improve_arcana.md) — `/grm-arcana-improve`
+- [improve_arcana.md](invocations/arcana/improve_arcana.md) — `/arc-improve`
 - Validators hub: [invocations/arcana/validators/validators.md](invocations/arcana/validators/validators.md)
 - Quality hub: [invocations/arcana/quality/quality.md](invocations/arcana/quality/quality.md)
 
 **Meta** — see [invocations/meta/meta.md](invocations/meta/meta.md):
 
-- [help.md](invocations/meta/help.md) — `/grm-meta-help`
-- [update_agent_block.md](invocations/meta/update_agent_block.md) — `/grm-meta-update-agent-block`
+- [help.md](invocations/meta/help.md) — `/arc-help`
+- [update_agent_block.md](invocations/meta/update_agent_block.md) — `/arc-agent-update`
 - [base_invocation.md](invocations/meta/base_invocation.md)
 
 ## Formulae

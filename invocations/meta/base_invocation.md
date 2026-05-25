@@ -11,7 +11,7 @@ last_verified: 2026-05-13
 
 A reusable, opinionated workflow for the most common Grimoire operation: "the user gave me a goal, I need to read sources, distill what's stable, write it as a wiki page, and wire it into the routing tree."
 
-This is **not** a slash command. It's a starting template for new invocations whose work fits the four-phase pattern. If a domain operation needs different phases (e.g. ingestion is handled by `/grm-domain-ingest`, lint by `/grm-domain-lint`), use the relevant dedicated invocation instead. For the structural skeleton of a brand-new invocation file, copy `formulae/invocation.formula.md`.
+This is **not** a slash command. It's a starting template for new invocations whose work fits the four-phase pattern. If a domain operation needs different phases (e.g. ingestion is handled by `/arc-grimoire-ingest`, lint by `/arc-grimoire-lint`), use the relevant dedicated invocation instead. For the structural skeleton of a brand-new invocation file, copy `formulae/invocation.formula.md`.
 
 The magical/practical boundary, page schema, hub convention, and storage layers are documented elsewhere; this file references them rather than restating.
 
@@ -30,7 +30,7 @@ Anything you author following this template must conform to:
 Use this four-phase template when:
 
 - The user has a goal that requires reading external material and producing a single canonical wiki page.
-- No more specific invocation applies (`/grm-domain-ingest` for filing a source, `/grm-domain-file-answer` for promoting a chat answer, `/grm-domain-create-chapter` for scaffolding a new chapter).
+- No more specific invocation applies (`/arc-grimoire-ingest` for filing a source, `/arc-grimoire-file-answer` for promoting a chat answer, `/arc-grimoire-create-chapter` for scaffolding a new chapter).
 
 ## When NOT to follow this pattern
 
@@ -53,26 +53,26 @@ Use this four-phase template when:
 ## User Request (filled from the user message)
 
 - **Goal**:
-  <!-- 1–3 sentences: what the user wants accomplished. -->
+  <!-- 13 sentences: what the user wants accomplished. -->
 
 - **Starting pointers** (files/repos/keywords):
   <!-- Use explicit pointers if provided.
        If missing: list what you will inspect first, and why those entry points are canonical. -->
 
 - **Desired outputs**:
-  - [ ] One canonical leaf page (default)
-  - [ ] Hub updates (almost always required when content is created/moved)
-  - [ ] One supporting asset (template OR snippet)
-  - [ ] Source filed under `sources/` (only if synthesizing an external artifact)
+ - [ ] One canonical leaf page (default)
+ - [ ] Hub updates (almost always required when content is created/moved)
+ - [ ] One supporting asset (template OR snippet)
+ - [ ] Source filed under `sources/` (only if synthesizing an external artifact)
 
 - **Scope**:
-  - [ ] Shared (cross-scope)
-  - [ ] Scope-specific (route via the grimoire's scope-folder hub)
+ - [ ] Shared (cross-scope)
+ - [ ] Scope-specific (route via the grimoire's scope-folder hub)
 
 - **Authority for the new page**:
-  - [ ] `external` — page summarizes external material; `sources:` required
-  - [ ] `grimoire` — wiki owns the synthesis; `sources:` may be empty
-  - [ ] `hybrid` — wiki owns synthesis but cites external implementation details
+ - [ ] `external`  page summarizes external material; `sources:` required
+ - [ ] `grimoire`  wiki owns the synthesis; `sources:` may be empty
+ - [ ] `hybrid`  wiki owns synthesis but cites external implementation details
 
 - **Success criteria**:
   <!-- If omitted by user, apply Defaults above. -->
@@ -139,9 +139,9 @@ last_verified: YYYY-MM-DD
 3. `## When to Use` — scenarios that route here.
 4. `## Primary Sources` — required when `authority` is `external` or `hybrid`. List artifacts under `sources/` and external systems the page synthesizes. Omit entirely for `authority: grimoire` pages that are themselves the source of truth.
 5. **Author-named content sections** — page formula intentionally does not enforce a fixed list here. Pick what the page actually needs. Common choices by `type`:
-   - `concept` / `entity`: `## Invariants`, `## Standard Patterns`, `## Architecture`, `## Comparison Table`
-   - `playbook`: `## Workflow`, `## Inputs`, `## Outputs`, `## Validation`
-   - `reference`: `## Vocabulary`, `## Schema`, `## Field Reference`
+  - `concept` / `entity`: `## Invariants`, `## Standard Patterns`, `## Architecture`, `## Comparison Table`
+  - `playbook`: `## Workflow`, `## Inputs`, `## Outputs`, `## Validation`
+  - `reference`: `## Vocabulary`, `## Schema`, `## Field Reference`
 6. `## Gotchas` — optional. Common mistakes, edge cases.
 7. `## Related` — full-path wikilinks to sibling/parent pages.
 
@@ -149,7 +149,7 @@ last_verified: YYYY-MM-DD
 
 - Update the directly-containing chapter hub with a wikilink pointer to the new leaf.
 - Update the root hub only when introducing a top-level chapter.
-- Use full-path Obsidian wikilinks (`[[chapters/path/to/page|label]]`) for in-grimoire pointers. Display labels name only the target filename, normalized for reading. Aliases are metadata only and never link targets. Cross-grimoire references stay as path placeholders (`GRIMOIRE_ARCANA/...`).
+- Use full-path Obsidian wikilinks (`[[chapters/path/to/page|label]]`) for in-grimoire pointers. Display labels name only the target filename, normalized for reading. Aliases are metadata only and never link targets. Cross-grimoire references stay as path placeholders (`ARCANA_HOME/...`).
 - If the new page introduces a new sub-chapter, scaffold its hub at `<new-folder>/<new-folder>.md` (the hub convention recurses).
 
 ### Phase 5 — Validate before finishing
@@ -157,9 +157,9 @@ last_verified: YYYY-MM-DD
 Run from the grimoire root:
 
 ```bash
-python3 GRIMOIRE_ARCANA/rites/validate_frontmatter.py --grimoire .
-python3 GRIMOIRE_ARCANA/rites/validate_links.py --grimoire .
-python3 GRIMOIRE_ARCANA/rites/validate_provenance.py --grimoire .
+python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
+python3 ARCANA_HOME/rites/validate_links.py --grimoire .
+python3 ARCANA_HOME/rites/validate_provenance.py --grimoire .
 ```
 
 Confirm:
@@ -168,16 +168,16 @@ Confirm:
 - No project / scope-specific content was written into shared chapters.
 - All added pointers and wikilinks resolve.
 - No absolute paths.
-- No `invocations/`, `formulae/`, or `rites/` folders created in the domain grimoire.
+- No `invocations/`, `formulae/`, or `rites/` folders created in the grimoire.
 
 ### Phase 6 — Append a log entry
 
 ```bash
-python3 GRIMOIRE_ARCANA/rites/append_log.py \
+python3 ARCANA_HOME/rites/append_log.py \
   --grimoire . \
   --op create \
   --title "<short description of what was authored>" \
-  --skill /<namespace>-<skill> \
+  --skill /<skill prefix>-<skill> \
   --field pages=<comma-separated paths>
 ```
 

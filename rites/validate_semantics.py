@@ -2,11 +2,11 @@
 """Validates Arcana semantics: hyphenated path examples in body text.
 
 What this rite checks (mechanical, deterministic):
-- Hyphenated path examples — paths like `chapters/example-name/` or
+- Hyphenated path examples - paths like `chapters/example-name/` or
   `file-name.md` written in prose should use snake_case (Arcana convention).
 
 What this rite does NOT do: intelligent semantic analysis (naming quality,
-discoverability, organization). For that, use /grm-domain-analyze-semantics.
+discoverability, organization). For that, use /arc-grimoire-analyze-semantics.
 Filename naming is enforced separately by validate_naming.py.
 
 Usage: python3 rites/validate_semantics.py
@@ -95,7 +95,7 @@ def main():
         print("Semantic validation passed.")
         print()
         print("For intelligent semantic analysis (naming quality, discoverability):")
-        print("   /grm-domain-analyze-semantics")
+        print("   /arc-grimoire-analyze-semantics")
         print()
         return 0
 

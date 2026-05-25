@@ -2,7 +2,7 @@
 """Generate canonical docs from authoritative source files.
 
 Currently emits:
-  docs/skills.md  — canonical list of every Arcana skill, derived from each
+  docs/skills.md - canonical list of every Arcana skill, derived from each
                     skills/<slug>/SKILL.md frontmatter (name + description).
 
 Why a generator? The skill list is referenced from many places. With this rite,
@@ -26,8 +26,8 @@ SKILLS_DIR = ARCANA_PATH / "skills"
 DOCS_DIR = ARCANA_PATH / "docs"
 SKILLS_DOC = DOCS_DIR / "skills.md"
 
-NAMESPACE_PLACEHOLDER = "{{NAMESPACE}}"
-ARCANA_NAMESPACE = "grm"  # Arcana's own namespace, declared in arcana/grimoire.json
+SKILL_PREFIX_PLACEHOLDER = "{{SKILL_PREFIX}}"
+ARCANA_SKILL_PREFIX = "arc"
 
 
 def read_frontmatter(skill_file):
@@ -63,7 +63,7 @@ def collect_skills():
         if not templated_name:
             continue
         registered_name = templated_name.replace(
-            NAMESPACE_PLACEHOLDER, ARCANA_NAMESPACE
+            SKILL_PREFIX_PLACEHOLDER, ARCANA_SKILL_PREFIX
         )
         description = fm.get("description", "")
         skills.append((registered_name, description))
@@ -71,29 +71,53 @@ def collect_skills():
 
 
 def group_skills(skills):
-    """Group skills by their first segment after the namespace prefix.
+    """Group skills by their first segment after the skill_prefix.
 
-    Example: 'grm-arcana-validate-format' -> group 'arcana'.
+    Example: 'arc-grimoire-ingest' -> group 'grimoire'.
     Returns an ordered dict-like list of (group, [(name, desc), ...]).
     """
     groups = {}
     for name, desc in skills:
-        # Strip the 'grm-' prefix to find the functional group.
         without_ns = re.sub(r"^[a-z]+-", "", name, count=1)
-        group = without_ns.split("-", 1)[0] if "-" in without_ns else without_ns
+        if without_ns in {"clean", "improve"}:
+            group = "arcana"
+        elif without_ns.startswith("validate-"):
+            group = "validate"
+        elif without_ns.startswith("grimoire-"):
+            group = "grimoire"
+        elif without_ns.startswith("library-"):
+            group = "library"
+        elif without_ns.startswith("skills-"):
+            group = "skills"
+        elif without_ns == "help":
+            group = "help"
+        elif without_ns.startswith("agent-"):
+            group = "agent"
+        else:
+            group = without_ns.split("-", 1)[0] if "-" in without_ns else without_ns
         groups.setdefault(group, []).append((name, desc))
 
-    # Stable ordering: arcana first, then domain, then alphabetical for the rest.
-    priority = {"arcana": 0, "library": 1, "domain": 2, "skills": 3, "meta": 4}
+    # Stable ordering: Arcana core first, then grimoire and support groups.
+    priority = {
+        "arcana": 0,
+        "validate": 1,
+        "grimoire": 2,
+        "library": 3,
+        "skills": 4,
+        "help": 5,
+        "agent": 6,
+    }
     return sorted(groups.items(), key=lambda kv: (priority.get(kv[0], 99), kv[0]))
 
 
 GROUP_HEADERS = {
     "arcana": "Arcana maintenance",
+    "validate": "Arcana validation",
     "library": "Library management",
-    "domain": "Domain grimoire operations",
+    "grimoire": "Grimoire operations",
     "skills": "Skill registration",
-    "meta": "Meta / discovery",
+    "help": "Help",
+    "agent": "Agent configuration",
 }
 
 
@@ -115,15 +139,15 @@ def render_skills_doc(skills):
         "",
         "# Arcana Skill Catalog",
         "",
-        "Skills shipped by Arcana itself, namespaced `grm-*`.",
+        "Skills shipped by Arcana itself, prefixed `arc-*`.",
         "Each entry links to the source `SKILL.md` — that file is canonical.",
         "",
-        "Domain grimoire skills (e.g. `cook-*` for a cooking grimoire,",
+        "Grimoire skills (e.g. `cook-*` for a cooking grimoire,",
         "`hr-*` for an HR grimoire) are not listed here — they're declared",
-        "in each grimoire's own `skills/` directory and use the namespace",
+        "in each grimoire's own `skills/` directory and use the `skill_prefix`",
         "from that grimoire's `grimoire.json`. To enumerate every skill",
-        "currently installed for an agent (Arcana + every domain grimoire),",
-        "invoke `/grm-meta-help`.",
+        "currently installed for an agent (Arcana + every grimoire),",
+        "invoke `/arc-help`.",
         "",
         "---",
         "",
@@ -136,7 +160,7 @@ def render_skills_doc(skills):
         lines.append("| Skill | Description |")
         lines.append("|---|---|")
         for name, desc in members:
-            slug = name.removeprefix("grm-")
+            slug = name.removeprefix(f"{ARCANA_SKILL_PREFIX}-")
             source = f"../skills/{slug}/SKILL.md"
             lines.append(f"| [`/{name}`]({source}) | {desc} |")
         lines.append("")
@@ -147,7 +171,7 @@ def render_skills_doc(skills):
         "## Adding a new skill",
         "",
         "1. Create `skills/<area>-<verb>-<object>/SKILL.md` with frontmatter:",
-        "   `name: {{NAMESPACE}}-<area>-<verb>-<object>` and a one-line `description`.",
+        "   `name: {{SKILL_PREFIX}}-<area>-<verb>-<object>` and a one-line `description`.",
         "2. Run `python3 rites/sync_docs.py --apply` to refresh this library.",
         "3. Run `python3 rites/register_skills.py` to install the skill into agent skill directories.",
         "",
@@ -192,7 +216,7 @@ def main():
 
     if args.apply:
         DOCS_DIR.mkdir(parents=True, exist_ok=True)
-        SKILLS_DOC.write_text(new_content, encoding="utf-8")
+        SKILLS_DOC.write_text(new_content, encoding="utf-8", newline="\n")
         print(f"  [OK]  Wrote {SKILLS_DOC}")
         print()
         sys.exit(0)

@@ -16,27 +16,27 @@ Confirm every page declaring `authority: external` or `authority: hybrid` lists 
 ## Invocation
 
 ```
-/grm-arcana-validate-provenance
+/arc-validate-provenance
 ```
 
 Or directly:
 
 ```bash
-python3 GRIMOIRE_ARCANA/rites/validate_provenance.py [--grimoire <path>]
+python3 ARCANA_HOME/rites/validate_provenance.py [--grimoire <path>]
 ```
 
 ## When to run
 
-- After `/grm-domain-ingest` to confirm the new pages cite their source.
-- As a phase of `/grm-domain-lint`.
+- After `/arc-grimoire-ingest` to confirm the new pages cite their source.
+- As a phase of `/arc-grimoire-lint`.
 - After moving or renaming files in `sources/`.
 - As a pre-release gate.
 
 ## Common failures
 
-- **`sources:` empty on external page** → either downgrade authority to `grimoire` (the page IS the source of truth), or add a real source.
-- **`sources/<path>` does not resolve** → either the artifact was renamed (provenance broke — rename it back or fix the page) or the path is a typo.
-- **`sources:` not a YAML list** → fix to `sources: ["sources/...", "..."]` or multi-line list.
+- **`sources:` empty on external page** -> either downgrade authority to `grimoire` (the page IS the source of truth), or add a real source.
+- **`sources/<path>` does not resolve** -> either the artifact was renamed (provenance broke - rename it back or fix the page) or the path is a typo.
+- **`sources:` not a YAML list** -> fix to `sources: ["sources/...", "..."]` or multi-line list.
 
 ## Related
 

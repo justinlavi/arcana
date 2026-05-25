@@ -37,7 +37,7 @@ REQUIRED_FILES = [
     "CHANGELOG.md",
     "VERSION",
     "library.json",
-    "grimoire.json",
+    "arcana.json",
     "rites/summon.sh",
     "rites/register_skills.py",
     "docs/installation.md",
@@ -48,11 +48,12 @@ REQUIRED_FILES = [
     "docs/page_schema.md",
 ]
 
-FORBIDDEN_DOMAIN_LAYER_PATHS = [
+FORBIDDEN_GRIMOIRE_LAYER_PATHS = [
     "chapters",
     "sources",
     "inbox",
     "log.md",
+    "grimoire.json",
 ]
 
 # Folders whose hub file must exist with the folder-name convention.
@@ -100,11 +101,11 @@ def main():
             print(f"  OK       {f}")
     print()
 
-    print("Checking Arcana root excludes domain grimoire layers...")
-    for rel in FORBIDDEN_DOMAIN_LAYER_PATHS:
+    print("Checking Arcana root excludes grimoire layers...")
+    for rel in FORBIDDEN_GRIMOIRE_LAYER_PATHS:
         path = ARCANA_ROOT / rel
         if path.exists():
-            print(f"  FORBIDDEN root path: {rel} (domain layer belongs in formulae/grimoire/)")
+            print(f"  FORBIDDEN root path: {rel} (grimoire layer belongs in formulae/grimoire/)")
             errors += 1
         else:
             print(f"  OK       no {rel}")

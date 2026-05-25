@@ -11,16 +11,16 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-Health-check the active domain grimoire. Combines mechanical rites (orphans, provenance, frontmatter, structure, links) with judgment-based passes (stale claims, ghost references, contradictions). Surface findings; apply only the fixes the user approves.
+Health-check the active grimoire. Combines mechanical rites (orphans, provenance, frontmatter, structure, links) with judgment-based passes (stale claims, ghost references, contradictions). Surface findings; apply only the fixes the user approves.
 
 This is the LLM-wiki "lint" pass: keeps the wiki maintained as it grows.
 
 ## Invocation
 
-From the active domain grimoire's root:
+From the active grimoire's root:
 
 ```
-/grm-domain-lint
+/arc-grimoire-lint
 ```
 
 Flags:
@@ -29,7 +29,7 @@ Flags:
 
 ## Preconditions
 
-1. Working directory must be a registered domain grimoire (its key in `~/grimoires/library.json`). Refuse for Arcana itself.
+1. Working directory must be a registered grimoire (its key in `~/grimoires/library.json`). Refuse for Arcana itself.
 2. The grimoire must have `sources/`, `log.md`, and a root hub.
 
 ## Workflow
@@ -39,11 +39,11 @@ Flags:
 Run these from the grimoire root and capture output:
 
 ```bash
-python3 GRIMOIRE_ARCANA/rites/validate_structure.py
-python3 GRIMOIRE_ARCANA/rites/validate_frontmatter.py
-python3 GRIMOIRE_ARCANA/rites/validate_links.py
-python3 GRIMOIRE_ARCANA/rites/validate_orphans.py --grimoire .
-python3 GRIMOIRE_ARCANA/rites/validate_provenance.py --grimoire .
+python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire .
+python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
+python3 ARCANA_HOME/rites/validate_links.py --grimoire .
+python3 ARCANA_HOME/rites/validate_orphans.py --grimoire .
+python3 ARCANA_HOME/rites/validate_provenance.py --grimoire .
 ```
 
 Stop and report if structure or frontmatter has hard errors — they invalidate later phases.
@@ -88,16 +88,16 @@ Group findings by category. For each group ask the user:
 
 - **Auto-apply**: clearly mechanical fixes (broken markdown links the rite already located, missing wikilinks where target exists, frontmatter format issues).
 - **Confirm-then-apply**: orphan wiring (which hub should own this orphan?), terminology standardization, page promotions.
-- **Surface only**: contradictions, stale claims, ghost references → list them; do not act without explicit approval.
+- **Surface only**: contradictions, stale claims, ghost references -> list them; do not act without explicit approval.
 
 ### Phase 7: Append to log.md
 
 ```bash
-python3 GRIMOIRE_ARCANA/rites/append_log.py \
+python3 ARCANA_HOME/rites/append_log.py \
   --grimoire . \
   --op lint \
   --title "<short summary>" \
-  --skill /grm-domain-lint \
+  --skill /arc-grimoire-lint \
   --field orphans=<n> \
   --field stale=<n> \
   --field ghost-refs=<n> \
@@ -135,7 +135,7 @@ Surface in chat:
 
 ## Related
 
-- Mechanical: `/grm-arcana-validate-structure`, `/grm-arcana-validate-frontmatter`, `/grm-arcana-validate-links`, `/grm-arcana-validate-orphans`, `/grm-arcana-validate-provenance`
-- Semantic / naming: `/grm-domain-analyze-semantics`
-- Page schema: `GRIMOIRE_ARCANA/docs/page_schema.md`
-- Comprehensive grimoire pass: `/grm-domain-improve` (lint runs as one phase of improve)
+- Mechanical: `/arc-validate-structure`, `/arc-validate-frontmatter`, `/arc-validate-links`, `/arc-validate-orphans`, `/arc-validate-provenance`
+- Semantic / naming: `/arc-grimoire-analyze-semantics`
+- Page schema: `ARCANA_HOME/docs/page_schema.md`
+- Comprehensive grimoire pass: `/arc-grimoire-improve` (lint runs as one phase of improve)

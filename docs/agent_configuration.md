@@ -28,7 +28,7 @@ Each agent reads a "system instructions" file. Grimoire needs a small block in t
 | ChatGPT (hosted) | "Custom Instructions" field | No (paste manually) |
 | GitHub Copilot | `.github/copilot_instructions.md` | No (add manually; trim to the four key sections if length-limited) |
 
-The block never changes when grimoires are added or removed — those changes happen in the library, not the agent file. When Arcana itself changes the block, use `/grm-meta-update-agent-block` to refresh existing `CLAUDE.md`, `AGENTS.md`, or other agent instruction files while preserving unrelated user instructions.
+The block never changes when grimoires are added or removed — those changes happen in the library, not the agent file. When Arcana itself changes the block, use `/arc-agent-update` to refresh existing `CLAUDE.md`, `AGENTS.md`, or other agent instruction files while preserving unrelated user instructions.
 
 ---
 
@@ -49,7 +49,7 @@ python3 ~/grimoires/arcana/rites/register_skills.py --agent claude
 python3 ~/grimoires/arcana/rites/register_skills.py --agent codex
 ```
 
-Or invoke `/grm-skills-register`. The summoning rite runs this for you on install.
+Or invoke `/arc-skills-register`. The summoning rite runs this for you on install.
 
 For Codex/ChatGPT, the registered directory must contain only `SKILL.md` — never bundle scripts, references, or copies of invocation content. The skill remains a thin pointer to Arcana invocations or rites.
 
@@ -64,7 +64,7 @@ A skill is a **thin pointer**. It delegates to one of:
 
 Skills must never embed implementation logic directly. This separation keeps them portable across agent platforms.
 
-For when to choose rite-backed vs invocation-backed (and the anti-patterns to avoid), see [`script_vs_ai.md` § Applying this to skills](script_vs_ai.md#applying-this-to-skills).
+For when to choose rite-backed vs invocation-backed (and the anti-patterns to avoid), see [`script_vs_ai.md` — Applying this to skills](script_vs_ai.md#applying-this-to-skills).
 
 ---
 
@@ -74,7 +74,7 @@ Every `SKILL.md` declares its skill in YAML frontmatter. Required fields are min
 
 | Field | Required | Used by | Notes |
 |---|---|---|---|
-| `name` | Yes | Both | Final registered command name. Source files use `{{NAMESPACE}}-<slug>`; the registration rite substitutes `{{NAMESPACE}}` with the grimoire's namespace at install time. |
+| `name` | Yes | Both | Final registered command name. Source files use `{{SKILL_PREFIX}}-<slug>`; the registration rite substitutes `{{SKILL_PREFIX}}` with the grimoire's skill prefix at install time. |
 | `description` | Yes | Both | One-line summary. Codex/ChatGPT renders it next to the command in the picker UI. Claude Code loads it into the model's reasoning context (see "Auto-invocation" below). |
 | `argument-hint` | No | Both | Bracketed hint shown during `/` autocomplete (e.g. `[topic]`, `[directory-name]`). |
 | `arguments` | No | Both | Comma-separated argument names available as `$name` in the SKILL.md body. |
@@ -89,38 +89,38 @@ Cross-agent safety: any field Codex/ChatGPT doesn't recognize is silently ignore
 
 Adding `when_to_use` makes a skill discoverable by intent in Claude Code (the user describes a problem; Claude routes to the right skill). The current Arcana settings:
 
-- **All user-facing operations** (`/grm-domain-*`, `/grm-library-*`, `/grm-skills-register`, `/grm-meta-help`, `/grm-arcana-validate-all`) declare `when_to_use` so Claude can auto-suggest them.
-- **One destructive skill** (`/grm-arcana-clean`) declares `disable-model-invocation: true` because it deletes artifacts; users must invoke it explicitly.
-- **Individual validators** (`/grm-arcana-validate-format`, `-links`, etc.) and the heavy maintainer orchestrator (`/grm-arcana-improve`) deliberately omit `when_to_use` — the orchestrator (`/grm-arcana-validate-all` or `/grm-arcana-improve`) is the right entry point for normal flows; auto-invoking individual validators would over-activate.
+- **All user-facing operations** (`/arc-grimoire-*`, `/arc-library-*`, `/arc-skills-register`, `/arc-help`, `/arc-validate-all`) declare `when_to_use` so Claude can auto-suggest them.
+- **One destructive skill** (`/arc-clean`) declares `disable-model-invocation: true` because it deletes artifacts; users must invoke it explicitly.
+- **Individual validators** (`/arc-validate-format`, `-links`, etc.) and the heavy maintainer orchestrator (`/arc-improve`) deliberately omit `when_to_use` — the orchestrator (`/arc-validate-all` or `/arc-improve`) is the right entry point for normal flows; auto-invoking individual validators would over-activate.
 
 When adding a new skill, decide: does the user describe a *problem* that maps to this skill? If yes, give it a `when_to_use`. If the skill is destructive or maintainer-only, set `disable-model-invocation: true`.
 
-Skills are namespaced by their grimoire's manifest:
-- Arcana skills: `grm-*` (declared in `arcana/grimoire.json`).
-- Domain grimoire skills: `{namespace}-*` (declared in each grimoire's `grimoire.json`).
+Skills are prefixed by their owning manifest:
+- Arcana skills: `arc-*` (declared in `arcana/arcana.json`).
+- Grimoire skills: `{skill prefix}-*` (declared in each grimoire's `grimoire.json`).
 
-Source `SKILL.md` files use `name: {{NAMESPACE}}-<slug>` in their frontmatter; the registration rite substitutes `{{NAMESPACE}}` with the grimoire's declared namespace at install time. See [reference.md](reference.md#grimoire-manifest) for manifest details.
+Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<slug>` in their frontmatter; the registration rite substitutes `{{SKILL_PREFIX}}` with the grimoire's declared skill prefix at install time. See [reference.md](reference.md#grimoire-manifest) for manifest details.
 
 ---
 
-## Domain Grimoire Skills
+## Grimoire Skills
 
-Domain grimoires contribute skills via their own `skills/` directory. Place each skill at `<grimoire>/skills/<area>-<verb>-<object>/SKILL.md`. The folder name is the subcommand after the namespace root. Use `{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` as path placeholders — the registration rite resolves both to absolute paths at install time.
+Grimoires contribute skills via their own `skills/` directory. Place each skill at `<grimoire>/skills/<area>-<verb>-<object>/SKILL.md`. The folder name is the subcommand after the skill prefix. Use `{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` as path placeholders — the registration rite resolves both to absolute paths at install time.
 
-To register new or updated skills, run `/grm-skills-register`.
+To register new or updated skills, run `/arc-skills-register`.
 
 ---
 
 ## Troubleshooting
 
 **Agent doesn't see new skills**
-- Run `/grm-skills-register` and open a new agent session (Claude Code / Codex caches skill listings).
+- Run `/arc-skills-register` and open a new agent session (Claude Code / Codex caches skill listings).
 
 **Agent has stale Grimoire routing instructions**
-- Run `/grm-meta-update-agent-block`. It compares existing agent instruction files against the canonical block and updates only the Grimoire section.
+- Run `/arc-agent-update`. It compares existing agent instruction files against the canonical block and updates only the Grimoire section.
 
 **Agent can't find a grimoire**
-- Verify the grimoire is in `~/grimoires/library.json` and the `local_path` resolves. Run `/grm-library-sync` to detect and reconcile drift.
+- Verify the grimoire is in `~/grimoires/library.json` and the `local_path` resolves. Run `/arc-library-sync` to detect and reconcile drift.
 
-**Skill names look wrong (`{{NAMESPACE}}-...`)**
-- The grimoire is missing a `grimoire.json` or its `namespace` field. See [reference.md](reference.md#grimoire-manifest).
+**Skill names look wrong (`{{SKILL_PREFIX}}-...`)**
+- The grimoire is missing a `grimoire.json` or its `skill_prefix` field. See [reference.md](reference.md#grimoire-manifest).

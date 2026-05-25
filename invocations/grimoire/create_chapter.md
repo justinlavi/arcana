@@ -11,18 +11,18 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-Scaffold a new knowledge chapter inside the active domain grimoire — copy `chapter_hub.formula.md` to `chapters/<chapter>/<chapter>.md`, customize placeholders, optionally seed leaf docs from `page.formula.md`, and register the chapter in the grimoire's root hub.
+Scaffold a new knowledge chapter inside the active grimoire — copy `chapter_hub.formula.md` to `chapters/<chapter>/<chapter>.md`, customize placeholders, optionally seed leaf docs from `page.formula.md`, and register the chapter in the grimoire's root hub.
 
 ## Invocation
 
 ```
-/grm-domain-create-chapter
+/arc-grimoire-create-chapter
 ```
 
 Or with a topic:
 
 ```
-/grm-domain-create-chapter for <topic>
+/arc-grimoire-create-chapter for <topic>
 ```
 
 ## Non-Negotiable Rules
@@ -30,7 +30,7 @@ Or with a topic:
 1. Chapter names are `snake_case`, lowercase, specific (`pto_policies`, not `hr_stuff`).
 2. The chapter hub file follows the folder-name convention: `chapters/<chapter>/<chapter>.md`.
 3. Practical folder names only inside chapters (`templates/`, `scripts/`, `snippets/`). Never `invocations/`, `formulae/`, or `rites/` — those live only in Arcana.
-4. Every page (hub + leaves) carries v2 frontmatter (`type`, `title`, `tags`, etc.). See `GRIMOIRE_ARCANA/docs/page_schema.md`.
+4. Every page (hub + leaves) carries v2 frontmatter (`type`, `title`, `tags`, etc.). See `ARCANA_HOME/docs/page_schema.md`.
 5. Link to source systems; don't duplicate their content.
 6. Update the grimoire's root hub so the chapter is routable. Use a wikilink.
 
@@ -38,7 +38,7 @@ Or with a topic:
 
 ## Step 0: Precondition
 
-Verify the working directory is a registered domain grimoire by checking `~/grimoires/library.json`. Arcana is not a grimoire. If the check fails, list available grimoires from the library and tell the user to `cd` into one. **Stop.**
+Verify the working directory is a registered grimoire by checking `~/grimoires/library.json`. Arcana is not a grimoire. If the check fails, list available grimoires from the library and tell the user to `cd` into one. **Stop.**
 
 ---
 
@@ -50,7 +50,7 @@ Have a short conversation. Ask one question at a time:
 - **One-line purpose** — what knowledge does this chapter hold?
 - **When to route here** — what kinds of questions land here?
 - **Knowledge sources** — wikis, drives, repos, tribal knowledge to point at
-- **Sub-topics** — 2–5 leaf docs the chapter will eventually contain
+- **Sub-topics** — 2?5 leaf docs the chapter will eventually contain
 
 Capture: `chapter_name`, `chapter_title` (Title Case), `purpose`, `when_to_use`, `sources[]`, `sub_topics[]`.
 
@@ -73,13 +73,13 @@ Edit `chapters/{{chapter_name}}/{{chapter_name}}.md` and replace placeholders:
 
 - Frontmatter: `{{CHAPTER_TITLE}}`, `{{CHAPTER_NAME}}`. Tags should include `chapter/{{chapter_name}}`.
 - **Hub level tag** — the formula defaults to `hub/chapter` (top-level). If this chapter is being created *inside* another chapter (i.e., the new path is `chapters/<existing>/<new>/`), change the tag to `hub/sub`. The level distinction drives the Obsidian graph color (chapter hubs vs sub-hubs); the routing model itself works identically at every depth.
-- `[Chapter Name]` → `{{chapter_title}}`
-- `[purpose]` → `{{purpose}}`
-- `[when to use]` → `{{when_to_use}}`
+- `[Chapter Name]` -> `{{chapter_title}}`
+- `[purpose]` -> `{{purpose}}`
+- `[when to use]` -> `{{when_to_use}}`
 - Routes block — one line per child, using full-path wikilinks. A child can be a leaf (a page with `type: concept`/`entity`/`playbook`/etc.) or a sub-hub (a folder with its own `<folder>.md`):
 
   ```markdown
-  - <child description> → [[chapters/{{chapter_name}}/<child_name>|<child label>]]
+  - <child description> -> [[chapters/{{chapter_name}}/<child_name>|<child label>]]
   ```
 
 Verify no placeholder syntax remains:
@@ -127,11 +127,11 @@ Keep entries alphabetized or grouped by domain — match the existing convention
 ## Step 6: Append to log.md
 
 ```bash
-python3 GRIMOIRE_ARCANA/rites/append_log.py \
+python3 ARCANA_HOME/rites/append_log.py \
   --grimoire . \
   --op create \
   --title "{{chapter_title}} chapter" \
-  --skill /grm-domain-create-chapter \
+  --skill /arc-grimoire-create-chapter \
   --field pages=chapters/{{chapter_name}}/{{chapter_name}}.md
 ```
 
@@ -142,11 +142,11 @@ python3 GRIMOIRE_ARCANA/rites/append_log.py \
 ```bash
 ls chapters/{{chapter_name}}/
 grep -n "{{chapter_name}}" {{grimoire_directory}}.md   # must find the new route
-python3 GRIMOIRE_ARCANA/rites/validate_domain_structure.py --grimoire .
-python3 GRIMOIRE_ARCANA/rites/validate_frontmatter.py --grimoire .
+python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire .
+python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
 ```
 
-Or invoke `/grm-domain-validate-structure` for the integrated structural pass.
+Or invoke `/arc-grimoire-validate-structure` for the integrated structural pass.
 
 ---
 
@@ -156,4 +156,4 @@ Or invoke `/grm-domain-validate-structure` for the integrated structural pass.
 - **Page formula**: `~/grimoires/arcana/formulae/page.formula.md`
 - **Page schema**: `~/grimoires/arcana/docs/page_schema.md`
 - **Grimoire creation**: [`create_grimoire.md`](create_grimoire.md)
-- **Structure validator**: `/grm-domain-validate-structure`
+- **Structure validator**: `/arc-grimoire-validate-structure`

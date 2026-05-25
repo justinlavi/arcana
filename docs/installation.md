@@ -9,7 +9,7 @@ last_verified: 2026-05-19
 
 # Arcana Installation
 
-One command installs Arcana — the framework that powers all your grimoires — configures your AI agents, and registers the `/grm-*` skill set. Cloning existing grimoires is optional and handled interactively.
+One command installs Arcana — the framework that powers all your grimoires — configures your AI agents, and registers the `/arc-*` skill set. Cloning existing grimoires is optional and handled interactively.
 
 For per-agent configuration after install, see [agent_configuration.md](agent_configuration.md). For library and manifest schemas, see [reference.md](reference.md).
 
@@ -24,7 +24,7 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 For forks or private mirrors, pass the Arcana repository URL explicitly:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_ARCANA_URL=https://github.com/your-org/arcana.git bash
+curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | ARCANA_URL=https://github.com/your-org/arcana.git bash
 ```
 
 The script installs from the public Arcana GitHub repository by default. When run from a cloned Arcana checkout, it detects the checkout's git origin automatically.
@@ -40,7 +40,7 @@ When run from the public curl command, the summoning rite is release-first excep
 1. Checks runtime dependencies (`git`; Python 3 and Dear PyGui only if source fallback is needed)
 2. Installs Arcana to `~/grimoires/arcana/` (clone or pull)
 3. Injects the Grimoire routing block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
-4. Registers Arcana's `/grm-*` skills to `~/.claude/skills/` and `~/.codex/skills/`
+4. Registers Arcana's `/arc-*` skills to `~/.claude/skills/` and `~/.codex/skills/`
 
 **Optional — if you have existing grimoires to clone:**
 5. Discovers grimoires via git host API (GitLab/GitHub), falls back to the static library
@@ -48,7 +48,7 @@ When run from the public curl command, the summoning rite is release-first excep
 7. Clones or updates selected grimoires in `~/grimoires/`
 8. Creates/updates the local library at `~/grimoires/library.json`
 
-After summoning, open a new Claude Code or Codex/ChatGPT session and try `/grm-meta-help`. To create your first grimoire from scratch, run `/grm-domain-create-grimoire`.
+After summoning, open a new Claude Code or Codex/ChatGPT session and try `/arc-help`. To create your first grimoire from scratch, run `/arc-grimoire-create`.
 
 Dear PyGui is bundled into release binaries. In source mode, Dear PyGui is imported from the system Python or from a Grimoire-managed Python dependency cache, not from the Arcana repository. If pip or Dear PyGui is missing, the bootstrap asks before installing anything; only an explicit `y` proceeds. On Arch-based systems, accepting the pip prompt may install `python-pip` with `pacman` first if the system Python does not include pip.
 
@@ -62,11 +62,11 @@ When you choose "Install Arcana and clone grimoires" in the GUI (or option 2 in 
 
 Arcana and grimoires don't need to live in the same place. Arcana might be installed from the public GitHub repo while your grimoires live in a private company GitLab or a different GitHub org. The rite asks where to look.
 
-If you don't have existing grimoires to clone yet, skip this step entirely and use `/grm-domain-create-grimoire` to build your first grimoire from scratch after Arcana is installed.
+If you don't have existing grimoires to clone yet, skip this step entirely and use `/arc-grimoire-create` to build your first grimoire from scratch after Arcana is installed.
 
 Discovery supports two URL shapes:
 - Direct repository URLs, such as `https://github.com/you/cooking-grimoire`, are trusted explicitly. The `-grimoire` slug is conventional but not required when the URL points to a single repository.
-- Namespace URLs, such as `https://github.com/you` or `https://gitlab.company.com/team`, scan available repositories/projects and select likely grimoires by `-grimoire` naming, `grimoire` topic/tag, or description metadata.
+- Skill prefix URLs, such as `https://github.com/you` or `https://gitlab.company.com/team`, scan available repositories/projects and select likely grimoires by `-grimoire` naming, `grimoire` topic/tag, or description metadata.
 
 **Providing a scope** — tell the script where your grimoires live:
 
@@ -140,7 +140,7 @@ Every grimoire scaffolded from `formulae/grimoire/README.md` therefore carries i
 
 3. Documents a manual install path for readers who prefer step-by-step (`git clone` Arcana + the grimoire into `~/grimoires/`, then `sync_library.py --apply` + `register_skills.py`), with the path layout called out as the one thing the other rites depend on.
 
-The `{{GRIMOIRE_REPO_URL}}` placeholder in the formula is the hook that `/grm-domain-create-grimoire` fills in during Step 1 (Discovery), so every new grimoire ships with this section pre-filled with its own canonical clone URL.
+The `{{GRIMOIRE_REPO_URL}}` placeholder in the formula is the hook that `/arc-grimoire-create` fills in during Step 1 (Discovery), so every new grimoire ships with this section pre-filled with its own canonical clone URL.
 
 ---
 
@@ -149,9 +149,9 @@ The `{{GRIMOIRE_REPO_URL}}` placeholder in the formula is the hook that `/grm-do
 If you can't run the summoning rite (no network, restricted environment, etc.):
 
 1. Clone Arcana to `~/grimoires/arcana/`.
-2. Clone each domain grimoire to `~/grimoires/<grimoire-name>/`.
+2. Clone each grimoire to `~/grimoires/<grimoire-name>/`.
 3. Create `~/grimoires/library.json` with one entry per grimoire (see [reference.md](reference.md#local-library)).
-4. Add the Grimoire instruction block to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` — the canonical block lives at [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md). To refresh an existing block after Arcana changes, use `/grm-meta-update-agent-block`.
+4. Add the Grimoire instruction block to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` — the canonical block lives at [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md). To refresh an existing block after Arcana changes, use `/arc-agent-update`.
 5. Run `python3 ~/grimoires/arcana/rites/register_skills.py` to install skills into agent skill directories.
 
 ---
@@ -165,8 +165,8 @@ A short end-to-end check that everything wired up correctly.
 ```bash
 ls ~/grimoires/                  # arcana/ + at least one *-grimoire/ if you cloned any
 cat ~/grimoires/library.json     # lists each grimoire and its local_path
-ls ~/.claude/skills/ | grep ^grm-     # Claude Code
-ls ~/.codex/skills/  | grep ^grm-     # Codex / ChatGPT CLI
+ls ~/.claude/skills/ | grep ^arc-     # Claude Code
+ls ~/.codex/skills/  | grep ^arc-     # Codex / ChatGPT CLI
 ```
 
 If any of these are missing, jump to the [Troubleshooting](#troubleshooting) section below.
@@ -176,12 +176,12 @@ If any of these are missing, jump to the [Troubleshooting](#troubleshooting) sec
 Open a new Claude Code (or Codex) session and run:
 
 ```
-/grm-meta-help
+/arc-help
 ```
 
-The skill should enumerate every installed `grm-*` and domain-namespaced skill. If you see a populated list, the agent has loaded the library and skill directory correctly.
+The skill should enumerate every installed `arc-*` and grimoire-prefixed skill. If you see a populated list, the agent has loaded the library and skill directory correctly.
 
-### 3. Smoke-test a domain grimoire
+### 3. Smoke-test a grimoire
 
 Pick any grimoire from your library and ask the agent:
 
@@ -195,7 +195,7 @@ For a deeper test, ask:
 
 > "What's the canonical document for {topic} in {grimoire-name}?"
 
-The agent should follow hubs depth-first (root hub → chapter hub → … → leaf, however deep the topic needs) and cite the exact file path it read.
+The agent should follow hubs depth-first (root hub -> chapter hub -> ... -> leaf, however deep the topic needs) and cite the exact file path it read.
 
 ---
 
@@ -204,7 +204,7 @@ The agent should follow hubs depth-first (root hub → chapter hub → … → l
 **Agent can't find a grimoire**
 - Check that the grimoire key exists in `~/grimoires/library.json`
 - Verify `local_path` resolves correctly on the filesystem
-- Run `/grm-library-sync` to detect and reconcile drift
+- Run `/arc-library-sync` to detect and reconcile drift
 
 **Summoning fails to clone**
 - Ensure network access to your git host (VPN if required)
@@ -218,11 +218,11 @@ The agent should follow hubs depth-first (root hub → chapter hub → … → l
 - On Arch-based systems, install Mesa and XWayland if needed: `sudo pacman -S --needed mesa xorg-xwayland`
 
 **Skills not appearing after install**
-- Run `/grm-skills-register` to re-register all skills
+- Run `/arc-skills-register` to re-register all skills
 - Open a new agent session (Claude Code / Codex caches skill listings)
 
-**Skill names appear as `{{NAMESPACE}}-...`**
+**Skill names appear as `{{SKILL_PREFIX}}-...`**
 - The grimoire is missing its `grimoire.json` manifest. Add one per [reference.md](reference.md#grimoire-manifest), then re-register.
 
 **Agent guesses instead of reading files**
-- The Grimoire instruction block isn't injected into `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`, or it is stale. See [agent_configuration.md](agent_configuration.md#agent-instruction-files), then run `/grm-meta-update-agent-block`.
+- The Grimoire instruction block isn't injected into `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`, or it is stale. See [agent_configuration.md](agent_configuration.md#agent-instruction-files), then run `/arc-agent-update`.

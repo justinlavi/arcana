@@ -1,5 +1,5 @@
 {
   "name": "good_grimoire",
-  "namespace": "good",
-  "description": "Fixture grimoire used by the Arcana test suite — passes all validators."
+  "skill_prefix": "good",
+  "description": "Fixture grimoire used by the Arcana test suite - passes all validators."
 }

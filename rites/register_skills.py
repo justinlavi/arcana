@@ -1,25 +1,32 @@
 #!/usr/bin/env python3
-"""Grimoire Skill Registration — cross-platform skill installer.
+"""Grimoire Skill Registration - cross-platform skill installer.
 
 Discovers skills from Arcana and all installed grimoires, cleans stale skills
-by namespace prefix, substitutes the {{NAMESPACE}} placeholder with the
-grimoire's declared namespace, and installs pointer skills to supported agent
-skill directories.
+by skill prefix, substitutes the {{SKILL_PREFIX}} placeholder with the declared
+skill prefix, and installs pointer skills to supported agent skill directories.
 
-Each grimoire (and Arcana) declares its namespace in `grimoire.json` at the
-grimoire root:
+Arcana declares its skill prefix in `arcana.json`:
 
     {
-      "name": "cooking-grimoire",
-      "namespace": "cook",
+      "name": "arcana",
+      "kind": "arcana",
+      "skill_prefix": "arc",
       "description": "..."
     }
 
-Domain skill source folders provide the subcommand path after the namespace.
-For example, namespace "cook" plus skills/recipe-add registers as
+Each grimoire declares its skill prefix in `grimoire.json` at the grimoire root:
+
+    {
+      "name": "cooking-grimoire",
+      "skill_prefix": "cook",
+      "description": "..."
+    }
+
+Grimoire skill source folders provide the subcommand path after the skill prefix.
+For example, skill_prefix "cook" plus skills/recipe-add registers as
 /cook-recipe-add.
 
-Source SKILL.md files use `{{NAMESPACE}}-<slug>` in their `name:` frontmatter
+Source SKILL.md files use `{{SKILL_PREFIX}}-<slug>` in their `name:` frontmatter
 field; the rite substitutes the placeholder during registration.
 
 Usage:
@@ -27,11 +34,12 @@ Usage:
 """
 
 import argparse
+import json
 import shutil
 from pathlib import Path
 
 from _lib import (
-    NAMESPACE_RE,
+    SKILL_PREFIX_RE,
     SKILL_SLUG_RE,
     info,
     load_library,
@@ -45,9 +53,10 @@ from _lib import (
 # ---------------------------------------------------------------------------
 
 ARCANA_PATH = Path(__file__).resolve().parent.parent
+ARCANA_MANIFEST = ARCANA_PATH / "arcana.json"
 GRIMOIRES_HOME = Path.home() / "grimoires"
 LOCAL_LIBRARY = GRIMOIRES_HOME / "library.json"
-NAMESPACE_PLACEHOLDER = "{{NAMESPACE}}"
+SKILL_PREFIX_PLACEHOLDER = "{{SKILL_PREFIX}}"
 SKILL_TARGETS = {
     "claude": {
         "label": "Claude Code",
@@ -67,9 +76,9 @@ SKILL_TARGETS = {
 # ---------------------------------------------------------------------------
 
 
-def is_valid_namespace(namespace):
-    """Return True when namespace is a compact lowercase slug like grm or oly."""
-    return bool(NAMESPACE_RE.fullmatch(namespace))
+def is_valid_skill_prefix(skill_prefix):
+    """Return True when skill_prefix is a compact lowercase slug like grm or oly."""
+    return bool(SKILL_PREFIX_RE.fullmatch(skill_prefix))
 
 
 def is_valid_skill_slug(slug):
@@ -78,9 +87,9 @@ def is_valid_skill_slug(slug):
 
 
 def load_grimoire_metadata(grimoire_root, label):
-    """Load and namespace-validate a grimoire's manifest.
+    """Load and skill_prefix-validate a grimoire's manifest.
 
-    Returns (metadata_dict, namespace_str) on success, or (None, None) on
+    Returns (metadata_dict, skill_prefix_str) on success, or (None, None) on
     failure with a warning logged. Thin wrapper over `_lib.load_manifest`
     that downgrades structured errors into the side-effect logs the
     skill-registration UX expects.
@@ -92,7 +101,28 @@ def load_grimoire_metadata(grimoire_root, label):
     if errors:
         warn(f"{label}: {errors[0]} (skipping)")
         return None, None
-    return metadata, metadata.get("namespace", "")
+    return metadata, metadata.get("skill_prefix", "")
+
+
+def load_arcana_metadata():
+    """Load and validate Arcana's own manifest."""
+    try:
+        metadata = json.loads(ARCANA_MANIFEST.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        warn(f"Arcana: could not read arcana.json: {exc} (skipping)")
+        return None, None
+
+    skill_prefix = metadata.get("skill_prefix", "")
+    if metadata.get("kind") != "arcana":
+        warn("Arcana: arcana.json missing kind='arcana' (skipping)")
+        return None, None
+    if not skill_prefix or not SKILL_PREFIX_RE.fullmatch(skill_prefix):
+        warn(
+            "Arcana: arcana.json missing valid 'skill_prefix' "
+            f"(must match {SKILL_PREFIX_RE.pattern})"
+        )
+        return None, None
+    return metadata, skill_prefix
 
 
 def read_frontmatter_name(skill_file):
@@ -112,7 +142,7 @@ def read_frontmatter_name(skill_file):
 
 
 def clean_prefix(skills_target, prefix, dry_run=False):
-    """Remove all skill directories matching a namespace prefix."""
+    """Remove all skill directories matching a skill_prefix."""
     cleaned = 0
     if not skills_target.is_dir():
         return cleaned
@@ -130,7 +160,7 @@ def clean_prefix(skills_target, prefix, dry_run=False):
 def register_skill(
     source_dir,
     skills_target,
-    namespace,
+    skill_prefix,
     arcana_path,
     grimoire_path="",
     source_label="Arcana",
@@ -145,10 +175,10 @@ def register_skill(
         return False
 
     slug = source_dir.name
-    expected_name = f"{namespace}-{slug}"
+    expected_name = f"{skill_prefix}-{slug}"
 
     declared_name_template = read_frontmatter_name(source_file)
-    expected_template = f"{NAMESPACE_PLACEHOLDER}-{slug}"
+    expected_template = f"{SKILL_PREFIX_PLACEHOLDER}-{slug}"
     if declared_name_template != expected_template:
         warn(
             f"{source_dir}: SKILL.md name must be '{expected_template}' "
@@ -171,7 +201,7 @@ def register_skill(
         if pointer_only and source.name != "SKILL.md":
             continue
         content = source.read_text(encoding="utf-8")
-        content = content.replace(NAMESPACE_PLACEHOLDER, namespace)
+        content = content.replace(SKILL_PREFIX_PLACEHOLDER, skill_prefix)
         content = content.replace("{{ARCANA_PATH}}", str(arcana_path))
         if grimoire_path:
             content = content.replace("{{GRIMOIRE_PATH}}", str(grimoire_path))
@@ -179,8 +209,8 @@ def register_skill(
         # Add provenance header to SKILL.md so AI knows this is a generated copy
         if source.name == "SKILL.md":
             provenance = (
-                f"\n<!-- GENERATED — source: {source_dir}/SKILL.md | "
-                f"DO NOT EDIT this file. Edit the source and run /grm-skills-register. -->\n"
+                f"\n<!-- GENERATED - source: {source_dir}/SKILL.md | "
+                f"DO NOT EDIT this file. Edit the source and run /arc-skills-register. -->\n"
             )
             # Insert after frontmatter closing ---
             parts = content.split("---", 2)
@@ -196,17 +226,17 @@ def register_skill(
 def register_source_skills(
     source_root,
     skills_dir,
-    namespace,
+    skill_prefix,
     source_label,
     skills_target,
     grimoire_path,
     dry_run,
     pointer_only,
 ):
-    """Clean a namespace and register every well-formed skill folder under it."""
-    prefix = f"{namespace}-"
+    """Clean a skill_prefix and register every well-formed skill folder under it."""
+    prefix = f"{skill_prefix}-"
 
-    info(f"Cleaning {prefix}* namespace...")
+    info(f"Cleaning {prefix}* skill_prefix...")
     cleaned = clean_prefix(skills_target, prefix, dry_run)
 
     info(f"Scanning {source_label} skills...")
@@ -221,7 +251,7 @@ def register_source_skills(
         if register_skill(
             skill_dir,
             skills_target,
-            namespace,
+            skill_prefix,
             ARCANA_PATH,
             grimoire_path=grimoire_path,
             source_label=source_label,
@@ -234,20 +264,20 @@ def register_source_skills(
 
 
 def register_arcana_skills(skills_target, dry_run=False, pointer_only=False):
-    """Register all Arcana skills using namespace declared in arcana/grimoire.json."""
+    """Register all Arcana skills using the prefix declared in arcana.json."""
     skills_dir = ARCANA_PATH / "skills"
     if not skills_dir.is_dir():
         warn(f"No skills directory in Arcana at {skills_dir}")
         return 0, 0
 
-    _, namespace = load_grimoire_metadata(ARCANA_PATH, "Arcana")
-    if not namespace:
+    _, skill_prefix = load_arcana_metadata()
+    if not skill_prefix:
         return 0, 0
 
     return register_source_skills(
         ARCANA_PATH,
         skills_dir,
-        namespace,
+        skill_prefix,
         "Arcana",
         skills_target,
         grimoire_path="",
@@ -257,13 +287,13 @@ def register_arcana_skills(skills_target, dry_run=False, pointer_only=False):
 
 
 def register_grimoire_skills(skills_target, dry_run=False, pointer_only=False):
-    """Register skills from all installed domain grimoires.
+    """Register skills from all installed grimoires.
 
-    Each grimoire's namespace is read from its own grimoire.json. The library
+    Each grimoire's skill_prefix is read from its own grimoire.json. The library
     is consulted only to discover where grimoires live on disk.
     """
     if not LOCAL_LIBRARY.is_file():
-        info(f"No local library at {LOCAL_LIBRARY} — skipping domain skills")
+        info(f"No local library at {LOCAL_LIBRARY} - skipping grimoire skills")
         return 0, 0
 
     library = load_library(LOCAL_LIBRARY)
@@ -287,14 +317,14 @@ def register_grimoire_skills(skills_target, dry_run=False, pointer_only=False):
             info(f"{key}: no skills/ directory (skipping)")
             continue
 
-        _, namespace = load_grimoire_metadata(local_path, key)
-        if not namespace:
+        _, skill_prefix = load_grimoire_metadata(local_path, key)
+        if not skill_prefix:
             continue
 
         registered, cleaned = register_source_skills(
             local_path,
             skills_dir,
-            namespace,
+            skill_prefix,
             key,
             skills_target,
             grimoire_path=str(local_path),
@@ -322,7 +352,7 @@ def register_target(agent_name, config, dry_run=False):
 
     print(f"  Target: {label} ({skills_target})")
     if pointer_only:
-        info("Pointer-only registration — copying SKILL.md files only")
+        info("Pointer-only registration - copying SKILL.md files only")
 
     if not dry_run:
         skills_target.mkdir(parents=True, exist_ok=True)
@@ -377,7 +407,7 @@ def main():
     print()
 
     if args.dry_run:
-        info("Dry run mode — no files will be written")
+        info("Dry run mode - no files will be written")
         print()
 
     results = []
@@ -396,7 +426,7 @@ def main():
     if not args.dry_run and total_registered > 0:
         labels = ", ".join(result["label"] for result in results)
         print(f"  Skills are now available for: {labels}.")
-        print("  Try: /grm-meta-help")
+        print("  Try: /arc-help")
         print()
 
 

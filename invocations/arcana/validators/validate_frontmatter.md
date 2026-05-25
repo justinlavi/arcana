@@ -13,21 +13,21 @@ last_verified: 2026-05-12
 
 Mechanically check every authored page's YAML frontmatter against the canonical [page schema](../../../docs/page_schema.md). Failures: missing frontmatter, unknown `type`, missing required fields for the type, malformed `last_verified`, broken `sources:` paths, malformed YAML lists.
 
-`SKILL.md` files are exempt — they use a different agent-defined schema. `README.md`, `CHANGELOG.md`, `log.md`, `VERSION` are exempt by name.
+`SKILL.md` files are exempt - they use a different agent-defined schema. `README.md`, `CHANGELOG.md`, `log.md`, `VERSION` are exempt by name.
 
 ## Invocation
 
 ```
-/grm-arcana-validate-frontmatter
+/arc-validate-frontmatter
 ```
 
 Or directly:
 
 ```bash
-python3 GRIMOIRE_ARCANA/rites/validate_frontmatter.py
+python3 ARCANA_HOME/rites/validate_frontmatter.py [--grimoire <path>]
 ```
 
-For a domain grimoire, `cd` into it first; the rite uses `GRIMOIRE_ARCANA` env var or its parent directory as root.
+Without `--grimoire`, the rite validates Arcana. For a grimoire, pass its root explicitly, for example `--grimoire .` from that grimoire directory.
 
 ## What gets checked
 
@@ -45,16 +45,16 @@ In short:
 ## When to run
 
 - After creating or editing any page.
-- As a phase of `/grm-arcana-improve` and `/grm-domain-improve`.
-- As a phase of `/grm-domain-lint`.
+- As a phase of `/arc-improve` and `/arc-grimoire-improve`.
+- As a phase of `/arc-grimoire-lint`.
 - As a pre-commit / pre-release gate.
 
 ## Common failures and fixes
 
-- **Missing frontmatter** → prepend a `---` block. See `formulae/page.formula.md` for a starting point.
-- **Missing `tags:`** → every page needs at least one tag, typically `chapter/<chapter>` or `arcana/<area>`.
-- **Source path doesn't resolve** → either the source was renamed (provenance broke) or never filed. Re-ingest or fix the path.
-- **`last_verified` malformed** → must be ISO date `YYYY-MM-DD`.
+- **Missing frontmatter** -> prepend a `---` block. See `formulae/page.formula.md` for a starting point.
+- **Missing `tags:`** -> every page needs at least one tag, typically `chapter/<chapter>` or `arcana/<area>`.
+- **Source path doesn't resolve** -> either the source was renamed (provenance broke) or never filed. Re-ingest or fix the path.
+- **`last_verified` malformed** -> must be ISO date `YYYY-MM-DD`.
 
 ## Related
 
