@@ -47,75 +47,11 @@ Priority labels:
 
 | ID | Priority | Item | Primary owner | Why deferred |
 |---|---|---|---|---|
-| ST-003 | P1 | Skill registration ownership and prefix-collision safety | `rites/register_skills.py`, agent skill dirs | Mutates user agent directories; cleanup rules need careful ownership boundaries. |
 | ST-004 | P1 | Summoning Rite behavior contract and GUI/core parity | `rites/summon*`, `.github/`, install docs | Installer behavior spans shell, Python, GUI, release assets, and docs. |
 | ST-007 | P2 | Agent target registry and instruction-block single source | agent docs, registration/update rites | Agent support is described across several surfaces and can drift. |
 | ST-008 | P2 | Grimoire validation orchestrator and profiles | grimoire validators, `/grm-improve` | Would add or reshape public validation workflow. |
 | ST-009 | P3 | Richer generated skill catalog | `rites/sync_docs.py`, `docs/skills.md` | Needs catalog rendering and tests against the command-surface contract. |
 | ST-010 | P3 | Source wrapper and provenance boundary clarification | source formula, provenance docs/validators | Needs design judgment before adding mechanical checks. |
-
-## ST-003: Skill Registration Ownership And Prefix-Collision Safety
-
-Priority: P1
-
-Status: Deferred
-
-Primary owner: `rites/register_skills.py`,
-`invocations/agent/register_skills.md`,
-`invocations/grimoire/register_skills.md`,
-`docs/agent_configuration.md`
-
-Current evidence:
-
-- Skill registration writes into agent-owned directories such as
-  `~/.claude/skills/` and `~/.codex/skills/`.
-- Arcana registers both platform skills and grimoire skills, while downstream
-  grimoires can define their own prefixes.
-- Stale generated skills and prefix collisions are user-visible, but cleanup
-  must not remove user-authored skills or another tool's files.
-
-Finding:
-
-Registration needs a stronger ownership model before Arcana can safely get
-more aggressive about stale cleanup or collision repair.
-
-Desired S-tier endpoint:
-
-- Generated skills carry an Arcana ownership marker that identifies source
-  repo, grimoire key, command name, and generation version.
-- Registration produces a plan before it writes: create, update, skip,
-  collision, stale-owned cleanup.
-- Prefix collisions are detected before writing and reported with the owning
-  grimoire or command family.
-- Cleanup only removes files Arcana can prove it generated.
-- Temp-HOME tests cover clean install, update, stale removal, collision, and
-  user-authored file preservation.
-
-First implementable slice:
-
-1. Add a dry-run/plan mode to `register_skills.py` that reports intended
-   writes and collisions without changing files.
-2. Add ownership metadata to newly generated skill files or adjacent manifest
-   files.
-3. Add temp-HOME tests for collision detection and user-authored preservation.
-4. Only then add stale-owned cleanup.
-
-Blast radius:
-
-High because this mutates user agent directories. The work should be staged
-and heavily tested before any automatic cleanup behavior changes.
-
-Validation profile:
-
-- New temp-HOME pytest coverage for registration.
-- Manual smoke test against disposable `.codex/skills` and `.claude/skills`
-  roots.
-- `python rites/validate.py --parallel`
-
-Read-path delta:
-
-Agents and users would see exactly why a skill was written, skipped, or
-blocked, instead of relying on implicit registration behavior.
 
 ## ST-004: Summoning Rite Behavior Contract And GUI/Core Parity
 
@@ -393,12 +329,12 @@ create a wrapper, cite a raw file, or cite an external URL.
 
 ## Suggested Implementation Sequence
 
-1. ST-003 next, because registration is
-   the highest-risk mutating rite.
-2. ST-004 as its own focused pass before the next installer/release push.
+1. ST-004 as its own focused pass before the next installer/release push.
+2. ST-007 before adding or reshaping agent targets.
 3. ST-008 before adding `grm-validate-all`; any new command must update
    `rites/data/command_surface.json`.
 4. ST-009 can now render richer metadata from the command-surface contract.
+5. ST-010 after the validation and catalog contracts settle.
 
 ## Update Triggers
 

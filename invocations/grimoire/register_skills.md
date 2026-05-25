@@ -31,6 +31,10 @@ Mutation profile: `plan_apply` via `rites/register_skills.py`. This
 invocation may apply directly when the user asks to register active-grimoire
 skills; use `--dry-run` when the user asks for a preview or when reviewing
 target changes.
+The plan reports creates, updates, owned stale cleanups, unowned preserves,
+and collisions. Apply mode refuses to overwrite unowned skill directories.
+Generated pointer skills without ownership metadata are rewritten when their
+provenance points back to an Arcana or grimoire skill source.
 
 ### 1. Run the registration rite for the active grimoire
 
@@ -42,7 +46,9 @@ On Windows, use `python` instead of `python3`.
 
 ### 2. Report the result
 
-Tell the user how many Arcana and active-grimoire skills were registered, how many stale registrations were cleaned, and which agent targets were written.
+Tell the user how many Arcana and active-grimoire skills were registered, how
+many owned stale registrations were cleaned, how many unowned directories were
+preserved, any collisions, and which agent targets were written.
 
 ### 3. Optional flags
 

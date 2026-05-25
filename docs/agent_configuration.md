@@ -56,6 +56,16 @@ For the normal "bring this machine up to date" workflow, run `/grm-update-arcana
 
 For Codex/ChatGPT, the registered directory must contain only `SKILL.md` — never bundle scripts, references, or copies of invocation content. The skill remains a thin pointer to Arcana invocations or rites.
 
+Every generated `SKILL.md` carries an `ARCANA_SKILL_OWNERSHIP` metadata
+comment naming the source repo, source key, source path, command, and
+generation version. Registration plans include `create`, `update`, owned
+stale cleanup, unowned preservation, and collisions before it writes. Apply mode
+refuses to overwrite or remove a skill directory without that ownership
+marker or generated provenance that points back to an Arcana/grimoire skill
+source. Existing generated pointer skills are rewritten with ownership metadata
+during registration. Prefix collisions between grimoire skill sources block
+writes until the manifest prefixes are made unique.
+
 ---
 
 ## How Skills Work

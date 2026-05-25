@@ -30,6 +30,10 @@
 - Updated rite-quality guidance and skill-registration behavior so dry-run
   output is treated as a plan, with temp-target tests for dry-run and repeated
   apply.
+- Updated skill registration to embed Arcana ownership metadata, block
+  unowned target collisions, detect grimoire prefix collisions before writing,
+  rewrite generated pointer skills that predate ownership metadata, and clean
+  only owned stale generated skills.
 
 ## [1.0.0] - 2026-05-25
 

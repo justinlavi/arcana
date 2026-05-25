@@ -53,6 +53,9 @@ artifacts, the mode it uses, what it writes, and how to validate it.
   calls it must ensure there is one append per completed operation.
 - A `read_only` rite may refresh named transient artifacts, but it must not
   change durable source, grimoire, agent, library, or install state.
+- `rites/register_skills.py` stamps generated `SKILL.md` files with
+  `ARCANA_SKILL_OWNERSHIP`; cleanup and overwrites are allowed only when that
+  marker or generated provenance proves Arcana ownership.
 
 ## Related
 
