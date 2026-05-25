@@ -9,7 +9,8 @@ last_verified: 1970-01-01
 ---
 
 <!--
-Choose `type:` from: concept | entity | source | playbook | reference
+Choose `type:` from: concept | entity | playbook | reference.
+Use source.formula.md under `sources/` for `type: source` wrappers.
 Choose `authority:` from: external | grimoire | hybrid (see docs/page_schema.md)
 `sources:` is required when authority is external or hybrid (paths under sources/).
 `aliases:` are optional metadata for search and alternate names; wikilinks never resolve through aliases.

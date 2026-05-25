@@ -13,7 +13,7 @@ For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. Th
 
 ### Storage layers
 
-- **`sources/`** - Immutable source artifacts (articles, transcripts, papers, screenshots). Read, never modify. Citation-stable: pages with `authority: external` cite paths under here.
+- **`sources/`** - Immutable source artifacts and source wrappers (articles, transcripts, papers, screenshots). File during ingest, then read. Citation-stable: pages with `authority: external` cite paths under here.
 - **`inbox/`** - Optional transient drop zone for mixed content awaiting classification. Cleared by `/grm-ingest`. Pages must NOT cite `inbox/` paths (contents disappear once processed).
 - **`chapters/`** - LLM-authored knowledge pages. Every page carries YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`); see `ARCANA_HOME/docs/page_schema.md`.
 - **`log.md`** - Append-only activity log. Each entry begins `## [YYYY-MM-DD HH:MM] <op> | <title>`.

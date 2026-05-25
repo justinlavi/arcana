@@ -13,7 +13,7 @@ last_verified: 2026-05-13
 
 Bring external content into a grimoire. The skill is polymorphic - it accepts a single source artifact, a folder, or no argument (sweep `inbox/`). It classifies each item and routes it to the right destination:
 
-- **External source artifact** -> `sources/<slug>` (immutable, citation-worthy)
+- **External source artifact** -> `sources/<slug>` or `sources/<slug>.md` (immutable, citation-worthy)
 - **Wiki content / draft** -> `chapters/<chapter>/<page>.md` (curated, frontmattered)
 - **Junk / unclear** -> stays where it is, flagged for human review
 
@@ -43,10 +43,17 @@ If the user provides only a description, ask for a source location (or instruct 
 
 The classic provenance-careful flow. The argument is a single immutable artifact (article, transcript, paper, screenshot, PDF).
 
-1. Copy (don't move) it to `sources/<slug>.<ext>`. Pick a short snake_case-or-kebab-case slug.
-2. For binary sources, also create a sibling `sources/<slug>.md` summary based on `ARCANA_HOME/formulae/source.formula.md` referencing the binary.
-3. For text sources, place the cleaned plain text body in the `## Source Body` section of `sources/<slug>.md`.
-4. Continue with **Common workflow** below from step 2.
+1. Pick a short snake_case-or-kebab-case slug and decide whether the source
+   should be filed as a raw artifact, a source wrapper, or both.
+2. For text sources, create `sources/<slug>.md` from
+   `ARCANA_HOME/formulae/source.formula.md` and place the cleaned plain text
+   body in `## Source Body`.
+3. For binary or large sources, copy the raw artifact to
+   `sources/<slug>/<original-file>` and create `sources/<slug>.md` as the
+   wrapper pointing at that raw artifact.
+4. For a raw artifact that is already citation-ready and needs no wrapper,
+   copy it to `sources/<slug>.<ext>` and cite that path directly.
+5. Continue with **Common workflow** below from step 2.
 
 ### Mode B - folder sweep (`<folder>` provided, OR `inbox/` swept by default)
 
@@ -57,7 +64,7 @@ Curatorial flow. The folder contains mixed content; classify each file before do
 
    | Classification | Criteria | Action |
    |---|---|---|
-   | **Source** | The file is an external artifact you want citation-stable: PDF, transcript, article, screenshot, dataset. Authored elsewhere. | Move to `sources/<slug>.<ext>`. If binary, also create `sources/<slug>.md` summary. Then synthesize into chapters per the common workflow. |
+   | **Source** | The file is an external artifact you want citation-stable: PDF, transcript, article, screenshot, dataset. Authored elsewhere. | Move or wrap it under `sources/` using Mode A's source wrapper rules. Then synthesize into chapters per the common workflow. |
    | **Wiki content** | Authored prose meant to be wiki-shaped (notes, drafts, half-finished chapters, AI-generated docs). Not citation-stable. | Promote to `chapters/<chapter>/<page>.md` with proper frontmatter (`authority: grimoire`, no `sources:` unless a `sources/` artifact actually grounds it). **Remove the original** - its value now lives in the wiki. |
    | **Junk / unclear** | Duplicate, superseded, ambiguous, off-topic, or you can't tell yet. | Leave in place, flag for human review in the report. **Never auto-delete.** |
 
@@ -90,9 +97,12 @@ Wikilink existing pages with full-path targets such as `[[chapters/path/to/page|
 
 Each chapter hub touched gets a wikilink pointer to any newly-created page in its `## Routes` section.
 
-#### 5. Close the provenance loop (sources only)
+#### 5. Close provenance from the wiki side
 
-For each source-derived page, append the page path to the `## Wiki Pages Derived From This Source` section in `sources/<slug>.md`. Provenance flows both directions.
+For each source-derived page, make sure the page frontmatter cites the stable
+source wrapper or raw artifact under `sources:`. Do not append backlinks or
+derived-page lists to files under `sources/`; source wrappers are capture
+records, and wiki pages carry the provenance pointers.
 
 #### 6. Append a single log entry
 

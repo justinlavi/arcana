@@ -11,9 +11,10 @@ checks:
   2. `type:` is present and one of the seven canonical values.
   3. The required-fields matrix in docs/page_schema.md holds for the type.
   4. `authority:` (when present) is one of `external | grimoire | hybrid`.
-  5. `sources:` paths under `sources/` resolve on disk; URLs are not network-checked.
-  6. `last_verified:` parses as YYYY-MM-DD.
-  7. `tags:` and `aliases:` are YAML lists of plain strings.
+  5. `type: source` is reserved for source wrappers under `sources/`.
+  6. `sources:` paths under `sources/` resolve on disk; URLs are not network-checked.
+  7. `last_verified:` parses as YYYY-MM-DD.
+  8. `tags:` and `aliases:` are YAML lists of plain strings.
 
 SKILL.md files are exempt - they use a different agent-defined schema.
 
@@ -79,7 +80,7 @@ def is_template(rel_path):
 
 def check_file(path, grimoire_root, reporter):
     """Add frontmatter diagnostics for a single file."""
-    rel = str(path.relative_to(grimoire_root))
+    rel = path.relative_to(grimoire_root).as_posix()
 
     try:
         content = path.read_text(encoding="utf-8", errors="replace")
@@ -119,6 +120,14 @@ def check_file(path, grimoire_root, reporter):
         return
 
     template = is_template(rel)
+    if type_ == "source" and not template and not rel.startswith("sources/"):
+        reporter.error(
+            "FRONTMATTER_SOURCE_OUTSIDE_SOURCES",
+            "`type: source` is reserved for source wrappers under sources/",
+            path=rel,
+            hint="Use concept/entity/playbook/reference for authored chapter synthesis.",
+            docs_reference="docs/page_schema.md",
+        )
     required, _optional = required_fields_for(type_)
 
     for field in required:

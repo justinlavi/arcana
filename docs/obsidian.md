@@ -55,7 +55,7 @@ A vaporwave-leaning palette: pinks, purples, cyan, electric blue. Cool and high-
 | **Hot pink** | `#FF71CE` | `tag:#hub/root` | The single grimoire-root hub |
 | **Cyan** | `#01CDFE` | `tag:#hub/chapter` | Top-level chapter hubs (immediately under `chapters/`) |
 | **Purple** | `#B967FF` | `tag:#hub/sub` | Any deeper hub (depth is open-ended) |
-| **Lavender** | `#C996FF` | `["type":"source"]` | Source pages (summaries of artifacts in `sources/`) |
+| **Lavender** | `#C996FF` | `["type":"source"]` | Source wrappers in `sources/` |
 | **Electric blue** | `#4D4DFF` | `["type":"playbook"]` | Procedural runbooks |
 | **Pale pink** | `#FFB3DE` | `["type":"reference"]` | Glossary / schema-style pages |
 | Default | (Obsidian default) | (everything else) | Concept and entity leaves |
@@ -75,7 +75,7 @@ You can combine queries: `tag:#hub/chapter -path:chapters/projects/` colors only
 - **`hub/root`** - there's exactly one per grimoire; hot pink marks the entry point at a glance.
 - **`hub/chapter`** - top-level chapters (immediately under `chapters/`); cyan tells you "these are the grimoire's major branches."
 - **`hub/sub`** - any hub deeper than a top-level chapter; purple tells you "this is a sub-router, not a leaf." Hub depth is open-ended - a sub-hub can route to its own sub-hubs, and so on. The tag flattens all those depths into one visual class because the routing rules are identical at every level.
-- **`type/source`** - derived directly from a `sources/` artifact; lavender surfaces source-backed synthesis at a glance.
+- **`type/source`** - source wrappers in `sources/`; lavender surfaces citation-stable capture records at a glance.
 - **`type/playbook`** - procedural; electric blue separates "things to do" from "things to know."
 - **`type/reference`** - definitional / schema-style; soft pink for the glossary class.
 

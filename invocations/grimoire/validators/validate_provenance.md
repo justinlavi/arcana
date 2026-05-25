@@ -11,7 +11,11 @@ last_verified: 2026-05-25
 
 ## Purpose
 
-Validate that active-grimoire pages with `authority: external` or `authority: hybrid` cite real source artifacts.
+Validate that active-grimoire pages with `authority: external` or
+`authority: hybrid` cite real source artifacts. Also validate source wrapper
+Markdown under `sources/`: wrappers must be `type: source`,
+`authority: external`, cite their original URL, capture origin, or sibling raw
+artifact, and avoid self-citation.
 
 ## Invocation
 
@@ -27,4 +31,6 @@ Run against the resolved active grimoire:
 python3 ARCANA_HOME/rites/validate_provenance.py --grimoire GRIMOIRE_ROOT
 ```
 
-Pages must not cite transient `inbox/` paths. Stable source artifacts belong under `sources/`.
+Pages must not cite transient `inbox/` paths. Stable source artifacts and
+source wrappers belong under `sources/`; authored synthesis belongs under
+`chapters/`.

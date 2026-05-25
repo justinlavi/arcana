@@ -61,7 +61,7 @@ Add the canonical Grimoire instruction block to your agent file using `/arc-agen
 ├── README.md                     # This file (human-facing project README)
 ├── grimoire.json                 # Manifest: name, skill prefix, description
 ├── log.md                        # Append-only activity log
-├── sources/                      # Immutable source artifacts (LLM never edits)
+├── sources/                      # Immutable source artifacts and wrappers
 ├── inbox/                        # Transient drop zone (mixed content awaiting classification)
 ├── chapters/                     # LLM-authored knowledge pages
 {{CHAPTER_TREE}}
@@ -80,14 +80,16 @@ Add the canonical Grimoire instruction block to your agent file using `/arc-agen
 | Goal | Skill |
 |---|---|
 | Add a new chapter | `/grm-create-chapter` |
-| Ingest a new source from `sources/` and update affected pages | `/grm-ingest` |
+| Ingest a new source into `sources/` and update affected pages | `/grm-ingest` |
 | Promote a chat answer into a page | `/grm-file-answer` |
 | Health-check the grimoire (orphans, stale, ghost refs) | `/grm-lint` |
 | Audit naming and structure | `/grm-improve` |
 
 ## Layers (the LLM-wiki model)
 
-- **Sources** (`sources/`) - Immutable source artifacts. Articles, transcripts, papers, screenshots. The LLM reads them but never modifies them.
+- **Sources** (`sources/`) - Immutable source artifacts and source wrappers.
+  Articles, transcripts, papers, screenshots, and datasets land here during
+  ingest; wiki pages cite these stable paths.
 - **Wiki** (`chapters/`) - LLM-authored markdown synthesis. Hubs, concept pages, entity pages, playbooks, references. Updated incrementally as new sources arrive.
 - **Schema** - `grimoire.json` plus the Arcana-injected block in `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`. Tells agents how to operate this grimoire.
 

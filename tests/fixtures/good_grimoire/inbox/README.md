@@ -20,7 +20,7 @@ Run `/grm-ingest` (no argument sweeps `inbox/`). The skill walks the folder and,
 
 | Classification | Destination | Notes |
 |---|---|---|
-| **External source artifact** | `sources/<slug>` (+ sibling `sources/<slug>.md` summary) | Becomes immutable, citation-worthy. Pages with `authority: external` cite this. |
+| **External source artifact** | `sources/<slug>` (+ sibling `sources/<slug>.md` wrapper when useful) | Becomes immutable, citation-worthy. Pages with `authority: external` cite this. |
 | **Wiki content / draft** | `chapters/<chapter>/<page>.md` with proper frontmatter | Promoted; original removed (its value is now in the wiki). Authority defaults to `grimoire` unless the draft synthesized a `sources/` source. |
 | **Junk / superseded / unclear** | Stays in `inbox/`, flagged in chat | User decides whether to delete or revisit. |
 

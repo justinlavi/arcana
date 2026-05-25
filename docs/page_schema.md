@@ -9,7 +9,12 @@ last_verified: 2026-05-12
 
 # Page Schema
 
-Every authored markdown page in a Grimoire (Arcana itself, or any grimoire) carries YAML frontmatter. This document is the canonical specification: what's required, what's optional, and what each field means.
+Every authored Markdown page in a Grimoire (Arcana itself, or any grimoire)
+carries YAML frontmatter. Raw artifacts under `sources/` may be copied exactly
+as received; source wrapper Markdown under `sources/` uses this schema.
+
+This document is the canonical specification: what's required, what's
+optional, and what each field means.
 
 The `validate_frontmatter` rite enforces this schema mechanically. Any page that fails - missing required fields for its `type`, unknown `type`, malformed YAML - is a structural violation.
 
@@ -24,7 +29,7 @@ A page declares its `type` so the agent knows how to treat it and so validators 
 | `hub` | Folder router. Lists pointers to children; never holds knowledge. | `<folder>/<folder>.md` |
 | `concept` | A standing topic, idea, or technique. | `chapters/<chapter>/<topic>.md` |
 | `entity` | A specific person, place, organization, product, project. | `chapters/<chapter>/<entity>.md` |
-| `source` | A summary tied to one immutable artifact in `sources/`. | `chapters/<chapter>/sources/<slug>.md` or `sources/<slug>.md` if it includes the source body |
+| `source` | A source wrapper: capture metadata plus source body or pointer for one immutable artifact. | `sources/<slug>.md` |
 | `playbook` | A procedural runbook the user follows. | `chapters/<chapter>/<procedure>.md` |
 | `reference` | Glossary-style or schema-style definition page. | `chapters/<chapter>/<term>.md` or `docs/*.md` |
 | `log-entry` | A single entry in `log.md`. Reserved for tooling that splits the log per entry; `log.md` itself is not annotated. | tooling output only |
@@ -44,6 +49,32 @@ Every page (except `hub` and `log-entry`) declares where its truth lives:
 | `hybrid` | Grimoire owns the synthesis, external systems own implementation details. | Required: list `sources:`. |
 
 `hub` and `log-entry` pages omit `authority`.
+
+---
+
+## Source Layer Boundary
+
+The `sources/` layer is citation-stable storage. It may contain raw artifacts,
+source wrapper Markdown, or both:
+
+- **Raw artifact**: a copied PDF, article export, transcript, image, dataset,
+  or original Markdown file. Raw artifacts do not need Arcana frontmatter and
+  are not rewritten to satisfy the page schema.
+- **Source wrapper**: a Markdown file created from
+  `formulae/source.formula.md`. It declares `type: source`,
+  `authority: external`, and `sources:` pointing to the original URL, capture
+  origin, or a sibling raw artifact such as `sources/<slug>/<file>.pdf`.
+- **Both together**: use `sources/<slug>.md` as the wrapper and store bulky or
+  binary originals under `sources/<slug>/`.
+
+Authored wiki pages live under `chapters/` and are not source wrappers. A page
+that synthesizes a source should use `type: concept`, `entity`, `playbook`, or
+`reference` as appropriate, then cite the stable source wrapper or raw artifact
+in `sources:`.
+
+External URLs may appear directly in `sources:` when the URL itself is the
+stable source pointer. When content has been filed locally, cite the local
+`sources/` path so provenance survives link rot and inbox cleanup.
 
 ---
 
@@ -69,7 +100,7 @@ last_verified: 2026-05-12
 | `title` | every page | Free text; what Obsidian shows as the document title. |
 | `aliases` | optional | List of alternate names for search, Dataview, and human metadata. Aliases are metadata only; wikilinks never resolve through aliases. |
 | `tags` | every page | Use `/`-separated namespaces: `chapter/<name>`, `type/<type>`, `domain/<...>`. Drives Dataview and Obsidian tag panes. |
-| `sources` | required for `authority: external` and `authority: hybrid` | Paths or URLs. At least one entry must resolve. Validator checks `sources/...` paths exist on disk. |
+| `sources` | required for `authority: external`, `authority: hybrid`, and `type: source` | Paths or URLs. At least one entry must resolve. Validator checks `sources/...` paths exist on disk. |
 | `authority` | every page except `hub` / `log-entry` | One of the three values above. |
 | `last_verified` | every page except `hub` / `log-entry` | ISO date the page was last hand-verified or auto-checked. `/grm-lint` flags pages older than the configured stale window. |
 
@@ -77,13 +108,13 @@ last_verified: 2026-05-12
 
 | Type | type | title | tags | authority | sources | last_verified |
 |---|---|---|---|---|---|---|
-| `hub` | ✓ | ✓ | ✓ | — | — | — |
-| `concept` | ✓ | ✓ | ✓ | ✓ | ✓ if external/hybrid | ✓ |
-| `entity` | ✓ | ✓ | ✓ | ✓ | ✓ if external/hybrid | ✓ |
-| `source` | ✓ | ✓ | ✓ | ✓ (always external) | ✓ | ✓ |
-| `playbook` | ✓ | ✓ | ✓ | ✓ | ✓ if external/hybrid | ✓ |
-| `reference` | ✓ | ✓ | ✓ | ✓ | ✓ if external/hybrid | ✓ |
-| `log-entry` | ✓ | ✓ | — | — | — | — |
+| `hub` | required | required | required | - | - | - |
+| `concept` | required | required | required | required | required if external/hybrid | required |
+| `entity` | required | required | required | required | required if external/hybrid | required |
+| `source` | required | required | required | required, always external | required | required |
+| `playbook` | required | required | required | required | required if external/hybrid | required |
+| `reference` | required | required | required | required | required if external/hybrid | required |
+| `log-entry` | required | required | - | - | - | - |
 
 `aliases` is optional everywhere. Use it for alternate names and discovery, not for routing.
 
@@ -153,18 +184,21 @@ last_verified: 2026-05-12
 ---
 ```
 
-### Source page (summary attached to a source artifact)
+### Source wrapper
 
 ```yaml
 ---
 type: source
 title: "Example Recipe Method - Lamination Chapter"
-tags: [chapter/sources, type/source]
-sources: ["sources/example_recipe_method.md"]
+tags: [type/source]
+sources: ["https://example.com/recipe-method"]
 authority: external
 last_verified: 2026-05-12
 ---
 ```
+
+This file lives at `sources/example_recipe_method.md`. Derived chapter pages
+cite it with `sources: ["sources/example_recipe_method.md"]`.
 
 ---
 
@@ -176,9 +210,19 @@ last_verified: 2026-05-12
 2. `type:` is present and matches one of the seven values.
 3. The required-fields matrix above holds for the declared `type`.
 4. `authority` (when present) is one of `external`, `grimoire`, `hybrid`.
-5. `sources` paths under `sources/` resolve on disk; URLs are not network-checked.
-6. `last_verified` is a parseable `YYYY-MM-DD` date.
-7. `tags` and `aliases` are YAML lists of plain strings.
+5. `type: source` pages are reserved for source wrappers under `sources/`.
+6. `sources` paths under `sources/` resolve on disk; URLs are not network-checked.
+7. `last_verified` is a parseable `YYYY-MM-DD` date.
+8. `tags` and `aliases` are YAML lists of plain strings.
+
+`python3 rites/validate_provenance.py` enforces:
+
+1. Every `authority: external` or `authority: hybrid` page cites at least one
+   source.
+2. Pages never cite transient `inbox/` paths.
+3. Source wrapper Markdown under `sources/` declares `type: source`,
+   `authority: external`, and non-empty `sources:`.
+4. Source wrappers do not cite themselves.
 
 The `/arc-validate-frontmatter` skill validates Arcana itself; `/grm-validate-frontmatter` validates an active grimoire.
 

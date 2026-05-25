@@ -91,6 +91,83 @@ def test_bad_frontmatter_structured_diagnostics_have_codes():
     assert "FRONTMATTER_MISSING_TYPE" in codes
 
 
+def test_source_type_is_reserved_for_sources_layer(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    (grimoire / "chapters/recipes/source_note.md").write_text(
+        """---
+type: source
+title: "Misplaced Source Note"
+tags: [type/source]
+sources: ["https://example.com/source"]
+authority: external
+last_verified: 2026-05-25
+---
+
+# Misplaced Source Note
+""",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_frontmatter.py", grimoire, "--format", "json")
+
+    assert result.returncode != 0
+    report = json.loads(result.stdout)
+    codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+    assert "FRONTMATTER_SOURCE_OUTSIDE_SOURCES" in codes
+
+
+def test_provenance_validates_source_wrappers(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    (grimoire / "sources/example_source.md").write_text(
+        """---
+type: source
+title: "Example Source"
+tags: [type/source]
+sources: ["https://example.com/source"]
+authority: external
+last_verified: 2026-05-25
+---
+
+# Example Source
+""",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_provenance.py", grimoire, "--format", "json")
+
+    assert result.returncode == 0, result.stdout
+    report = json.loads(result.stdout)
+    assert report["checked"]["source_wrappers"] == 1
+
+    (grimoire / "sources/bad_source.md").write_text(
+        """---
+type: source
+title: "Bad Source"
+tags: [type/source]
+sources: ["sources/bad_source.md"]
+authority: grimoire
+last_verified: 2026-05-25
+---
+
+# Bad Source
+""",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_provenance.py", grimoire, "--format", "json")
+
+    assert result.returncode != 0
+    report = json.loads(result.stdout)
+    codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+    assert "PROVENANCE_SOURCE_WRAPPER_AUTHORITY" in codes
+    assert "PROVENANCE_SOURCE_WRAPPER_SELF_REFERENCE" in codes
+
+
 def test_bad_links_is_caught():
     result = _run("validate_links.py", BAD_LINKS)
     assert result.returncode != 0, (

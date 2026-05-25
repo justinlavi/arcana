@@ -47,62 +47,11 @@ Priority labels:
 
 | ID | Priority | Item | Primary owner | Why deferred |
 |---|---|---|---|---|
-| ST-010 | P3 | Source wrapper and provenance boundary clarification | source formula, provenance docs/validators | Needs design judgment before adding mechanical checks. |
-
-## ST-010: Source Wrapper And Provenance Boundary Clarification
-
-Priority: P3
-
-Status: Deferred
-
-Primary owner: `formulae/source.formula.md`, `docs/page_schema.md`,
-`docs/operating_model.md`, `rites/validate_provenance.py`
-
-Current evidence:
-
-- `sources/` is immutable source storage.
-- Pages with `authority: external` or `hybrid` must cite stable sources.
-- Arcana has a source formula, provenance validator, and source-layer docs,
-  but source wrappers versus raw artifacts can still require human judgment.
-
-Finding:
-
-The provenance model is correct, but the line between raw source artifact,
-source wrapper page, and authored chapter page could be clearer before adding
-more validation.
-
-Desired S-tier endpoint:
-
-- Clear guidance for when `sources/` should contain raw copied artifacts,
-  source wrapper markdown, external URLs, or both.
-- Validation rules that stay mechanical: source path exists, inbox is not
-  cited, external/hybrid pages have stable source pointers.
-- AI judgment remains responsible for whether a source is substantively
-  sufficient.
-
-First implementable slice:
-
-1. Clarify source-wrapper rules in `docs/page_schema.md` and
-   `formulae/source.formula.md`.
-2. Add only narrow mechanical checks if a stable rule emerges.
-
-Blast radius:
-
-Low-medium. Mostly docs, with possible provenance validator tweaks.
-
-Validation profile:
-
-- `python rites/validate_provenance.py`
-- `python rites/validate.py --parallel`
-
-Read-path delta:
-
-Agents ingesting sources can classify artifacts without guessing whether to
-create a wrapper, cite a raw file, or cite an external URL.
+| _None_ | - | No open deferred architecture items. | - | - |
 
 ## Suggested Implementation Sequence
 
-1. ST-010 after the validation and catalog contracts settle.
+No open implementation items.
 
 ## Update Triggers
 

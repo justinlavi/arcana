@@ -22,6 +22,8 @@
   `--format jsonl` on every Arcana validator and the validator orchestrator.
 - Added regression coverage for the generated skill catalog's
   command-surface metadata.
+- Added provenance/frontmatter regression coverage for source wrappers and
+  source-layer boundaries.
 
 ### Changed
 
@@ -49,6 +51,11 @@
   health checks through the grimoire validation profile.
 - Updated `docs/skills.md` generation to render workflow, ownership, guard,
   mutation, rite, and validation metadata from the command-surface contract.
+- Clarified the source-layer model: raw artifacts and source wrappers live in
+  `sources/`, authored synthesis lives in `chapters/`, and source wrappers do
+  not maintain derived-page backlinks.
+- Updated frontmatter and provenance validators to enforce source-wrapper
+  placement, authority, source references, and self-citation rules.
 
 ## [1.0.0] - 2026-05-25
 
