@@ -12,10 +12,12 @@ last_verified: 2026-05-25
 ## Purpose
 
 Mechanically validate that every Arcana-shipped slash-command reference in
-Arcana markdown resolves to a source `SKILL.md`.
+Arcana markdown resolves to a source `SKILL.md`, and that every public
+Arcana-shipped command is represented in the command-surface contract.
 
 This catches drift such as renamed skills, deleted skills, typoed command
-references, and docs that announce a skill before its source folder exists.
+references, docs that announce a skill before its source folder exists, and
+public commands missing from `rites/data/command_surface.json`.
 
 ## Invocation
 
@@ -41,10 +43,13 @@ On Windows, use `python` instead of `python3`.
    - Update the doc reference to an existing skill.
    - Create the missing `skills/<family>/<slug>/SKILL.md`.
    - Remove references to an intentionally retired skill.
-5. After adding or removing a skill, run `python3 ARCANA_HOME/rites/sync_docs.py --apply`.
+5. For each command-surface error, update the skill, invocation, guard, rite,
+   or `rites/data/command_surface.json` entry until the contract is complete.
+6. After adding or removing a skill, run `python3 ARCANA_HOME/rites/sync_docs.py --apply`.
 
 ## Related
 
 - Validators hub: [`validators.md`](validators.md)
 - Skill schema: [`../../../docs/skill_schema.md`](../../../docs/skill_schema.md)
+- Public command surface: [`../../../docs/command_surface.md`](../../../docs/command_surface.md)
 - Skill catalog generator: [`../../../rites/sync_docs.py`](../../../rites/sync_docs.py)

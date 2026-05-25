@@ -26,6 +26,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 - [docs/agent_configuration.md](docs/agent_configuration.md) — Per-agent setup (Claude / Codex / Copilot)
 - [docs/skills.md](docs/skills.md) — Canonical Arcana skill catalog (auto-generated)
 - [docs/skill_schema.md](docs/skill_schema.md) — Command-family skill naming schema
+- [docs/command_surface.md](docs/command_surface.md) — Public command matrix validated by `/arc-validate-skill-refs`
 - [docs/reference.md](docs/reference.md) — Terminology, library/manifest schemas, path keys, formula placeholders
 - [docs/operating_model.md](docs/operating_model.md) — Storage layers and routing
 - [docs/page_schema.md](docs/page_schema.md) — Frontmatter spec for every page
@@ -97,6 +98,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 ## Skills
 
 - [docs/skills.md](docs/skills.md) — Canonical Arcana skill catalog (auto-generated)
+- [docs/command_surface.md](docs/command_surface.md) — Validated public command matrix
 - [skills/](skills/) — Skill source directory; registered via `rites/register_skills.py`
 
 ## Rites

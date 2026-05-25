@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validates that every Arcana-shipped skill reference resolves to a real skill.
+"""Validates Arcana skill references and the public command-surface contract.
 
 Scans all markdown files in Arcana for slash-command references matching
 Arcana's declared command-family prefixes (for example `arc-` and `grm-`) and
@@ -11,6 +11,10 @@ ensures each reference resolves to a source `SKILL.md`. Catches drift like:
 Grimoire skill references (e.g. `/jpn-...`) are NOT validated here;
 they live in their own grimoire repos. This is an Arcana-internal check.
 
+Also validates `rites/data/command_surface.json`, the public contract that
+connects every Arcana-shipped command to its skill source, invocation home,
+workflow owner, safety posture, and validation profile.
+
 Usage: python3 rites/validate_skill_refs.py
 Exit codes: 0 = all references resolve, 1 = at least one dangling reference
 """
@@ -21,6 +25,7 @@ import sys
 from pathlib import Path
 
 from _lib import default_arcana_root, ok, warn
+import command_surface as command_surface_contract
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ARCANA_ROOT = default_arcana_root()
@@ -158,7 +163,9 @@ def main():
         print("Scanning markdown for Arcana-shipped slash-command references...")
     dangling = []
     seen_pairs = set()
+    reference_count = 0
     for rel, lineno, full in scan_for_skill_refs(prefixes):
+        reference_count += 1
         if full in valid_commands:
             continue
         # Deduplicate (file, slug) pairs - one report per file per slug.
@@ -182,25 +189,51 @@ def main():
     if human:
         print()
 
+    if human:
+        print("Checking public command-surface contract...")
+    surface_contract, surface_errors = command_surface_contract.validate_command_surface(ARCANA_ROOT)
+    for error in surface_errors:
+        reporter.error(
+            error["code"],
+            error["message"],
+            path=error.get("path"),
+            hint=error.get("hint"),
+        )
+        if human:
+            warn(f"{error.get('path', '-')}: {error['message']}")
+
+    surface_entries = (
+        len(command_surface_contract.command_entries(surface_contract))
+        if surface_contract is not None
+        else 0
+    )
+    if human and not surface_errors:
+        ok(f"Command-surface contract covers {surface_entries} public command(s).")
+    if human:
+        print()
+
     if not human:
         reporter.emit(
             args.format,
             checked={
                 "valid_commands": len(valid_commands),
-                "references": len(seen_pairs),
+                "references": reference_count,
                 "dangling_references": len(dangling),
+                "command_surface_entries": surface_entries,
+                "command_surface_errors": len(surface_errors),
             },
         )
         return reporter.exit_code()
 
     print("====================================")
     print(f"Dangling skill references: {len(dangling)}")
+    print(f"Command-surface errors:    {len(surface_errors)}")
     print()
 
     if not dangling and reporter.error_count() == 0:
         return 0
-    print("Either create the missing skill or update the reference.")
-    print("If a skill was renamed, update the docs that reference it.")
+    print("Either create the missing skill, update the reference, or repair the command-surface contract.")
+    print("If a skill was renamed, update the docs and command-surface entry that reference it.")
     print("After adding/removing a skill, also run:")
     print("   python3 rites/sync_docs.py --apply")
     print()

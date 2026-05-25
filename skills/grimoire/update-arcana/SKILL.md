@@ -1,7 +1,7 @@
 ---
 name: {{SKILL_PREFIX}}-update-arcana
-description: Update Arcana, refresh agent integration, re-register skills, and check active-grimoire compatibility
-when_to_use: User wants to update Arcana while working in a grimoire; user asks to pull the latest Arcana; user says Arcana may be stale; user wants one command to refresh the engine, agent skills, agent block, and current grimoire compatibility.
+description: Update Arcana, refresh agent integration, re-register skills, and check active-grimoire health
+when_to_use: User wants to update Arcana while working in a grimoire; user asks to pull the latest Arcana; user says Arcana may be stale; user wants one command to refresh the engine, agent skills, agent block, and current grimoire health.
 user-invocable: true
 allowed-tools: Bash Read Write Edit
 ---

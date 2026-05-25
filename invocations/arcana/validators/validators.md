@@ -38,7 +38,7 @@ reports.
 | [validate_orphans.md](validate_orphans.md) | `/arc-validate-orphans` | Every page is reachable from at least one other page |
 | [validate_provenance.md](validate_provenance.md) | `/arc-validate-provenance` | Every external/hybrid page cites real sources under `sources/` |
 | [validate_security.md](validate_security.md) | `/arc-validate-security` | Credential patterns and unsafe Python constructs in rites |
-| [validate_skill_refs.md](validate_skill_refs.md) | `/arc-validate-skill-refs` | Slash-command references resolve to source skills |
+| [validate_skill_refs.md](validate_skill_refs.md) | `/arc-validate-skill-refs` | Slash-command references and command-surface entries resolve |
 
 ## Run them all
 

@@ -50,10 +50,9 @@ Priority labels:
 | ST-003 | P1 | Skill registration ownership and prefix-collision safety | `rites/register_skills.py`, agent skill dirs | Mutates user agent directories; cleanup rules need careful ownership boundaries. |
 | ST-004 | P1 | Summoning Rite behavior contract and GUI/core parity | `rites/summon*`, `.github/`, install docs | Installer behavior spans shell, Python, GUI, release assets, and docs. |
 | ST-005 | P2 | Mutating rite plan/apply/idempotency profile | mutating rites and invocations | Broad behavioral standard across multiple write-capable rites. |
-| ST-006 | P2 | Public command-surface matrix | skills, invocations, rites, generated docs | Needs a durable contract before command docs can be validated or generated. |
 | ST-007 | P2 | Agent target registry and instruction-block single source | agent docs, registration/update rites | Agent support is described across several surfaces and can drift. |
 | ST-008 | P2 | Grimoire validation orchestrator and profiles | grimoire validators, `/grm-improve` | Would add or reshape public validation workflow. |
-| ST-009 | P3 | Richer generated skill catalog | `rites/sync_docs.py`, `docs/skills.md` | Best implemented after ST-006 defines the command contract. |
+| ST-009 | P3 | Richer generated skill catalog | `rites/sync_docs.py`, `docs/skills.md` | Needs catalog rendering and tests against the command-surface contract. |
 | ST-010 | P3 | Source wrapper and provenance boundary clarification | source formula, provenance docs/validators | Needs design judgment before adding mechanical checks. |
 
 ## ST-003: Skill Registration Ownership And Prefix-Collision Safety
@@ -238,64 +237,6 @@ Read-path delta:
 Agents can know before running a rite whether it plans, writes, appends, or
 needs human confirmation.
 
-## ST-006: Public Command-Surface Matrix
-
-Priority: P2
-
-Status: Deferred
-
-Primary owner: `arcana.json`, `skills/*/*/SKILL.md`,
-`invocations/**/*.md`, `rites/sync_docs.py`, `docs/skills.md`
-
-Current evidence:
-
-- `review_architecture.md` now requires architecture reviews to build this
-  matrix:
-  `command -> skill source -> invocation leaf -> rite/judgment owner ->
-  guard/preconditions -> mutation/log behavior -> validation profile ->
-  generated docs impact`
-- `docs/skills.md` lists commands, but it does not yet expose workflow owner,
-  guard behavior, mutability, or validation profile.
-
-Finding:
-
-The public command surface is coherent, but it is still primarily understood
-by reading skills and invocations together. S-tier Arcana should make the
-contract visible and checkable.
-
-Desired S-tier endpoint:
-
-- One command-surface contract, either hand-authored and validated or generated
-  from structured skill/invocation metadata.
-- Each public command has exactly one workflow home.
-- Skills, invocation leaves, and rite owners are linked.
-- Mutating/logging behavior and validation profile are explicit.
-- Missing invocation leaves or stale skills are caught mechanically.
-
-First implementable slice:
-
-1. Add a hand-authored matrix under docs or a structured data file under
-   `rites/data/`.
-2. Teach `validate_skill_refs.py` or a new validator to check that every skill
-   appears in the matrix.
-3. Later, generate `docs/skills.md` from the richer contract.
-
-Blast radius:
-
-Medium. This starts as documentation, but it becomes a public contract once a
-validator checks it.
-
-Validation profile:
-
-- `python rites/validate_skill_refs.py`
-- `python rites/sync_docs.py --apply`
-- Full validator suite after generated docs change.
-
-Read-path delta:
-
-Agents can inspect one matrix to understand how a command behaves instead of
-opening skill, invocation, rite, and docs files separately.
-
 ## ST-007: Agent Target Registry And Instruction-Block Single Source
 
 Priority: P2
@@ -415,7 +356,8 @@ Priority: P3
 
 Status: Deferred
 
-Primary owner: `rites/sync_docs.py`, `docs/skills.md`, ST-006 command matrix
+Primary owner: `rites/sync_docs.py`, `docs/skills.md`,
+`rites/data/command_surface.json`
 
 Current evidence:
 
@@ -425,8 +367,8 @@ Current evidence:
 
 Finding:
 
-The generated catalog is good as a skill index. It could become a stronger
-operational map after ST-006 defines richer command metadata.
+The generated catalog is good as a skill index. It can now become a stronger
+operational map by rendering the command-surface metadata.
 
 Desired S-tier endpoint:
 
@@ -437,11 +379,13 @@ Desired S-tier endpoint:
 
 First implementable slice:
 
-Wait for ST-006, then update `sync_docs.py` to render the richer metadata.
+Use `rites/data/command_surface.json` to update `sync_docs.py` so the
+generated catalog renders workflow owner, rite owner, guard, mutation profile,
+and validation profile.
 
 Blast radius:
 
-Low-medium after ST-006; premature before then.
+Low-medium. The command-surface contract now provides the metadata source.
 
 Validation profile:
 
@@ -506,13 +450,14 @@ create a wrapper, cite a raw file, or cite an external URL.
 
 ## Suggested Implementation Sequence
 
-1. ST-006 before adding or reshaping public commands. It prevents command
-   surface drift.
+1. ST-005 first slice, because it defines the mutating-rite profile that
+   registration should follow.
 2. ST-003 after ST-005 or alongside its first slice, because registration is
    the highest-risk mutating rite.
 3. ST-004 as its own focused pass before the next installer/release push.
-4. ST-008 after ST-006, because adding `grm-validate-all` would expand the
-   public command surface.
+4. ST-008 before adding `grm-validate-all`; any new command must update
+   `rites/data/command_surface.json`.
+5. ST-009 can now render richer metadata from the command-surface contract.
 
 ## Update Triggers
 

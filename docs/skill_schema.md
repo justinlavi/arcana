@@ -73,6 +73,12 @@ skills/agent/register-skills/SKILL.md      -> /arc-agent-register-skills
 
 The naming validator enforces folder/frontmatter agreement and rejects skill files outside the declared command families.
 
+Every public Arcana-shipped command also has an entry in
+[`command_surface.md`](command_surface.md). That contract links the command to
+its source skill, invocation leaf, workflow owner, guard, mutation behavior,
+logging behavior, and validation profile. `/arc-validate-skill-refs` checks
+the contract whenever command references are validated.
+
 ## Invocation Layout
 
 Invocation files follow the same target boundary:

@@ -147,6 +147,8 @@ List the facts Arcana repeats most often and name their canonical homes:
 - Frontmatter schema: `docs/page_schema.md`
 - Command-family naming: `docs/skill_schema.md`
 - Skill catalog: generated `docs/skills.md`, sourced from `skills/*/*/SKILL.md`
+- Public command surface: `rites/data/command_surface.json`, explained by
+  `docs/command_surface.md`
 - Agent instruction block: `rites/templates/grimoire_block.md`
 - Grimoire scaffold contracts: `formulae/grimoire/`
 - Release process: `docs/release.md` and `docs/governance.md`
@@ -222,7 +224,8 @@ Flag any path that requires comparing two docs to learn the current rule, or
 any path where a generated view is treated as editable truth.
 
 For public command surfaces, the skills/agents and invocations lanes must
-produce this matrix:
+audit `rites/data/command_surface.json` against the live skills,
+invocations, and rites:
 
 ```text
 command -> skill source -> invocation leaf -> rite/judgment owner ->
@@ -230,9 +233,11 @@ guard/preconditions -> mutation/log behavior -> validation profile ->
 generated docs impact
 ```
 
-Every public command should have exactly one workflow home. Skills stay thin,
-hubs route, rites own deterministic mechanics, and judgment passes are named
-as judgment.
+Every public command should have exactly one workflow home in that contract.
+Skills stay thin, hubs route, rites own deterministic mechanics, and judgment
+passes are named as judgment. After any public command change, run
+`python3 rites/validate_skill_refs.py` so command-surface drift is caught
+mechanically.
 
 ### 7. Review scalability and future-proofing
 

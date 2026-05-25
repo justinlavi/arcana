@@ -11,7 +11,7 @@ last_verified: 2026-05-25
 
 ## Purpose
 
-Update the local Arcana installation from the active grimoire user's point of view, then refresh the pieces normal users actually rely on: the local library, agent skill registrations, agent routing block, Arcana validation status, and active-grimoire scaffold compatibility.
+Update the local Arcana installation from the active grimoire user's point of view, then refresh the pieces normal users actually rely on: the local library, agent skill registrations, agent routing block, Arcana validation status, and active-grimoire scaffold health.
 
 This is the "one command after Arcana changed upstream" workflow for normal grimoire users. It is not a maintainer workflow and must not edit Arcana source files except through `git pull --ff-only`.
 
@@ -83,7 +83,7 @@ Compare `ARCANA_HOME/rites/templates/grimoire_block.md` against the marked Grimo
 
 If a marked block exists and differs, replace only the marked block. If the block boundaries are ambiguous, stop and ask. Preserve all non-Grimoire content exactly. This follows the same safety rules as `/arc-agent-update`, but is included here so the normal update workflow stays one command.
 
-### 7. Check active-grimoire compatibility
+### 7. Check active-grimoire health
 
 Run the current Arcana structure validator against the active grimoire:
 
@@ -101,7 +101,7 @@ End with:
 - Whether Arcana validation passed.
 - Whether skills were registered.
 - Whether agent instruction blocks were updated, already current, skipped, or need a user decision.
-- Whether the active grimoire passed structure compatibility, or should run `/grm-improve`.
+- Whether the active grimoire passed the structure check, or should run `/grm-improve`.
 Include the resolved active grimoire path in the summary.
 
 ## Related
