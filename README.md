@@ -169,7 +169,7 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 | [Agent Configuration](docs/agent_configuration.md) | Claude Code, Codex, Copilot, Cursor |
 | [Skill Catalog](docs/skills.md) | Every `/arc-*` command with descriptions |
 | [Skill Schema](docs/skill_schema.md) | Command-family naming rules |
-| [Operating Model](docs/operating_model.md) | Three-layer model and routing |
+| [Operating Model](docs/operating_model.md) | Storage layers and routing |
 | [Page Schema](docs/page_schema.md) | Frontmatter spec for every page |
 | [Obsidian Setup](docs/obsidian.md) | Open as a vault; graph-view color groups |
 | [Reference](docs/reference.md) | Terminology, schemas, path conventions |

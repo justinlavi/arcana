@@ -9,7 +9,7 @@ last_verified: 2026-05-19
 
 # Arcana Installation
 
-One command installs Arcana — the framework that powers all your grimoires — configures your AI agents, and registers the `/arc-*` skill set. Cloning existing grimoires is optional and handled interactively.
+One command installs Arcana — the framework that powers all your grimoires — configures your AI agents, and registers the `/arc-*` and `/grm-*` skill sets. Cloning existing grimoires is optional and handled interactively.
 
 For per-agent configuration after install, see [agent_configuration.md](agent_configuration.md). For library and manifest schemas, see [reference.md](reference.md).
 

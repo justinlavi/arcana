@@ -6,7 +6,7 @@ This README is the canonical home for the long-form description. Other surfaces 
 
 ## Installation
 
-This grimoire is part of the **Grimoire** ecosystem powered by **Arcana**, the framework that handles agent integration, the validator suite, the canonical `/arc-*` skill set, and library registration. The recommended way to install both is the Arcana summoning rite - one command, end-to-end.
+This grimoire is part of the **Grimoire** ecosystem powered by **Arcana**, the framework that handles agent integration, the validator suite, the canonical `/arc-*` and `/grm-*` skill sets, and library registration. The recommended way to install both is the Arcana summoning rite - one command, end-to-end.
 
 ### Recommended - Arcana summoning rite
 
@@ -112,7 +112,7 @@ Manifest at `grimoire.json`:
 }
 ```
 
-(The manifest description is a short tagline - a few words like "Olympus knowledge" or "personal cooking knowledge". The long-form description lives in this README; do not paste the long form into the manifest or hub.)
+(The manifest description is a short tagline - a few words like "personal cooking knowledge" or "HR runbooks and policies". The long-form description lives in this README; do not paste the long form into the manifest or hub.)
 
 Skills under `skills/<area>-<verb>-<object>/` register as `/{{SKILL_PREFIX}}-<area>-<verb>-<object>`.
 

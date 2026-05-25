@@ -175,10 +175,10 @@ When creating new grimoires, use these placeholders in formula templates:
 
 | Placeholder | Description | Example value |
 |------------|------------|--------------|
-| `{{GRIMOIRE_NAME}}` | Display name; brand only - used in the root-hub H1 | `Cooking`, `HR`, `Olympus` |
+| `{{GRIMOIRE_NAME}}` | Display name; brand only - used in the root-hub H1 | `Cooking`, `HR`, `Project Alpha` |
 | `{{GRIMOIRE_TOKEN}}` | All-caps token | `COOKING`, `HR` |
 | `{{GRIMOIRE_DOMAIN}}` | Subject area / category | `cooking`, `human resources` |
-| `{{GRIMOIRE_PURPOSE}}` | Short tagline, 2–5 words; used in the manifest `description` and as an italic subtitle in the root hub | `Olympus knowledge`, `personal cooking knowledge`, `HR runbooks and policies` |
+| `{{GRIMOIRE_PURPOSE}}` | Short tagline, 2–5 words; used in the manifest `description` and as an italic subtitle in the root hub | `personal cooking knowledge`, `HR runbooks and policies`, `Project Alpha knowledge` |
 | `{{GRIMOIRE_PURPOSE_DETAILED}}` | Long-form description; lives **only** in `README.md`; never duplicated to manifest or hub | `recipes, techniques, equipment, and ingredient inventories — the full personal cooking reference` |
 | `{{GRIMOIRE_DIRECTORY}}` | Filesystem name | `cooking-grimoire`, `hr-grimoire` |
 | `{{SKILL_PREFIX}}` | Short slug for skill prefix | `cook`, `hr` |

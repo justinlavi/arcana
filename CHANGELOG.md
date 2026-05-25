@@ -374,6 +374,9 @@ settings Arcana validates.
 - `docs/skills.md` - generated Arcana skill catalog.
 - `invocations/arcana/quality/review_architecture.md` - judgment-based
   whole-repo architecture review used by `/arc-improve`.
+- Installation and scaffold docs identify both `/arc-*` and `/grm-*` skill
+  sets, and placeholder examples use the canonical cooking, HR, and Project
+  Alpha names.
 
 ### Public readiness
 
