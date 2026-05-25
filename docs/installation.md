@@ -125,7 +125,9 @@ If the user skips the prompt, the rite installs Arcana only. If discovery fails,
 
 ### When a grimoire is discovered first
 
-Most users will find Arcana first and use the summoning rite's interactive discovery to clone grimoires. But it's also common for someone to be pointed at a *grimoire repo* (on a private GitLab, a public GitHub repo, etc.) without ever having heard of Arcana. The summoning rite is the recommended entry point in that case too — one command pulls Arcana, registers it, and clones the grimoire into the right place. Users who'd rather install by hand can do that as well; the only thing that matters is the path layout — Arcana at `~/grimoires/arcana/` and each grimoire at `~/grimoires/<grimoire-directory>/` — because the other rites resolve each other through those locations.
+Most users find Arcana first, then use the summoning rite's interactive discovery to clone grimoires. Some users arrive from a *grimoire repo* instead, such as a private GitLab repository or a public GitHub repository, before they know Arcana exists.
+
+The summoning rite is still the recommended entry point: one command pulls Arcana, registers it, and clones the grimoire into the right place. Manual installation is fine too, as long as the path layout stays stable: Arcana at `~/grimoires/arcana/` and each grimoire at `~/grimoires/<grimoire-directory>/`. The other rites resolve each other through those locations.
 
 Every grimoire scaffolded from `formulae/grimoire/README.md` therefore carries its own `## Installation` section that:
 

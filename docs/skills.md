@@ -38,7 +38,7 @@ invoke `/arc-help`.
 |---|---|
 | [`/arc-validate-all`](../skills/validate-all/SKILL.md) | Run the full Arcana validator suite via the orchestrator rite (every mechanical check in one shot) |
 | [`/arc-validate-encoding`](../skills/validate-encoding/SKILL.md) | Mechanically validate UTF-8, LF line endings, BOMs, mojibake markers, and repair artifacts |
-| [`/arc-validate-format`](../skills/validate-format/SKILL.md) | Mechanically validate Arcana markdown formatting (headings, code fences, frontmatter) |
+| [`/arc-validate-format`](../skills/validate-format/SKILL.md) | Mechanically validate Markdown formatting (headings, code fences, tables, tree examples) |
 | [`/arc-validate-frontmatter`](../skills/validate-frontmatter/SKILL.md) | Mechanically validate page frontmatter against the canonical schema (type, required fields, sources, last_verified) |
 | [`/arc-validate-links`](../skills/validate-links/SKILL.md) | Mechanically validate that internal markdown links in Arcana resolve to real files |
 | [`/arc-validate-naming`](../skills/validate-naming/SKILL.md) | Mechanically validate Arcana naming conventions (snake_case paths, kebab-case skills) |

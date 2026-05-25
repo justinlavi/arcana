@@ -122,7 +122,7 @@ Open a new agent session and run `/arc-help` to see every available command, or 
 |   |-- rites/                    # Python automation scripts
 |   |-- skills/                   # Slash-command source files
 |   |-- docs/                     # Framework documentation (page_schema.md is canonical)
-|   `-- resources/                # Branding assets
+|   |-- resources/                # Branding assets
 |
 |-- cooking-grimoire/             # A personal grimoire
 |   |-- cooking-grimoire.md       # Root hub
@@ -133,13 +133,13 @@ Open a new agent session and run `/arc-help` to see every available command, or 
 |   |-- chapters/                 # recipes/, techniques/, equipment/, ...
 |   |   |-- recipes/recipes.md    # Chapter hub (folder-name convention)
 |   |   |-- recipes/sourdough.md  # Leaf
-|   |   `-- techniques/
+|   |   |-- techniques/
 |   |       |-- techniques.md     # Chapter hub
-|   |       `-- lamination/       # Sub-chapter (nests as deep as needed)
+|   |       |-- lamination/       # Sub-chapter (nests as deep as needed)
 |   |           |-- lamination.md # Sub-chapter hub (same convention)
 |   |           |-- book_folds.md # Leaf
-|   |           `-- windowpane_test.md
-|   `-- skills/                   # Grimoire skills
+|   |           |-- windowpane_test.md
+|   |-- skills/                   # Grimoire skills
 |
 |-- hr-grimoire/                  # A workplace grimoire
 |   |-- hr-grimoire.md            # Root hub
@@ -148,9 +148,9 @@ Open a new agent session and run `/arc-help` to see every available command, or 
 |   |-- sources/
 |   |-- inbox/
 |   |-- chapters/                 # onboarding/, policies/, benefits/, ...
-|   `-- skills/
+|   |-- skills/
 |
-`-- library.json                  # Local registry of installed grimoires and their paths
+|-- library.json                  # Local registry of installed grimoires and their paths
 ```
 
 Create as many grimoires as you need. Arcana provides the framework; each grimoire supplies its own knowledge, skills, and source artifacts.

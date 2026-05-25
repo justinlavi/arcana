@@ -55,6 +55,7 @@ Before editing the grimoire:
 Invoke and collect output from:
 
 - `/arc-grimoire-validate-structure` - directory layout, required hub files, managed scaffold drift
+- `/arc-validate-format` (`python3 ARCANA_HOME/rites/validate_format.py --grimoire .`) - Markdown tables, fences, and tree examples
 - `/arc-validate-links` - internal markdown links resolve
 - `/arc-grimoire-validate-boundaries` - magical/practical boundary compliance
 

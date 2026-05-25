@@ -11,7 +11,7 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-Validate invocation and formula format compliance (required sections and schema).
+Validate Markdown, invocation, formula, and hub format compliance. The rite checks required invocation sections, thin hubs, formula headings, table delimiter rows, fenced code blocks, and pipe-only Markdown tree examples.
 
 ## Invocation
 
@@ -34,6 +34,12 @@ Execute the validation rite:
 
 ```bash
 python3 rites/validate_format.py
+```
+
+For a grimoire root:
+
+```bash
+python3 ARCANA_HOME/rites/validate_format.py --grimoire .
 ```
 
 ### Step 2: Review Invocation Format
@@ -106,12 +112,23 @@ For each format violation:
 2. Document placeholders
 3. Add usage instructions
 
+**Unclosed code fence**:
+1. Add the matching closing fence using the same marker (` ``` ` or ` ~~~ `).
+2. If the example must show fenced Markdown inside a fenced block, use a longer outer fence.
+
+**Backtick tree branch marker**:
+1. Replace legacy tree markers like `` `-- child `` with pipe markers like `|-- child`.
+2. Keep indentation aligned so the tree remains readable in plain text.
+
 ## Outputs
 
 **Console output**:
 - Invocation files with missing sections
 - hub files exceeding size limit
 - Formulae with format issues
+- Markdown table delimiter rows with fewer than 3 hyphens
+- Unclosed fenced code blocks
+- Markdown tree examples that use backtick branch markers
 - Exit code: 0 (compliant) or 1 (violations found)
 
 **On success**:

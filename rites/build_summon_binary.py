@@ -6,6 +6,10 @@ Usage:
 
 The resulting artifact is intended for GitHub Release assets, not for committing
 to the repository.
+
+Exit codes:
+    0  Release artifact built successfully
+    1  Build failed or PyInstaller did not produce the expected binary
 """
 
 import argparse
@@ -141,11 +145,18 @@ def main():
 
     pyinstaller_args.append(str(ROOT / "rites" / "summon.py"))
 
-    run(pyinstaller_args)
+    try:
+        run(pyinstaller_args)
+    except subprocess.CalledProcessError as exc:
+        print()
+        print(f"[ERROR] PyInstaller failed with exit code {exc.returncode}.")
+        print("        Install or repair PyInstaller, then re-run this rite.")
+        return 1
 
     binary = pyinstaller_dist / binary_name
     if not binary.is_file():
-        raise FileNotFoundError(f"PyInstaller did not produce expected binary: {binary}")
+        print(f"[ERROR] PyInstaller did not produce expected binary: {binary}")
+        return 1
 
     os.chmod(binary, os.stat(binary).st_mode | 0o755)
 

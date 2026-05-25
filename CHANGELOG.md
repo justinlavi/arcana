@@ -20,6 +20,9 @@ Breaking semantic cleanup:
 - Extended `/arc-grimoire-improve` and `validate_grimoire_structure.py` to treat current Arcana-managed scaffold files as part of grimoire upgrade/structure compliance.
 - Removed Arcana's static grimoire catalog entirely; `~/grimoires/library.json` is the only persistent grimoire registry, and remote grimoires are discovered only from an explicit GitHub/GitLab scope.
 - Hardened encoding validation against numeric range question-mark artifacts, and made skill registration write generated skill files as UTF-8/LF.
+- Hardened the Summoning Rite binary builder so PyInstaller failures report a clear error instead of a traceback.
+- Clarified the grimoire-first installation path in the installation guide.
+- Extended format validation to scan grimoire roots, catch unclosed fenced code blocks, and reject backtick-style Markdown tree branch markers.
 
 ## [1.0.0] - 2026-05-19
 

@@ -7,7 +7,7 @@ authority: grimoire
 last_verified: 2026-05-12
 ---
 
-# Invocation: Improve Arcana Quality
+# Invocation: Improve Arcana Documentation
 
 ## Purpose
 
