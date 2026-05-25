@@ -27,7 +27,7 @@ Expected assets:
 
 Actual architecture labels are produced by the build runner.
 
-`rites/summon.sh` is the single bootstrap entry point. Windows users can run it from Git Bash or WSL; the release workflow still produces a Windows binary for direct download and future Windows-specific bootstrap improvements.
+`rites/summon.sh` is the single bootstrap entry point. Windows users can run it from Git Bash; the bootstrap detects Git Bash's `MINGW*` / `MSYS*` / `CYGWIN*` platform names, downloads the Windows `.zip` asset, and runs `grimoire-summon.exe`. WSL is treated as Linux and uses the Linux assets.
 
 ---
 
@@ -86,9 +86,9 @@ Draft releases are useful for private review, but they are not useful for unauth
 
 Public curl flow:
 1. Detect OS and architecture.
-2. Download `grimoire-summon-{platform}.tar.gz` from GitHub Releases.
-3. Download and verify `grimoire-summon-{platform}.tar.gz.sha256`.
-4. Extract and run the `grimoire-summon` binary.
+2. Download `grimoire-summon-{platform}.tar.gz` on Linux/macOS or `grimoire-summon-{platform}.zip` on Windows from GitHub Releases.
+3. Download and verify the matching `.sha256` checksum.
+4. Extract and run `grimoire-summon` on Linux/macOS or `grimoire-summon.exe` on Windows.
 5. Fall back to the Python source bootstrap if any release step fails.
 
 On Linux with a detected display session, `GRIMOIRE_SUMMON_BINARY=auto` skips steps 2-4 and goes straight to source mode. Use `GRIMOIRE_SUMMON_BINARY=always` to test the Linux release binary directly.
@@ -98,6 +98,8 @@ Binary controls:
 - `GRIMOIRE_SUMMON_BINARY=always` - force release binary lookup.
 - `GRIMOIRE_SUMMON_BINARY=never` - force Python source bootstrap.
 - `GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0` - download from a specific release tag instead of `latest`.
+
+GitHub's `latest` release URL resolves only to a non-draft, non-prerelease release. For prerelease testing, set `GRIMOIRE_SUMMON_RELEASE_TAG` to the exact tag.
 
 Example test command for a repeatedly overwritten prerelease:
 

@@ -31,7 +31,7 @@ The script installs from the public Arcana GitHub repository by default. When ru
 
 When run from the public curl command, the summoning rite is release-first except on Linux GUI sessions, where it uses the Python source launcher by default to avoid frozen OpenGL/GLX library drift:
 1. Detects the current OS and architecture.
-2. Downloads the matching `grimoire-summon-*` asset from the latest GitHub Release.
+2. Downloads the matching `grimoire-summon-*` asset from the latest GitHub Release (`.tar.gz` on Linux/macOS, `.zip` on Windows Git Bash).
 3. Verifies the `.sha256` checksum.
 4. Runs the binary.
 5. Falls back to the Python source bootstrap if the release asset is unavailable or exits abnormally.

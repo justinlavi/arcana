@@ -71,6 +71,7 @@ summon_platform() {
     case "$os" in
         linux) os="linux" ;;
         darwin) os="macos" ;;
+        mingw*|msys*|cygwin*) os="windows" ;;
         *) return 1 ;;
     esac
 
@@ -132,6 +133,39 @@ verify_checksum() {
     fi
 }
 
+extract_archive() {
+    local archive="$1"
+    local dest="$2"
+    local archive_win
+    local dest_win
+    local py
+
+    case "$archive" in
+        *.zip)
+            if command -v unzip &>/dev/null; then
+                unzip -q "$archive" -d "$dest"
+            elif command -v powershell.exe &>/dev/null && command -v cygpath &>/dev/null; then
+                archive_win="$(cygpath -w "$archive")"
+                dest_win="$(cygpath -w "$dest")"
+                powershell.exe -NoProfile -Command \
+                    "Expand-Archive -LiteralPath '$archive_win' -DestinationPath '$dest_win' -Force"
+            else
+                py="$(command -v python3 || command -v python || true)"
+                if [[ -z "$py" ]]; then
+                    return 1
+                fi
+                "$py" -c "import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$archive" "$dest"
+            fi
+            ;;
+        *.tar.gz)
+            tar -xzf "$archive" -C "$dest"
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
 should_try_binary() {
     if [[ "$GRIMOIRE_SUMMON_BINARY" == "never" ]]; then
         return 1
@@ -163,6 +197,7 @@ try_release_binary() {
     local binary_temp
     local bin_dir
     local binary
+    local binary_name
 
     if ! platform="$(summon_platform)"; then
         echo "  [INFO]  No release binary available for this platform"
@@ -171,7 +206,13 @@ try_release_binary() {
 
     repo_base="$(repo_http_base "$ARCANA_URL")"
     download_base="$(release_download_base "$repo_base" "$GRIMOIRE_SUMMON_RELEASE_TAG")"
-    asset="grimoire-summon-$platform.tar.gz"
+    if [[ "$platform" == windows-* ]]; then
+        asset="grimoire-summon-$platform.zip"
+        binary_name="grimoire-summon.exe"
+    else
+        asset="grimoire-summon-$platform.tar.gz"
+        binary_name="grimoire-summon"
+    fi
     checksum="$asset.sha256"
 
     binary_temp="$(mktemp -d "${TMPDIR:-/tmp}/grimoire-summon.XXXXXX")"
@@ -197,17 +238,22 @@ try_release_binary() {
         return 1
     fi
 
-    if ! tar -xzf "$binary_temp/$asset" -C "$bin_dir"; then
+    if ! extract_archive "$binary_temp/$asset" "$bin_dir"; then
         echo "  [WARN]  Could not extract release binary - falling back to Python source"
         rm -rf "$binary_temp"
         return 1
     fi
 
-    binary="$bin_dir/grimoire-summon"
+    binary="$bin_dir/$binary_name"
     if [[ ! -x "$binary" ]]; then
         chmod +x "$binary" 2>/dev/null || true
     fi
-    if [[ ! -x "$binary" ]]; then
+    if [[ "$platform" == windows-* && ! -f "$binary" ]]; then
+        echo "  [WARN]  Release binary not found after extraction - falling back to Python source"
+        rm -rf "$binary_temp"
+        return 1
+    fi
+    if [[ "$platform" != windows-* && ! -x "$binary" ]]; then
         echo "  [WARN]  Release binary is not executable - falling back to Python source"
         rm -rf "$binary_temp"
         return 1
