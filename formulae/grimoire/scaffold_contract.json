@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "description": "Machine-readable contract for the grimoire scaffold under formulae/grimoire.",
+  "root_hub": {
+    "source": "root_hub.formula.md",
+    "target": "{{GRIMOIRE_DIRECTORY}}.md",
+    "create": true,
+    "required": true,
+    "managed": false,
+    "placeholder_required": true
+  },
+  "directories": [
+    {
+      "path": "chapters",
+      "source": "chapters",
+      "create": true,
+      "required": true
+    },
+    {
+      "path": "sources",
+      "source": "sources",
+      "create": true,
+      "required": true
+    },
+    {
+      "path": "inbox",
+      "source": "inbox",
+      "create": true,
+      "required": true
+    },
+    {
+      "path": "skills",
+      "create": true,
+      "required": false
+    },
+    {
+      "path": ".obsidian",
+      "source": ".obsidian",
+      "create": true,
+      "required": true
+    }
+  ],
+  "files": [
+    {
+      "source": "README.md",
+      "target": "README.md",
+      "create": true,
+      "required": true,
+      "managed": false,
+      "role": "customized",
+      "placeholder_required": true
+    },
+    {
+      "source": "grimoire.json",
+      "target": "grimoire.json",
+      "create": true,
+      "required": true,
+      "managed": false,
+      "role": "manifest",
+      "placeholder_required": true
+    },
+    {
+      "source": "log.md",
+      "target": "log.md",
+      "create": true,
+      "required": true,
+      "managed": false,
+      "role": "customized",
+      "placeholder_required": true
+    },
+    {
+      "source": ".editorconfig",
+      "target": ".editorconfig",
+      "create": true,
+      "required": true,
+      "managed": true,
+      "role": "managed_support"
+    },
+    {
+      "source": ".gitattributes",
+      "target": ".gitattributes",
+      "create": true,
+      "required": true,
+      "managed": true,
+      "role": "managed_support"
+    },
+    {
+      "source": ".obsidian/app.json",
+      "target": ".obsidian/app.json",
+      "create": true,
+      "required": true,
+      "managed": true,
+      "role": "managed_obsidian"
+    },
+    {
+      "source": ".obsidian/graph.json",
+      "target": ".obsidian/graph.json",
+      "create": true,
+      "required": true,
+      "managed": true,
+      "role": "managed_obsidian"
+    },
+    {
+      "source": "inbox/README.md",
+      "target": "inbox/README.md",
+      "create": true,
+      "required": true,
+      "managed": true,
+      "role": "managed_layer_readme"
+    },
+    {
+      "source": "sources/README.md",
+      "target": "sources/README.md",
+      "create": true,
+      "required": true,
+      "managed": true,
+      "role": "managed_layer_readme"
+    },
+    {
+      "source": "chapters/.gitkeep",
+      "target": "chapters/.gitkeep",
+      "create": true,
+      "required": false,
+      "managed": false,
+      "role": "empty_directory_marker"
+    },
+    {
+      "source": "sources/.gitkeep",
+      "target": "sources/.gitkeep",
+      "create": true,
+      "required": false,
+      "managed": false,
+      "role": "empty_directory_marker"
+    },
+    {
+      "source": "inbox/.gitkeep",
+      "target": "inbox/.gitkeep",
+      "create": true,
+      "required": false,
+      "managed": false,
+      "role": "empty_directory_marker"
+    }
+  ],
+  "json_requirements": [
+    {
+      "path": ".obsidian/app.json",
+      "required_values": {
+        "newLinkFormat": "absolute",
+        "useMarkdownLinks": false
+      }
+    }
+  ],
+  "ignored_user_state": [
+    ".obsidian/workspace.json",
+    ".obsidian/workspace-mobile.json",
+    ".obsidian/cache",
+    ".obsidian/plugins"
+  ]
+}

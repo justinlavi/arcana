@@ -11,7 +11,7 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-AI-guided conversational setup that scaffolds a complete grimoire from the formula template, registers it in the local library, and validates the result. Output is a working v2-compliant grimoire directory with customized root hub, README, manifest, `sources/`, `log.md`, and initial chapter skeletons (each with its own folder-named hub and frontmatter).
+AI-guided conversational setup that scaffolds a complete grimoire from the scaffold contract, registers it in the local library, and validates the result. Output is a working grimoire directory with customized root hub, README, manifest, `sources/`, `log.md`, and initial chapter skeletons (each with its own folder-named hub and frontmatter).
 
 ## Invocation
 
@@ -27,7 +27,7 @@ AI-guided conversational setup that scaffolds a complete grimoire from the formu
 4. No credentials, PII, or secrets.
 5. Link to source systems; don't duplicate their content.
 6. Designate an owner.
-7. Every page carries v2 frontmatter (see `ARCANA_HOME/docs/page_schema.md`).
+7. Every page carries canonical frontmatter (see `ARCANA_HOME/docs/page_schema.md`).
 8. Hub naming: every folder F has a hub at `F/<basename(F)>.md`.
 
 ---
@@ -64,25 +64,23 @@ Let the user select, rename, drop, or add chapters and provide a one-line descri
 
 ---
 
-## Step 3: Scaffold from Template
+## Step 3: Scaffold from Contract
 
-```bash
-ARCANA_HOME="${ARCANA_HOME:-$HOME/grimoires/arcana}"
-mkdir {{grimoire_directory}} && cd {{grimoire_directory}}
-git init
-cp "$ARCANA_HOME/formulae/grimoire/root_hub.formula.md" ./{{grimoire_directory}}.md
-cp "$ARCANA_HOME/formulae/grimoire/README.md" .
-cp "$ARCANA_HOME/formulae/grimoire/grimoire.json" .
-cp "$ARCANA_HOME/formulae/grimoire/log.md" .
-cp "$ARCANA_HOME/formulae/grimoire/.gitattributes" .
-cp "$ARCANA_HOME/formulae/grimoire/.editorconfig" .
-mkdir chapters skills sources inbox .obsidian
-cp "$ARCANA_HOME/formulae/grimoire/sources/README.md" sources/README.md
-cp "$ARCANA_HOME/formulae/grimoire/inbox/README.md" inbox/README.md
-cp "$ARCANA_HOME/formulae/grimoire/.obsidian/app.json" .obsidian/app.json
-cp "$ARCANA_HOME/formulae/grimoire/.obsidian/graph.json" .obsidian/graph.json
-touch sources/.gitkeep chapters/.gitkeep inbox/.gitkeep
-```
+The scaffold inventory lives in
+`ARCANA_HOME/formulae/grimoire/scaffold_contract.json`. Load that contract
+before creating files. It is the only source for scaffold directories,
+templated files, copied support files, managed Obsidian settings, and empty
+directory markers.
+
+Create the grimoire by applying the contract:
+
+1. Create the target grimoire directory and run `git init`.
+2. For every `directories[]` entry with `create: true`, create `path`.
+3. Copy `root_hub.source` to `root_hub.target`, substituting
+   `{{GRIMOIRE_DIRECTORY}}` in the target path.
+4. For every `files[]` entry with `create: true`, copy `source` to `target`,
+   substituting scaffold placeholders in target paths.
+5. Replace placeholders in copied file contents during Step 4.
 
 The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, skill prefix, description). `sources/` is the immutable sources layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `.obsidian/app.json` and `.obsidian/graph.json` are managed scaffold files that preserve safe full-path wikilink behavior and Arcana's graph-view color groups; `log.md` is the append-only activity log.
 
@@ -148,7 +146,7 @@ For each selected chapter, follow `ARCANA_HOME/invocations/grimoire/create_chapt
 - **starting pointers**: ask user, or use `"Define during usage"`
 - **sub_topics**: suggest 2-3 inferred from the chapter (e.g. `onboarding` -> `first_day`, `first_week`, `manager_guide`)
 
-Create chapter hub `chapters/<chapter>/<chapter>.md` with v2 frontmatter and routing to planned sub_topics. Do not generate full leaf docs in this pass — placeholders or TODOs in the chapter hub are acceptable.
+Create chapter hub `chapters/<chapter>/<chapter>.md` with canonical frontmatter and routing to planned sub_topics. Do not generate full leaf docs in this pass — placeholders or TODOs in the chapter hub are acceptable.
 
 If a chapter creation fails, report it and continue with the rest. The user can retry with `/grm-create-chapter <name>`.
 

@@ -20,23 +20,20 @@ Exit codes: 0 = compliant, 1 = violations
 
 import argparse
 import filecmp
+import json
 import sys
 from pathlib import Path
 
 from _lib import default_arcana_root, load_manifest
-
-REQUIRED_DIRS = ["sources", "chapters"]
-RECOMMENDED_DIRS = ["inbox"]  # Warn-only; inbox/ is the transient drop zone for /grm-ingest
-# grimoire.json is validated separately (step 1); the root hub is checked in step 3.
-REQUIRED_FILES_BY_CONVENTION = ["README.md", "log.md"]
-MANAGED_SCAFFOLD_FILES = [
-    ".editorconfig",
-    ".gitattributes",
-    ".obsidian/app.json",
-    ".obsidian/graph.json",
-    "inbox/README.md",
-    "sources/README.md",
-]
+from scaffold_contract import (
+    ScaffoldContractError,
+    json_requirements,
+    load_scaffold_contract,
+    managed_scaffold_files,
+    required_customized_files,
+    required_directories,
+    validate_contract_against_formula,
+)
 
 
 def main():
@@ -45,7 +42,8 @@ def main():
                         help="Grimoire root (default: cwd)")
     args = parser.parse_args()
     root = args.grimoire.expanduser().resolve()
-    formula_root = default_arcana_root() / "formulae" / "grimoire"
+    arcana_root = default_arcana_root()
+    formula_root = arcana_root / "formulae" / "grimoire"
 
     print()
     print("Validating Grimoire Structure")
@@ -54,6 +52,18 @@ def main():
     print()
 
     errors = 0
+    try:
+        scaffold_contract = load_scaffold_contract(arcana_root)
+    except ScaffoldContractError as exc:
+        print(f"  WARN     {exc}")
+        print()
+        print("==================================")
+        print("Grimoire structure validation failed with 1 issue(s)")
+        return 1
+
+    for contract_error in validate_contract_against_formula(scaffold_contract, formula_root):
+        print(f"  WARN     scaffold contract error: {contract_error}")
+        errors += 1
 
     # 1. Manifest must exist, parse, and declare both 'name' and a valid skill_prefix.
     if not (root / "grimoire.json").is_file():
@@ -75,7 +85,7 @@ def main():
             print(f"  OK       grimoire.json (name={grimoire_name})")
 
     # 2. Required root files (other than the dynamic hub name).
-    for f in REQUIRED_FILES_BY_CONVENTION:
+    for f in required_customized_files(scaffold_contract):
         if not (root / f).is_file():
             print(f"  MISSING  file: {f}")
             errors += 1
@@ -90,18 +100,10 @@ def main():
     else:
         print(f"  OK       {grimoire_name}.md")
 
-    # 4. Required directories.
-    for d in REQUIRED_DIRS:
+    # 4. Required scaffold directories.
+    for d in required_directories(scaffold_contract):
         if not (root / d).is_dir():
             print(f"  MISSING  directory: {d}")
-            errors += 1
-        else:
-            print(f"  OK       {d}/")
-
-    # 4b. Recommended directories (warn but don't fail).
-    for d in RECOMMENDED_DIRS:
-        if not (root / d).is_dir():
-            print(f"  MISSING  directory: {d}/  - drop zone for /grm-ingest")
             errors += 1
         else:
             print(f"  OK       {d}/")
@@ -153,7 +155,7 @@ def main():
     if formula_root.is_dir():
         print()
         print("Checking managed scaffold files against current Arcana formulae...")
-        for rel in MANAGED_SCAFFOLD_FILES:
+        for rel in managed_scaffold_files(scaffold_contract):
             expected = formula_root / rel
             actual = root / rel
             if not expected.is_file():
@@ -171,32 +173,31 @@ def main():
         print(f"  WARN     Arcana formula root missing: {formula_root}")
         errors += 1
 
-    # 8. Obsidian app.json must set newLinkFormat=absolute. The default
-    # ("shortest") causes Ctrl-clicking a full-path wikilink to create a
-    # recursive directory tree relative to the current note when the link
-    # doesn't resolve. Setting "absolute" matches the validator's wikilink
-    # resolution model.
-    obsidian_app = root / ".obsidian" / "app.json"
-    if obsidian_app.is_file():
-        import json
-        try:
-            cfg = json.loads(obsidian_app.read_text())
-        except (json.JSONDecodeError, OSError) as exc:
-            print(f"  WARN     .obsidian/app.json unreadable: {exc}")
+    # 8. JSON requirements from the scaffold contract.
+    for requirement in json_requirements(scaffold_contract):
+        rel = requirement["path"]
+        actual = root / rel
+        if not actual.is_file():
+            print(f"  WARN     {rel} missing")
             errors += 1
-        else:
-            if cfg.get("newLinkFormat") != "absolute":
-                print(f"  WARN     .obsidian/app.json must set \"newLinkFormat\": \"absolute\" "
-                      f"(got {cfg.get('newLinkFormat')!r}); Ctrl-click on full-path wikilinks "
-                      f"will create recursive directory trees otherwise")
+            continue
+        try:
+            cfg = json.loads(actual.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError) as exc:
+            print(f"  WARN     {rel} unreadable: {exc}")
+            errors += 1
+            continue
+
+        for key, expected_value in requirement["required_values"].items():
+            actual_value = cfg.get(key)
+            if actual_value != expected_value:
+                print(
+                    f"  WARN     {rel} must set {key!r} to {expected_value!r} "
+                    f"(got {actual_value!r})"
+                )
                 errors += 1
             else:
-                print(f"  OK       .obsidian/app.json (newLinkFormat=absolute)")
-    else:
-        print(f"  WARN     .obsidian/app.json missing - copy from "
-              f"ARCANA_HOME/formulae/grimoire/.obsidian/app.json to prevent "
-              f"Obsidian's default link behavior from creating recursive directories")
-        errors += 1
+                print(f"  OK       {rel} ({key}={expected_value!r})")
 
     print()
     print("==================================")

@@ -84,7 +84,9 @@ review guide, then merge findings into the synthesis matrix before editing.
 
 Apply local fixes directly; defer large moves, public command changes,
 generated-output rewrites, or changes affecting more than ten files with a
-clear benefit and blast radius.
+clear benefit and blast radius. Persist substantial deferred items in
+[`../../docs/architecture_backlog.md`](../../docs/architecture_backlog.md)
+when they need maintainer review after the current conversation.
 
 ### Phase 4: Rite quality
 
@@ -177,13 +179,16 @@ Out of scope: grimoires (use `/grm-improve`).
 
 ## Deliverables
 
-Apply fixes directly to Arcana files. Report to the user (do not write to disk):
+Apply fixes directly to Arcana files. Report to the user, and write to
+`docs/architecture_backlog.md` only when a deferred item creates a reusable
+architecture queue:
 
 - Validator pass/fail summary
 - Architecture review summary (review lanes, source-of-truth issues, naming/boundary findings, AI-efficiency findings)
 - Fixes applied (counts by category)
 - Documentation duplication / clarity fixes applied
 - Remaining items needing human follow-up
+- Architecture backlog items created, updated, or resolved
 - Whether `CHANGELOG.md` should be updated
 
 Only create new documentation files when they create a reusable canonical home,

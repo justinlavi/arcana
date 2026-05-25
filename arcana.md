@@ -32,6 +32,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 - [docs/obsidian.md](docs/obsidian.md) — Vault setup and graph-view color groups
 - [docs/vscode.md](docs/vscode.md) — VS Code setup (uninstall Markdown Preview Enhanced + install Foam) to avoid recursive-directory bug on Ctrl-click
 - [docs/script_vs_ai.md](docs/script_vs_ai.md) — When to use scripts vs AI
+- [docs/architecture_backlog.md](docs/architecture_backlog.md) — Deferred S-tier architecture opportunities from `/arc-improve`
 - [docs/governance.md](docs/governance.md) — Maintenance policies and versioning
 - [docs/release.md](docs/release.md) — Release workflow for Summoning Rite binaries
 - [CHANGELOG.md](CHANGELOG.md) — Version history
@@ -86,6 +87,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 
 - [formulae/grimoire/](formulae/grimoire/) — Full grimoire scaffold (copy for new domains)
   - [formulae/grimoire/root_hub.formula.md](formulae/grimoire/root_hub.formula.md) — Root-hub template (becomes `<grimoire>/<grimoire>.md`)
+  - [formulae/grimoire/scaffold_contract.json](formulae/grimoire/scaffold_contract.json) — Machine-readable scaffold inventory used by creation, audit, validation, and tests
 - [formulae/chapter_hub.formula.md](formulae/chapter_hub.formula.md) — Chapter hub template
 - [formulae/page.formula.md](formulae/page.formula.md) — Knowledge page template
 - [formulae/invocation.formula.md](formulae/invocation.formula.md) — Custom invocation template

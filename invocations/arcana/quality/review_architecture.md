@@ -276,6 +276,12 @@ Defer and report when a change affects public command names, file paths,
 release behavior, generated outputs, or more than ten files. For deferred
 items, state the benefit, blast radius, and suggested first step.
 
+When a deferred item is likely to outlive the current conversation, update
+[`../../../docs/architecture_backlog.md`](../../../docs/architecture_backlog.md)
+with a stable ID, priority, owner surfaces, first implementable slice, and
+validation profile. Do not use the backlog for small local cleanup that can be
+applied safely inside the current pass.
+
 ### 9. Report
 
 In the final `/arc-improve` report, include:
@@ -289,6 +295,9 @@ In the final `/arc-improve` report, include:
 - AI-efficiency findings: shortest useful read path for key workflows.
 - Changes applied.
 - Deferred architecture opportunities, prioritized.
+- Backlog updates made in
+  [`../../../docs/architecture_backlog.md`](../../../docs/architecture_backlog.md),
+  if any.
 
 ## Non-goals
 
@@ -305,3 +314,4 @@ In the final `/arc-improve` report, include:
 - Rite quality: [`validate_rites.md`](validate_rites.md)
 - Script vs AI split: [`../../../docs/script_vs_ai.md`](../../../docs/script_vs_ai.md)
 - Skill schema: [`../../../docs/skill_schema.md`](../../../docs/skill_schema.md)
+- S-tier backlog: [`../../../docs/architecture_backlog.md`](../../../docs/architecture_backlog.md)

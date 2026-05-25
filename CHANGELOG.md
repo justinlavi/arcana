@@ -1,5 +1,22 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Added `docs/architecture_backlog.md` as the durable review queue for
+  deferred S-tier architecture work found during `/arc-improve`.
+- Added `formulae/grimoire/scaffold_contract.json` as the shared grimoire
+  scaffold inventory consumed by creation, audit, validation, and tests.
+
+### Changed
+
+- Updated the architecture review workflow to persist substantial deferred
+  items to the architecture backlog instead of leaving them only in chat
+  summaries.
+- Updated `/grm-create`, `/grm-improve`, and `/grm-validate-structure` to use
+  the scaffold contract for managed grimoire scaffold files.
+
 ## [1.0.0] - 2026-05-25
 
 Arcana 1.0.0 defines Arcana as a framework for creating, installing, routing,

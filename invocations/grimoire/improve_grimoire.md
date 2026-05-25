@@ -31,7 +31,7 @@ From a registered grimoire, or from a workspace where the active grimoire can be
 
 - Routing takes more hops than the topic warrants (deeply-nested chains for genuinely simple knowledge)
 - Arcana was updated and this grimoire may be behind the current scaffold/schema
-- A grimoire was created from an older Arcana version
+- A grimoire scaffold no longer matches the current Arcana contract
 - Hub trees are unbalanced - a few hubs hold most of the leaves while others are nearly empty
 - Orphan docs or broken links have accumulated
 - Routers feel bloated or duplicated
@@ -59,16 +59,10 @@ Invoke and collect output from:
 
 Stop and report if any validator returns hard errors that would invalidate later phases (e.g. missing root hub).
 
-If `/grm-validate-structure` reports missing or stale managed scaffold files, copy the current files from `ARCANA_HOME/formulae/grimoire/` before continuing:
-
-| Grimoire file | Source of truth |
-|---|---|
-| `.editorconfig` | `ARCANA_HOME/formulae/grimoire/.editorconfig` |
-| `.gitattributes` | `ARCANA_HOME/formulae/grimoire/.gitattributes` |
-| `.obsidian/app.json` | `ARCANA_HOME/formulae/grimoire/.obsidian/app.json` |
-| `.obsidian/graph.json` | `ARCANA_HOME/formulae/grimoire/.obsidian/graph.json` |
-| `inbox/README.md` | `ARCANA_HOME/formulae/grimoire/inbox/README.md` |
-| `sources/README.md` | `ARCANA_HOME/formulae/grimoire/sources/README.md` |
+If `/grm-validate-structure` reports missing or stale managed scaffold files,
+load `ARCANA_HOME/formulae/grimoire/scaffold_contract.json`. For every
+`files[]` entry with `managed: true`, copy `source` from
+`ARCANA_HOME/formulae/grimoire/` to the grimoire `target` before continuing.
 
 Do not mechanically replace grimoire-authored files such as the root README, root hub, `grimoire.json`, `log.md`, chapter hubs, or content pages. Those require contextual review.
 
@@ -119,7 +113,7 @@ subject and context.
 **Arcana upgrade review**
 - Compare current grimoire practices against `ARCANA_HOME/docs/operating_model.md`, `ARCANA_HOME/docs/page_schema.md`, and `ARCANA_HOME/rites/templates/grimoire_block.md`.
 - Update stale command names, manifest field names, and operational vocabulary to current Arcana.
-- Preserve historical log entries unless the entry is actively misleading for current operations; add a new log entry for the migration instead of rewriting history.
+- Preserve historical log entries unless the entry is actively misleading for current operations; add a new log entry for the scaffold update.
 
 ### Phase 5: Apply fixes
 

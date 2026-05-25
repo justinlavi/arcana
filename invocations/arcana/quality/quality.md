@@ -14,6 +14,7 @@ Judgment-based invocations for improving Arcana quality beyond what mechanical v
 - **[review_architecture.md](review_architecture.md)** - Review Arcana's whole layout, source-of-truth boundaries, naming, scalability, and AI-agent efficiency.
 - **[improve_documentation.md](improve_documentation.md)** — Find duplication and clarity issues across docs and invocations. Decide canonical homes; replace duplicates with links.
 - **[validate_rites.md](validate_rites.md)** — Rite-specific quality checks (portability, error handling, docstrings). Complements the security validator.
+- **[architecture_backlog.md](../../../docs/architecture_backlog.md)** - Deferred S-tier architecture opportunities that need maintainer approval before implementation.
 
 ## When to use
 
@@ -25,3 +26,4 @@ Judgment-based invocations for improving Arcana quality beyond what mechanical v
 
 - **Mechanical validators**: [`../validators/validators.md`](../validators/validators.md) — run these first; they're cheap and deterministic.
 - **Orchestrator**: [`../improve_arcana.md`](../improve_arcana.md)
+- **Architecture backlog**: [`../../../docs/architecture_backlog.md`](../../../docs/architecture_backlog.md)
