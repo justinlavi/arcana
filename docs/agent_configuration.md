@@ -94,7 +94,7 @@ Adding `when_to_use` makes a skill discoverable by intent in Claude Code (the us
 
 - **All user-facing operations** (`/grm-*`, `/arc-library-*`, `/arc-agent-register-skills`, `/arc-help`, `/arc-validate-all`) declare `when_to_use` so Claude can auto-suggest them.
 - **One destructive skill** (`/arc-workspace-clean`) declares `disable-model-invocation: true` because it deletes artifacts; users must invoke it explicitly.
-- **Individual validators** (`/arc-validate-format`, `-links`, etc.) and the heavy maintainer orchestrator (`/arc-improve`) deliberately omit `when_to_use` — the orchestrator (`/arc-validate-all` or `/arc-improve`) is the right entry point for normal flows; auto-invoking individual validators would over-activate.
+- **Individual validators** (`/arc-validate-format`, `-links`, etc.) may keep `when_to_use` as searchable/discovery metadata, but set `disable-model-invocation: true` when they should not auto-trigger. The orchestrators (`/arc-validate-all` or `/arc-improve`) are the right entry points for normal flows; auto-invoking individual validators would over-activate.
 
 When adding a new skill, decide: does the user describe a *problem* that maps to this skill? If yes, give it a `when_to_use`. If the skill is destructive or maintainer-only, set `disable-model-invocation: true`.
 

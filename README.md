@@ -93,11 +93,12 @@ When you update Arcana, all your grimoires benefit — because they reference it
 
 ## Supported Agents
 
-Arcana registers skills to:
+Arcana automatically configures the agents it can safely write to, and documents
+manual setup for the rest:
 
 - **Claude Code** — full skill registration; Arcana's `/arc-*` and `/grm-*` commands plus each grimoire's own commands
 - **Codex / ChatGPT** — pointer-only registration from the same source files
-- **GitHub Copilot, Cursor** — via the agent instruction block injected into `CLAUDE.md` / `AGENTS.md`
+- **GitHub Copilot, Cursor, hosted ChatGPT, and other agents** — manual instruction-block setup; see [docs/agent_configuration.md](docs/agent_configuration.md) for exact files and support level
 
 ---
 

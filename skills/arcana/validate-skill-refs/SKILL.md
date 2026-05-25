@@ -9,28 +9,8 @@ allowed-tools: Bash Read
 
 # Validate Arcana Skill References
 
-You are running the skill-references validator against the Arcana repository. It scans every markdown file for Arcana-shipped slash-command references (`/arc-*` and `/grm-*`) and verifies each one matches a source `SKILL.md`. Catches drift like:
+You are running the skill-reference validator against the Arcana repository. Follow the invocation guide below.
 
-- A doc mentions `/grm-foo` after the skill was renamed or deleted.
-- A new skill is announced in prose before its source folder is created.
-- A typo in a slash-command reference (`/grm-imporve` vs `/grm-improve`).
+## Invocation
 
-Wildcard and placeholder forms (`/arc-validate-*`, `/grm-validate-*`, `/arc-validate-<name>`) are skipped - they're prose, not real references.
-
-## Run
-
-```bash
-python3 {{ARCANA_PATH}}/rites/validate_skill_refs.py
-```
-
-Report dangling references with file:line citations. Exit code 0 means clean; non-zero means at least one reference doesn't resolve.
-
-## Procedural detail
-
-If references are stale, choose one of:
-
-1. **The reference is wrong**: rename the doc reference to match an existing skill, or delete the stale mention.
-2. **The skill should exist**: create `skills/<family>/<slug>/SKILL.md` following `docs/skill_schema.md`, then re-run `/arc-agent-register-skills` and `python3 rites/sync_docs.py --apply`.
-3. **The skill was intentionally retired**: scan all docs and remove the references, then re-run this validator.
-
-This validator is part of the suite run by `/arc-validate-all` and the `validate.py` orchestrator.
+!`cat {{ARCANA_PATH}}/invocations/arcana/validators/validate_skill_refs.md`

@@ -9,6 +9,8 @@ tags: [arcana/invocations, type/hub, scope/validators, hub/sub]
 
 Mechanical, deterministic checks against the Arcana repository. Each validator has its own dedicated skill, and all of them run together via the orchestrator.
 
+For the aggregate command, see [validate_all.md](validate_all.md).
+
 ## Available
 
 | Validator | Skill | What it checks |
@@ -24,8 +26,7 @@ Mechanical, deterministic checks against the Arcana repository. Each validator h
 | [validate_orphans.md](validate_orphans.md) | `/arc-validate-orphans` | Every page is reachable from at least one other page |
 | [validate_provenance.md](validate_provenance.md) | `/arc-validate-provenance` | Every external/hybrid page cites real sources under `sources/` |
 | [validate_security.md](validate_security.md) | `/arc-validate-security` | Credential patterns and unsafe Python constructs in rites |
-
-Plus a non-validator skill that runs the same scan over `/arc-*` references in prose: `/arc-validate-skill-refs`.
+| [validate_skill_refs.md](validate_skill_refs.md) | `/arc-validate-skill-refs` | Slash-command references resolve to source skills |
 
 ## Run them all
 
@@ -36,7 +37,7 @@ python3 ../../../rites/validate.py --smart     # only validators relevant to git
 python3 ../../../rites/validate.py --auto      # smart + execute
 ```
 
-Or invoke `/arc-validate-all`.
+Or invoke `/arc-validate-all`, whose workflow home is [validate_all.md](validate_all.md).
 
 ## Related
 

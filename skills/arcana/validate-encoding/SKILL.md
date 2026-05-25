@@ -7,10 +7,8 @@ allowed-tools: Bash
 
 # Validate Arcana Encoding
 
-Run the encoding validator from the Arcana directory:
+You are validating Arcana text encoding and newline safety. Follow the invocation guide below.
 
-```bash
-python3 rites/validate_encoding.py
-```
+## Invocation
 
-For an active grimoire, use `/grm-validate-encoding`.
+!`cat {{ARCANA_PATH}}/invocations/arcana/validators/validate_encoding.md`

@@ -56,7 +56,6 @@ Invoke and collect output from:
 - `/grm-validate-structure` - directory layout, required hub files, managed scaffold drift
 - `/grm-validate-format` - Markdown tables, fences, and tree examples
 - `/grm-validate-links` - internal markdown links resolve
-- `/grm-validate-boundaries` - magical/practical boundary compliance
 
 Stop and report if any validator returns hard errors that would invalidate later phases (e.g. missing root hub).
 
@@ -92,6 +91,10 @@ Run `/grm-analyze-semantics` and incorporate its output:
 ### Phase 4: Judgment passes
 
 Apply the following heuristics to the inventory and semantic output. Each is human-judgment work - explain the reason for every change in the final report.
+
+Also run `/grm-validate-boundaries` as a judgment-based boundary pass. It uses
+deterministic search aids, but final classification depends on the grimoire's
+subject and context.
 
 **Router normalization**
 - Routers are pointer lists. Move prose into leaf docs.

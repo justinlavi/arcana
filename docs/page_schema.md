@@ -134,7 +134,7 @@ type: concept
 title: "Lamination"
 aliases: ["laminating dough", "book folds"]
 tags: [chapter/techniques, technique/dough, type/concept]
-sources: ["sources/article-tartine-method.md"]
+sources: ["sources/example_recipe_method.md"]
 authority: external
 last_verified: 2026-05-12
 ---
@@ -158,9 +158,9 @@ last_verified: 2026-05-12
 ```yaml
 ---
 type: source
-title: "Tartine Bread - Lamination Chapter"
+title: "Example Recipe Method - Lamination Chapter"
 tags: [chapter/sources, type/source]
-sources: ["sources/article-tartine-method.md"]
+sources: ["sources/example_recipe_method.md"]
 authority: external
 last_verified: 2026-05-12
 ---

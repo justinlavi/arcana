@@ -100,7 +100,7 @@ Skills are pointer files. The skill itself contains no logic - it dispatches to 
 ## Documentation changes
 
 - Each concept has one canonical home. Storage layers live in [docs/operating_model.md](docs/operating_model.md), the page schema lives in [docs/page_schema.md](docs/page_schema.md), and so on. Other docs link rather than duplicate.
-- All authored markdown carries YAML frontmatter - see [docs/page_schema.md](docs/page_schema.md). [rites/validate_frontmatter.py](rites/validate_frontmatter.py) enforces it.
+- Knowledge-routing markdown carries YAML frontmatter - see [docs/page_schema.md](docs/page_schema.md). [rites/validate_frontmatter.py](rites/validate_frontmatter.py) enforces it for `docs/`, `invocations/`, `formulae/`, `chapters/`, and grimoire root hubs. GitHub-facing root files such as `README.md`, `CONTRIBUTING.md`, and `CHANGELOG.md` are exempt unless Arcana explicitly adopts frontmatter for them.
 - Every folder has a hub file named after the folder. New folders need a new hub.
 - Internal links use markdown for cross-doc references and full-path `[[wikilinks]]` for hub-internal navigation. [rites/validate_links.py](rites/validate_links.py) checks both.
 

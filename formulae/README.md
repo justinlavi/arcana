@@ -16,7 +16,7 @@ Templates the LLM copies when scaffolding new content. Each `*.formula.md` carri
 ## Conventions
 
 - All templates carry placeholder YAML frontmatter; substitute values before saving.
-- Placeholder tokens use `{{TOKEN}}` syntax. Canonical placeholders and their meanings live in [`docs/reference.md`](../docs/reference.md#placeholders-in-formulae).
+- Machine-substituted placeholder tokens use `{{TOKEN}}` syntax. Bracketed prompts such as `[Title]` are human authoring cues inside generic page/source formulas, not scaffold variables. Canonical scaffold placeholders and their meanings live in [`docs/reference.md`](../docs/reference.md#placeholders-in-formulae).
 - Templates are intentionally exempted from strict frontmatter validation (placeholders like `YYYY-MM-DD` would fail otherwise) - see [`docs/page_schema.md`](../docs/page_schema.md) for the spec applied after expansion.
 
 ## Editing a formula

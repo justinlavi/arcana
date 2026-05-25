@@ -58,7 +58,88 @@ Review the whole repository, not only authored markdown:
 Do not require router hubs for code, config, skill, fixture, asset, or hidden
 tool directories. Hub conventions apply to knowledge-routing folders.
 
-### 2. Build a source-of-truth map
+### 2. Dispatch parallel review lanes
+
+For an S-tier pass, do not keep the entire review in one linear context when
+subagents or parallel AI reviewers are available. Split the repo into isolated
+lanes so each reviewer can go deep without competing for attention. If
+subagents are unavailable, run the same lanes serially and keep their notes
+separate until synthesis.
+
+Keep the maintainer on the critical path: the maintainer owns validation,
+final judgment, edits, and synthesis. Delegate sidecar analysis that can run
+independently.
+
+| Lane | Scope | Primary question |
+|---|---|---|
+| Root and docs | `README.md`, `arcana.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/*.md` | Are audience boundaries, canonical homes, and human/AI read paths obvious? |
+| Invocations | `invocations/**/*.md` | Are workflows thin, routable, non-duplicative, and clear about when to use rites vs judgment? |
+| Rites | `rites/*.py`, `rites/templates/`, `rites/data/` | Are scripts small enough to audit, deterministic, portable, and sharing helpers well? |
+| Formulae and tests | `formulae/**/*`, `tests/**/*` | Do templates, managed scaffold files, fixtures, and tests encode the contracts Arcana claims? |
+| Skills and agents | `skills/**/*/SKILL.md`, agent docs, registration/update flows | Are skills thin, discoverable, portable across agents, and generated views current? |
+| Release and install | `.github/`, `docs/release.md`, `docs/installation.md`, summoning rites | Is install/update/release behavior documented once and resilient across platforms? |
+| Cross-cutting AI efficiency | All surfaces | For common workflows, what is the shortest useful read path and where does it force inference? |
+
+Give each lane the same output contract:
+
+- `lane`: one of the lane names above.
+- `scope_reviewed`: concrete files or globs inspected.
+- `commands_run`: read-only checks run, or `none`.
+- `findings`: top 5 findings, ordered by user impact and maintenance risk.
+- Each finding includes `id`, `priority` (`P0`-`P3`), `evidence`
+  (`file:line` references), `invariant`, `recommendation`, `action`
+  (`apply_now`, `defer`, `codify`, `retain`), `blast_radius`, and
+  `read_path_delta`.
+- `deferred_opportunities`: changes too broad for the current pass.
+- `workflow_updates`: instructions that should be added to future
+  `/arc-improve` or architecture reviews.
+
+Use this template for each delegated lane:
+
+```text
+Audit Arcana for S-tier architecture in this lane only.
+Repo root: ARCANA_HOME.
+Lane:
+Scope:
+Do not edit files unless explicitly assigned this lane's write scope.
+Find source-of-truth drift, duplicated contracts, AI/human read-path friction,
+missing tests, unsafe mutation behavior, and unclear ownership.
+Return the lane output schema from review_architecture.md.
+```
+
+When worker agents are allowed to edit, assign disjoint write scopes. Otherwise
+use read-only explorers and let the maintainer apply the integrated patch.
+
+### 3. Synthesize lane reports
+
+Merge the lane reports before editing. Look for:
+
+- The same issue reported from two surfaces, which usually indicates a missing
+  source of truth.
+- Conflicting recommendations, which usually indicate unclear ownership or
+  audience boundaries.
+- Repeated "defer" items that deserve a roadmap section or future validator.
+- Local edits that unlock multiple lanes without changing public behavior.
+
+Build a synthesis matrix so findings are mergeable instead of prose-only:
+
+| Finding ID | Lanes | Canonical owner | Apply/defer/codify | First step |
+|---|---|---|---|---|
+| `<stable-id>` | `<lanes>` | `<file or subsystem>` | `<decision>` | `<next action>` |
+
+Grade the architecture with an explicit rubric:
+
+| Grade | Meaning |
+|---|---|
+| A | Correct, coherent, validator-clean, and maintainable by the current maintainer. |
+| S | Self-explaining to new maintainers and agents, contract-driven, low-drift, deeply testable, and scalable without relying on one person's memory. |
+
+An S-tier recommendation should improve at least one of: deterministic read
+paths, source-of-truth ownership, testable contracts, cross-agent portability,
+or release/update resilience. Avoid novelty refactors that do not improve one
+of those properties.
+
+### 4. Build a source-of-truth map
 
 List the facts Arcana repeats most often and name their canonical homes:
 
@@ -69,7 +150,8 @@ List the facts Arcana repeats most often and name their canonical homes:
 - Agent instruction block: `rites/templates/grimoire_block.md`
 - Grimoire scaffold contracts: `formulae/grimoire/`
 - Release process: `docs/release.md` and `docs/governance.md`
-- Current release architecture: `CHANGELOG.md`
+- Release history and snapshots: `CHANGELOG.md` (not the live canonical
+  architecture; link to canonical docs for current rules)
 
 Then search for drift-prone repetitions:
 
@@ -86,7 +168,7 @@ For each repetition, decide:
 - **Intentional snapshot**: keep it only when the document explicitly acts as a
   release snapshot or audit record.
 
-### 3. Review naming and boundaries
+### 5. Review naming and boundaries
 
 Judge whether names help users and agents predict where things live:
 
@@ -105,7 +187,7 @@ Judge whether names help users and agents predict where things live:
 Flag names that are mechanically valid but semantically awkward. Mechanical
 validators cannot tell whether a name is intuitive.
 
-### 4. Review AI-agent efficiency
+### 6. Review AI-agent efficiency
 
 For each common task, ask how many files an agent must read before it can act:
 
@@ -115,8 +197,11 @@ For each common task, ask how many files an agent must read before it can act:
 - Ingest a source.
 - Validate Arcana.
 - Improve Arcana.
+- Improve a grimoire.
+- Update Arcana from a grimoire.
 - Register skills.
 - Update an agent instruction block.
+- Diagnose a validator failure.
 
 Prefer workflows where the agent reads one hub, one invocation, and only the
 specific referenced canonical docs. Watch for:
@@ -127,7 +212,29 @@ specific referenced canonical docs. Watch for:
 - Docs that force agents to compare two sources to learn the current rule.
 - Human-facing docs that are good marketing but poor operational entry points.
 
-### 5. Review scalability and future-proofing
+Record the shortest useful read path for each workflow as:
+
+```text
+workflow -> entry file -> invocation/rite -> canonical docs/templates -> validation
+```
+
+Flag any path that requires comparing two docs to learn the current rule, or
+any path where a generated view is treated as editable truth.
+
+For public command surfaces, the skills/agents and invocations lanes must
+produce this matrix:
+
+```text
+command -> skill source -> invocation leaf -> rite/judgment owner ->
+guard/preconditions -> mutation/log behavior -> validation profile ->
+generated docs impact
+```
+
+Every public command should have exactly one workflow home. Skills stay thin,
+hubs route, rites own deterministic mechanics, and judgment passes are named
+as judgment.
+
+### 7. Review scalability and future-proofing
 
 Look for places where the current design will become expensive as Arcana grows:
 
@@ -138,12 +245,24 @@ Look for places where the current design will become expensive as Arcana grows:
 - Test fixtures that encode only happy paths.
 - Docs whose examples narrow Arcana to one domain.
 - Release instructions that assume one maintainer's local machine.
+- Review processes that depend on a single AI context instead of isolated
+  reviewer lanes plus synthesis.
+- Managed scaffold contracts repeated across docs, formulas, validators, and
+  tests instead of living in one machine-checkable place.
+- Skill registration cleanup paths that can delete user-authored or
+  prefix-colliding skills.
+- Mutating rites without dry-run/plan output, explicit exit codes, or temp-HOME
+  tests.
+- Installer behavior split between shell, CLI, GUI, docs, and release notes
+  without a contract that names the canonical behavior.
+- Validator diagnostics that are not structured enough for editors, issue
+  reports, or AI repair loops.
 
 Do not add abstraction preemptively. Recommend a new abstraction only when it
 removes real duplication, reduces repeated judgment work, or preserves a
 single source of truth.
 
-### 6. Apply or defer
+### 8. Apply or defer
 
 Apply fixes directly when they are low-risk and local:
 
@@ -157,12 +276,13 @@ Defer and report when a change affects public command names, file paths,
 release behavior, generated outputs, or more than ten files. For deferred
 items, state the benefit, blast radius, and suggested first step.
 
-### 7. Report
+### 9. Report
 
 In the final `/arc-improve` report, include:
 
 - Architecture grade before/after.
 - Inventory counts by surface.
+- Review lanes run, skipped, or serialized, with reason.
 - Source-of-truth issues fixed.
 - Redundancy removed or intentionally retained.
 - Naming and boundary findings.

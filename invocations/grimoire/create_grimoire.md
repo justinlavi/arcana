@@ -67,21 +67,24 @@ Let the user select, rename, drop, or add chapters and provide a one-line descri
 ## Step 3: Scaffold from Template
 
 ```bash
+ARCANA_HOME="${ARCANA_HOME:-$HOME/grimoires/arcana}"
 mkdir {{grimoire_directory}} && cd {{grimoire_directory}}
 git init
-cp ~/grimoires/arcana/formulae/grimoire/root_hub.formula.md ./{{grimoire_directory}}.md
-cp ~/grimoires/arcana/formulae/grimoire/README.md .
-cp ~/grimoires/arcana/formulae/grimoire/grimoire.json .
-cp ~/grimoires/arcana/formulae/grimoire/log.md .
-cp ~/grimoires/arcana/formulae/grimoire/.gitattributes .
-cp ~/grimoires/arcana/formulae/grimoire/.editorconfig .
-mkdir chapters skills sources inbox
-cp ~/grimoires/arcana/formulae/grimoire/sources/README.md sources/README.md
-cp ~/grimoires/arcana/formulae/grimoire/inbox/README.md inbox/README.md
+cp "$ARCANA_HOME/formulae/grimoire/root_hub.formula.md" ./{{grimoire_directory}}.md
+cp "$ARCANA_HOME/formulae/grimoire/README.md" .
+cp "$ARCANA_HOME/formulae/grimoire/grimoire.json" .
+cp "$ARCANA_HOME/formulae/grimoire/log.md" .
+cp "$ARCANA_HOME/formulae/grimoire/.gitattributes" .
+cp "$ARCANA_HOME/formulae/grimoire/.editorconfig" .
+mkdir chapters skills sources inbox .obsidian
+cp "$ARCANA_HOME/formulae/grimoire/sources/README.md" sources/README.md
+cp "$ARCANA_HOME/formulae/grimoire/inbox/README.md" inbox/README.md
+cp "$ARCANA_HOME/formulae/grimoire/.obsidian/app.json" .obsidian/app.json
+cp "$ARCANA_HOME/formulae/grimoire/.obsidian/graph.json" .obsidian/graph.json
 touch sources/.gitkeep chapters/.gitkeep inbox/.gitkeep
 ```
 
-The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, skill prefix, description). `sources/` is the immutable sources layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `log.md` is the append-only activity log.
+The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, skill prefix, description). `sources/` is the immutable sources layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `.obsidian/app.json` and `.obsidian/graph.json` are managed scaffold files that preserve safe full-path wikilink behavior and Arcana's graph-view color groups; `log.md` is the append-only activity log.
 
 ---
 

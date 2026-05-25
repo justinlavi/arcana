@@ -8,27 +8,8 @@ allowed-tools: Bash Read
 
 # Validate Arcana (All)
 
-You are running the full validator suite against the Arcana repository. The orchestrator rite (`rites/validate.py`) executes every individual validator and aggregates results.
+You are running the full validator suite against the Arcana repository. Follow the invocation guide below.
 
-For a single concern, every validator also has its own focused skill - run `/arc-help` for the full catalog, or browse `{{ARCANA_PATH}}/docs/skills.md`. Run the focused skill if you want faster feedback on one aspect; run this aggregate before commits/releases.
+## Invocation
 
-## Run
-
-Default (sequential):
-```bash
-python3 {{ARCANA_PATH}}/rites/validate.py
-```
-
-The orchestrator supports four optional modes - pick the one that matches user intent:
-- `--parallel` - run all validators concurrently (faster on a clean repo)
-- `--smart` - git-aware: only show validators relevant to the working-tree changes (no execution)
-- `--auto` - `--smart` plus auto-execute the relevant validators
-- `--summary` - collapsed output, only pass/fail per validator
-
-Report aggregated pass/fail status to the user. Exit code 0 means every validator passed.
-
-## When to use
-
-- Before an Arcana release
-- After bulk doc/rite edits
-- As the validation phase of `/arc-improve`
+!`cat {{ARCANA_PATH}}/invocations/arcana/validators/validate_all.md`

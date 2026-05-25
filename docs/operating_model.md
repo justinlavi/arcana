@@ -108,7 +108,7 @@ Every knowledge page must declare one authority model:
 
 **Type 1: Source Pointers (Zero Drift Risk)**
 - Pure file/line references to authoritative sources
-- Example: "CMake options live in `CP_Framework/CMakeLists.txt` lines 10-25"
+- Example: "Build options live in `project_alpha/CMakeLists.txt` lines 10-25"
 - Validation: File exists, lines exist
 - No duplication of implementation details
 
@@ -132,7 +132,7 @@ Every knowledge page must declare one authority model:
 - Include query commands to extract current values
 
 **Type 5: Prescriptive Templates (Controlled Drift)**
-- Code/CMake templates in `chapters/*/formulae/`
+- Code/config templates in `chapters/*/templates/`
 - These ARE the standard (not a snapshot of it)
 - Purpose: Ensure consistency across projects
 - Updates to templates propagate standard changes across projects
@@ -146,7 +146,7 @@ Every knowledge page must declare one authority model:
 
 **Type 7: FORBIDDEN (High Drift Risk)**
 - Stored implementation values without query instructions
-- Example: Storing `SYS_LOG_FORMAT = INLINE` without extraction command
+- Example: Storing `EXAMPLE_LOG_FORMAT = INLINE` without extraction command
 - This type should never exist in Grimoire
 - Always convert to Type 4 (Observed Patterns with queries)
 

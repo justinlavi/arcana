@@ -6,7 +6,9 @@ Arcana 1.0.0 defines Arcana as a framework for creating, installing, routing,
 validating, and maintaining grimoires: structured, AI-navigable knowledge
 bases the LLM can keep current over time.
 
-This entry is the current architecture source of truth for the release.
+This entry is the release architecture snapshot. The live canonical rules
+remain in `docs/`, `invocations/`, `formulae/`, `rites/`, and generated
+indexes such as `docs/skills.md`.
 
 ### Release highlights
 
@@ -381,6 +383,13 @@ settings Arcana validates.
   `.obsidian/graph.json` as managed scaffold alongside `.obsidian/app.json`,
   preserving the opinionated Obsidian graph-view color groups during grimoire
   audits and Arcana upgrade checks.
+- `/arc-improve` architecture review now has a repeatable S-tier protocol for
+  parallel review lanes, synthesis, AI read-path tracing, and deferred
+  architecture opportunities.
+- Public validator skills now route through invocation leaves, `/grm-create`
+  explicitly copies managed Obsidian scaffold files, and low-risk docs were
+  tightened around frontmatter scope, agent support, boundary examples, and
+  judgment-versus-mechanical workflow ownership.
 
 ### Public readiness
 

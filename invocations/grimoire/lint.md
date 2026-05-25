@@ -24,7 +24,7 @@ From the active grimoire context:
 ```
 
 Flags:
-- `--apply-mechanical` — apply mechanical fixes (orphan-wiring suggestions, link repair) without asking per-fix.
+- `--apply-mechanical` — apply deterministic repair rites, such as link repair, without asking per-fix. Orphan wiring, stale-claim verification, ghost-reference promotion, and contradiction resolution still require confirmation.
 - `--quick` — only run the cheap mechanical rites; skip judgment passes.
 
 ## Preconditions

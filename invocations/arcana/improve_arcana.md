@@ -69,11 +69,22 @@ Cast the whole-repo architecture review:
 
 - [`quality/review_architecture.md`](quality/review_architecture.md)
 
-This is the AI-heavy pass. It inventories every surface, builds a
+This is the AI-heavy pass. It inventories every surface, dispatches isolated
+review lanes when subagents or parallel AI reviewers are available, builds a
 source-of-truth map, reviews naming and folder boundaries, checks AI-agent
-read paths, and looks for scalability risks. Apply local fixes directly; defer
-large moves, public command changes, or generated-output rewrites with a clear
-benefit and blast radius.
+read paths, and looks for scalability risks.
+
+Use the lane protocol in `quality/review_architecture.md` for S-tier passes:
+root/docs, invocations, rites, formulae/tests, skills/agents, release/install,
+and cross-cutting AI efficiency. Keep validation, synthesis, and final edits in
+the maintainer context. If subagents are unavailable, run the same lanes
+serially and report that the pass was serialized.
+Require each lane to return the structured lane schema from the architecture
+review guide, then merge findings into the synthesis matrix before editing.
+
+Apply local fixes directly; defer large moves, public command changes,
+generated-output rewrites, or changes affecting more than ten files with a
+clear benefit and blast radius.
 
 ### Phase 4: Rite quality
 
@@ -143,7 +154,7 @@ If the pass produced user-visible changes:
 3. **Canonical examples only** - `cooking-grimoire` (personal), `hr-grimoire` (workplace); plus `Alice/Bob`, `Project Alpha`, `{your-grimoire}` for sub-examples. No real product/company names, no industry-narrowing assumptions.
 4. **Magical boundary** - invocations, formulae, rites live ONLY in Arcana.
 5. **Semantic versioning** - strict; reflected in `CHANGELOG.md`.
-6. **Path conventions** - cross-grimoire references use root placeholders (`ARCANA_HOME/`, `GRIMOIRE_{DOMAIN}/`), never `../`.
+6. **Path conventions** - cross-grimoire references use root placeholders (`ARCANA_HOME/`) and library-key paths such as `cooking-grimoire/...`, never `../`.
 7. **Single source of truth** - every repeated fact is either a short navigation summary, generated view, intentional release snapshot, or a bug.
 8. **AI efficiency** - preserve deterministic read paths; prefer one hub, one invocation, and only the needed canonical docs for common tasks.
 
@@ -169,7 +180,7 @@ Out of scope: grimoires (use `/grm-improve`).
 Apply fixes directly to Arcana files. Report to the user (do not write to disk):
 
 - Validator pass/fail summary
-- Architecture review summary (source-of-truth issues, naming/boundary findings, AI-efficiency findings)
+- Architecture review summary (review lanes, source-of-truth issues, naming/boundary findings, AI-efficiency findings)
 - Fixes applied (counts by category)
 - Documentation duplication / clarity fixes applied
 - Remaining items needing human follow-up
