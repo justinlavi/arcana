@@ -50,7 +50,7 @@ Have a short conversation. Ask one question at a time:
 - **One-line purpose** — what knowledge does this chapter hold?
 - **When to route here** — what kinds of questions land here?
 - **Knowledge sources** — wikis, drives, repos, tribal knowledge to point at
-- **Sub-topics** — 2?5 leaf docs the chapter will eventually contain
+- **Sub-topics** — 2-5 leaf docs the chapter will eventually contain
 
 Capture: `chapter_name`, `chapter_title` (Title Case), `purpose`, `when_to_use`, `sources[]`, `sub_topics[]`.
 

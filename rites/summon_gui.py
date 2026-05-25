@@ -43,7 +43,6 @@ from summon_core import (
     inject_agent_file,
     install_arcana,
     install_grimoire,
-    load_static_library,
     register_skills,
     resolve_arcana_url,
     system_python,
@@ -420,15 +419,14 @@ class _ResolveArgs:
 
 def _worker_discover(scope_url, token, log, cancel_event, proc_slot, **_kw):
     """Run discovery; returns {entries, count}."""
-    library_static = load_static_library()
-    entries = dict(library_static.get("grimoires", {}))
+    entries = {}
     if scope_url and not cancel_event.is_set():
         discovered = discover_grimoires(scope_url, log, explicit_token=token)
         for k, v in discovered.items():
             if k not in entries:
                 entries[k] = v
     elif not scope_url:
-        log.info("No scope URL  using static library only")
+        log.info("No scope URL - skipping grimoire discovery")
     log.ok(f"Total available: {len(entries)} grimoire(s)")
     return {"entries": entries, "count": len(entries)}
 
@@ -1388,7 +1386,6 @@ class GuiState:
         self.discovered = {}              # key -> entry
         self.selected = set()             # selected grimoire keys
         self.installed = []               # list[dict] from scan_installed
-        self.static_library = {}          # from load_static_library
         # Active worker
         self.active_run = None            # current Worker
         # Log state
@@ -1880,7 +1877,7 @@ def _on_discover(state):
             pass
     spawn_worker(
         state,
-        f"Discover {scope or '(static library)'}",
+        f"Discover {scope or '(no scope)'}",
         _worker_discover,
         {"scope_url": scope, "token": token},
     )
@@ -1891,8 +1888,6 @@ def _on_install(state):
     keys = sorted(state.selected)
     if keys:
         library = {"grimoires": dict(state.discovered)}
-        if not library["grimoires"]:
-            library = load_static_library()
         spawn_worker(
             state,
             f"Install Arcana + {len(keys)}",

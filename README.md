@@ -150,7 +150,7 @@ Open a new agent session and run `/arc-help` to see every available command, or 
 |   |-- chapters/                 # onboarding/, policies/, benefits/, ...
 |   `-- skills/
 |
-`-- library.json                  # Registry of installed grimoires and their paths
+`-- library.json                  # Local registry of installed grimoires and their paths
 ```
 
 Create as many grimoires as you need. Arcana provides the framework; each grimoire supplies its own knowledge, skills, and source artifacts.

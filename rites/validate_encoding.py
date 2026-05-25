@@ -11,6 +11,7 @@ Exit codes: 0 = success, 1 = violations found
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -47,6 +48,12 @@ TEXT_NAMES = {
 SKIP_DIRS = {".git", ".mypy_cache", ".pytest_cache", "__pycache__", ".artifacts"}
 MOJIBAKE_MARKERS = ("\u00c3", "\u00c2", "\u00e2", "\ufffd")
 ASCII_ARTIFACTS = ("A" + "a" + ",a", "A" + ",a", " a" + "' ")
+ASCII_ARTIFACT_PATTERNS = (
+    (
+        re.compile(r"\b\d+\?\d+\b"),
+        "probable numeric range repair artifact",
+    ),
+)
 
 
 def is_text_candidate(path: Path) -> bool:
@@ -99,6 +106,14 @@ def check_file(path: Path, root: Path) -> list[str]:
         if idx != -1:
             violations.append(
                 f"{rel}:{line_for_offset(text, idx)}: probable mojibake repair artifact {marker!r}"
+            )
+            break
+
+    for pattern, label in ASCII_ARTIFACT_PATTERNS:
+        match = pattern.search(text)
+        if match:
+            violations.append(
+                f"{rel}:{line_for_offset(text, match.start())}: {label} {match.group()!r}"
             )
             break
 

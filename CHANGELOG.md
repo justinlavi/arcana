@@ -18,6 +18,8 @@ Breaking semantic cleanup:
 - Added the same Git/editor guardrails to the grimoire formula so newly created grimoires inherit stable encoding and newline policy.
 - Made `rites/templates/grimoire_block.md` the only Grimoire agent-block source; source bootstrap downloads it and release binaries bundle it instead of relying on an inline copy.
 - Extended `/arc-grimoire-improve` and `validate_grimoire_structure.py` to treat current Arcana-managed scaffold files as part of grimoire upgrade/structure compliance.
+- Removed Arcana's static grimoire catalog entirely; `~/grimoires/library.json` is the only persistent grimoire registry, and remote grimoires are discovered only from an explicit GitHub/GitLab scope.
+- Hardened encoding validation against numeric range question-mark artifacts, and made skill registration write generated skill files as UTF-8/LF.
 
 ## [1.0.0] - 2026-05-19
 

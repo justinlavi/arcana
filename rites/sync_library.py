@@ -243,7 +243,7 @@ def write_library(library, library_path):
     """Atomically write the library with stable formatting."""
     library_path.parent.mkdir(parents=True, exist_ok=True)
     tmp = library_path.with_suffix(library_path.suffix + ".tmp")
-    with open(tmp, "w") as f:
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
         json.dump(library, f, indent=2)
         f.write("\n")
     tmp.replace(library_path)

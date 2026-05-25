@@ -74,37 +74,9 @@ Skill names use skill prefixes: Arcana ships `arc-*` (declared in `arcana/arcana
 
 ---
 
-## Libraries
+## Local Library
 
-Grimoire uses two library files. The library is a **pure registry** — it records *where* grimoires live, nothing else. Each grimoire's identity (name, skill prefix, description) lives in its own [manifest](#grimoire-manifest).
-
-### Global library (Arcana repo)
-
-`library.json` at the Arcana repo root. Lists grimoires available for the summoning rite to install. Each deployment of Arcana populates it with the grimoires that fork distributes.
-
-```json
-{
-  "grimoires": {
-    "cooking-grimoire": {
-      "name": "Cooking",
-      "description": "Personal cooking knowledge: recipes, techniques, equipment",
-      "online_path": "https://git.example.com/you/cooking-grimoire.git"
-    },
-    "hr-grimoire": {
-      "name": "HR",
-      "description": "Onboarding, policies, benefits, performance reviews",
-      "online_path": "https://git.example.com/your-team/hr-grimoire.git"
-    }
-  }
-}
-```
-
-Fields:
-- `name` — display name for the summoning menu.
-- `description` — short description shown during selection.
-- `online_path` — git clone URL (any git-compatible host).
-
-### Local library (per-user)
+Arcana uses one local library: `~/grimoires/library.json`. It is a **pure registry**: it records *where* installed grimoires live, nothing else. Each grimoire's identity (name, skill prefix, description) lives in its own [manifest](#grimoire-manifest).
 
 `~/grimoires/library.json`, created by the summoning rite or `/arc-library-sync`. Lists grimoires the user has cloned and where they live on disk.
 

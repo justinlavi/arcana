@@ -42,9 +42,9 @@ When run from the public curl command, the summoning rite is release-first excep
 3. Injects the Grimoire routing block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
 4. Registers Arcana's `/arc-*` skills to `~/.claude/skills/` and `~/.codex/skills/`
 
-**Optional — if you have existing grimoires to clone:**
-5. Discovers grimoires via git host API (GitLab/GitHub), falls back to the static library
-6. Presents an interactive menu — pick which grimoires to clone
+**Optional - if you have existing grimoires to clone:**
+5. Discovers grimoires via git host API (GitLab/GitHub)
+6. Presents an interactive menu - pick which grimoires to clone
 7. Clones or updates selected grimoires in `~/grimoires/`
 8. Creates/updates the local library at `~/grimoires/library.json`
 
@@ -58,7 +58,7 @@ GUI startup is probed before the source launcher opens a full Dear PyGui window.
 
 ## Cloning Existing Grimoires
 
-When you choose "Install Arcana and clone grimoires" in the GUI (or option 2 in the CLI), the rite can discover and clone grimoires by querying the git host API. This removes the need to maintain a static `library.json` — grimoires are found dynamically based on naming convention (`*-grimoire`).
+When you choose "Install Arcana and clone grimoires" in the GUI (or option 2 in the CLI), the rite can discover and clone grimoires by querying the git host API. Arcana does not ship a grimoire catalog; grimoires are discovered dynamically from the scope you provide.
 
 Arcana and grimoires don't need to live in the same place. Arcana might be installed from the public GitHub repo while your grimoires live in a private company GitLab or a different GitHub org. The rite asks where to look.
 
@@ -68,7 +68,7 @@ Discovery supports two URL shapes:
 - Direct repository URLs, such as `https://github.com/you/cooking-grimoire`, are trusted explicitly. The `-grimoire` slug is conventional but not required when the URL points to a single repository.
 - Skill prefix URLs, such as `https://github.com/you` or `https://gitlab.company.com/team`, scan available repositories/projects and select likely grimoires by `-grimoire` naming, `grimoire` topic/tag, or description metadata.
 
-**Providing a scope** — tell the script where your grimoires live:
+**Providing a scope** - tell the script where your grimoires live:
 
 ```bash
 # Via --scope flag
@@ -93,7 +93,7 @@ If no scope is provided, the rite prompts interactively:
 ```
   Where are your grimoires hosted?
   Enter the URL of the group or org containing your grimoires.
-  Press Enter to skip and use the static library only.
+  Press Enter to skip grimoire cloning and install Arcana only.
 
   Examples:
     https://github.com/my-org
@@ -107,7 +107,7 @@ If no scope is provided, the rite prompts interactively:
 - **GitLab** (self-hosted or gitlab.com): uses the Projects API to search within a group or instance-wide
 - **GitHub** (github.com or GitHub Enterprise): uses the Repos API to search within an org
 
-**Authentication** — required for private instances:
+**Authentication** - required for private instances:
 
 | Host | Environment Variable | Header |
 |---|---|---|
@@ -121,7 +121,7 @@ export GITLAB_TOKEN
 ./rites/summon.sh --scope https://gitlab.company.com/my-team
 ```
 
-**Fallback**: If the user skips the prompt or the API is unreachable, the script falls back to the static `library.json`.
+If the user skips the prompt, the rite installs Arcana only. If discovery fails, it reports the failure and continues without cloning grimoires. Existing local grimoires remain tracked only in `~/grimoires/library.json`.
 
 ### When a grimoire is discovered first
 

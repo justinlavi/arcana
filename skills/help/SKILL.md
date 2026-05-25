@@ -1,14 +1,14 @@
 ---
 name: {{SKILL_PREFIX}}-help
-description: Display the Grimoire skill catalog and usage guide
-when_to_use: User asks what Grimoire skills exist, what commands are available, or how to discover the system. Run this before suggesting any specific skill if the user is new or unfamiliar. Also good when user asks "what can Grimoire do" or "list grimoire commands".
+description: Display the Arcana skill catalog and installed grimoire skill guide
+when_to_use: User asks what Arcana skills exist, what commands are available, or how to discover the system. Run this before suggesting any specific skill if the user is new or unfamiliar. Also good when user asks "what can Arcana do", "what can Grimoire do", or "list grimoire commands".
 user-invocable: true
 allowed-tools: Bash Read
 ---
 
-# Grimoire Help
+# Arcana Help
 
-You are displaying the Grimoire skill catalog - Arcana's skills plus every grimoire's skills.
+You are displaying the Arcana skill catalog plus any skills installed by registered grimoires.
 
 ## Context
 

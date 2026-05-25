@@ -86,7 +86,6 @@ How Arcana is laid out — for the rules themselves, follow the links:
 - [rites/append_log.py](rites/append_log.py) — Append to a grimoire's `log.md`
 - [rites/validate.py](rites/validate.py) — Orchestrator for the full validator suite
 - Validators: `rites/validate_<aspect>.py` (structure, naming, semantics, format, links, security, skill-refs, frontmatter, orphans, provenance)
-- [library.json](library.json) — Discoverable grimoires shipped with this Arcana
 
 ## Resources
 

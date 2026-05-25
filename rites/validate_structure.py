@@ -36,7 +36,6 @@ REQUIRED_FILES = [
     "README.md",
     "CHANGELOG.md",
     "VERSION",
-    "library.json",
     "arcana.json",
     "rites/summon.sh",
     "rites/register_skills.py",

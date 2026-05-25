@@ -7,11 +7,11 @@ authority: grimoire
 last_verified: 2026-05-12
 ---
 
-# Invocation: Grimoire Help
+# Invocation: Arcana Help
 
 ## Purpose
 
-Show the user every Grimoire skill currently installed: Arcana's `arc-*` catalog plus the skills shipped by each grimoire registered in `~/grimoires/library.json`. The Arcana list lives in [`docs/skills.md`](../../docs/skills.md) (auto-generated); grimoire skills must be enumerated live since no equivalent static catalog exists across grimoires.
+Show the user the Arcana skill catalog plus any skills shipped by grimoires registered in `~/grimoires/library.json`. The Arcana list lives in [`docs/skills.md`](../../docs/skills.md) (auto-generated); grimoire skills must be enumerated live from the local library because Arcana does not maintain a central list of downstream grimoires.
 
 ## Invocation
 

@@ -94,7 +94,7 @@ Replace placeholders. Confirm `skill_prefix` with the user before writing — it
 | Field | Length | Where it lives | Example |
 |---|---|---|---|
 | `{{GRIMOIRE_NAME}}` | brand only (one word usually) | H1 of root hub, `name` field of manifest | `Olympus`, `LUS`, `Cooking` |
-| `{{GRIMOIRE_PURPOSE}}` | short tagline (2?5 words) | manifest `description`, italic subtitle in root hub | `Olympus knowledge`, `personal cooking knowledge`, `HR runbooks and policies` |
+| `{{GRIMOIRE_PURPOSE}}` | short tagline (2-5 words) | manifest `description`, italic subtitle in root hub | `Olympus knowledge`, `personal cooking knowledge`, `HR runbooks and policies` |
 | `{{GRIMOIRE_PURPOSE_DETAILED}}` | long-form paragraph | **only** `README.md` | full multi-sentence description |
 
 Do not re-paste the long form into the manifest, the root hub, the log, or any skill file. If another page needs the description, link to README — don't copy it.

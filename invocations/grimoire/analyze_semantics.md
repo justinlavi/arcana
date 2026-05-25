@@ -102,7 +102,7 @@ If `docs/reference.md` exists, treat it as authoritative. Otherwise propose cano
 Group by priority:
 
 1. **Critical renames** (score <50) — current name, proposed name, files affected, what breaks, estimated effort, predicted score gain.
-2. **Suggested renames** (50?69) — same fields, lower priority.
+2. **Suggested renames** (50-69) — same fields, lower priority.
 3. **Terminology standardization** — chosen canonical term plus the variants to replace.
 4. **Structure changes** — splits, merges, flattenings; estimated effort.
 5. **Quick wins** — anything <30 min effort with 10-point gain. Surface these separately.

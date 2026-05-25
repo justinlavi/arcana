@@ -1,6 +1,6 @@
 ---
-name: arc-validate-encoding
-description: Mechanically validate UTF-8, LF line endings, BOMs, and mojibake markers
+name: {{SKILL_PREFIX}}-validate-encoding
+description: Mechanically validate UTF-8, LF line endings, BOMs, mojibake markers, and repair artifacts
 user-invocable: true
 allowed-tools: Bash
 ---

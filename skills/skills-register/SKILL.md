@@ -1,6 +1,6 @@
 ---
 name: {{SKILL_PREFIX}}-skills-register
-description: Register all Grimoire skills from Arcana and grimoires into supported agent skill directories
+description: Register Arcana skills and installed grimoire skills into supported agent skill directories
 when_to_use: A skill isn't appearing in the slash-command picker; user just added, renamed, or edited a SKILL.md; user installed a new grimoire; user mentions "skill not recognized" or "after editing skills". Run after any change in skills/ that the agent needs to pick up.
 user-invocable: true
 allowed-tools: Bash Read
@@ -8,7 +8,7 @@ allowed-tools: Bash Read
 
 # Register Grimoire Skills
 
-You are registering all Grimoire skills from Arcana and every installed grimoire into supported agent skill directories:
+You are registering Arcana skills and every installed grimoire's skills into supported agent skill directories:
 
 - Claude Code: `~/.claude/skills/`
 - Codex/ChatGPT: `~/.codex/skills/`

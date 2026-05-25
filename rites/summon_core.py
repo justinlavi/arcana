@@ -569,20 +569,6 @@ def install_arcana(arcana_url, log):
     return True
 
 
-def load_static_library():
-    """Load the global library.json from Arcana. Returns dict."""
-    library_path = ARCANA_DIR / "library.json"
-    if not library_path.is_file():
-        library_path = REPO_ROOT / "library.json"
-    if not library_path.is_file():
-        return {"grimoires": {}}
-    try:
-        with open(library_path) as f:
-            return json.load(f)
-    except (json.JSONDecodeError, OSError):
-        return {"grimoires": {}}
-
-
 def install_grimoire(key, entry, log):
     """Clone or update a single grimoire. Returns True on success."""
     name = entry.get("name", key)
@@ -643,7 +629,7 @@ def update_local_library(installed_keys, library, log):
         }
         local["grimoires"][key] = local_entry
 
-    with open(LOCAL_LIBRARY, "w") as f:
+    with open(LOCAL_LIBRARY, "w", encoding="utf-8", newline="\n") as f:
         json.dump(local, f, indent=2)
         f.write("\n")
     log.ok(f"Local library updated: {LOCAL_LIBRARY}")
@@ -655,7 +641,7 @@ def inject_agent_file(log, target_path, title):
     target_path.parent.mkdir(parents=True, exist_ok=True)
 
     if not target_path.is_file():
-        target_path.write_text(f"# {title}\n", encoding="utf-8")
+        target_path.write_text(f"# {title}\n", encoding="utf-8", newline="\n")
         log.info(f"Created {target_path}")
 
     content = target_path.read_text(encoding="utf-8")
@@ -670,7 +656,7 @@ def inject_agent_file(log, target_path, title):
     else:
         content += GRIMOIRE_BLOCK
 
-    target_path.write_text(content, encoding="utf-8")
+    target_path.write_text(content, encoding="utf-8", newline="\n")
     log.ok(f"Grimoire block injected into {target_path}")
 
 
@@ -887,7 +873,7 @@ def run_cli(args):
             print()
             print("  Where are your grimoires hosted?")
             print("  Enter the URL of the group or org containing your grimoires.")
-            print("  Press Enter to skip and use the static library only.")
+            print("  Press Enter to skip grimoire cloning and install Arcana only.")
             print()
             print("  Examples:")
             print("    https://github.com/my-org")
@@ -896,7 +882,7 @@ def run_cli(args):
             print()
             scope_url = _prompt_text("  Grimoire location: ", default="").strip()
 
-        library = load_static_library()
+        library = {"grimoires": {}}
         if scope_url:
             discovered = discover_grimoires(scope_url, log)
             for key, entry in discovered.items():

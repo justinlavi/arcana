@@ -217,7 +217,8 @@ def register_skill(
             if len(parts) >= 3:
                 content = parts[0] + "---" + parts[1] + "---" + provenance + parts[2]
 
-        (target_dir / source.name).write_text(content, encoding="utf-8")
+        with open(target_dir / source.name, "w", encoding="utf-8", newline="\n") as f:
+            f.write(content)
 
     ok(f"Registered: /{expected_name} ({source_label})")
     return True

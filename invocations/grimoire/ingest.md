@@ -56,7 +56,7 @@ Curatorial flow. The folder contains mixed content; classify each file before do
 2. **Classify each file** with the user. For each, propose one of three classifications and confirm in chat before acting:
 
    | Classification | Criteria | Action |
-   |--|--|--|
+   |---|---|---|
    | **Source** | The file is an external artifact you want citation-stable: PDF, transcript, article, screenshot, dataset. Authored elsewhere. | Move to `sources/<slug>.<ext>`. If binary, also create `sources/<slug>.md` summary. Then synthesize into chapters per the common workflow. |
    | **Wiki content** | Authored prose meant to be wiki-shaped (notes, drafts, half-finished chapters, AI-generated docs). Not citation-stable. | Promote to `chapters/<chapter>/<page>.md` with proper frontmatter (`authority: grimoire`, no `sources:` unless a `sources/` artifact actually grounds it). **Remove the original** - its value now lives in the wiki. |
    | **Junk / unclear** | Duplicate, superseded, ambiguous, off-topic, or you can't tell yet. | Leave in place, flag for human review in the report. **Never auto-delete.** |
