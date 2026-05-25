@@ -47,74 +47,10 @@ Priority labels:
 
 | ID | Priority | Item | Primary owner | Why deferred |
 |---|---|---|---|---|
-| ST-004 | P1 | Summoning Rite behavior contract and GUI/core parity | `rites/summon*`, `.github/`, install docs | Installer behavior spans shell, Python, GUI, release assets, and docs. |
 | ST-007 | P2 | Agent target registry and instruction-block single source | agent docs, registration/update rites | Agent support is described across several surfaces and can drift. |
 | ST-008 | P2 | Grimoire validation orchestrator and profiles | grimoire validators, `/grm-improve` | Would add or reshape public validation workflow. |
 | ST-009 | P3 | Richer generated skill catalog | `rites/sync_docs.py`, `docs/skills.md` | Needs catalog rendering and tests against the command-surface contract. |
 | ST-010 | P3 | Source wrapper and provenance boundary clarification | source formula, provenance docs/validators | Needs design judgment before adding mechanical checks. |
-
-## ST-004: Summoning Rite Behavior Contract And GUI/Core Parity
-
-Priority: P1
-
-Status: Deferred
-
-Primary owner: `rites/summon.sh`, `rites/summon.py`,
-`rites/summon_core.py`, `rites/summon_gui.py`,
-`rites/build_summon_binary.py`, `.github/workflows/summon-release.yml`,
-`docs/installation.md`, `docs/release.md`
-
-Current evidence:
-
-- The Summoning Rite has shell bootstrap behavior, Python source behavior,
-  binary release behavior, GUI behavior, CLI behavior, and GitHub Actions
-  release behavior.
-- Docs describe release assets, binary/source fallback, Linux GUI source
-  preference, Windows Git Bash support, checksums, retry controls, and agent
-  setup.
-- Tests cover some core helper behavior, but there is no single contract that
-  defines parity between CLI, GUI, source, and release paths.
-
-Finding:
-
-The installer is powerful and user-facing. Its behavior is documented, but the
-contract is distributed across code and docs. Future installer improvements
-could drift between GUI and core behavior unless parity is named and tested.
-
-Desired S-tier endpoint:
-
-- A concise summoning contract that names required behaviors independent of
-  transport: install Arcana, optionally discover/clone grimoires, write the
-  library, inject/update agent blocks, register skills, and report failures.
-- A capabilities matrix for shell bootstrap, Python CLI, Python GUI, and
-  release binary modes.
-- Tests that exercise core decisions without requiring network or GUI.
-- Documentation generated from, or checked against, the contract where
-  practical.
-
-First implementable slice:
-
-1. Add a contract section or small contract document for summon behavior.
-2. Add tests for mode-selection and parity-critical decisions in
-   `summon_core.py`.
-3. Add a review checklist to `docs/release.md` for GUI/core parity before
-   release.
-
-Blast radius:
-
-Medium-high. The first slice can be mostly documentation and tests, but later
-work may affect installer UX and release automation.
-
-Validation profile:
-
-- `python -m pytest tests/test_summon_core.py`
-- Local source-mode summon dry smoke where feasible.
-- Release workflow test build before publishing assets.
-
-Read-path delta:
-
-A maintainer can answer "what must every summon mode do?" from one contract
-instead of reconciling shell, Python, GUI, docs, and release notes.
 
 ## ST-007: Agent Target Registry And Instruction-Block Single Source
 
@@ -329,12 +265,11 @@ create a wrapper, cite a raw file, or cite an external URL.
 
 ## Suggested Implementation Sequence
 
-1. ST-004 as its own focused pass before the next installer/release push.
-2. ST-007 before adding or reshaping agent targets.
-3. ST-008 before adding `grm-validate-all`; any new command must update
+1. ST-007 before adding or reshaping agent targets.
+2. ST-008 before adding `grm-validate-all`; any new command must update
    `rites/data/command_surface.json`.
-4. ST-009 can now render richer metadata from the command-surface contract.
-5. ST-010 after the validation and catalog contracts settle.
+3. ST-009 can now render richer metadata from the command-surface contract.
+4. ST-010 after the validation and catalog contracts settle.
 
 ## Update Triggers
 

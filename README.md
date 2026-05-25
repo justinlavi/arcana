@@ -110,6 +110,8 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 
 The summoning rite installs **Arcana** — the framework — configures your AI agents, and registers the `/arc-*` and `/grm-*` skill sets. If you have existing grimoires hosted on GitHub or GitLab, the rite can discover and clone them too. Otherwise, skip straight to building your first grimoire from scratch after Arcana is up.
 
+Detailed installer mode rules live in [docs/summoning_contract.md](docs/summoning_contract.md).
+
 Open a new agent session and run `/arc-help` to see every available command, or run `/grm-create` to start your first grimoire.
 
 -> [Full installation guide](docs/installation.md) - [5-minute smoke test](docs/installation.md#verify-your-install-5-minute-smoke-test)

@@ -16,6 +16,7 @@ from pathlib import Path
 from _lib import default_arcana_root
 from diagnostics import DiagnosticReporter, add_output_format_arg
 from rite_profiles import profile_entries, validate_rite_profiles
+from summon_contract import mode_entries, validate_summon_contract
 
 ARCANA_ROOT = default_arcana_root()
 
@@ -53,6 +54,7 @@ REQUIRED_FILES = [
     "rites/summon.sh",
     "rites/register_skills.py",
     "docs/installation.md",
+    "docs/summoning_contract.md",
     "docs/agent_configuration.md",
     "docs/operating_model.md",
     "docs/governance.md",
@@ -188,6 +190,28 @@ def main():
     if human:
         print()
 
+    if human:
+        print("Checking Summoning Rite contract...")
+    summon_contract, summon_contract_errors = validate_summon_contract(ARCANA_ROOT)
+    for error in summon_contract_errors:
+        reporter.error(
+            error["code"],
+            error["message"],
+            path=error.get("path"),
+            hint=error.get("hint"),
+        )
+        if human:
+            print(f"  CONTRACT {error.get('path', '-')}: {error['message']}")
+    summon_mode_count = (
+        len(mode_entries(summon_contract))
+        if summon_contract is not None
+        else 0
+    )
+    if human and not summon_contract_errors:
+        print(f"  OK       {summon_mode_count} Summoning Rite mode(s)")
+    if human:
+        print()
+
     if not human:
         reporter.emit(
             args.format,
@@ -196,6 +220,7 @@ def main():
                 "required_files": len(REQUIRED_FILES),
                 "hub_directories": len(HUB_DIRS),
                 "rite_profiles": rite_profile_count,
+                "summon_modes": summon_mode_count,
             },
         )
         return reporter.exit_code()

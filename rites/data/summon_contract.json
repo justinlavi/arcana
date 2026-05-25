@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "title": "Summoning Rite Behavior Contract",
+  "description": "Authoritative contract for the shell bootstrap, Python dispatcher, shared install engine, GUI front end, release binary, and release workflow.",
+  "modes": [
+    {
+      "id": "shell_bootstrap",
+      "label": "Shell bootstrap",
+      "surface": "rites/summon.sh",
+      "entrypoint": "curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash",
+      "owner": "transport",
+      "code_symbols": [
+        "summon.sh:should_try_binary",
+        "summon.sh:try_release_binary",
+        "summon.sh:download_with_retries"
+      ],
+      "required_behaviors": [
+        "Find or install Python 3 only with explicit user consent.",
+        "Prefer release binaries for public piped installs except Linux GUI auto mode.",
+        "Download summon.py, summon_core.py, the Grimoire block template, and summon_gui.py when GUI mode is possible.",
+        "Verify release checksums before running binaries.",
+        "Fall back to Python source when release download, checksum, extraction, or execution fails.",
+        "Pass command-line arguments through to the Python dispatcher."
+      ]
+    },
+    {
+      "id": "python_dispatcher",
+      "label": "Python dispatcher",
+      "surface": "rites/summon.py",
+      "entrypoint": "python rites/summon.py [--arcana-url URL] [--scope URL] [--cli|--gui]",
+      "owner": "mode_selection",
+      "code_symbols": [
+        "summon._detect_gui_mode",
+        "summon.main"
+      ],
+      "required_behaviors": [
+        "Respect --cli and --gui overrides.",
+        "Use GUI mode on Windows by default.",
+        "Use GUI mode on display-capable Linux/macOS sessions by default.",
+        "Use CLI mode when no display server is detected.",
+        "Fall back to CLI if GUI import or startup fails."
+      ]
+    },
+    {
+      "id": "python_cli",
+      "label": "Python CLI",
+      "surface": "rites/summon_core.py",
+      "entrypoint": "summon_core.run_cli(args)",
+      "owner": "install_engine",
+      "code_symbols": [
+        "summon_core.run_cli",
+        "summon_core.finalize_install",
+        "summon_core.install_arcana",
+        "summon_core.install_grimoire",
+        "summon_core.discover_grimoires"
+      ],
+      "required_behaviors": [
+        "Check git before install work.",
+        "Install or update Arcana.",
+        "Optionally discover GitHub/GitLab grimoires from a scope URL.",
+        "Optionally clone selected grimoires.",
+        "Update the local library for installed grimoires.",
+        "Inject supported agent instruction blocks.",
+        "Register Arcana and grimoire skills.",
+        "Report completion, warnings, and recovery instructions."
+      ]
+    },
+    {
+      "id": "python_gui",
+      "label": "Python GUI",
+      "surface": "rites/summon_gui.py",
+      "entrypoint": "summon_gui.run_gui(args)",
+      "owner": "frontend",
+      "code_symbols": [
+        "summon_gui.run_gui",
+        "summon_gui.finalize_install_with_settings",
+        "summon_gui._worker_install_arcana",
+        "summon_gui._worker_install_full",
+        "summon_gui._worker_register_skills"
+      ],
+      "required_behaviors": [
+        "Use summon_core discovery, install, library, agent, and skill primitives.",
+        "Run long operations in cancelable workers.",
+        "Honor persisted agent target and skill-registration settings.",
+        "Expose install, manage, settings, diagnostics, and log views.",
+        "Fall back before opening the full GUI when GUI dependencies or display support fail."
+      ]
+    },
+    {
+      "id": "release_binary",
+      "label": "Release binary",
+      "surface": "rites/build_summon_binary.py",
+      "entrypoint": "python rites/build_summon_binary.py --clean",
+      "owner": "release_artifact",
+      "code_symbols": [
+        "build_summon_binary.platform_id",
+        "build_summon_binary.archive_file",
+        "build_summon_binary.sha256_file",
+        "build_summon_binary.main"
+      ],
+      "required_behaviors": [
+        "Build grimoire-summon with PyInstaller.",
+        "Bundle resources and the canonical Grimoire block template.",
+        "Produce platform-specific archives under dist/summon.",
+        "Produce a sha256 checksum beside every archive."
+      ]
+    },
+    {
+      "id": "release_workflow",
+      "label": "Release workflow",
+      "surface": ".github/workflows/summon-release.yml",
+      "entrypoint": "Build Summoning Rite Releases",
+      "owner": "github_actions",
+      "code_symbols": [],
+      "required_behaviors": [
+        "Build release assets on Linux, macOS Intel, macOS Apple Silicon, and Windows.",
+        "Upload workflow artifacts for review.",
+        "Optionally create or update a GitHub Release.",
+        "Upload release assets with clobbering enabled for pre-final review."
+      ]
+    }
+  ],
+  "required_pipeline": [
+    {
+      "id": "check_git",
+      "label": "Check git availability",
+      "owner": "summon_core.check_git",
+      "required_for": ["python_cli", "python_gui"]
+    },
+    {
+      "id": "install_arcana",
+      "label": "Install or update Arcana",
+      "owner": "summon_core.install_arcana",
+      "required_for": ["python_cli", "python_gui"]
+    },
+    {
+      "id": "discover_grimoires",
+      "label": "Discover grimoires from a git host scope",
+      "owner": "summon_core.discover_grimoires",
+      "required_for": ["python_cli", "python_gui"]
+    },
+    {
+      "id": "install_grimoires",
+      "label": "Install selected grimoires",
+      "owner": "summon_core.install_grimoire",
+      "required_for": ["python_cli", "python_gui"]
+    },
+    {
+      "id": "update_library",
+      "label": "Update local library",
+      "owner": "summon_core.update_local_library",
+      "required_for": ["python_cli", "python_gui"]
+    },
+    {
+      "id": "inject_agent_blocks",
+      "label": "Inject supported agent instruction blocks",
+      "owner": "summon_core.inject_agent_file",
+      "required_for": ["python_cli", "python_gui"]
+    },
+    {
+      "id": "register_skills",
+      "label": "Register Arcana and grimoire skills",
+      "owner": "summon_core.register_skills",
+      "required_for": ["python_cli", "python_gui"]
+    }
+  ],
+  "bootstrap_environment": [
+    {
+      "name": "ARCANA_URL",
+      "purpose": "Override the Arcana repository URL."
+    },
+    {
+      "name": "ARCANA_REF",
+      "purpose": "Override the raw-source ref for companion script downloads."
+    },
+    {
+      "name": "GRIMOIRE_SUMMON_BINARY",
+      "purpose": "Choose release-binary behavior: auto, always, or never."
+    },
+    {
+      "name": "GRIMOIRE_SUMMON_RELEASE_TAG",
+      "purpose": "Download release assets from a specific tag or latest."
+    },
+    {
+      "name": "GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS",
+      "purpose": "Set release and companion-script download retry count."
+    },
+    {
+      "name": "GRIMOIRE_SUMMON_RETRY_DELAY",
+      "purpose": "Set delay between download attempts."
+    },
+    {
+      "name": "GRIMOIRE_SUMMON_PY_DEPS",
+      "purpose": "Set the Python dependency cache used by source GUI mode."
+    }
+  ],
+  "release_assets": [
+    {
+      "platform": "linux-x86_64",
+      "archive": "grimoire-summon-linux-x86_64.tar.gz",
+      "checksum": "grimoire-summon-linux-x86_64.tar.gz.sha256"
+    },
+    {
+      "platform": "macos-x86_64",
+      "archive": "grimoire-summon-macos-x86_64.tar.gz",
+      "checksum": "grimoire-summon-macos-x86_64.tar.gz.sha256"
+    },
+    {
+      "platform": "macos-arm64",
+      "archive": "grimoire-summon-macos-arm64.tar.gz",
+      "checksum": "grimoire-summon-macos-arm64.tar.gz.sha256"
+    },
+    {
+      "platform": "windows-x86_64",
+      "archive": "grimoire-summon-windows-x86_64.zip",
+      "checksum": "grimoire-summon-windows-x86_64.zip.sha256"
+    }
+  ],
+  "parity_checks": [
+    {
+      "id": "shared_post_install",
+      "contract": "CLI and GUI install paths both perform local library update, agent block injection, and skill registration after Arcana installation."
+    },
+    {
+      "id": "source_release_fallback",
+      "contract": "The shell bootstrap falls back to Python source after release download, checksum, extraction, or binary execution failure."
+    },
+    {
+      "id": "gui_fallback",
+      "contract": "The dispatcher falls back to CLI when GUI startup fails."
+    },
+    {
+      "id": "linux_gui_source_first",
+      "contract": "Public piped installs use source mode by default on Linux GUI sessions unless GRIMOIRE_SUMMON_BINARY=always."
+    }
+  ]
+}

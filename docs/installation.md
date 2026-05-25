@@ -4,14 +4,19 @@ title: "Installation"
 aliases: ["install", "summon", "setup"]
 tags: [type/reference, arcana/docs]
 authority: grimoire
-last_verified: 2026-05-19
+last_verified: 2026-05-25
 ---
 
 # Arcana Installation
 
-One command installs Arcana — the framework that powers all your grimoires — configures your AI agents, and registers the `/arc-*` and `/grm-*` skill sets. Cloning existing grimoires is optional and handled interactively.
+One command installs Arcana - the framework that powers all your grimoires -
+configures your AI agents, and registers the `/arc-*` and `/grm-*` skill sets.
+Cloning existing grimoires is optional and handled interactively.
 
-For per-agent configuration after install, see [agent_configuration.md](agent_configuration.md). For library and manifest schemas, see [reference.md](reference.md).
+For per-agent configuration after install, see
+[agent_configuration.md](agent_configuration.md). For library and manifest
+schemas, see [reference.md](reference.md). For the installer mode contract, see
+[summoning_contract.md](summoning_contract.md).
 
 ---
 
@@ -29,7 +34,9 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 
 The script installs from the public Arcana GitHub repository by default. When run from a cloned Arcana checkout, it detects the checkout's git origin automatically.
 
-When run from the public curl command, the summoning rite is release-first except on Linux GUI sessions, where it uses the Python source launcher by default to avoid frozen OpenGL/GLX library drift:
+When run from the public curl command, the summoning rite is release-first
+except on Linux GUI sessions, where it uses the Python source launcher by
+default to avoid frozen OpenGL/GLX library drift:
 1. Detects the current OS and architecture.
 2. Downloads the matching `grimoire-summon-*` asset from the latest GitHub Release (`.tar.gz` on Linux/macOS, `.zip` on Windows Git Bash).
 3. Verifies the `.sha256` checksum.
@@ -88,7 +95,11 @@ To pin a specific release asset instead of using GitHub's latest published relea
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0 bash
 ```
 
-Release asset downloads print progress and explicit retry attempts. If a network stalls, the bootstrap retries and then fails over to source mode after the configured attempt/stall window. Advanced controls are documented in [release.md](release.md#bootstrap-behavior).
+Release asset downloads print progress and explicit retry attempts. If a
+network stalls, the bootstrap retries and then fails over to source mode after
+the configured attempt/stall window. Advanced controls are documented in
+[release.md](release.md#bootstrap-behavior), and durable mode rules are in
+[summoning_contract.md](summoning_contract.md#release-and-source-selection).
 
 If no scope is provided, the rite prompts interactively:
 

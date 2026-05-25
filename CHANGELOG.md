@@ -12,6 +12,8 @@
   the validated public command-surface contract.
 - Added `rites/data/rite_profiles.json` and `docs/rite_profiles.md` as the
   mutating-rite plan/apply/idempotency contract.
+- Added `rites/data/summon_contract.json` and `docs/summoning_contract.md` as
+  the validated Summoning Rite behavior contract.
 - Added structured validator diagnostics through `--format json` and
   `--format jsonl` on every Arcana validator and the validator orchestrator.
 

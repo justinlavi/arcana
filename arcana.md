@@ -23,6 +23,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 
 - [README.md](README.md) — Overview and architecture
 - [docs/installation.md](docs/installation.md) — Summoning rite, manual install, 5-minute smoke test
+- [docs/summoning_contract.md](docs/summoning_contract.md) - Summoning Rite behavior contract and mode matrix
 - [docs/agent_configuration.md](docs/agent_configuration.md) — Per-agent setup (Claude / Codex / Copilot)
 - [docs/skills.md](docs/skills.md) — Canonical Arcana skill catalog (auto-generated)
 - [docs/skill_schema.md](docs/skill_schema.md) — Command-family skill naming schema

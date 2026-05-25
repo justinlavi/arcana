@@ -4,12 +4,16 @@ title: "Release Workflow"
 aliases: ["release", "binary-release"]
 tags: [type/reference, arcana/docs]
 authority: grimoire
-last_verified: 2026-05-19
+last_verified: 2026-05-25
 ---
 
 # Arcana Release Guide
 
 How to build and publish Summoning Rite binaries for GitHub Releases.
+
+The canonical installer behavior contract lives in
+[`summoning_contract.md`](summoning_contract.md), backed by
+`rites/data/summon_contract.json`.
 
 ---
 
@@ -20,6 +24,8 @@ Arcana does not commit built binaries to the repository. The release workflow bu
 Expected assets:
 - `grimoire-summon-linux-x86_64.tar.gz`
 - `grimoire-summon-linux-x86_64.tar.gz.sha256`
+- `grimoire-summon-macos-x86_64.tar.gz`
+- `grimoire-summon-macos-x86_64.tar.gz.sha256`
 - `grimoire-summon-macos-arm64.tar.gz`
 - `grimoire-summon-macos-arm64.tar.gz.sha256`
 - `grimoire-summon-windows-x86_64.zip`
@@ -58,7 +64,15 @@ Manual test build:
 1. Open **Actions** in GitHub.
 2. Run **Build Summoning Rite Releases**.
 3. Leave `publish` disabled.
-4. Download the workflow artifacts and test them locally.
+4. Confirm generated asset names match the platform matrix in
+   `rites/data/summon_contract.json`.
+5. Download the workflow artifacts and test them locally.
+6. Run bootstrap smoke checks for `GRIMOIRE_SUMMON_BINARY=auto`,
+   `GRIMOIRE_SUMMON_BINARY=always`, and `GRIMOIRE_SUMMON_BINARY=never`.
+7. Confirm Linux GUI auto mode uses the source path by default.
+8. Confirm Windows Git Bash downloads the `.zip` asset and runs
+   `grimoire-summon.exe`.
+9. Confirm a missing or checksum-failed release binary falls back to source.
 
 Publish a draft release:
 1. Push a tag such as `v1.2.3`.
@@ -83,6 +97,9 @@ Draft releases are useful for private review, but they are not useful for unauth
 ---
 
 ## Bootstrap Behavior
+
+The durable mode matrix is in
+[`summoning_contract.md`](summoning_contract.md#release-and-source-selection).
 
 `rites/summon.sh` prefers release assets when run through the public curl pipe, except on Linux GUI sessions where it uses the Python source launcher by default. The Linux source-first GUI path avoids frozen GLFW/GLX library drift across fast-moving distro render stacks while preserving binary use for CLI/headless Linux and for macOS/Windows. Running from a local checkout keeps using local source by default, which is better for Arcana development.
 
