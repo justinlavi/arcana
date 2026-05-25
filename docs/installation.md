@@ -88,6 +88,8 @@ To pin a specific release asset instead of using GitHub's latest published relea
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0 bash
 ```
 
+Release asset downloads print progress. If a network stalls, the bootstrap fails over to source mode after the configured stall window. Advanced controls are documented in [release.md](release.md#bootstrap-behavior).
+
 If no scope is provided, the rite prompts interactively:
 
 ```

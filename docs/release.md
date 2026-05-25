@@ -98,6 +98,8 @@ Binary controls:
 - `GRIMOIRE_SUMMON_BINARY=always` - force release binary lookup.
 - `GRIMOIRE_SUMMON_BINARY=never` - force Python source bootstrap.
 - `GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0` - download from a specific release tag instead of `latest`.
+- `GRIMOIRE_SUMMON_CONNECT_TIMEOUT=20` - seconds to wait for a download connection.
+- `GRIMOIRE_SUMMON_STALL_TIMEOUT=120` and `GRIMOIRE_SUMMON_MIN_SPEED=1` - fail a stalled download after the transfer stays below the minimum speed for the timeout window.
 
 GitHub's `latest` release URL resolves only to a non-draft, non-prerelease release. For prerelease testing, set `GRIMOIRE_SUMMON_RELEASE_TAG` to the exact tag.
 

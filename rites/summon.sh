@@ -18,11 +18,16 @@ DEFAULT_ARCANA_REF="main"
 : "${GRIMOIRE_SUMMON_PY_DEPS:=${XDG_CACHE_HOME:-$HOME/.cache}/grimoire/summon-python}"
 : "${GRIMOIRE_SUMMON_BINARY:=auto}"
 : "${GRIMOIRE_SUMMON_RELEASE_TAG:=latest}"
+: "${GRIMOIRE_SUMMON_CONNECT_TIMEOUT:=20}"
+: "${GRIMOIRE_SUMMON_STALL_TIMEOUT:=120}"
+: "${GRIMOIRE_SUMMON_MIN_SPEED:=1}"
 export ARCANA_URL
 export GRIMOIRE_SUMMON_PY_DEPS
 
 TEMP_DIR=""
 SCRIPT_SOURCE="${BASH_SOURCE[0]:-$0}"
+
+echo "  [INFO]  Arcana Summoning Rite bootstrap starting"
 
 derive_raw_base() {
     local repo_url="$1"
@@ -42,13 +47,51 @@ download_file() {
     local dest="$2"
 
     if command -v curl &>/dev/null; then
-        curl -fsSL "$url" -o "$dest"
+        curl -fsSL \
+            --connect-timeout "$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
+            --speed-time "$GRIMOIRE_SUMMON_STALL_TIMEOUT" \
+            --speed-limit "$GRIMOIRE_SUMMON_MIN_SPEED" \
+            --retry 2 \
+            "$url" -o "$dest"
     elif command -v wget &>/dev/null; then
-        wget -qO "$dest" "$url"
+        wget -q \
+            --timeout="$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
+            --tries=3 \
+            -O "$dest" "$url"
     else
         echo "  [ERROR] curl or wget is required to run the summoning rite from a pipe"
         return 1
     fi
+}
+
+download_release_file() {
+    local url="$1"
+    local dest="$2"
+    local label="$3"
+
+    echo "  [INFO]  Downloading $label..."
+    if command -v curl &>/dev/null; then
+        curl -fL \
+            --connect-timeout "$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
+            --speed-time "$GRIMOIRE_SUMMON_STALL_TIMEOUT" \
+            --speed-limit "$GRIMOIRE_SUMMON_MIN_SPEED" \
+            --retry 2 \
+            --progress-bar \
+            "$url" -o "$dest"
+    elif command -v wget &>/dev/null; then
+        wget \
+            --timeout="$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
+            --tries=3 \
+            --show-progress \
+            -O "$dest" "$url"
+    else
+        echo "  [ERROR] curl or wget is required to download release assets"
+        return 1
+    fi
+}
+
+file_size_bytes() {
+    wc -c < "$1" | tr -d '[:space:]'
 }
 
 repo_http_base() {
@@ -213,6 +256,7 @@ try_release_binary() {
         echo "  [INFO]  No release binary available for this platform"
         return 1
     fi
+    echo "  [INFO]  Detected platform: $platform"
 
     repo_base="$(repo_http_base "$ARCANA_URL")"
     download_base="$(release_download_base "$repo_base" "$GRIMOIRE_SUMMON_RELEASE_TAG")"
@@ -230,24 +274,30 @@ try_release_binary() {
     mkdir -p "$bin_dir"
 
     echo "  [INFO]  Trying release binary: $asset"
-    if ! download_file "$download_base/$asset" "$binary_temp/$asset"; then
+    echo "  [INFO]  Release source: $download_base"
+    if ! download_release_file "$download_base/$asset" "$binary_temp/$asset" "$asset"; then
         echo "  [INFO]  Release binary unavailable - falling back to Python source"
         rm -rf "$binary_temp"
         return 1
     fi
+    echo "  [OK]    Downloaded $asset ($(file_size_bytes "$binary_temp/$asset") bytes)"
 
+    echo "  [INFO]  Downloading checksum: $checksum"
     if download_file "$download_base/$checksum" "$binary_temp/$checksum"; then
+        echo "  [INFO]  Verifying checksum..."
         if ! (cd "$binary_temp" && verify_checksum "$checksum"); then
             echo "  [WARN]  Release binary checksum failed - falling back to Python source"
             rm -rf "$binary_temp"
             return 1
         fi
+        echo "  [OK]    Checksum verified"
     else
         echo "  [WARN]  Release checksum unavailable - falling back to Python source"
         rm -rf "$binary_temp"
         return 1
     fi
 
+    echo "  [INFO]  Extracting release binary..."
     if ! extract_archive "$binary_temp/$asset" "$bin_dir"; then
         echo "  [WARN]  Could not extract release binary - falling back to Python source"
         rm -rf "$binary_temp"
