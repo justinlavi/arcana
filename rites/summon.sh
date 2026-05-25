@@ -20,7 +20,10 @@ DEFAULT_ARCANA_REF="main"
 : "${GRIMOIRE_SUMMON_RELEASE_TAG:=latest}"
 : "${GRIMOIRE_SUMMON_CONNECT_TIMEOUT:=20}"
 : "${GRIMOIRE_SUMMON_STALL_TIMEOUT:=120}"
+: "${GRIMOIRE_SUMMON_QUIET_STALL_TIMEOUT:=30}"
 : "${GRIMOIRE_SUMMON_MIN_SPEED:=1}"
+: "${GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS:=3}"
+: "${GRIMOIRE_SUMMON_RETRY_DELAY:=2}"
 export ARCANA_URL
 export GRIMOIRE_SUMMON_PY_DEPS
 
@@ -45,23 +48,122 @@ derive_raw_base() {
 download_file() {
     local url="$1"
     local dest="$2"
+    local label="${3:-$(basename "$dest")}"
 
-    if command -v curl &>/dev/null; then
-        curl -fsSL \
-            --connect-timeout "$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
-            --speed-time "$GRIMOIRE_SUMMON_STALL_TIMEOUT" \
-            --speed-limit "$GRIMOIRE_SUMMON_MIN_SPEED" \
-            --retry 2 \
-            "$url" -o "$dest"
-    elif command -v wget &>/dev/null; then
-        wget -q \
-            --timeout="$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
-            --tries=3 \
-            -O "$dest" "$url"
-    else
-        echo "  [ERROR] curl or wget is required to run the summoning rite from a pipe"
+    download_with_retries "$url" "$dest" "$label" quiet
+}
+
+python_download_file() {
+    local url="$1"
+    local dest="$2"
+    local py
+
+    py="$(command -v python3 || command -v python || true)"
+    if [[ -z "$py" ]]; then
         return 1
     fi
+
+    "$py" - "$url" "$dest" "$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" <<'PY'
+import sys
+from urllib.request import urlopen
+
+url, dest, timeout = sys.argv[1], sys.argv[2], int(sys.argv[3])
+with urlopen(url, timeout=timeout) as response, open(dest, "wb") as out:
+    while True:
+        chunk = response.read(1024 * 1024)
+        if not chunk:
+            break
+        out.write(chunk)
+PY
+}
+
+download_with_retries() {
+    local url="$1"
+    local dest="$2"
+    local label="$3"
+    local mode="${4:-quiet}"
+    local attempt=1
+    local temp_dest="$dest.part"
+    local output=""
+    local stall_timeout="$GRIMOIRE_SUMMON_STALL_TIMEOUT"
+
+    if [[ "$mode" == "quiet" ]]; then
+        stall_timeout="$GRIMOIRE_SUMMON_QUIET_STALL_TIMEOUT"
+    fi
+
+    rm -f "$temp_dest"
+    while (( attempt <= GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS )); do
+        output=""
+        echo "  [INFO]  Download attempt $attempt/$GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS: $label"
+
+        if command -v curl &>/dev/null; then
+            if [[ "$mode" == "progress" ]]; then
+                if curl -fL \
+                    --connect-timeout "$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
+                    --speed-time "$stall_timeout" \
+                    --speed-limit "$GRIMOIRE_SUMMON_MIN_SPEED" \
+                    --progress-bar \
+                    "$url" -o "$temp_dest"; then
+                    mv "$temp_dest" "$dest"
+                    return 0
+                fi
+            else
+                output="$(curl -fsSL \
+                    --connect-timeout "$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
+                    --speed-time "$stall_timeout" \
+                    --speed-limit "$GRIMOIRE_SUMMON_MIN_SPEED" \
+                    "$url" -o "$temp_dest" 2>&1)" && {
+                    mv "$temp_dest" "$dest"
+                    return 0
+                }
+            fi
+        elif command -v wget &>/dev/null; then
+            if [[ "$mode" == "progress" ]]; then
+                if wget \
+                    --timeout="$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
+                    --tries=1 \
+                    --show-progress \
+                    -O "$temp_dest" "$url"; then
+                    mv "$temp_dest" "$dest"
+                    return 0
+                fi
+            else
+                output="$(wget -q \
+                    --timeout="$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
+                    --tries=1 \
+                    -O "$temp_dest" "$url" 2>&1)" && {
+                    mv "$temp_dest" "$dest"
+                    return 0
+                }
+            fi
+        else
+            echo "  [ERROR] curl or wget is required to download $label"
+            return 1
+        fi
+
+        rm -f "$temp_dest"
+        if [[ -n "$output" ]]; then
+            echo "  [WARN]  Download failed: $output"
+        else
+            echo "  [WARN]  Download failed: $label"
+        fi
+
+        if (( attempt < GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS )); then
+            echo "  [INFO]  Retrying in ${GRIMOIRE_SUMMON_RETRY_DELAY}s..."
+            sleep "$GRIMOIRE_SUMMON_RETRY_DELAY"
+        fi
+        attempt=$((attempt + 1))
+    done
+
+    echo "  [INFO]  Trying Python download fallback for $label..."
+    if python_download_file "$url" "$temp_dest"; then
+        mv "$temp_dest" "$dest"
+        return 0
+    fi
+    rm -f "$temp_dest"
+
+    echo "  [WARN]  Exhausted download attempts for $label"
+    return 1
 }
 
 download_release_file() {
@@ -70,24 +172,7 @@ download_release_file() {
     local label="$3"
 
     echo "  [INFO]  Downloading $label..."
-    if command -v curl &>/dev/null; then
-        curl -fL \
-            --connect-timeout "$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
-            --speed-time "$GRIMOIRE_SUMMON_STALL_TIMEOUT" \
-            --speed-limit "$GRIMOIRE_SUMMON_MIN_SPEED" \
-            --retry 2 \
-            --progress-bar \
-            "$url" -o "$dest"
-    elif command -v wget &>/dev/null; then
-        wget \
-            --timeout="$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
-            --tries=3 \
-            --show-progress \
-            -O "$dest" "$url"
-    else
-        echo "  [ERROR] curl or wget is required to download release assets"
-        return 1
-    fi
+    download_with_retries "$url" "$dest" "$label" progress
 }
 
 file_size_bytes() {

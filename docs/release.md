@@ -100,6 +100,10 @@ Binary controls:
 - `GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0` - download from a specific release tag instead of `latest`.
 - `GRIMOIRE_SUMMON_CONNECT_TIMEOUT=20` - seconds to wait for a download connection.
 - `GRIMOIRE_SUMMON_STALL_TIMEOUT=120` and `GRIMOIRE_SUMMON_MIN_SPEED=1` - fail a stalled download after the transfer stays below the minimum speed for the timeout window.
+- `GRIMOIRE_SUMMON_QUIET_STALL_TIMEOUT=30` - shorter stall timeout for small quiet downloads such as checksums and companion scripts.
+- `GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS=3` and `GRIMOIRE_SUMMON_RETRY_DELAY=2` - retry release and companion-script downloads with explicit attempt logging.
+
+If curl/wget cannot fetch a file after the configured attempts, the bootstrap tries a Python `urllib` download fallback when Python is already available on PATH.
 
 GitHub's `latest` release URL resolves only to a non-draft, non-prerelease release. For prerelease testing, set `GRIMOIRE_SUMMON_RELEASE_TAG` to the exact tag.
 
