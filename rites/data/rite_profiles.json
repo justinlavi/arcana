@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "title": "Arcana Mutating Rite Profiles",
+  "description": "Authoritative contract for write-capable rites: whether they plan, apply, append, or only write through an explicit operation.",
+  "profiles": [
+    {
+      "path": "rites/adopt_grimoire.py",
+      "profile": "apply_only",
+      "default_mode": "apply",
+      "plan_command": null,
+      "apply_command": "python rites/adopt_grimoire.py <directory> --skill-prefix <prefix> --description \"<description>\"",
+      "writes": ["<target grimoire>/grimoire.json"],
+      "idempotency": "Refuses to overwrite an existing manifest; rerun returns a validation failure without changing the file.",
+      "validation_profile": "python rites/sync_library.py --home <home>; python rites/validate_grimoire_structure.py --grimoire <target> after the grimoire has a full scaffold.",
+      "tests": ["tests/test_rite_profiles.py"]
+    },
+    {
+      "path": "rites/append_log.py",
+      "profile": "append_only",
+      "default_mode": "append",
+      "plan_command": null,
+      "apply_command": "python rites/append_log.py --grimoire <path> --op <op> --title \"<title>\"",
+      "writes": ["<grimoire>/log.md"],
+      "idempotency": "Append-only by design; invocation workflows gate one append per completed operation.",
+      "validation_profile": "Inspect the appended log entry; run relevant grimoire validators for the operation that produced the entry.",
+      "tests": ["tests/test_rite_profiles.py"]
+    },
+    {
+      "path": "rites/build_summon_binary.py",
+      "profile": "apply_only",
+      "default_mode": "apply",
+      "plan_command": null,
+      "apply_command": "python rites/build_summon_binary.py",
+      "writes": ["build artifacts", "release archives", "checksum files"],
+      "idempotency": "Removes and recreates build outputs for the requested version.",
+      "validation_profile": "Run the release build check and inspect produced archives and checksums before publishing.",
+      "tests": ["tests/test_rite_profiles.py"]
+    },
+    {
+      "path": "rites/clean_artifacts.py",
+      "profile": "plan_apply",
+      "default_mode": "apply",
+      "plan_command": "python rites/clean_artifacts.py --dry-run",
+      "apply_command": "python rites/clean_artifacts.py",
+      "writes": ["rites/.artifacts directories under Arcana and installed grimoires"],
+      "idempotency": "After cleanup, rerun reports nothing to clean.",
+      "validation_profile": "python rites/clean_artifacts.py --dry-run",
+      "tests": ["tests/test_rite_profiles.py"]
+    },
+    {
+      "path": "rites/register_skills.py",
+      "profile": "plan_apply",
+      "default_mode": "apply",
+      "plan_command": "python rites/register_skills.py --dry-run",
+      "apply_command": "python rites/register_skills.py",
+      "writes": ["supported agent skill directories under the user's home directory"],
+      "idempotency": "Rerunning with the same inputs produces the same rendered skill files after cleaning the selected command-prefix directories.",
+      "validation_profile": "python rites/register_skills.py --dry-run; temp-target pytest coverage for dry-run and repeated apply.",
+      "tests": ["tests/test_register_skills.py", "tests/test_rite_profiles.py"]
+    },
+    {
+      "path": "rites/repair_links.py",
+      "profile": "plan_apply",
+      "default_mode": "plan",
+      "plan_command": "python rites/repair_links.py --grimoire <path>",
+      "apply_command": "python rites/repair_links.py --grimoire <path> --apply",
+      "writes": ["active-grimoire Markdown files with unambiguous wikilink repairs"],
+      "idempotency": "After apply, rerun reports no repairs for links it already normalized.",
+      "validation_profile": "python rites/validate_links.py --grimoire <path>; python rites/validate_orphans.py --grimoire <path>",
+      "tests": ["tests/test_rite_profiles.py"]
+    },
+    {
+      "path": "rites/summon.sh",
+      "profile": "apply_only",
+      "default_mode": "apply",
+      "plan_command": null,
+      "apply_command": "bash rites/summon.sh",
+      "writes": ["download cache", "Arcana install tree", "selected grimoire repositories", "agent instruction files", "agent skill directories"],
+      "idempotency": "Install/update behavior is governed by the Summoning Rite contract and mode-specific prompts.",
+      "validation_profile": "Summoning Rite parity checks and release smoke tests.",
+      "tests": ["tests/test_rite_profiles.py", "tests/test_summon_core.py"]
+    },
+    {
+      "path": "rites/summon_core.py",
+      "profile": "apply_only",
+      "default_mode": "apply",
+      "plan_command": null,
+      "apply_command": "python rites/summon.py",
+      "writes": ["Arcana install tree", "selected grimoire repositories", "library.json", "agent instruction files", "agent skill directories"],
+      "idempotency": "Install/update behavior is governed by the Summoning Rite contract and mode-specific prompts.",
+      "validation_profile": "python -m pytest tests/test_summon_core.py",
+      "tests": ["tests/test_rite_profiles.py", "tests/test_summon_core.py"]
+    },
+    {
+      "path": "rites/summon_gui.py",
+      "profile": "apply_only",
+      "default_mode": "apply",
+      "plan_command": null,
+      "apply_command": "python rites/summon.py --gui",
+      "writes": ["GUI settings", "Arcana install tree", "selected grimoire repositories", "library.json", "agent instruction files", "agent skill directories", "diagnostic exports"],
+      "idempotency": "Install/update behavior is governed by the Summoning Rite contract and mode-specific prompts.",
+      "validation_profile": "Summoning Rite GUI/core parity checks.",
+      "tests": ["tests/test_rite_profiles.py", "tests/test_summon_core.py"]
+    },
+    {
+      "path": "rites/sync_docs.py",
+      "profile": "plan_apply",
+      "default_mode": "plan",
+      "plan_command": "python rites/sync_docs.py",
+      "apply_command": "python rites/sync_docs.py --apply",
+      "writes": ["docs/skills.md"],
+      "idempotency": "After apply, rerun reports docs/skills.md is up to date.",
+      "validation_profile": "python rites/sync_docs.py --apply; git diff --check",
+      "tests": ["tests/test_rite_profiles.py"]
+    },
+    {
+      "path": "rites/sync_library.py",
+      "profile": "plan_apply",
+      "default_mode": "plan",
+      "plan_command": "python rites/sync_library.py",
+      "apply_command": "python rites/sync_library.py --apply",
+      "writes": ["~/grimoires/library.json"],
+      "idempotency": "After apply, rerun reports the library is in sync unless disk state changed.",
+      "validation_profile": "python rites/sync_library.py; python rites/register_skills.py --dry-run after approved library changes.",
+      "tests": ["tests/test_rite_profiles.py"]
+    },
+    {
+      "path": "rites/validate.py",
+      "profile": "read_only",
+      "default_mode": "read",
+      "plan_command": null,
+      "apply_command": "python rites/validate.py --parallel",
+      "writes": ["transient validator reports under rites/.artifacts when parallel mode is used"],
+      "idempotency": "Validation does not change durable Arcana or grimoire content; transient reports may be refreshed.",
+      "validation_profile": "python rites/validate.py --parallel",
+      "tests": ["tests/test_rite_profiles.py", "tests/test_validators_against_fixtures.py"]
+    }
+  ]
+}

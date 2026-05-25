@@ -36,7 +36,7 @@ known owner and mutation profile.
 | `owner_type` | `rite`, `judgment`, or `hybrid`. |
 | `rite_owner` | Deterministic rite path, or `null` for judgment-owned workflows. |
 | `preconditions` | Conditions the command must establish before acting. |
-| `mutation_profile` | `read_only`, `plan_apply`, `apply_only`, or `judgment_gated`. |
+| `mutation_profile` | `read_only`, `plan_apply`, `apply_only`, `append_only`, or `judgment_gated`. |
 | `mutation_behavior` | Plain-language write behavior. |
 | `log_behavior` | Whether the command appends or creates a grimoire log entry. |
 | `validation_profile` | Checks that prove the command's work. |

@@ -49,7 +49,6 @@ Priority labels:
 |---|---|---|---|---|
 | ST-003 | P1 | Skill registration ownership and prefix-collision safety | `rites/register_skills.py`, agent skill dirs | Mutates user agent directories; cleanup rules need careful ownership boundaries. |
 | ST-004 | P1 | Summoning Rite behavior contract and GUI/core parity | `rites/summon*`, `.github/`, install docs | Installer behavior spans shell, Python, GUI, release assets, and docs. |
-| ST-005 | P2 | Mutating rite plan/apply/idempotency profile | mutating rites and invocations | Broad behavioral standard across multiple write-capable rites. |
 | ST-007 | P2 | Agent target registry and instruction-block single source | agent docs, registration/update rites | Agent support is described across several surfaces and can drift. |
 | ST-008 | P2 | Grimoire validation orchestrator and profiles | grimoire validators, `/grm-improve` | Would add or reshape public validation workflow. |
 | ST-009 | P3 | Richer generated skill catalog | `rites/sync_docs.py`, `docs/skills.md` | Needs catalog rendering and tests against the command-surface contract. |
@@ -180,62 +179,6 @@ Read-path delta:
 
 A maintainer can answer "what must every summon mode do?" from one contract
 instead of reconciling shell, Python, GUI, docs, and release notes.
-
-## ST-005: Mutating Rite Plan/Apply/Idempotency Profile
-
-Priority: P2
-
-Status: Deferred
-
-Primary owner: `rites/register_skills.py`, `rites/sync_library.py`,
-`rites/sync_docs.py`, `rites/adopt_grimoire.py`, `rites/repair_links.py`,
-`rites/clean_artifacts.py`, `invocations/arcana/quality/validate_rites.md`
-
-Current evidence:
-
-- Some mutating rites already distinguish dry-run from apply.
-- Other rites write because writing is their primary job.
-- The rite quality invocation asks whether mutating rites have a dry-run or
-  apply split, but Arcana does not yet define one shared profile for plan
-  output, exit codes, and idempotency tests.
-
-Finding:
-
-S-tier maintainability needs a consistent mental model for write-capable
-rites. The current pattern is mostly good but not yet contract-shaped.
-
-Desired S-tier endpoint:
-
-- Every mutating rite declares one of: read-only, plan/apply, apply-only by
-  nature, or append-only.
-- Plan output is clear enough for agents to summarize and users to approve.
-- Exit codes distinguish success, validation failure, and operational error
-  where useful.
-- Temp-directory or temp-HOME tests prove idempotency and scoped writes.
-- Invocations state whether they are allowed to run the rite directly or need
-  user confirmation first.
-
-First implementable slice:
-
-1. Add the profile to `docs/script_vs_ai.md` and
-   `invocations/arcana/quality/validate_rites.md`.
-2. Classify current rites in a table.
-3. Pick one high-risk rite, likely `register_skills.py`, and bring it into
-   the new profile with tests.
-
-Blast radius:
-
-Medium. Mostly documentation at first, then staged rite changes.
-
-Validation profile:
-
-- Focused tests for each updated rite.
-- `python rites/validate.py --parallel`
-
-Read-path delta:
-
-Agents can know before running a rite whether it plans, writes, appends, or
-needs human confirmation.
 
 ## ST-007: Agent Target Registry And Instruction-Block Single Source
 
@@ -450,14 +393,12 @@ create a wrapper, cite a raw file, or cite an external URL.
 
 ## Suggested Implementation Sequence
 
-1. ST-005 first slice, because it defines the mutating-rite profile that
-   registration should follow.
-2. ST-003 after ST-005 or alongside its first slice, because registration is
+1. ST-003 next, because registration is
    the highest-risk mutating rite.
-3. ST-004 as its own focused pass before the next installer/release push.
-4. ST-008 before adding `grm-validate-all`; any new command must update
+2. ST-004 as its own focused pass before the next installer/release push.
+3. ST-008 before adding `grm-validate-all`; any new command must update
    `rites/data/command_surface.json`.
-5. ST-009 can now render richer metadata from the command-surface contract.
+4. ST-009 can now render richer metadata from the command-surface contract.
 
 ## Update Triggers
 

@@ -27,6 +27,7 @@ REQUIRED_LIST_FIELDS = {"preconditions"}
 OPTIONAL_PATH_FIELDS = {"guard", "rite_owner"}
 ALLOWED_OWNER_TYPES = {"rite", "judgment", "hybrid"}
 ALLOWED_MUTATION_PROFILES = {
+    "append_only",
     "read_only",
     "plan_apply",
     "apply_only",

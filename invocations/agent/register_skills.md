@@ -23,6 +23,10 @@ Use this global command after Arcana skill changes, after installing or removing
 
 ## Workflow
 
+Mutation profile: `plan_apply` via `rites/register_skills.py`. This
+invocation may apply directly when the user asks to register skills; use
+`--dry-run` when the user asks for a preview or when reviewing target changes.
+
 ### 1. Run the registration rite
 
 ```bash

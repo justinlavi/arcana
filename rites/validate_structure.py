@@ -15,6 +15,7 @@ from pathlib import Path
 
 from _lib import default_arcana_root
 from diagnostics import DiagnosticReporter, add_output_format_arg
+from rite_profiles import profile_entries, validate_rite_profiles
 
 ARCANA_ROOT = default_arcana_root()
 
@@ -165,6 +166,28 @@ def main():
     if human:
         print()
 
+    if human:
+        print("Checking mutating rite profiles...")
+    rite_profile_contract, rite_profile_errors = validate_rite_profiles(ARCANA_ROOT)
+    for error in rite_profile_errors:
+        reporter.error(
+            error["code"],
+            error["message"],
+            path=error.get("path"),
+            hint=error.get("hint"),
+        )
+        if human:
+            print(f"  PROFILE  {error.get('path', '-')}: {error['message']}")
+    rite_profile_count = (
+        len(profile_entries(rite_profile_contract))
+        if rite_profile_contract is not None
+        else 0
+    )
+    if human and not rite_profile_errors:
+        print(f"  OK       {rite_profile_count} mutating rite profile(s)")
+    if human:
+        print()
+
     if not human:
         reporter.emit(
             args.format,
@@ -172,6 +195,7 @@ def main():
                 "required_directories": len(REQUIRED_DIRS),
                 "required_files": len(REQUIRED_FILES),
                 "hub_directories": len(HUB_DIRS),
+                "rite_profiles": rite_profile_count,
             },
         )
         return reporter.exit_code()

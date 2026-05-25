@@ -33,6 +33,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 - [docs/obsidian.md](docs/obsidian.md) — Vault setup and graph-view color groups
 - [docs/vscode.md](docs/vscode.md) — VS Code setup (uninstall Markdown Preview Enhanced + install Foam) to avoid recursive-directory bug on Ctrl-click
 - [docs/script_vs_ai.md](docs/script_vs_ai.md) — When to use scripts vs AI
+- [docs/rite_profiles.md](docs/rite_profiles.md) — Mutation profiles for write-capable rites
 - [docs/architecture_backlog.md](docs/architecture_backlog.md) — Deferred S-tier architecture opportunities from `/arc-improve`
 - [docs/governance.md](docs/governance.md) — Maintenance policies and versioning
 - [docs/release.md](docs/release.md) — Release workflow for Summoning Rite binaries

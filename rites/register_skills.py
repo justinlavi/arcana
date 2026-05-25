@@ -35,8 +35,14 @@ For example, skill_prefix "cook" plus skills/recipe-add registers as
 Source SKILL.md files use `{{SKILL_PREFIX}}-<slug>` in their `name:` frontmatter
 field; the rite substitutes the placeholder during registration.
 
+Mutation profile: plan_apply. `--dry-run` prints the planned cleanup and
+registration actions without writing. The default mode applies the same plan
+to the selected agent skill target directories.
+
 Usage:
     python3 register_skills.py [--agent all|claude|codex] [--grimoire PATH] [--dry-run]
+
+Exit codes: 0 = plan/apply completed; argparse exits 2 for invalid arguments.
 """
 
 import argparse
@@ -479,11 +485,13 @@ def register_target(agent_name, config, dry_run=False, grimoire_path=None):
 
     total_registered = arcana_registered + grimoire_registered
     total_cleaned = arcana_cleaned + grimoire_cleaned
+    action = "would register" if dry_run else "registered"
+    cleanup_action = "would clean" if dry_run else "cleaned"
 
     print()
-    print(f"  {label}: registered {total_registered} skill(s)")
+    print(f"  {label}: {action} {total_registered} skill(s)")
     if total_cleaned > 0:
-        print(f"  {label}: cleaned    {total_cleaned} stale skill(s)")
+        print(f"  {label}: {cleanup_action}    {total_cleaned} stale skill(s)")
     print()
 
     return {
@@ -491,6 +499,7 @@ def register_target(agent_name, config, dry_run=False, grimoire_path=None):
         "label": label,
         "registered": total_registered,
         "cleaned": total_cleaned,
+        "mode": "plan" if dry_run else "apply",
     }
 
 
@@ -541,9 +550,15 @@ def main():
     print("  ----------------------------")
     total_registered = sum(result["registered"] for result in results)
     total_cleaned = sum(result["cleaned"] for result in results)
-    print(f"  Registered: {total_registered} skill registration(s)")
+    if args.dry_run:
+        print(f"  Planned registrations: {total_registered} skill(s)")
+    else:
+        print(f"  Registered: {total_registered} skill registration(s)")
     if total_cleaned > 0:
-        print(f"  Cleaned:    {total_cleaned} stale skill registration(s)")
+        if args.dry_run:
+            print(f"  Planned cleanups:      {total_cleaned} stale skill(s)")
+        else:
+            print(f"  Cleaned:    {total_cleaned} stale skill registration(s)")
     print()
 
     if not args.dry_run and total_registered > 0:

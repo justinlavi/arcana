@@ -4,14 +4,16 @@ title: "Validate Rites"
 aliases: ["validate-rites", "rite-quality"]
 tags: [arcana/invocations, type/playbook, scope/quality]
 authority: grimoire
-last_verified: 2026-05-12
+last_verified: 2026-05-25
 ---
 
 # Invocation: Validate Arcana Rites
 
 ## Purpose
 
-Judgment-based quality review of rite scripts (Python files under `rites/`). Covers error handling, exit codes, idempotency, portability, docstrings, and size limits.
+Judgment-based quality review of rite scripts (Python files under `rites/`).
+Covers error handling, exit codes, idempotency, portability, docstrings, size
+limits, and mutation-profile compliance.
 
 Pairs with `/arc-validate-security` (mechanical credential/unsafe-construct scan). This invocation is the human-judgment counterpart - no rite automates it. See [`docs/script_vs_ai.md`](../../../docs/script_vs_ai.md) for the split.
 
@@ -34,6 +36,9 @@ ls rites/*.py
 ```
 
 Skip `__pycache__/`, `data/`, `templates/`. Treat `validate_*.py`, `sync_*.py`, and orchestrators (`validate.py`, `summon.py`, `register_skills.py`) as in scope.
+Load `rites/data/rite_profiles.json` before reviewing write-capable rites and
+use [`docs/rite_profiles.md`](../../../docs/rite_profiles.md) as the human
+reference.
 
 ### 2. Per-rite checks
 
@@ -58,8 +63,15 @@ Read each rite top-to-bottom and judge:
 
 **Idempotency**
 - Re-running on an unchanged tree produces identical output and exit code
-- Mutating rites (`sync_library.py`, `sync_docs.py`, `register_skills.py`) support a dry-run / `--apply` split or are obviously read-only when not given a flag
-- No accumulating side effects (appending to logs without rotation, etc.)
+- Write-capable rites match one of the declared profiles: `read_only`,
+  `plan_apply`, `apply_only`, or `append_only`
+- `plan_apply` rites name a plan command and an apply command; the plan is
+  clear enough for an agent to summarize before writing
+- `apply_only` rites name their write scope and refuse unsafe overwrites
+- `append_only` rites are called only from workflows that warrant one append
+- No accumulating side effects outside declared `append_only` targets
+- Temp-directory or temp-HOME tests cover scoped writes for high-risk rites,
+  especially agent, install, library, and grimoire-content writes
 
 **Portability**
 - Resolves Arcana root via `ARCANA_HOME` env var with a sensible fallback (see existing rites for the pattern)

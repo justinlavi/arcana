@@ -27,6 +27,11 @@ Use this day-to-day when the user is working inside one grimoire and has added, 
 
 ## Workflow
 
+Mutation profile: `plan_apply` via `rites/register_skills.py`. This
+invocation may apply directly when the user asks to register active-grimoire
+skills; use `--dry-run` when the user asks for a preview or when reviewing
+target changes.
+
 ### 1. Run the registration rite for the active grimoire
 
 ```bash

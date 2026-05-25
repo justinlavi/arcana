@@ -10,6 +10,8 @@
   scaffold inventory consumed by creation, audit, validation, and tests.
 - Added `rites/data/command_surface.json` and `docs/command_surface.md` as
   the validated public command-surface contract.
+- Added `rites/data/rite_profiles.json` and `docs/rite_profiles.md` as the
+  mutating-rite plan/apply/idempotency contract.
 - Added structured validator diagnostics through `--format json` and
   `--format jsonl` on every Arcana validator and the validator orchestrator.
 
@@ -25,6 +27,9 @@
 - Updated `/arc-validate-skill-refs` to verify command-surface coverage,
   workflow owners, guard paths, rite paths, mutation profiles, and validation
   profiles for every Arcana-shipped public command.
+- Updated rite-quality guidance and skill-registration behavior so dry-run
+  output is treated as a plan, with temp-target tests for dry-run and repeated
+  apply.
 
 ## [1.0.0] - 2026-05-25
 

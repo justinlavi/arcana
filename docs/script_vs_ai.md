@@ -177,6 +177,8 @@ find invocations/ -name "*.md" ! -name "$(basename "$(pwd)").md" | wc -l   # lea
 - Use them for speed and consistency
 - Make them idempotent and safe
 - Exit codes: 0 = success, 1 = failure
+- If they write files, declare a mutation profile in
+  [`rite_profiles.md`](rite_profiles.md)
 
 **DON'T**:
 - Try to understand meaning or context
@@ -197,6 +199,26 @@ find invocations/ -name "*.md" ! -name "$(basename "$(pwd)").md" | wc -l   # lea
 - Manually count or search (use scripts for that)
 - Reinvent what scripts already do
 - Ignore data that scripts provide
+
+---
+
+## Mutating Rite Profiles
+
+Write-capable rites use one of four profiles. The contract lives in
+[`rites/data/rite_profiles.json`](../rites/data/rite_profiles.json), with a
+human-readable view in [`rite_profiles.md`](rite_profiles.md).
+
+| Profile | Use when | Required behavior |
+|---|---|---|
+| `read_only` | The rite only reports facts; any writes are named transient artifacts. | Do not change durable source, grimoire, agent, library, or install state. |
+| `plan_apply` | The rite can preview and then write the same scoped change. | Provide a plan command and an apply command; the plan must be specific enough to summarize. |
+| `apply_only` | A separate plan is not useful for the operation. | Make the write scope explicit and refuse unsafe overwrites. |
+| `append_only` | The rite appends a record to an append-only target. | Invocation workflows decide when one append is warranted. |
+
+Every mutating invocation must name whether it may run the apply command
+directly or must ask the user after showing the plan. Every mutating rite
+should have a focused temp-directory or temp-HOME test for scoped writes or
+idempotency before its behavior is broadened.
 
 ---
 
@@ -239,7 +261,7 @@ AI manually checking every file instead of using find/grep
 
 ---
 
-## Migration Strategy
+## Refactoring Strategy
 
 When you find a rite trying to be intelligent:
 
