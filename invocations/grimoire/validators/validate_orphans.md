@@ -21,10 +21,10 @@ Detect authored grimoire pages that no other page links to.
 
 ## Workflow
 
-Run from the active grimoire root:
+Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_orphans.py --grimoire .
+python3 ARCANA_HOME/rites/validate_orphans.py --grimoire GRIMOIRE_ROOT
 ```
 
 Orphans are candidates to wire into a hub, merge, or delete after review.

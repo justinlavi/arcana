@@ -23,7 +23,7 @@ This invocation ensures:
 
 ## Preconditions
 
-Before executing, verify the current working directory is a registered grimoire (check `~/grimoires/library.json`). If it is not, list available grimoires and tell the user to `cd` to one. Arcana is not a grimoire. **Stop** if the check fails.
+Before executing, resolve `GRIMOIRE_ROOT` with the shared grimoire directory guard. Arcana is not a grimoire. Stop if no active grimoire can be resolved.
 
 ## When to Cast
 
@@ -35,7 +35,7 @@ Before executing, verify the current working directory is a registered grimoire 
 
 ## Invocation
 
-From your grimoire directory, cast:
+From the active grimoire context, cast:
 
 ```
 /grm-validate-structure
@@ -44,7 +44,7 @@ From your grimoire directory, cast:
 Mechanical equivalent:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire .
+python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT
 ```
 
 ## Validation Workflow

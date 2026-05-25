@@ -25,7 +25,7 @@ The agent decides what to file based on the immediate prior conversation. The us
 
 ## Preconditions
 
-1. Working directory must be a registered grimoire. Refuse for Arcana itself.
+1. Resolve `GRIMOIRE_ROOT` with the shared grimoire directory guard. Refuse for Arcana itself.
 2. There must be a recent substantive chat answer to file (the agent is responsible for identifying it; if unclear, ask).
 
 ## Workflow
@@ -68,7 +68,7 @@ Add a full-path wikilink pointer in the relevant chapter hub's `## Routes` secti
 
 ```bash
 python3 ARCANA_HOME/rites/append_log.py \
-  --grimoire . \
+  --grimoire GRIMOIRE_ROOT \
   --op file-answer \
   --title "<page title>" \
   --skill /grm-file-answer \
@@ -79,8 +79,8 @@ python3 ARCANA_HOME/rites/append_log.py \
 ### 6. Validate
 
 ```bash
-python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
-python3 ARCANA_HOME/rites/validate_links.py --grimoire .
+python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/validate_links.py --grimoire GRIMOIRE_ROOT
 ```
 
 ## Non-negotiable rules

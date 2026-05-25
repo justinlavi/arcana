@@ -17,7 +17,7 @@ This is the "one command after Arcana changed upstream" workflow for normal grim
 
 ## Invocation
 
-From a registered grimoire's root:
+From a registered grimoire, or from a workspace where the active grimoire can be resolved from `~/grimoires/library.json`:
 
 ```
 /grm-update-arcana
@@ -68,10 +68,8 @@ If this fails, stop and report the failing validators. Do not continue to skill 
 
 ### 5. Register skills for Arcana plus the active grimoire
 
-From the active grimoire root:
-
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --grimoire .
+python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT
 ```
 
 This refreshes Arcana-shipped `/arc-*` and `/grm-*` commands and the active grimoire's own `<skill prefix>-*` commands without scanning every installed grimoire.
@@ -90,7 +88,7 @@ If a marked block exists and differs, replace only the marked block. If the bloc
 Run the current Arcana structure validator against the active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire .
+python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT
 ```
 
 If it reports missing or stale managed scaffold files, tell the user that Arcana updated successfully but the grimoire needs `/grm-improve` to apply scaffold/schema upgrades. Do not perform broad grimoire edits inside this command.
@@ -104,6 +102,7 @@ End with:
 - Whether skills were registered.
 - Whether agent instruction blocks were updated, already current, skipped, or need a user decision.
 - Whether the active grimoire passed structure compatibility, or should run `/grm-improve`.
+Include the resolved active grimoire path in the summary.
 
 ## Related
 

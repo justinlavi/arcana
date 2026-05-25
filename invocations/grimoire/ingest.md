@@ -33,7 +33,7 @@ If the user provides only a description, ask for a source location (or instruct 
 
 ## Preconditions
 
-1. Working directory must be a registered grimoire (its key in `~/grimoires/library.json`). Refuse for Arcana itself.
+1. Resolve `GRIMOIRE_ROOT` with the shared grimoire directory guard. Refuse for Arcana itself.
 2. `sources/` and `log.md` must exist at the grimoire root. If missing, instruct the user to re-scaffold or run `/grm-validate-structure`.
 3. `inbox/` is optional. If the user invokes with no argument and no `inbox/` exists, ask whether to create one or to point at a specific path.
 
@@ -98,7 +98,7 @@ For each source-derived page, append the page path to the `## Wiki Pages Derived
 
 ```bash
 python3 ARCANA_HOME/rites/append_log.py \
-  --grimoire . \
+  --grimoire GRIMOIRE_ROOT \
   --op ingest \
   --title "<short description>" \
   --skill /grm-ingest \
@@ -114,9 +114,9 @@ One entry covers the whole sweep. Don't append per-file.
 #### 7. Validate
 
 ```bash
-python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
-python3 ARCANA_HOME/rites/validate_provenance.py --grimoire .
-python3 ARCANA_HOME/rites/validate_links.py --grimoire .
+python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/validate_provenance.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/validate_links.py --grimoire GRIMOIRE_ROOT
 ```
 
 Fix and re-run until clean. Do not append a second log entry for the fix.

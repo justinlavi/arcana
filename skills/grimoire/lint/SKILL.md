@@ -13,7 +13,7 @@ You are health-checking the active grimoire. Combines mechanical rites (orphans,
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
-- **Grimoire root**: cwd (must be a registered grimoire)
+- **Grimoire root**: resolved active grimoire (`GRIMOIRE_ROOT`)
 
 ## Invocation
 

@@ -17,7 +17,7 @@ Use this after a structural migration, after `/grm-ingest` finds drift, or any t
 
 ## Invocation
 
-From the active grimoire's root:
+From the active grimoire context:
 
 ```
 /grm-repair-links
@@ -27,7 +27,7 @@ The skill runs a dry-run first, surfaces the proposed changes plus any ambiguiti
 
 ## Preconditions
 
-1. Working directory must be a registered grimoire (its key in `~/grimoires/library.json`).
+1. Resolve `GRIMOIRE_ROOT` with the shared grimoire directory guard.
 2. The grimoire should be under version control so changes can be reviewed/reverted via diff.
 
 ## Workflow
@@ -37,7 +37,7 @@ The skill runs a dry-run first, surfaces the proposed changes plus any ambiguiti
 Run the rite without `--apply` to enumerate every proposed change:
 
 ```bash
-python3 ARCANA_HOME/rites/repair_links.py --grimoire .
+python3 ARCANA_HOME/rites/repair_links.py --grimoire GRIMOIRE_ROOT
 ```
 
 The output has four sections:
@@ -62,7 +62,7 @@ If the dry-run looks clean, proceed to apply. If there are ambiguities you want 
 Run with `--apply` to write changes:
 
 ```bash
-python3 ARCANA_HOME/rites/repair_links.py --grimoire . --apply
+python3 ARCANA_HOME/rites/repair_links.py --grimoire GRIMOIRE_ROOT --apply
 ```
 
 Edits are per-file and atomic. The rite preserves existing display labels (`[[xxx|My Label]]` becomes `[[chapters/path/xxx|My Label]]`) and adds a stem label when none is present.
@@ -82,8 +82,8 @@ For each `[MISS]` entry: the target genuinely doesn't exist. Either delete the r
 Confirm the change set is clean:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_links.py --grimoire .
-python3 ARCANA_HOME/rites/validate_orphans.py --grimoire .
+python3 ARCANA_HOME/rites/validate_links.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/validate_orphans.py --grimoire GRIMOIRE_ROOT
 ```
 
 Orphan count should drop significantly - every reconnected page joins the routing graph.

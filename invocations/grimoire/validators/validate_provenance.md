@@ -21,10 +21,10 @@ Validate that active-grimoire pages with `authority: external` or `authority: hy
 
 ## Workflow
 
-Run from the active grimoire root:
+Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_provenance.py --grimoire .
+python3 ARCANA_HOME/rites/validate_provenance.py --grimoire GRIMOIRE_ROOT
 ```
 
 Pages must not cite transient `inbox/` paths. Stable source artifacts belong under `sources/`.

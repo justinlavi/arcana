@@ -21,10 +21,10 @@ Validate active-grimoire page frontmatter against `ARCANA_HOME/docs/page_schema.
 
 ## Workflow
 
-Run from the active grimoire root:
+Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
+python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT
 ```
 
 Use this when pages were added, imported, or edited. For Arcana itself, use `/arc-validate-frontmatter`.

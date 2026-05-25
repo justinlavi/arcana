@@ -17,7 +17,7 @@ This is the grimoire counterpart to `/arc-improve` (which targets Arcana itself)
 
 ## Invocation
 
-From a registered grimoire's root:
+From a registered grimoire, or from a workspace where the active grimoire can be resolved:
 
 ```
 /grm-improve
@@ -25,9 +25,7 @@ From a registered grimoire's root:
 
 ## Preconditions
 
-1. The current working directory must match a `local_path` in `~/grimoires/library.json`.
-2. If it does not match, list available grimoires from the library, instruct the user to `cd` into one, and **stop**.
-3. Arcana is not a grimoire - refuse if `cwd` is the Arcana root.
+!`cat ARCANA_HOME/invocations/meta/grimoire_directory_guard.md`
 
 ## When to cast
 

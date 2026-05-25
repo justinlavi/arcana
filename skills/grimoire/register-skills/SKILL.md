@@ -13,7 +13,7 @@ You are registering Arcana skills and the active grimoire's own skills into supp
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
-- **Active grimoire**: current working directory
+- **Active grimoire**: resolve from `~/grimoires/library.json`; cwd does not have to be the grimoire root
 - **Invocation**: `{{ARCANA_PATH}}/invocations/grimoire/register_skills.md`
 
 ## Invocation

@@ -29,10 +29,8 @@ Use this day-to-day when the user is working inside one grimoire and has added, 
 
 ### 1. Run the registration rite for the active grimoire
 
-From the active grimoire root:
-
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --grimoire .
+python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT
 ```
 
 On Windows, use `python` instead of `python3`.
@@ -46,14 +44,14 @@ Tell the user how many Arcana and active-grimoire skills were registered, how ma
 Preview without writing:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --grimoire . --dry-run
+python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --dry-run
 ```
 
 Target one supported agent:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --grimoire . --agent codex
-python3 ARCANA_HOME/rites/register_skills.py --grimoire . --agent claude
+python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --agent codex
+python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --agent claude
 ```
 
 ## Related

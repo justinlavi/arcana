@@ -40,7 +40,7 @@ name: {{SKILL_PREFIX}}-<registered-slug>
 
 The registration rite substitutes `{{SKILL_PREFIX}}` with the command family's prefix. For example, `skills/grimoire/validate-links/SKILL.md` declares `{{SKILL_PREFIX}}-validate-links` and registers as `/grm-validate-links`.
 
-Some `/grm-*` commands intentionally maintain Arcana from the active grimoire context. For example, `/grm-update-arcana` updates Arcana, refreshes agent integration, and then checks the active grimoire against the updated framework. Keep these rare and name the external target explicitly.
+Some `/grm-*` commands intentionally maintain Arcana from the active grimoire context. For example, `/grm-update-arcana` updates Arcana, refreshes agent integration, and then checks the active grimoire against the updated framework. Keep these rare and name the external target explicitly. These commands may resolve the active grimoire from `~/grimoires/library.json`; they should not require terminal cwd when an unambiguous grimoire can be selected.
 
 ## Reusable Rites
 

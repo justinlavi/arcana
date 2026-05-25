@@ -18,7 +18,7 @@ If no argument was provided, default to sweeping `inbox/`.
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
-- **Grimoire root**: cwd (must be a registered grimoire)
+- **Grimoire root**: resolved active grimoire (`GRIMOIRE_ROOT`)
 - **Sources layer**: `sources/` (immutable; LLM never edits filed artifacts)
 - **Inbox layer**: `inbox/` (transient drop zone; gets emptied on ingest)
 - **Wiki layer**: `chapters/` (curated, frontmattered)

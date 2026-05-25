@@ -13,7 +13,7 @@ You are bulk-rewriting filename-only wikilinks in the active grimoire to the can
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
-- **Grimoire root**: cwd (must be a registered grimoire)
+- **Grimoire root**: resolved active grimoire (`GRIMOIRE_ROOT`)
 - **Engine**: `{{ARCANA_PATH}}/rites/repair_links.py`
 
 ## Invocation

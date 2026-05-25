@@ -21,10 +21,10 @@ Validate that every active-grimoire path is safe to clone on Windows, Linux, and
 
 ## Workflow
 
-Run from the active grimoire root:
+Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_portability.py --grimoire .
+python3 ARCANA_HOME/rites/validate_portability.py --grimoire GRIMOIRE_ROOT
 ```
 
 Any violation should be fixed before sharing the grimoire with other machines.

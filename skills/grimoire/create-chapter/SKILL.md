@@ -1,7 +1,7 @@
 ---
 name: {{SKILL_PREFIX}}-create-chapter
 description: Create a new knowledge chapter in the active grimoire
-when_to_use: User wants to add a chapter, document a topic in their grimoire, or has knowledge that doesn't fit any existing chapter. Phrases like "add a chapter for X", "document Y in this grimoire", "where should I put info about Z" are all good triggers. Requires being in a registered grimoire directory.
+when_to_use: User wants to add a chapter, document a topic in their grimoire, or has knowledge that doesn't fit any existing chapter. Phrases like "add a chapter for X", "document Y in this grimoire", "where should I put info about Z" are all good triggers. Operates on the resolved active grimoire.
 argument-hint: [chapter-topic]
 arguments: [topic]
 user-invocable: true

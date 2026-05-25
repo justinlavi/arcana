@@ -17,7 +17,7 @@ This is the LLM-wiki "lint" pass: keeps the wiki maintained as it grows.
 
 ## Invocation
 
-From the active grimoire's root:
+From the active grimoire context:
 
 ```
 /grm-lint
@@ -29,21 +29,21 @@ Flags:
 
 ## Preconditions
 
-1. Working directory must be a registered grimoire (its key in `~/grimoires/library.json`). Refuse for Arcana itself.
+1. Resolve `GRIMOIRE_ROOT` with the shared grimoire directory guard. Refuse for Arcana itself.
 2. The grimoire must have `sources/`, `log.md`, and a root hub.
 
 ## Workflow
 
 ### Phase 1: Mechanical rites
 
-Run these from the grimoire root and capture output:
+Run these against `GRIMOIRE_ROOT` and capture output:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire .
-python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
-python3 ARCANA_HOME/rites/validate_links.py --grimoire .
-python3 ARCANA_HOME/rites/validate_orphans.py --grimoire .
-python3 ARCANA_HOME/rites/validate_provenance.py --grimoire .
+python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/validate_links.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/validate_orphans.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/validate_provenance.py --grimoire GRIMOIRE_ROOT
 ```
 
 Stop and report if structure or frontmatter has hard errors — they invalidate later phases.
@@ -94,7 +94,7 @@ Group findings by category. For each group ask the user:
 
 ```bash
 python3 ARCANA_HOME/rites/append_log.py \
-  --grimoire . \
+  --grimoire GRIMOIRE_ROOT \
   --op lint \
   --title "<short summary>" \
   --skill /grm-lint \

@@ -21,10 +21,10 @@ Validate that markdown links and full-path Obsidian wikilinks resolve inside the
 
 ## Workflow
 
-Run from the active grimoire root:
+Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_links.py --grimoire .
+python3 ARCANA_HOME/rites/validate_links.py --grimoire GRIMOIRE_ROOT
 ```
 
 Report broken links with file and line citations. Exit code 0 means all checked links resolve.

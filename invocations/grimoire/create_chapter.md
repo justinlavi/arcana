@@ -38,7 +38,7 @@ Or with a topic:
 
 ## Step 0: Precondition
 
-Verify the working directory is a registered grimoire by checking `~/grimoires/library.json`. Arcana is not a grimoire. If the check fails, list available grimoires from the library and tell the user to `cd` into one. **Stop.**
+Resolve the active grimoire with the shared grimoire directory guard. Set `GRIMOIRE_ROOT` before creating files. Arcana is not a grimoire.
 
 ---
 
@@ -128,7 +128,7 @@ Keep entries alphabetized or grouped by domain — match the existing convention
 
 ```bash
 python3 ARCANA_HOME/rites/append_log.py \
-  --grimoire . \
+  --grimoire GRIMOIRE_ROOT \
   --op create \
   --title "{{chapter_title}} chapter" \
   --skill /grm-create-chapter \
@@ -142,8 +142,8 @@ python3 ARCANA_HOME/rites/append_log.py \
 ```bash
 ls chapters/{{chapter_name}}/
 grep -n "{{chapter_name}}" {{grimoire_directory}}.md   # must find the new route
-python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire .
-python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
+python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT
 ```
 
 Or invoke `/grm-validate-structure` for the integrated structural pass.

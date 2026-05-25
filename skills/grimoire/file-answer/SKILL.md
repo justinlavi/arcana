@@ -13,7 +13,7 @@ You are promoting a chat answer into a wiki page so it doesn't evaporate into ch
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
-- **Grimoire root**: cwd (must be a registered grimoire)
+- **Grimoire root**: resolved active grimoire (`GRIMOIRE_ROOT`)
 - **Page formula**: `{{ARCANA_PATH}}/formulae/page.formula.md`
 
 ## Invocation

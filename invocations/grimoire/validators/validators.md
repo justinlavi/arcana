@@ -9,7 +9,7 @@ last_verified: 2026-05-25
 
 # Grimoire Validators
 
-Mechanical validators that operate on the active grimoire. Each wraps a shared Arcana rite with `--grimoire .` so the user-facing command target is explicit.
+Mechanical validators that operate on the resolved active grimoire. Each wraps a shared Arcana rite with `--grimoire GRIMOIRE_ROOT` so the user-facing command target is explicit without depending on terminal cwd.
 
 | Invocation | Skill | Checks |
 |---|---|---|

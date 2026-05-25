@@ -13,7 +13,7 @@ You are updating Arcana from the active grimoire user's point of view.
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
-- **Active grimoire**: current working directory
+- **Active grimoire**: resolve from `~/grimoires/library.json`; cwd does not have to be the grimoire root
 - **Invocation**: `{{ARCANA_PATH}}/invocations/grimoire/update_arcana.md`
 
 ## Invocation
