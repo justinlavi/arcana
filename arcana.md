@@ -7,116 +7,113 @@ tags: [arcana/root, type/hub, hub/root]
 
 # Arcana
 
-Meta-knowledge about Arcana itself — invocations, formulae, rites, and governance. For grimoire knowledge, route to the grimoire's own root hub instead.
+Meta-knowledge about Arcana itself: invocations, formulae, rites, and governance. For grimoire knowledge, route to the grimoire's own root hub instead.
 
 Arcana is the engine. Every grimoire references it; nothing copies it.
 
 ## Read Model
 
-How Arcana is laid out — for the rules themselves, follow the links:
-
-- Routing: hub-per-folder, open-ended depth. Full rules in [docs/operating_model.md](docs/operating_model.md).
-- Frontmatter: type / authority / sources / last_verified. Spec in [docs/page_schema.md](docs/page_schema.md).
-- Arcana is the engine layer: `docs/`, `invocations/`, `formulae`, `rites`, `skills`, and `resources`. Grimoire layers (`chapters/`, `sources/`, `inbox/`, `log.md`) are scaffolded by [formulae/grimoire/](formulae/grimoire/), not kept at Arcana root.
+- Routing: hub-per-folder, open-ended depth -> [[docs/operating_model|operating model]]
+- Frontmatter: type / authority / sources / last_verified -> [[docs/page_schema|page schema]]
+- Engine layers: `docs/`, `invocations/`, `formulae/`, `rites/`, `skills/`, and `resources/`
+- Grimoire scaffold layers (`chapters/`, `sources/`, `inbox/`, `log.md`) -> [[formulae/grimoire/README|README]]
 
 ## Documentation
 
-- [README.md](README.md) — Overview and architecture
-- [docs/installation.md](docs/installation.md) — Summoning rite, manual install, 5-minute smoke test
-- [docs/summoning_contract.md](docs/summoning_contract.md) - Summoning Rite behavior contract and mode matrix
-- [docs/agent_targets.md](docs/agent_targets.md) - Supported agent target registry
-- [docs/agent_configuration.md](docs/agent_configuration.md) — Per-agent setup (Claude / Codex / Copilot)
-- [docs/skills.md](docs/skills.md) — Canonical Arcana skill catalog (auto-generated)
-- [docs/skill_schema.md](docs/skill_schema.md) — Command-family skill naming schema
-- [docs/command_surface.md](docs/command_surface.md) — Public command matrix validated by `/arc-validate-skill-refs`
-- [docs/reference.md](docs/reference.md) — Terminology, library/manifest schemas, path keys, formula placeholders
-- [docs/operating_model.md](docs/operating_model.md) — Storage layers and routing
-- [docs/page_schema.md](docs/page_schema.md) — Frontmatter spec for every page
-- [docs/obsidian.md](docs/obsidian.md) — Vault setup and graph-view color groups
-- [docs/vscode.md](docs/vscode.md) — VS Code setup (uninstall Markdown Preview Enhanced + install Foam) to avoid recursive-directory bug on Ctrl-click
-- [docs/script_vs_ai.md](docs/script_vs_ai.md) — When to use scripts vs AI
-- [docs/rite_profiles.md](docs/rite_profiles.md) — Mutation profiles for write-capable rites
-- [docs/architecture_backlog.md](docs/architecture_backlog.md) — Deferred S-tier architecture opportunities from `/arc-improve`
-- [docs/governance.md](docs/governance.md) — Maintenance policies and versioning
-- [docs/release.md](docs/release.md) — Release workflow for Summoning Rite binaries
-- [CHANGELOG.md](CHANGELOG.md) — Version history
+- Overview and architecture -> [[README|README]]
+- Installation and smoke test -> [[docs/installation|installation]]
+- Summoning behavior contract -> [[docs/summoning_contract|summoning contract]]
+- Agent target registry -> [[docs/agent_targets|agent targets]]
+- Agent setup -> [[docs/agent_configuration|agent configuration]]
+- Skill catalog -> [[docs/skills|skills]]
+- Skill naming schema -> [[docs/skill_schema|skill schema]]
+- Public command matrix -> [[docs/command_surface|command surface]]
+- Terminology and schemas -> [[docs/reference|reference]]
+- Storage layers and routing -> [[docs/operating_model|operating model]]
+- Page frontmatter schema -> [[docs/page_schema|page schema]]
+- Obsidian setup -> [[docs/obsidian|obsidian]]
+- VS Code wikilink setup -> [[docs/vscode|vscode]]
+- Script vs AI boundaries -> [[docs/script_vs_ai|script vs ai]]
+- Rite mutation profiles -> [[docs/rite_profiles|rite profiles]]
+- Architecture backlog -> [[docs/architecture_backlog|architecture backlog]]
+- Governance and versioning -> [[docs/governance|governance]]
+- Release workflow -> [[docs/release|release]]
+- Version history -> [[CHANGELOG|CHANGELOG]]
 
 ## Invocations
 
-**Grimoire (grimoire operations)** — see [invocations/grimoire/grimoire.md](invocations/grimoire/grimoire.md):
+**Grimoire operations** -> [[invocations/grimoire/grimoire|grimoire]]
 
-- [create_grimoire.md](invocations/grimoire/create_grimoire.md) — `/grm-create`
-- [create_chapter.md](invocations/grimoire/create_chapter.md) — `/grm-create-chapter`
-- [update_arcana.md](invocations/grimoire/update_arcana.md) — `/grm-update-arcana`
-- [register_skills.md](invocations/grimoire/register_skills.md) — `/grm-register-skills`
-- [ingest.md](invocations/grimoire/ingest.md) — `/grm-ingest`
-- [file_answer.md](invocations/grimoire/file_answer.md) — `/grm-file-answer`
-- [lint.md](invocations/grimoire/lint.md) — `/grm-lint`
-- [improve_grimoire.md](invocations/grimoire/improve_grimoire.md) — `/grm-improve`
-- [analyze_semantics.md](invocations/grimoire/analyze_semantics.md) — `/grm-analyze-semantics`
-- [validate_all.md](invocations/grimoire/validators/validate_all.md) — `/grm-validate-all`
-- [validate_structure.md](invocations/grimoire/validate_structure.md) — `/grm-validate-structure`
-- [validate_boundaries.md](invocations/grimoire/validate_boundaries.md) — `/grm-validate-boundaries`
-- Validators hub: [invocations/grimoire/validators/validators.md](invocations/grimoire/validators/validators.md)
+- Create a grimoire -> [[invocations/grimoire/create_grimoire|create grimoire]]
+- Create a chapter -> [[invocations/grimoire/create_chapter|create chapter]]
+- Update Arcana from a grimoire -> [[invocations/grimoire/update_arcana|update arcana]]
+- Register active-grimoire skills -> [[invocations/grimoire/register_skills|register skills]]
+- Ingest a source -> [[invocations/grimoire/ingest|ingest]]
+- File a chat answer -> [[invocations/grimoire/file_answer|file answer]]
+- Lint a grimoire -> [[invocations/grimoire/lint|lint]]
+- Improve a grimoire -> [[invocations/grimoire/improve_grimoire|improve grimoire]]
+- Analyze grimoire semantics -> [[invocations/grimoire/analyze_semantics|analyze semantics]]
+- Validate a grimoire -> [[invocations/grimoire/validators/validate_all|validate all]]
+- Validate grimoire structure -> [[invocations/grimoire/validate_structure|validate structure]]
+- Validate grimoire boundaries -> [[invocations/grimoire/validate_boundaries|validate boundaries]]
+- Grimoire validator hub -> [[invocations/grimoire/validators/validators|validators]]
 
-**Arcana (maintainer only)** — see [invocations/arcana/arcana.md](invocations/arcana/arcana.md):
+**Arcana maintenance** -> [[invocations/arcana/arcana|arcana]]
 
-- [improve_arcana.md](invocations/arcana/improve_arcana.md) — `/arc-improve`
-- Validators hub: [invocations/arcana/validators/validators.md](invocations/arcana/validators/validators.md)
-- Quality hub: [invocations/arcana/quality/quality.md](invocations/arcana/quality/quality.md)
+- Improve Arcana -> [[invocations/arcana/improve_arcana|improve arcana]]
+- Arcana validator hub -> [[invocations/arcana/validators/validators|validators]]
+- Arcana quality hub -> [[invocations/arcana/quality/quality|quality]]
 
-**Agent** — see [invocations/agent/agent.md](invocations/agent/agent.md):
+**Agent operations** -> [[invocations/agent/agent|agent]]
 
-- [register_skills.md](invocations/agent/register_skills.md) — `/arc-agent-register-skills`
-- [update_agent_block.md](invocations/agent/update_agent_block.md) — `/arc-agent-update`
+- Register agent skills -> [[invocations/agent/register_skills|register skills]]
+- Update agent instructions -> [[invocations/agent/update_agent_block|update agent block]]
 
-**Library** — see [invocations/library/library.md](invocations/library/library.md):
+**Library operations** -> [[invocations/library/library|library]]
 
-- [sync.md](invocations/library/sync.md) — `/arc-library-sync`
-- [adopt.md](invocations/library/adopt.md) — `/arc-library-adopt`
+- Sync the local library -> [[invocations/library/sync|sync]]
+- Adopt an unmanaged grimoire -> [[invocations/library/adopt|adopt]]
 
-**Workspace** — see [invocations/workspace/workspace.md](invocations/workspace/workspace.md):
+**Workspace operations** -> [[invocations/workspace/workspace|workspace]]
 
-- [clean.md](invocations/workspace/clean.md) — `/arc-workspace-clean`
+- Clean workspace artifacts -> [[invocations/workspace/clean|clean]]
 
-**Help**:
+**Help** -> [[invocations/help/help|help]]
 
-- [help.md](invocations/help/help.md) — `/arc-help`
+**Meta support** -> [[invocations/meta/meta|meta]]
 
-**Meta support** — see [invocations/meta/meta.md](invocations/meta/meta.md):
-
-- [base_invocation.md](invocations/meta/base_invocation.md)
-- [grimoire_directory_guard.md](invocations/meta/grimoire_directory_guard.md)
+- Base invocation template -> [[invocations/meta/base_invocation|base invocation]]
+- Grimoire directory guard -> [[invocations/meta/grimoire_directory_guard|grimoire directory guard]]
 
 ## Formulae
 
-- [formulae/grimoire/](formulae/grimoire/) — Full grimoire scaffold (copy for new domains)
-  - [formulae/grimoire/root_hub.formula.md](formulae/grimoire/root_hub.formula.md) — Root-hub template (becomes `<grimoire>/<grimoire>.md`)
-  - [formulae/grimoire/scaffold_contract.json](formulae/grimoire/scaffold_contract.json) — Machine-readable scaffold inventory used by creation, audit, validation, and tests
-- [formulae/chapter_hub.formula.md](formulae/chapter_hub.formula.md) — Chapter hub template
-- [formulae/page.formula.md](formulae/page.formula.md) — Knowledge page template
-- [formulae/invocation.formula.md](formulae/invocation.formula.md) — Custom invocation template
-- [formulae/log_entry.formula.md](formulae/log_entry.formula.md) — `log.md` entry shape
-- [formulae/source.formula.md](formulae/source.formula.md) — Source artifact template
+- Full grimoire scaffold -> [[formulae/grimoire/README|README]]
+- Root-hub template -> [[formulae/grimoire/root_hub.formula|root hub.formula]]
+- Chapter hub template -> [[formulae/chapter_hub.formula|chapter hub.formula]]
+- Knowledge page template -> [[formulae/page.formula|page.formula]]
+- Custom invocation template -> [[formulae/invocation.formula|invocation.formula]]
+- Log entry shape -> [[formulae/log_entry.formula|log entry.formula]]
+- Source artifact template -> [[formulae/source.formula|source.formula]]
+- Scaffold contract: `formulae/grimoire/scaffold_contract.json`
 
 ## Skills
 
-- [docs/skills.md](docs/skills.md) — Canonical Arcana skill catalog (auto-generated)
-- [docs/command_surface.md](docs/command_surface.md) — Validated public command matrix
-- [skills/](skills/) — Skill source directory; registered via `rites/register_skills.py`
+- Canonical skill catalog -> [[docs/skills|skills]]
+- Public command matrix -> [[docs/command_surface|command surface]]
+- Skill source directory: `skills/`; registered via `rites/register_skills.py`
 
 ## Rites
 
-- [rites/summon.sh](rites/summon.sh) — One-command summoning
-- [rites/agent_targets.py](rites/agent_targets.py) - Agent target registry loader and validator
-- [rites/register_skills.py](rites/register_skills.py) — Skill registration
-- [rites/sync_library.py](rites/sync_library.py) — Library reconciliation
-- [rites/sync_docs.py](rites/sync_docs.py) — Generate `docs/skills.md`
-- [rites/adopt_grimoire.py](rites/adopt_grimoire.py) — Manifest writer for unmanaged dirs
-- [rites/append_log.py](rites/append_log.py) — Append to a grimoire's `log.md`
-- [rites/validate.py](rites/validate.py) — Orchestrator for the full validator suite
-- Validators: `rites/validate_<aspect>.py` (structure, naming, semantics, format, links, security, skill-refs, frontmatter, orphans, provenance)
+- One-command summoning: `rites/summon.sh`
+- Agent target registry loader and validator: `rites/agent_targets.py`
+- Skill registration: `rites/register_skills.py`
+- Library reconciliation: `rites/sync_library.py`
+- Generated docs sync: `rites/sync_docs.py`
+- Manifest writer for unmanaged dirs: `rites/adopt_grimoire.py`
+- Grimoire log appender: `rites/append_log.py`
+- Full validator orchestrator: `rites/validate.py`
+- Validators: `rites/validate_<aspect>.py`
 
 ## Resources
 
-- [resources/](resources/) — Branding assets
+- Branding assets: `resources/`

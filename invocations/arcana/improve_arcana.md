@@ -67,7 +67,7 @@ not basic breakage.
 
 Cast the whole-repo architecture review:
 
-- [`quality/review_architecture.md`](quality/review_architecture.md)
+- [[invocations/arcana/quality/review_architecture|review architecture]]
 
 This is the AI-heavy pass. It inventories every surface, dispatches isolated
 review lanes when subagents or parallel AI reviewers are available, builds a
@@ -85,18 +85,18 @@ review guide, then merge findings into the synthesis matrix before editing.
 Apply local fixes directly; defer large moves, public command changes,
 generated-output rewrites, or changes affecting more than ten files with a
 clear benefit and blast radius. Persist substantial deferred items in
-[`../../docs/architecture_backlog.md`](../../docs/architecture_backlog.md)
+[[docs/architecture_backlog|architecture backlog]]
 when they need maintainer review after the current conversation.
 
 ### Phase 4: Rite quality
 
-Follow the rite-specific quality check at [`quality/validate_rites.md`](quality/validate_rites.md). It's a judgment-based invocation (no dedicated skill - it runs as part of this orchestrator) that inspects rite scripts for style, error handling, exit codes, and idempotency. Apply fixes and re-run the validator suite from Phase 1.
+Follow the rite-specific quality check at [[invocations/arcana/quality/validate_rites|validate rites]]. It's a judgment-based invocation (no dedicated skill - it runs as part of this orchestrator) that inspects rite scripts for style, error handling, exit codes, and idempotency. Apply fixes and re-run the validator suite from Phase 1.
 
 ### Phase 5: Documentation quality
 
 Cast the documentation improvement invocation:
 
-- [`quality/improve_documentation.md`](quality/improve_documentation.md)
+- [[invocations/arcana/quality/improve_documentation|improve documentation]]
 
 This invocation covers both **duplication** (same fact in two places, copy-pasted file trees, drifting lists) and **clarity** (jargon, unclear antecedents, structural overload). It is judgment-based - no slash command - and is intended to run as part of this orchestrator.
 
@@ -215,8 +215,8 @@ After:
 
 - All validators (orchestrated): `/arc-validate-all` - `python3 rites/validate.py`
 - Individual validators: see `invocations/arcana/validators/validators.md`
-- Architecture quality: [`quality/review_architecture.md`](quality/review_architecture.md)
-- Rite quality: [`quality/validate_rites.md`](quality/validate_rites.md)
-- Documentation quality: [`quality/improve_documentation.md`](quality/improve_documentation.md)
+- Architecture quality: [[invocations/arcana/quality/review_architecture|review architecture]]
+- Rite quality: [[invocations/arcana/quality/validate_rites|validate rites]]
+- Documentation quality: [[invocations/arcana/quality/improve_documentation|improve documentation]]
 - Doc generator: `rites/sync_docs.py`
 - Grimoire equivalent: `/grm-improve`

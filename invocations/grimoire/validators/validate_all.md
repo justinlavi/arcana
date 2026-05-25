@@ -64,7 +64,7 @@ The grimoire profile runs:
 
 ## Related
 
-- Validators hub: [`validators.md`](validators.md)
+- Validators hub: [[invocations/grimoire/validators/validators|validators]]
 - Orchestrator rite: [`../../../rites/validate.py`](../../../rites/validate.py)
-- Structure validator: [`../validate_structure.md`](../validate_structure.md)
-- Grimoire improvement: [`../improve_grimoire.md`](../improve_grimoire.md)
+- Structure validator: [[invocations/grimoire/validate_structure|validate structure]]
+- Grimoire improvement: [[invocations/grimoire/improve_grimoire|improve grimoire]]

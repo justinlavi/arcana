@@ -140,7 +140,7 @@ Tags are flat strings inside YAML (Dataview-compatible). Avoid spaces; use `_` o
 | Chapter | `chapters/<chapter>/<chapter>.md` | `type/hub`, `hub/chapter`, `chapter/<chapter>` |
 | Sub-chapter | `chapters/<chapter>/<sub>/<sub>.md` (or deeper) | `type/hub`, `hub/sub`, `chapter/<sub>` |
 
-For Obsidian graph view configuration that uses these tags to color hubs, see [obsidian.md](obsidian.md).
+For Obsidian graph view configuration that uses these tags to color hubs, see [[docs/obsidian|obsidian]].
 
 ---
 

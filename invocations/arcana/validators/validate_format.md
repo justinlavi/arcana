@@ -59,7 +59,8 @@ Validates hub files are **thin routers**:
 
 **Thin router criteria**:
 - < 200 lines total
-- Simple file list with one-line descriptions
+- Simple route list with one-line descriptions
+- Full-path wikilinks for internal Markdown-page pointers
 - NO detailed invocation metadata (that belongs in invocation files)
 - NO duplicated content from invocation files
 
@@ -68,8 +69,8 @@ Validates hub files are **thin routers**:
 ## Available Invocations
 
 ### Creation
-- **[create_grimoire.md](create_grimoire.md)** - Create new grimoire
-- **[create_chapter.md](create_chapter.md)** - Add knowledge chapter
+- Create new grimoire -> [[invocations/grimoire/create_grimoire|create grimoire]]
+- Add knowledge chapter -> [[invocations/grimoire/create_chapter|create chapter]]
 ```
 
 **Example of thick router** (❌ wrong):
@@ -100,7 +101,7 @@ For each format violation:
 
 **Hub too long**:
 1. Remove duplicate content
-2. Simplify descriptions to one line
+2. Simplify descriptions to one route per line
 3. Move detailed content to invocation files
 
 **Formula missing structure**:
@@ -121,6 +122,7 @@ For each format violation:
 **Console output**:
 - Invocation files with missing sections
 - hub files exceeding size limit
+- hub routes that use Markdown links (reported by `validate_links.py`)
 - Formulae with format issues
 - Markdown table delimiter rows with fewer than 3 hyphens
 - Unclosed fenced code blocks
@@ -187,9 +189,9 @@ For each format violation:
 ## Related
 
 - **Rite**: [rites/validate_format.py](../../../rites/validate_format.py)
-- **Formula template**: [formulae/invocation.formula.md](../../../formulae/invocation.formula.md)
-- **Reference**: [docs/operating_model.md](../../../docs/operating_model.md#single-source-architecture)
-- **Orchestrator**: [improve_arcana.md](../improve_arcana.md)
+- **Formula template**: [[formulae/invocation.formula|invocation.formula]]
+- **Reference**: [[docs/operating_model#single-source-architecture|operating model]]
+- **Orchestrator**: [[invocations/arcana/improve_arcana|improve arcana]]
 
 ## Notes
 

@@ -47,4 +47,4 @@ python3 ARCANA_HOME/rites/clean_artifacts.py --dry-run
 
 ## Related
 
-- Workspace hub: [`workspace.md`](workspace.md)
+- Workspace hub: [[invocations/workspace/workspace|workspace]]

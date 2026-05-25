@@ -94,7 +94,7 @@ You can combine queries: `tag:#hub/chapter -path:chapters/projects/` colors only
 
 ## Full-path wikilinks
 
-Arcana supports only repository-root relative wikilinks. Write `[[chapters/projects/cf_sw/overview|overview]]`, not `[[cf_sw_overview|overview]]` or `[[overview]]`. The `.md` suffix is optional in wikilinks for Obsidian compatibility.
+Arcana supports only repository-root relative wikilinks for internal Markdown pages. Write `[[chapters/projects/cf_sw/overview|overview]]`, not `[[cf_sw_overview|overview]]`, `[[overview]]`, or `[overview](overview.md)`. The `.md` suffix is optional in wikilinks for Obsidian compatibility. Standard Markdown links remain for external URLs, same-page anchors, and local non-Markdown artifacts.
 
 If a wikilink includes display text after `|`, keep it to the target filename only, normalized for reading. The path already carries chapter, project, trip, and parent-folder context, so `[[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|overview]]` is preferred over `[[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|fukuoka kyoto tokyo trip overview]]`.
 
@@ -137,6 +137,6 @@ Stay opinionated about how many colors you ship - past ~8 groups the graph becom
 
 ## Related
 
-- Page schema (the source of the tags): [page_schema.md](page_schema.md)
-- Operating model: [operating_model.md](operating_model.md)
-- Agent configuration: [agent_configuration.md](agent_configuration.md)
+- Page schema (the source of the tags): [[docs/page_schema|page schema]]
+- Operating model: [[docs/operating_model|operating model]]
+- Agent configuration: [[docs/agent_configuration|agent configuration]]

@@ -11,7 +11,7 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-Detect pages no other page links to - neither via standard markdown links nor via full-path wikilinks. Orphans are pages the routing surface can't reach; they're either dead content or a missing hub pointer.
+Detect pages no other page reaches through canonical wikilinks. Orphans are pages the routing surface can't reach; they're either dead content or a missing hub pointer.
 
 ## Invocation
 
@@ -45,7 +45,7 @@ Folder hubs are checked: an unreachable folder hub means the parent hub is missi
 
 For each orphan, three options:
 
-1. **Wire it** - add a wikilink or markdown link from the appropriate hub.
+1. **Wire it** - add a wikilink from the appropriate hub.
 2. **Promote it** - turn it into a hub itself if it represents a folder concept.
 3. **Delete it** - the content is dead.
 
@@ -53,5 +53,5 @@ Don't auto-wire orphans during validation. Surface them for judgment.
 
 ## Related
 
-- Schema: [`../../../docs/page_schema.md`](../../../docs/page_schema.md)
-- Validator suite: [`../validators/validators.md`](../validators/validators.md)
+- Schema: [[docs/page_schema|page schema]]
+- Validator suite: [[invocations/arcana/validators/validators|validators]]

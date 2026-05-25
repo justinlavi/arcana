@@ -59,5 +59,5 @@ Or invoke `/arc-agent-register-skills`.
 
 ## Related
 
-- Adopt unmanaged directory: [`adopt.md`](adopt.md)
-- Global skill registration: [`../agent/register_skills.md`](../agent/register_skills.md)
+- Adopt unmanaged directory: [[invocations/library/adopt|adopt]]
+- Global skill registration: [[invocations/agent/register_skills|register skills]]

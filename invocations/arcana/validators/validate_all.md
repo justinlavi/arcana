@@ -44,6 +44,6 @@ On Windows, use `python` instead of `python3`.
 
 ## Related
 
-- Validators hub: [`validators.md`](validators.md)
+- Validators hub: [[invocations/arcana/validators/validators|validators]]
 - Orchestrator rite: [`../../../rites/validate.py`](../../../rites/validate.py)
-- Architecture review: [`../quality/review_architecture.md`](../quality/review_architecture.md)
+- Architecture review: [[invocations/arcana/quality/review_architecture|review architecture]]

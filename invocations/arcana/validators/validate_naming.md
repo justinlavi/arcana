@@ -82,7 +82,7 @@ Check that examples in documentation also use snake_case:
 - File references: `templates/example_template.md`
 - Directory paths: `scripts/helper_scripts/`
 
-Check that skill examples follow [docs/skill_schema.md](../../../docs/skill_schema.md):
+Check that skill examples follow [[docs/skill_schema|skill schema]]:
 - `/arc-*` for Arcana itself and platform support
 - `/grm-*` for active grimoires
 - `/arc-library-*`, `/arc-agent-*`, and `/arc-workspace-*` for support targets
@@ -132,8 +132,8 @@ Check that skill examples follow [docs/skill_schema.md](../../../docs/skill_sche
 ## Related
 
 - **Rite**: [rites/validate_naming.py](../../../rites/validate_naming.py)
-- **Reference**: [docs/reference.md](../../../docs/reference.md#naming-conventions)
-- **Orchestrator**: [improve_arcana.md](../improve_arcana.md)
+- **Reference**: [[docs/reference#naming-conventions|reference]]
+- **Orchestrator**: [[invocations/arcana/improve_arcana|improve arcana]]
 
 ## Notes
 

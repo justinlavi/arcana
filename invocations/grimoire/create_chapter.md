@@ -155,5 +155,5 @@ Or invoke `/grm-validate-all` for the full mechanical pass.
 - **Chapter hub formula**: `~/grimoires/arcana/formulae/chapter_hub.formula.md`
 - **Page formula**: `~/grimoires/arcana/formulae/page.formula.md`
 - **Page schema**: `~/grimoires/arcana/docs/page_schema.md`
-- **Grimoire creation**: [`create_grimoire.md`](create_grimoire.md)
+- **Grimoire creation**: [[invocations/grimoire/create_grimoire|create grimoire]]
 - **Structure validator**: `/grm-validate-structure`

@@ -68,7 +68,7 @@ Do not mechanically replace grimoire-authored files such as the root README, roo
 
 - Enumerate routers (every hub) and leaf docs.
 - Classify leaves as wired (reachable from a router) or orphaned.
-- Flag absolute paths, `search`/`look around` instructions, and prose >150 words inside routers.
+- Flag absolute paths, `search`/`look around` instructions, Markdown links in routers, and router prose that is not needed for disambiguation.
 - Identify duplicate or near-duplicate leaf content.
 
 ### Phase 3: Semantic analysis
@@ -90,7 +90,8 @@ subject and context.
 
 **Router normalization**
 - Routers are pointer lists. Move prose into leaf docs.
-- Each router entry: one line, one destination, query-shaped phrasing (`CMake config -> cmake_overrides.md`).
+- Each router entry: one line, one destination, query-shaped phrasing plus a full-path wikilink (`CMake config -> [[chapters/build_system/cmake_overrides|cmake overrides]]`).
+- Judge router size by shape, not word count: route lines may be long because wikilink targets are explicit; flag excess prose lines, multi-destination entries, and repeated explanations instead of enforcing a fixed 150-word cap.
 - Root hub points only to chapter hub files; chapter hub points to 1-2 leaves per topic.
 
 **Canonicalization**

@@ -201,8 +201,8 @@ shellcheck --version
 ## Related
 
 - **Rite**: [rites/validate_security.py](../../../rites/validate_security.py)
-- **Best practices**: [docs/governance.md](../../../docs/governance.md#security)
-- **Orchestrator**: [improve_arcana.md](../improve_arcana.md)
+- **Best practices**: [[docs/governance#security|governance]]
+- **Orchestrator**: [[invocations/arcana/improve_arcana|improve arcana]]
 
 ## Notes
 

@@ -66,7 +66,7 @@ Supported `--agent` values come from
 
 ## Related
 
-- Active-grimoire registration: [`../grimoire/register_skills.md`](../grimoire/register_skills.md)
-- Agent block update: [`update_agent_block.md`](update_agent_block.md)
-- Agent targets: [`../../docs/agent_targets.md`](../../docs/agent_targets.md)
-- Agent configuration: [`../../docs/agent_configuration.md`](../../docs/agent_configuration.md)
+- Active-grimoire registration: [[invocations/grimoire/register_skills|register skills]]
+- Agent block update: [[invocations/agent/update_agent_block|update agent block]]
+- Agent targets: [[docs/agent_targets|agent targets]]
+- Agent configuration: [[docs/agent_configuration|agent configuration]]

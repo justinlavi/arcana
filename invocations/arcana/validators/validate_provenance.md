@@ -51,6 +51,6 @@ For an active grimoire, use `/grm-validate-provenance`.
 
 ## Related
 
-- Schema: [`../../../docs/page_schema.md`](../../../docs/page_schema.md)
-- Frontmatter validator: [`validate_frontmatter.md`](validate_frontmatter.md)
-- Grimoire provenance validator: [`../../grimoire/validators/validate_provenance.md`](../../grimoire/validators/validate_provenance.md)
+- Schema: [[docs/page_schema|page schema]]
+- Frontmatter validator: [[invocations/arcana/validators/validate_frontmatter|validate frontmatter]]
+- Grimoire provenance validator: [[invocations/grimoire/validators/validate_provenance|validate provenance]]

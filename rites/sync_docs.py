@@ -192,12 +192,18 @@ def code_cell(value):
     return f"`{escape_table_cell(value)}`"
 
 
-def path_link(path, label=None):
-    """Render a repository-relative path as a docs-relative Markdown link."""
+def page_wikilink(path):
+    """Render a repository-relative Markdown page as a root-relative wikilink."""
+    return f"[[{path[:-3]}]]" if path.endswith(".md") else f"[[{path}]]"
+
+
+def path_ref(path):
+    """Render a repository-relative path using Arcana's link standard."""
     if not path:
         return "`none`"
-    display = label or Path(path).name
-    return f"[`{escape_table_cell(display)}`](../{path})"
+    if path.endswith(".md"):
+        return page_wikilink(path)
+    return f"`{escape_table_cell(path)}`"
 
 
 def render_skill_row(skill, metadata):
@@ -205,13 +211,13 @@ def render_skill_row(skill, metadata):
     name = skill["name"]
     entry = metadata[name]
     return (
-        f"| [`/{name}`](../{skill['source']}) "
+        f"| `/{name}` {path_ref(skill['source'])} "
         f"| {escape_table_cell(skill['description'])} "
-        f"| {path_link(entry['invocation'])} "
+        f"| {path_ref(entry['invocation'])} "
         f"| {code_cell(entry['owner_type'])} "
         f"| {code_cell(entry['mutation_profile'])} "
-        f"| {path_link(entry.get('rite_owner'))} "
-        f"| {path_link(entry.get('guard'))} "
+        f"| {path_ref(entry.get('rite_owner'))} "
+        f"| {path_ref(entry.get('guard'))} "
         f"| {code_cell(entry['validation_profile'])} |"
     )
 
@@ -248,12 +254,12 @@ def render_skills_doc(skills, command_metadata):
         "",
         "Skills shipped by Arcana use command-family prefixes:",
         "`arc-*` for Arcana platform operations and `grm-*` for universal",
-        "grimoire operations. See [skill_schema.md](skill_schema.md).",
+        "grimoire operations. See [[docs/skill_schema|skill schema]].",
         "Each entry links to the source `SKILL.md` and its operational",
         "command-surface metadata. The source files are canonical.",
         "",
         "Metadata columns come from",
-        "[command_surface.json](../rites/data/command_surface.json): workflow",
+        "`rites/data/command_surface.json`: workflow",
         "home, owner type, mutation profile, rite owner, guard, and validation",
         "profile.",
         "",
@@ -285,7 +291,7 @@ def render_skills_doc(skills, command_metadata):
         "",
         "## Adding a new skill",
         "",
-        "1. Choose the command family in [skill_schema.md](skill_schema.md).",
+        "1. Choose the command family in [[docs/skill_schema|skill schema]].",
         "2. Create `skills/<family>/<slug>/SKILL.md` with frontmatter:",
         "   `name: {{SKILL_PREFIX}}-<registered-slug>` and a one-line `description`.",
         "3. Add or update the command entry in `rites/data/command_surface.json`.",

@@ -88,7 +88,7 @@
       "rite_owner": "rites/validate_links.py",
       "preconditions": ["Arcana root"],
       "mutation_profile": "read_only",
-      "mutation_behavior": "Scans Arcana Markdown links and wikilinks for repository-resolvable targets.",
+      "mutation_behavior": "Scans Arcana references for repository-resolvable targets and rejects Markdown links to internal Markdown pages.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_links.py",
       "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
@@ -118,7 +118,7 @@
       "rite_owner": "rites/validate_orphans.py",
       "preconditions": ["Arcana root"],
       "mutation_profile": "read_only",
-      "mutation_behavior": "Scans Arcana Markdown pages for routing reachability through links and wikilinks.",
+      "mutation_behavior": "Scans Arcana Markdown pages for routing reachability through canonical wikilinks.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/validate_orphans.py",
       "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
@@ -448,7 +448,7 @@
       "rite_owner": "rites/validate_links.py",
       "preconditions": ["Registered active grimoire"],
       "mutation_profile": "read_only",
-      "mutation_behavior": "Scans active-grimoire Markdown links and wikilinks for repository-resolvable targets.",
+      "mutation_behavior": "Scans active-grimoire references for repository-resolvable targets and rejects Markdown links to internal Markdown pages.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate_links.py --grimoire GRIMOIRE_ROOT",
       "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
@@ -463,7 +463,7 @@
       "rite_owner": "rites/validate_orphans.py",
       "preconditions": ["Registered active grimoire"],
       "mutation_profile": "read_only",
-      "mutation_behavior": "Scans active-grimoire pages for routing reachability through links and wikilinks.",
+      "mutation_behavior": "Scans active-grimoire pages for routing reachability through canonical wikilinks.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate_orphans.py --grimoire GRIMOIRE_ROOT",
       "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."

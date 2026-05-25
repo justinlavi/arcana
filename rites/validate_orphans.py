@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Detect orphan pages in a grimoire.
 
-A page is an orphan when no other markdown file in the grimoire links to it
-via either a relative-path markdown link or a full-path wikilink.
+A page is an orphan when no other markdown file in the grimoire reaches it
+through a full-path wikilink.
 
 Pages that are themselves entry points are excluded from the orphan check:
   * the grimoire root hub (`<grimoire>/<grimoire>.md`)
@@ -17,12 +17,10 @@ Exit codes: 0 = no orphans, 1 = orphans found
 """
 
 import argparse
-import re
 import sys
 from pathlib import Path
 
 from _lib import (
-    LINK_RE,
     WIKILINK_RE,
     add_grimoire_arg,
     resolve_grimoire_arg,
@@ -51,7 +49,7 @@ def collect_pages(root):
 
 
 def collect_inbound(pages, root):
-    """Return set of pages with at least one inbound link or wikilink."""
+    """Return set of pages with at least one inbound wikilink."""
     inbound = set()
     for src in pages:
         try:
@@ -59,23 +57,6 @@ def collect_inbound(pages, root):
         except OSError:
             continue
         scanable = strip_code_blocks(content)
-
-        for m in LINK_RE.finditer(scanable):
-            link = m.group(1).split("#")[0].split("?")[0]
-            if not link:
-                continue
-            if re.match(r"^[a-z]+://", link) or link.startswith("mailto:"):
-                continue
-            if link.startswith("/"):
-                target = root / link.lstrip("/")
-            else:
-                target = (src.parent / link).resolve()
-            try:
-                target = target.resolve()
-            except OSError:
-                continue
-            if target.is_file() and target.suffix == ".md":
-                inbound.add(target)
 
         for m in WIKILINK_RE.finditer(scanable):
             body_raw = wikilink_target_body(m.group(1))

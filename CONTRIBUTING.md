@@ -10,13 +10,13 @@ Arcana has four working layers. Almost every PR touches exactly one of them:
 
 | Layer | What lives there | Read first |
 |---|---|---|
-| `docs/` | Framework documentation for humans | [docs/operating_model.md](docs/operating_model.md) |
-| `formulae/` | Templates copied when scaffolding new content | [formulae/page.formula.md](formulae/page.formula.md) |
-| `invocations/` | AI-guided workflow definitions referenced by skills | [invocations/meta/base_invocation.md](invocations/meta/base_invocation.md) |
+| `docs/` | Framework documentation for humans | [[docs/operating_model]] |
+| `formulae/` | Templates copied when scaffolding new content | [[formulae/page.formula]] |
+| `invocations/` | AI-guided workflow definitions referenced by skills | [[invocations/meta/base_invocation]] |
 | `rites/` | Python automation - validators, library sync, installer | [rites/_lib.py](rites/_lib.py) |
 | `skills/` | Pointer files registered into agent skill directories | any `skills/*/SKILL.md` |
 
-If you're unsure where a change belongs, [docs/script_vs_ai.md](docs/script_vs_ai.md) explains the rite-vs-invocation split that drives most placement decisions.
+If you're unsure where a change belongs, [[docs/script_vs_ai|script vs ai]] explains the rite-vs-invocation split that drives most placement decisions.
 
 ---
 
@@ -64,7 +64,7 @@ Every validator should:
 2. Accept `--grimoire <path>` via `add_grimoire_arg(parser)`. Default to Arcana itself; allow grimoires too.
 3. Exit `0` on clean, `1` on violations. Use `info` / `ok` / `warn` / `err` from `_lib` for output.
 4. Ship as a `validate_<aspect>.py` file under `rites/`.
-5. Get a corresponding command-family skill folder such as `skills/arcana/validate-<aspect>/SKILL.md` or `skills/grimoire/validate-<aspect>/SKILL.md` (see [docs/skill_schema.md](docs/skill_schema.md)).
+5. Get a corresponding command-family skill folder such as `skills/arcana/validate-<aspect>/SKILL.md` or `skills/grimoire/validate-<aspect>/SKILL.md` (see [[docs/skill_schema|skill schema]]).
 6. Be added to the orchestrator [rites/validate.py](rites/validate.py) if it is part of the Arcana validator suite so `/arc-validate-all` picks it up.
 7. Get a covering test under `tests/test_validate_<aspect>.py` using the fixture grimoires under `tests/fixtures/`.
 
@@ -88,19 +88,19 @@ def main():
 
 Skills are pointer files. The skill itself contains no logic - it dispatches to an invocation or rite.
 
-1. Choose the command family first: `arcana`, `grimoire`, `library`, `agent`, `workspace`, or `help`. See [docs/skill_schema.md](docs/skill_schema.md).
+1. Choose the command family first: `arcana`, `grimoire`, `library`, `agent`, `workspace`, or `help`. See [[docs/skill_schema|skill schema]].
 2. Create `skills/<family>/<slug>/SKILL.md`. The folder name is the command suffix after that family's prefix.
 3. Use the `{{SKILL_PREFIX}}-<registered-slug>` template in the `name:` frontmatter - registration substitutes the command family's prefix from `arcana.json`.
 4. Mirror the frontmatter fields the surrounding skills use: `description`, `when_to_use`, `user-invocable`, `allowed-tools`. Add `disable-model-invocation: true` for destructive skills.
 5. Include the corresponding invocation under `invocations/` if the skill needs more than 5-10 lines of guidance.
-6. Run [rites/sync_docs.py](rites/sync_docs.py) to regenerate [docs/skills.md](docs/skills.md).
+6. Run [rites/sync_docs.py](rites/sync_docs.py) to regenerate [[docs/skills|skills]].
 
 ---
 
 ## Documentation changes
 
-- Each concept has one canonical home. Storage layers live in [docs/operating_model.md](docs/operating_model.md), the page schema lives in [docs/page_schema.md](docs/page_schema.md), and so on. Other docs link rather than duplicate.
-- Knowledge-routing markdown carries YAML frontmatter - see [docs/page_schema.md](docs/page_schema.md). [rites/validate_frontmatter.py](rites/validate_frontmatter.py) enforces it for `docs/`, `invocations/`, `formulae/`, `chapters/`, and grimoire root hubs. GitHub-facing root files such as `README.md`, `CONTRIBUTING.md`, and `CHANGELOG.md` are exempt unless Arcana explicitly adopts frontmatter for them.
+- Each concept has one canonical home. Storage layers live in [[docs/operating_model|operating model]], the page schema lives in [[docs/page_schema|page schema]], and so on. Other docs link rather than duplicate.
+- Knowledge-routing markdown carries YAML frontmatter - see [[docs/page_schema|page schema]]. [rites/validate_frontmatter.py](rites/validate_frontmatter.py) enforces it for `docs/`, `invocations/`, `formulae/`, `chapters/`, and grimoire root hubs. GitHub-facing root files such as `README.md`, `CONTRIBUTING.md`, and `CHANGELOG.md` are exempt unless Arcana explicitly adopts frontmatter for them.
 - Every folder has a hub file named after the folder. New folders need a new hub.
 - Internal links use markdown for cross-doc references and full-path `[[wikilinks]]` for hub-internal navigation. [rites/validate_links.py](rites/validate_links.py) checks both.
 
@@ -118,7 +118,7 @@ Skills are pointer files. The skill itself contains no logic - it dispatches to 
 ## Pull request expectations
 
 - One concern per PR. Mixing a doc rewrite with a validator change makes review hard.
-- Update [CHANGELOG.md](CHANGELOG.md). Before the current version is tagged as final, edit that version's entry in place; after a final tag, collect new changes under `## [Unreleased]`.
+- Update [[CHANGELOG|CHANGELOG]]. Before the current version is tagged as final, edit that version's entry in place; after a final tag, collect new changes under `## [Unreleased]`.
 - Bump [VERSION](VERSION) only as part of an explicit release PR.
 - If you touched user-facing behavior, mention what a downstream grimoire owner has to do to adopt the change.
 
@@ -134,4 +134,4 @@ Skills are pointer files. The skill itself contains no logic - it dispatches to 
 
 ## Maintainer notes
 
-The `/arc-improve` and `/arc-validate-all` skills are the canonical maintenance entry points. Run them before tagging a release. Release workflow lives in [docs/release.md](docs/release.md).
+The `/arc-improve` and `/arc-validate-all` skills are the canonical maintenance entry points. Run them before tagging a release. Release workflow lives in [[docs/release|release]].

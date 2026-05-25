@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-"""Validates internal links and wikilinks in markdown files.
+"""Validates internal links and canonical wikilinks in markdown files.
 
 Resolves two link forms:
 
-  1. Standard markdown links: `[text](path/to/file.md)` - relative or root-anchored.
-  2. Wikilinks: `[[path/to/page|display text]]` - resolved only as a
+  1. Wikilinks: `[[path/to/page|display text]]` - resolved only as a
      repository-root relative path, with `.md` optional.
+  2. Standard markdown links: `[text](path/to/file.ext)` - only for
+     external URLs, same-page anchors, and non-Markdown local artifacts.
+
+Internal Markdown-page references must use full-path wikilinks everywhere,
+not just in hubs.
 
 Warns when wikilink display text repeats ancestor context instead of matching
 the target filename stem. The path carries location; the label should name the
@@ -31,14 +35,12 @@ from _lib import (
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 SKIP_DIRS = {
-    "invocations/arcana/validators",
-    "invocations/arcana/quality",
     "sources",
     "inbox",
     "tests",
 }
 
-SKIP_FILES = {"operating_model.md"}
+SKIP_FILES = set()
 
 PLACEHOLDER_TOKENS = ["{", "<", "invocation_name", "chapter_name", "file_name",
                       "ARCANA_HOME", "GRIMOIRE_PATH", "ARCANA_PATH",
@@ -67,9 +69,36 @@ def label_key(text):
     return text.strip().lower()
 
 
+def resolve_markdown_link(target_path, source_path, root):
+    """Resolve a standard Markdown link target relative to its source page."""
+    if target_path.startswith("/"):
+        resolved = root / target_path.lstrip("/")
+    else:
+        resolved = (source_path.parent / target_path).resolve()
+
+    try:
+        return resolved.resolve()
+    except OSError:
+        return resolved
+
+
+def markdown_page_reference(target_path, resolved):
+    """Return True when a standard Markdown link points at an internal page."""
+    normalized = target_path.replace("\\", "/").rstrip("/")
+    if normalized.endswith(".md"):
+        return True
+    if resolved.is_file() and resolved.suffix == ".md":
+        return True
+    if resolved.is_dir() and (resolved / "README.md").is_file():
+        return True
+    if not Path(normalized).suffix and resolved.with_suffix(".md").is_file():
+        return True
+    return False
+
+
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="Validate internal links and wikilinks")
+    parser = argparse.ArgumentParser(description="Validate internal links and canonical wikilinks")
     add_grimoire_arg(parser)
     add_output_format_arg(parser)
     args = parser.parse_args()
@@ -86,7 +115,7 @@ def main():
         print(f"Grimoire root: {grimoire_root}")
         print()
 
-        print("Scanning markdown files for broken links and wikilinks...")
+        print("Scanning markdown files for broken links and invalid page link styles...")
 
     for path in sorted(grimoire_root.rglob("*.md")):
         rel = str(path.relative_to(grimoire_root))
@@ -107,10 +136,10 @@ def main():
         files_checked += 1
 
         scanable = strip_code_blocks(content)
-
         # Standard markdown links
         for link_match in LINK_RE.finditer(scanable):
             link = link_match.group(1)
+            line_number = scanable.count("\n", 0, link_match.start()) + 1
 
             if re.match(r"^[a-z]+://", link) or link.startswith("mailto:"):
                 continue
@@ -123,15 +152,26 @@ def main():
             if not target_path:
                 continue
 
-            if target_path.startswith("/"):
-                resolved = grimoire_root / target_path.lstrip("/")
-            else:
-                resolved = (path.parent / target_path).resolve()
-
+            resolved = resolve_markdown_link(target_path, path, grimoire_root)
             try:
-                resolved = resolved.resolve()
-            except OSError:
-                pass
+                resolved.relative_to(grimoire_root)
+                internal = True
+            except ValueError:
+                internal = False
+
+            if internal and markdown_page_reference(target_path, resolved):
+                reporter.error(
+                    "LINK_MARKDOWN_INTERNAL",
+                    f"internal Markdown page uses a markdown link instead of a wikilink: {link}",
+                    path=rel,
+                    line=line_number,
+                    hint="Use a repository-root relative wikilink, e.g. [[path/to/page|page]].",
+                    docs_reference="docs/obsidian.md",
+                )
+                if human:
+                    print(f"  STYLE   {rel}:{line_number}:")
+                    print(f"          Markdown page link: {link}")
+                    print("          Use a full-path wikilink for internal Markdown pages.")
 
             if not resolved.exists():
                 reporter.error(
@@ -187,12 +227,12 @@ def main():
     print()
     print("==================================")
     if reporter.error_count() == 0:
-        print("Link validation passed (no broken links or wikilinks found)")
+        print("Link validation passed (no broken links or invalid page link styles found)")
         if reporter.warning_count():
             print(f"Link label warnings: {reporter.warning_count()}")
         return 0
     else:
-        print(f"Link validation failed with {reporter.error_count()} broken link(s)")
+        print(f"Link validation failed with {reporter.error_count()} error(s)")
         if reporter.warning_count():
             print(f"Link label warnings: {reporter.warning_count()}")
         return 1

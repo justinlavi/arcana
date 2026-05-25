@@ -56,6 +56,11 @@
   not maintain derived-page backlinks.
 - Updated frontmatter and provenance validators to enforce source-wrapper
   placement, authority, source references, and self-citation rules.
+- Updated Arcana and grimoire Markdown-page references to require full-path
+  wikilinks everywhere; `/arc-validate-links` and `/grm-validate-links` now
+  fail internal Markdown page links with `LINK_MARKDOWN_INTERNAL`.
+- Updated grimoire improvement and semantic-analysis guidance to judge router
+  size by route shape and excess prose instead of a fixed 150-word cap.
 
 ## [1.0.0] - 2026-05-25
 
@@ -208,7 +213,7 @@ substitutes them when installing skills into agent directories.
 | `/arc-validate-encoding` | Validate UTF-8, LF line endings, BOMs, mojibake markers, and repair artifacts in Arcana. |
 | `/arc-validate-format` | Validate Markdown formatting in Arcana. |
 | `/arc-validate-frontmatter` | Validate Arcana page frontmatter. |
-| `/arc-validate-links` | Validate Arcana Markdown links and wikilinks. |
+| `/arc-validate-links` | Validate Arcana links and internal Markdown-page wikilinks. |
 | `/arc-validate-naming` | Validate Arcana naming conventions. |
 | `/arc-validate-orphans` | Detect orphan pages in Arcana. |
 | `/arc-validate-portability` | Detect filesystem-portability issues in Arcana paths. |
@@ -243,7 +248,7 @@ substitutes them when installing skills into agent directories.
 | `/grm-validate-encoding` | Validate UTF-8/LF policy in the active grimoire. |
 | `/grm-validate-format` | Validate Markdown formatting in the active grimoire. |
 | `/grm-validate-frontmatter` | Validate page frontmatter in the active grimoire. |
-| `/grm-validate-links` | Validate Markdown links and wikilinks in the active grimoire. |
+| `/grm-validate-links` | Validate links and internal Markdown-page wikilinks in the active grimoire. |
 | `/grm-validate-orphans` | Detect orphan pages in the active grimoire. |
 | `/grm-validate-portability` | Validate filesystem portability in the active grimoire. |
 | `/grm-validate-provenance` | Validate source provenance in the active grimoire. |
@@ -267,7 +272,7 @@ Mechanical rites are independently invocable and orchestrated by
 - `validate_format` - Markdown formatting, invocation/formula shape, hub
   length, unclosed fences, and invalid tree branch markers.
 - `validate_frontmatter` - page schema compliance.
-- `validate_links` - Markdown links and full-path wikilinks.
+- `validate_links` - canonical page wikilinks plus external, anchor, and non-page Markdown links.
 - `validate_orphans` - inbound-reference reachability.
 - `validate_provenance` - `external` and `hybrid` pages cite stable sources,
   never `inbox/`.

@@ -62,13 +62,15 @@ Hub-level tags (`hub/root`, `hub/chapter`, `hub/sub`) distinguish levels for the
 
 Folder-named hubs make Obsidian's graph view legible (every node has a unique, meaningful label) and make full-path wikilinks intuitive, e.g. `[[chapters/build_system/build_system|build system]]`.
 
+Internal Markdown-page references are always full-path wikilinks, whether they appear in a hub, a leaf, a skill, or a reference page. Standard Markdown links are reserved for external URLs, same-page anchors, and local non-Markdown artifacts.
+
 ## What Grimoire Is
 
 - A deterministic knowledge router for any knowledge-based work (code, documentation, policies, templates, processes, etc.).
 - A persistent, compounding artifact the LLM keeps current as new sources arrive.
 - **Minimal-read invariant:** every hop narrows the search; the path stops at the leaf that answers the question. Shallow when topics are flat (root hub -> leaf), deeper when topics warrant nesting (root -> chapter -> sub-chapter -> ... -> leaf). The invariant is "as few hops as the structure requires," not a fixed count.
 - Hubs are maps; leaf docs store invariants, stable patterns, and source pointers.
-- Keep canonical rules in one leaf and link/wikilink to it from related docs.
+- Keep canonical rules in one leaf and wikilink to it from related routing surfaces.
 
 ## How To Route
 
@@ -78,7 +80,7 @@ Folder-named hubs make Obsidian's graph view legible (every node has a unique, m
 4) Repeat step 3 at each hub. Read sub-hubs depth-first; do not branch unless the current hub explicitly directs you to a related sibling.
 5) When you reach a leaf, read it. Read one related leaf only when the hub or the leaf's `Related` section calls for it.
 6) For project / scope-specific overrides, the grimoire root or a chapter hub typically routes through a `projects/projects.md` (or `clients/`, `teams/`) sub-hub. Follow it and then the specific scope hub.
-7) When adding knowledge, update the relevant hub with an explicit pointer (full-path wikilinks preferred); no exploratory wording. If the new content needs its own grouping, add a sub-folder with its own hub — the convention recurses.
+7) When adding knowledge, update the relevant hub with an explicit full-path wikilink pointer; no exploratory wording. If the new content needs its own grouping, add a sub-folder with its own hub - the convention recurses.
 
 ## Scope Rules
 - **Shared chapters** store rules that apply across all scopes the grimoire covers (e.g. company-wide policies in an HR grimoire, kitchen-wide techniques in a cooking grimoire).

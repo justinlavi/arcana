@@ -7,15 +7,15 @@ tags: [arcana/invocations, type/hub, scope/workspace, hub/chapter]
 
 # Workspace Invocations
 
-Workspace operations - invocations that intentionally touch Arcana plus installed grimoires.
+Workspace operations that intentionally touch Arcana plus installed grimoires.
 
 ## Available
 
 | Invocation | Skill | What it does |
 |---|---|---|
-| [clean.md](clean.md) | `/arc-workspace-clean` | Remove temporary rite artifacts across Arcana and installed grimoires |
+| [[invocations/workspace/clean|clean]] | `/arc-workspace-clean` | Remove temporary rite artifacts across Arcana and installed grimoires |
 
 ## Related
 
-- Arcana maintenance: [`../arcana/arcana.md`](../arcana/arcana.md)
-- Grimoire operations: [`../grimoire/grimoire.md`](../grimoire/grimoire.md)
+- Arcana maintenance -> [[invocations/arcana/arcana|arcana]]
+- Grimoire operations -> [[invocations/grimoire/grimoire|grimoire]]

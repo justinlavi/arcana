@@ -105,8 +105,8 @@ Include the resolved active grimoire path in the summary.
 
 ## Related
 
-- Active-grimoire improvement: [`improve_grimoire.md`](improve_grimoire.md)
-- Active-grimoire skill registration: [`register_skills.md`](register_skills.md)
-- Global agent registration: [`../agent/register_skills.md`](../agent/register_skills.md)
-- Agent block update: [`../agent/update_agent_block.md`](../agent/update_agent_block.md)
-- Agent targets: [`../../docs/agent_targets.md`](../../docs/agent_targets.md)
+- Active-grimoire improvement: [[invocations/grimoire/improve_grimoire|improve grimoire]]
+- Active-grimoire skill registration: [[invocations/grimoire/register_skills|register skills]]
+- Global agent registration: [[invocations/agent/register_skills|register skills]]
+- Agent block update: [[invocations/agent/update_agent_block|update agent block]]
+- Agent targets: [[docs/agent_targets|agent targets]]

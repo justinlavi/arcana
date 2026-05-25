@@ -11,7 +11,7 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-Mechanically check every authored page's YAML frontmatter against the canonical [page schema](../../../docs/page_schema.md). Failures: missing frontmatter, unknown `type`, source wrappers outside `sources/`, missing required fields for the type, malformed `last_verified`, broken `sources:` paths, malformed YAML lists.
+Mechanically check every authored page's YAML frontmatter against the canonical [[docs/page_schema|page schema]]. Failures: missing frontmatter, unknown `type`, source wrappers outside `sources/`, missing required fields for the type, malformed `last_verified`, broken `sources:` paths, malformed YAML lists.
 
 `SKILL.md` files are exempt - they use a different agent-defined schema. `README.md`, `CHANGELOG.md`, `log.md`, `VERSION` are exempt by name.
 
@@ -31,7 +31,7 @@ For an active grimoire, use `/grm-validate-frontmatter`.
 
 ## What gets checked
 
-See [`docs/page_schema.md`](../../../docs/page_schema.md) for the full required-fields matrix per `type`.
+See [[docs/page_schema|page schema]] for the full required-fields matrix per `type`.
 
 In short:
 
@@ -59,6 +59,6 @@ In short:
 
 ## Related
 
-- Schema: [`docs/page_schema.md`](../../../docs/page_schema.md)
-- Validator suite: [`../validators/validators.md`](../validators/validators.md)
-- Provenance: [`validate_provenance.md`](validate_provenance.md)
+- Schema: [[docs/page_schema|page schema]]
+- Validator suite: [[invocations/arcana/validators/validators|validators]]
+- Provenance: [[invocations/arcana/validators/validate_provenance|validate provenance]]

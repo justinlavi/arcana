@@ -282,7 +282,7 @@ release behavior, generated outputs, or more than ten files. For deferred
 items, state the benefit, blast radius, and suggested first step.
 
 When a deferred item is likely to outlive the current conversation, update
-[`../../../docs/architecture_backlog.md`](../../../docs/architecture_backlog.md)
+[[docs/architecture_backlog|architecture backlog]]
 with a stable ID, priority, owner surfaces, first implementable slice, and
 validation profile. Do not use the backlog for small local cleanup that can be
 applied safely inside the current pass.
@@ -301,7 +301,7 @@ In the final `/arc-improve` report, include:
 - Changes applied.
 - Deferred architecture opportunities, prioritized.
 - Backlog updates made in
-  [`../../../docs/architecture_backlog.md`](../../../docs/architecture_backlog.md),
+  [[docs/architecture_backlog|architecture backlog]],
   if any.
 
 ## Non-goals
@@ -314,9 +314,9 @@ In the final `/arc-improve` report, include:
 
 ## Related
 
-- Orchestrator: [`../improve_arcana.md`](../improve_arcana.md)
-- Documentation quality: [`improve_documentation.md`](improve_documentation.md)
-- Rite quality: [`validate_rites.md`](validate_rites.md)
-- Script vs AI split: [`../../../docs/script_vs_ai.md`](../../../docs/script_vs_ai.md)
-- Skill schema: [`../../../docs/skill_schema.md`](../../../docs/skill_schema.md)
-- S-tier backlog: [`../../../docs/architecture_backlog.md`](../../../docs/architecture_backlog.md)
+- Orchestrator: [[invocations/arcana/improve_arcana|improve arcana]]
+- Documentation quality: [[invocations/arcana/quality/improve_documentation|improve documentation]]
+- Rite quality: [[invocations/arcana/quality/validate_rites|validate rites]]
+- Script vs AI split: [[docs/script_vs_ai|script vs ai]]
+- Skill schema: [[docs/skill_schema|skill schema]]
+- S-tier backlog: [[docs/architecture_backlog|architecture backlog]]

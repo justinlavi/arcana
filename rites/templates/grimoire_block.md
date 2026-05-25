@@ -22,7 +22,7 @@ For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. Th
 
 1. Resolve the active grimoire from the working directory (its key in the library) or project context.
 2. Open `<grimoire>/<grimoire>.md` for routing.
-3. Use full-path Obsidian wikilinks (`[[chapters/path/to/page|label]]`) for in-grimoire pointers; aliases are metadata only and never link targets. Keep display labels to the target filename, normalized for reading.
+3. Use full-path Obsidian wikilinks (`[[chapters/path/to/page|label]]`) for every in-grimoire Markdown-page pointer; aliases are metadata only and never link targets. Keep display labels to the target filename, normalized for reading.
 4. Cross-grimoire references use path placeholders (`ARCANA_HOME/...`, `<grimoire>/...`).
 5. For Grimoire meta-knowledge: read `ARCANA_HOME/arcana.md`.
 6. Do not modify Grimoire files unless a `/arc-*` skill, a grimoire skill, or explicit instruction asks for it.

@@ -7,7 +7,7 @@ tags: [grimoire/{{SKILL_PREFIX}}, type/hub, hub/root]
 
 # {{GRIMOIRE_NAME}}
 
-*{{GRIMOIRE_PURPOSE}}.* Routing entry point - see [README.md](README.md) for the long-form description. Framework reference: `ARCANA_HOME/arcana.md`.
+*{{GRIMOIRE_PURPOSE}}.* Routing entry point - see [[README|README]] for the long-form description. Framework reference: `ARCANA_HOME/arcana.md`.
 
 ## Read Model
 

@@ -4,14 +4,14 @@ title: "Validate Links"
 aliases: ["validate-links"]
 tags: [arcana/invocations, type/reference, scope/validators]
 authority: grimoire
-last_verified: 2026-05-12
+last_verified: 2026-05-25
 ---
 
 # Invocation: Validate Arcana Links
 
 ## Purpose
 
-Detect broken internal references and links in Arcana documentation.
+Detect broken internal references in Arcana documentation and enforce wikilink-only internal Markdown-page references everywhere.
 
 ## Invocation
 
@@ -22,175 +22,112 @@ Detect broken internal references and links in Arcana documentation.
 ## When to Cast
 
 - Before Arcana releases
-- After renaming or moving files
-- During improve-arcana workflow (Phase 4)
-- After major documentation restructuring
+- After renaming or moving Markdown files
+- During `/arc-improve`
+- After documentation or routing changes
 
 ## Workflow
 
 ### Step 1: Run Automation
 
-Execute the validation rite:
-
 ```bash
 python3 rites/validate_links.py
 ```
 
-### Step 2: Review Broken Links
+### Step 2: Review Link Findings
 
-The rite scans all markdown files for links and verifies targets exist.
-It also warns when a wikilink's display label repeats parent-folder context instead of matching the target filename.
+The rite scans Markdown files, verifies resolvable internal references, and enforces page-link style:
+
+- Internal Markdown-page references must use repository-root relative wikilinks.
+- Standard Markdown links are limited to external URLs, same-page anchors, and local non-Markdown artifacts.
+- Wikilink display labels should match the target filename stem, normalized for reading.
 
 **Link types validated**:
-- Relative file references: `[text](../file.md)`
-- Relative directory references: `[text](folder/)`
-- Full-path wikilinks: `[[chapters/path/to/page|label]]`
-- Intra-document anchors: `[text](#section)` (partial validation)
+
+- Full-path wikilinks: `[[docs/page_schema|page schema]]`
+- Intra-document anchors: `[text](#section)` (skipped as local anchors)
+- Non-Markdown local artifacts: `[script](../rites/validate_links.py)`
+
+**Internal-page style enforced**:
+
+- Valid page reference: `Topic -> [[chapters/path/to/page|page]]`
+- Invalid page reference: `Topic -> [page](../path/to/page.md)`
 
 **Link types skipped**:
+
 - External URLs: `https://`, `http://`, `mailto:`
-- Named keys: `ARCANA_HOME/`, `GRIMOIRE_{DOMAIN}/`
+- Placeholder paths: `ARCANA_HOME/`, `GRIMOIRE_PATH`, template variables, and similar formula tokens
 - Anchor-only links: `#section`
 
-### Step 3: Fix Broken Links
+### Step 3: Fix Findings
 
-For each broken link:
+For each finding:
 
-1. **Determine cause**:
-  - File was renamed? Update link to new name
-  - File was moved? Update path
-  - File was deleted? Remove link or restore file
-  - Typo in link? Correct spelling
+1. If the target is broken, update the path or remove the reference.
+2. If an internal Markdown-page reference uses Markdown link syntax, replace it with a repository-root relative wikilink.
+3. If a wikilink label is verbose, shorten the display label to the target filename stem.
+4. Re-run the validator.
 
-2. **Update link**:
-   ```markdown
-   <!-- Before (broken) -->
-   `quickstart -> old_quickstart.md`
+Example:
 
-   <!-- After (fixed) -->
-   `quickstart -> docs/quickstart.md`
-   ```
+```markdown
+<!-- Invalid for an internal Markdown page -->
+Quickstart -> [quickstart](../docs/quickstart.md)
 
-3. **Verify fix**:
-   ```bash
-   python3 rites/validate_links.py
-   ```
-
-### Step 4: Update Cross-References
-
-When fixing links, check for related cross-references:
-
-**Example**: If you renamed a file:
-1. Update direct links to the file
-2. Update references in the relevant hub
-3. Update "Related" sections in other invocations
-4. Check breadcrumb trails in documentation
+<!-- Valid -->
+Quickstart -> [[docs/quickstart|quickstart]]
+```
 
 ## Outputs
 
 **Console output**:
-- Broken links with source file location
-- Link text and resolved path
-- Exit code: 0 (clean) or 1 (broken links found)
 
-**On success**:
-```
- Link validation passed (no broken links found)
-```
+- Broken links with source file and line where available
+- Internal Markdown-page style violations with source file and line
+- Wikilink label warnings
+- Exit code: 0 (clean) or 1 (errors found)
 
-**On broken links**:
-```
- Broken link in invocations/grimoire/create_chapter.md:
-   Link: ../quickstart.md
-   Resolved to: invocations/quickstart.md
- Link validation failed with 1 broken links
-```
+**Structured diagnostics**:
 
-## Link Best Practices
+- `LINK_MARKDOWN_BROKEN`
+- `LINK_MARKDOWN_INTERNAL`
+- `LINK_WIKILINK_BROKEN`
+- `LINK_LABEL_VERBOSE`
 
-### Prefer Relative Paths
+## Link Standards
 
-**Within same directory**:
-```markdown
-[other invocation](create_grimoire.md)
-```
+### Internal Page References
 
-**Parent directory**:
-```markdown
-[docs](../../docs/quickstart.md)
-```
-
-### Use Root Placeholders for Cross-Grimoire
-
-**Arcana → Arcana**:
-```markdown
-[reference](ARCANA_HOME/docs/reference.md)
-```
-
-**Arcana → Grimoire**:
-```markdown
-[chapter](cooking-grimoire/chapters/breads/sourdough.md)
-```
-
-### Use Full-Path Wikilinks For In-Grimoire Routing
-
-Wikilink targets must be repository-root relative paths. The `.md` suffix is optional in wikilinks for Obsidian compatibility.
-When using display text, use only the target filename stem, normalized for reading. The path already supplies parent context.
+All internal Markdown-page references use full-path wikilinks:
 
 ```markdown
- [[chapters/breads/sourdough|sourdough]]
- [[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|overview]]
- [[README]]
- [[sourdough]]
- [[bread alias]]
- [[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|fukuoka kyoto tokyo trip overview]]
+- Create a grimoire -> [[invocations/grimoire/create_grimoire|create grimoire]]
+- Travel planning -> [[chapters/travel/travel|travel]]
 ```
 
-### Include File Extensions
+### Standard Markdown Links
 
-**Always use .md extension for markdown links**:
+Markdown links remain valid for external URLs, same-page anchors, and local non-Markdown artifacts. They are not valid for internal Markdown pages.
+
 ```markdown
- [file](path/file.md)
- [file](path/file)
+See [the external project](https://example.com/project).
+See [this section](#link-standards).
+See [the validator script](../../../rites/validate_links.py).
 ```
 
-### Avoid Absolute Paths
+### Wikilink Targets
 
-**Don't hardcode deployment paths**:
+Wikilink targets must be repository-root relative paths. The `.md` suffix is optional for Obsidian compatibility. Aliases and filename-only shortcuts are invalid unless they also resolve as real repository-root paths.
+
 ```markdown
- [file](/home/user/arcana/file.md)
- [file](../file.md)
- [file](ARCANA_HOME/file.md)
+[[docs/page_schema|page schema]]
+[[invocations/arcana/validators/validate_links|validate links]]
+[[README|README]]
 ```
-
-## Troubleshooting
-
-**False positives** (valid links reported as broken):
-- Placeholder paths are automatically skipped
-- Code example files are excluded (operating_model.md)
-- If needed, add exclusion to rite script
-
-**Links work but validation fails**:
-- Check for typos in path
-- Verify case sensitivity (file.md vs File.md)
-- Ensure no spaces in filename
-
-**Anchor links not validated**:
-- Current implementation only validates file existence
-- Anchor validation would require parsing headers (future enhancement)
 
 ## Related
 
-- **Rite**: [rites/validate_links.py](../../../rites/validate_links.py)
-- **Path conventions**: [docs/reference.md](../../../docs/reference.md#path-reference-convention)
-- **Orchestrator**: [improve_arcana.md](../improve_arcana.md)
-
-## Notes
-
-**Exclusions**: The rite automatically skips:
-- `docs/operating_model.md` (has example link patterns)
-- `invocations/arcana/validators/validate_structure.md` (shows examples)
-
-**Performance**: Moderate speed (3-5 seconds for entire Arcana)
-
-**Path resolution**: Uses bash realpath for accurate path normalization
+- Rite: `rites/validate_links.py`
+- Path conventions -> [[docs/obsidian|obsidian]]
+- Operating model -> [[docs/operating_model|operating model]]
+- Orchestrator -> [[invocations/arcana/improve_arcana|improve arcana]]

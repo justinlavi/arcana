@@ -12,7 +12,7 @@ last_verified: 2026-05-25
 How to build and publish Summoning Rite binaries for GitHub Releases.
 
 The canonical installer behavior contract lives in
-[`summoning_contract.md`](summoning_contract.md), backed by
+[[docs/summoning_contract|summoning contract]], backed by
 `rites/data/summon_contract.json`.
 
 ---
@@ -99,7 +99,7 @@ Draft releases are useful for private review, but they are not useful for unauth
 ## Bootstrap Behavior
 
 The durable mode matrix is in
-[`summoning_contract.md`](summoning_contract.md#release-and-source-selection).
+[[docs/summoning_contract#release-and-source-selection|summoning contract]].
 
 `rites/summon.sh` prefers release assets when run through the public curl pipe, except on Linux GUI sessions where it uses the Python source launcher by default. The Linux source-first GUI path avoids frozen GLFW/GLX library drift across fast-moving distro render stacks while preserving binary use for CLI/headless Linux and for macOS/Windows. Running from a local checkout keeps using local source by default, which is better for Arcana development.
 

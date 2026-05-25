@@ -11,15 +11,15 @@ Shared invocation fragments and templates. User-facing operations belong in thei
 
 ## Available
 
-- **[base_invocation.md](base_invocation.md)** - Generic invocation execution template. Used as a starting point when building a custom workflow that doesn't match any existing invocation.
-- **[grimoire_directory_guard.md](grimoire_directory_guard.md)** - Shared precondition included via `!cat` by every `/grm-*` skill that operates on the active grimoire (cwd). Single-sourced so the guard contract stays consistent across skills.
+- Generic invocation execution template -> [[invocations/meta/base_invocation|base invocation]]
+- Active-grimoire directory guard -> [[invocations/meta/grimoire_directory_guard|grimoire directory guard]]
 
 ## Related
 
-- Grimoire operations: [`../grimoire/grimoire.md`](../grimoire/grimoire.md)
-- Arcana maintenance (maintainer only): [`../arcana/arcana.md`](../arcana/arcana.md)
-- Agent operations: [`../agent/agent.md`](../agent/agent.md)
-- Help: [`../help/help.md`](../help/help.md)
-- Library operations: [`../library/library.md`](../library/library.md)
-- Workspace operations: [`../workspace/workspace.md`](../workspace/workspace.md)
-- Canonical skill catalog: [`../../docs/skills.md`](../../docs/skills.md)
+- Grimoire operations -> [[invocations/grimoire/grimoire|grimoire]]
+- Arcana maintenance -> [[invocations/arcana/arcana|arcana]]
+- Agent operations -> [[invocations/agent/agent|agent]]
+- Help -> [[invocations/help/help|help]]
+- Library operations -> [[invocations/library/library|library]]
+- Workspace operations -> [[invocations/workspace/workspace|workspace]]
+- Canonical skill catalog -> [[docs/skills|skills]]

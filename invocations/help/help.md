@@ -11,7 +11,7 @@ last_verified: 2026-05-25
 
 ## Purpose
 
-Show the user the Arcana skill catalog plus any skills shipped by grimoires registered in `~/grimoires/library.json`. The Arcana list lives in [`docs/skills.md`](../../docs/skills.md) (auto-generated); grimoire skills must be enumerated live from the local library because Arcana does not maintain a central list of downstream grimoires.
+Show the user the Arcana skill catalog plus any skills shipped by grimoires registered in `~/grimoires/library.json`. The Arcana list lives in [[docs/skills|skills]] (auto-generated); grimoire skills must be enumerated live from the local library because Arcana does not maintain a central list of downstream grimoires.
 
 ## Invocation
 
@@ -23,7 +23,7 @@ Show the user the Arcana skill catalog plus any skills shipped by grimoires regi
 
 ### 1. Show Arcana skills
 
-Read [`ARCANA_HOME/docs/skills.md`](../../docs/skills.md) and present its tables to the user as-is. It is the canonical, sync-generated list. Do not re-derive it by scanning `skills/<family>/<slug>/SKILL.md` unless `docs/skills.md` is missing - in that case fall back to the scan and warn the user it should be regenerated with `python3 rites/sync_docs.py --apply`.
+Read [[docs/skills|skills]] and present its tables to the user as-is. It is the canonical, sync-generated list. Do not re-derive it by scanning `skills/<family>/<slug>/SKILL.md` unless `docs/skills.md` is missing - in that case fall back to the scan and warn the user it should be regenerated with `python3 rites/sync_docs.py --apply`.
 
 ### 2. Enumerate grimoire skills
 
@@ -56,8 +56,8 @@ End with a one-line total: `Total: N skills across M sources (Arcana + <list>)`.
 
 ## Related
 
-- **Arcana skill catalog (canonical)**: [`docs/skills.md`](../../docs/skills.md)
+- **Arcana skill catalog (canonical)**: [[docs/skills|skills]]
 - **Global skill registration**: `/arc-agent-register-skills`
 - **Active-grimoire skill registration**: `/grm-register-skills`
 - **Catalog reconciliation**: `/arc-library-sync`
-- **Skill system mechanics**: [`docs/agent_configuration.md`](../../docs/agent_configuration.md)
+- **Skill system mechanics**: [[docs/agent_configuration|agent configuration]]

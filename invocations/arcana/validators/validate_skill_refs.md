@@ -49,7 +49,7 @@ On Windows, use `python` instead of `python3`.
 
 ## Related
 
-- Validators hub: [`validators.md`](validators.md)
-- Skill schema: [`../../../docs/skill_schema.md`](../../../docs/skill_schema.md)
-- Public command surface: [`../../../docs/command_surface.md`](../../../docs/command_surface.md)
+- Validators hub: [[invocations/arcana/validators/validators|validators]]
+- Skill schema: [[docs/skill_schema|skill schema]]
+- Public command surface: [[docs/command_surface|command surface]]
 - Skill catalog generator: [`../../../rites/sync_docs.py`](../../../rites/sync_docs.py)

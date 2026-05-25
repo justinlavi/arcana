@@ -76,7 +76,7 @@ grep -rho '\b[A-Z][A-Z]+\b' --include="*.md" docs | sort | uniq -c | sort -rn | 
 - Documents doing more than one job (split them)
 - Documents with nothing other docs need (consider deleting)
 - Cross-references that go through too many hops to reach the answer
-- Missing or stale entries in [hub](../../../arcana.md), [`docs/skills.md`](../../../docs/skills.md), or other auto-generated indexes (regenerate with `python3 rites/sync_docs.py --apply`)
+- Missing or stale entries in [[arcana|arcana]], [[docs/skills|skills]], or other auto-generated indexes (regenerate with `python3 rites/sync_docs.py --apply`)
 
 ### 4. Apply fixes
 
@@ -94,7 +94,7 @@ For each issue:
 
 ## Related
 
-- **Validators**: [`validators/validators.md`](../validators/validators.md) and `/arc-validate-all`
-- **Rite quality**: [`validate_rites.md`](validate_rites.md) (rite-specific checks; complementary)
+- **Validators**: [[invocations/arcana/validators/validators|validators]] and `/arc-validate-all`
+- **Rite quality**: [[invocations/arcana/quality/validate_rites|validate rites]] (rite-specific checks; complementary)
 - **Doc generator**: [`rites/sync_docs.py`](../../../rites/sync_docs.py) (the pattern for replacing prose-as-data with single-source views)
-- **Orchestrator**: [`improve_arcana.md`](../improve_arcana.md)
+- **Orchestrator**: [[invocations/arcana/improve_arcana|improve arcana]]

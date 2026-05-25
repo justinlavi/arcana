@@ -9,51 +9,39 @@ tags: [arcana/invocations, type/hub, scope/validators, hub/sub]
 
 Mechanical, deterministic checks against the Arcana repository. Each validator has its own dedicated skill, and all of them run together via the orchestrator.
 
-For the aggregate command, see [validate_all.md](validate_all.md).
-
-Each validator supports structured diagnostics:
-
-```bash
-python3 ../../../rites/<validator>.py --format json
-python3 ../../../rites/<validator>.py --format jsonl
-```
-
-Every diagnostic carries `code`, `severity`, `path`, `line`, `message`,
-`hint`, `validator`, and `docs_reference`. The default human output is for
-terminal use; JSON and JSONL are for agents, editor integrations, and issue
-reports.
+For the aggregate command, see [[invocations/arcana/validators/validate_all|validate all]].
 
 ## Available
 
 | Validator | Skill | What it checks |
 |---|---|---|
-| [validate_structure.md](validate_structure.md) | `/arc-validate-structure` | Required directories and files exist; layout matches conventions |
-| [validate_encoding.md](validate_encoding.md) | `/arc-validate-encoding` | UTF-8, LF line endings, BOMs, and mojibake markers |
-| [validate_portability.md](validate_portability.md) | `/arc-validate-portability` | No Windows-reserved characters or basenames in any path |
-| [validate_naming.md](validate_naming.md) | `/arc-validate-naming` | snake_case for paths; kebab-case for skills |
-| [validate_format.md](validate_format.md) | `/arc-validate-format` | Invocation/formula schema compliance |
-| [validate_frontmatter.md](validate_frontmatter.md) | `/arc-validate-frontmatter` | Every page declares its `type` and the schema's required fields |
-| [validate_semantics.md](validate_semantics.md) | `/arc-validate-semantics` | Hyphenated path examples in markdown prose |
-| [validate_links.md](validate_links.md) | `/arc-validate-links` | Internal markdown links resolve |
-| [validate_orphans.md](validate_orphans.md) | `/arc-validate-orphans` | Every page is reachable from at least one other page |
-| [validate_provenance.md](validate_provenance.md) | `/arc-validate-provenance` | Every external/hybrid page cites real sources under `sources/` |
-| [validate_security.md](validate_security.md) | `/arc-validate-security` | Credential patterns and unsafe Python constructs in rites |
-| [validate_skill_refs.md](validate_skill_refs.md) | `/arc-validate-skill-refs` | Slash-command references and command-surface entries resolve |
+| [[invocations/arcana/validators/validate_structure|validate structure]] | `/arc-validate-structure` | Required directories and files exist; layout matches conventions |
+| [[invocations/arcana/validators/validate_encoding|validate encoding]] | `/arc-validate-encoding` | UTF-8, LF line endings, BOMs, and mojibake markers |
+| [[invocations/arcana/validators/validate_portability|validate portability]] | `/arc-validate-portability` | No Windows-reserved characters or basenames in any path |
+| [[invocations/arcana/validators/validate_naming|validate naming]] | `/arc-validate-naming` | snake_case for paths; kebab-case for skills |
+| [[invocations/arcana/validators/validate_format|validate format]] | `/arc-validate-format` | Invocation/formula schema compliance |
+| [[invocations/arcana/validators/validate_frontmatter|validate frontmatter]] | `/arc-validate-frontmatter` | Every page declares its `type` and the schema's required fields |
+| [[invocations/arcana/validators/validate_semantics|validate semantics]] | `/arc-validate-semantics` | Hyphenated path examples in markdown prose |
+| [[invocations/arcana/validators/validate_links|validate links]] | `/arc-validate-links` | Internal references resolve and hub routes use wikilinks |
+| [[invocations/arcana/validators/validate_orphans|validate orphans]] | `/arc-validate-orphans` | Every page is reachable from at least one other page |
+| [[invocations/arcana/validators/validate_provenance|validate provenance]] | `/arc-validate-provenance` | Every external/hybrid page cites real sources under `sources/` |
+| [[invocations/arcana/validators/validate_security|validate security]] | `/arc-validate-security` | Credential patterns and unsafe Python constructs in rites |
+| [[invocations/arcana/validators/validate_skill_refs|validate skill refs]] | `/arc-validate-skill-refs` | Slash-command references and command-surface entries resolve |
 
 ## Run them all
 
 ```bash
-python3 ../../../rites/validate.py            # sequential, default
-python3 ../../../rites/validate.py --parallel  # concurrent
-python3 ../../../rites/validate.py --smart     # only validators relevant to git changes
-python3 ../../../rites/validate.py --auto      # smart + execute
+python3 ../../../rites/validate.py
+python3 ../../../rites/validate.py --parallel
+python3 ../../../rites/validate.py --smart
+python3 ../../../rites/validate.py --auto
 python3 ../../../rites/validate.py --format json
 ```
 
-Or invoke `/arc-validate-all`, whose workflow home is [validate_all.md](validate_all.md).
+Or invoke `/arc-validate-all`, whose workflow home is [[invocations/arcana/validators/validate_all|validate all]].
 
 ## Related
 
-- Orchestrator invocation: [`../improve_arcana.md`](../improve_arcana.md)
-- Rite scripts: [`../../../rites/`](../../../rites/)
-- Canonical terminology: [`../../../docs/reference.md`](../../../docs/reference.md)
+- Orchestrator invocation -> [[invocations/arcana/improve_arcana|improve arcana]]
+- Rite scripts: `rites/`
+- Canonical terminology -> [[docs/reference|reference]]

@@ -71,6 +71,6 @@ Supported `--agent` values come from
 
 ## Related
 
-- Global registration: [`../agent/register_skills.md`](../agent/register_skills.md)
-- Agent targets: [`../../docs/agent_targets.md`](../../docs/agent_targets.md)
-- Agent configuration: [`../../docs/agent_configuration.md`](../../docs/agent_configuration.md)
+- Global registration: [[invocations/agent/register_skills|register skills]]
+- Agent targets: [[docs/agent_targets|agent targets]]
+- Agent configuration: [[docs/agent_configuration|agent configuration]]

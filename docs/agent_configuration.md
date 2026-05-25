@@ -10,12 +10,12 @@ last_verified: 2026-05-25
 # Arcana Agent Configuration
 
 Per-agent setup for using Arcana and grimoire skills. The agent support matrix
-lives in [agent_targets.md](agent_targets.md), backed by
+lives in [[docs/agent_targets|agent targets]], backed by
 [`rites/data/agent_targets.json`](../rites/data/agent_targets.json). The
-summoning rite ([installation.md](installation.md)) configures automatic local
+summoning rite ([[docs/installation|installation]]) configures automatic local
 targets from that registry.
 
-For installation, see [installation.md](installation.md). For library and manifest schemas, see [reference.md](reference.md). For the current Arcana skill catalog, see [skills.md](skills.md). For command naming rules, see [skill_schema.md](skill_schema.md).
+For installation, see [[docs/installation|installation]]. For library and manifest schemas, see [[docs/reference|reference]]. For the current Arcana skill catalog, see [[docs/skills|skills]]. For command naming rules, see [[docs/skill_schema|skill schema]].
 
 ---
 
@@ -23,7 +23,7 @@ For installation, see [installation.md](installation.md). For library and manife
 
 Each agent reads a "system instructions" file. Grimoire needs a small block in that file so the agent knows how to route through the library.
 
-**Canonical block**: [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md) — single source of truth for the instructions text. Copy this into manual targets listed in [agent_targets.md](agent_targets.md). Do not duplicate the block in any other file — edit the canonical and the change propagates wherever it's referenced.
+**Canonical block**: [[rites/templates/grimoire_block|grimoire block]] — single source of truth for the instructions text. Copy this into manual targets listed in [[docs/agent_targets|agent targets]]. Do not duplicate the block in any other file — edit the canonical and the change propagates wherever it's referenced.
 
 The block never changes when grimoires are added or removed — those changes happen in the library, not the agent file. When Arcana itself changes the block, use `/arc-agent-update` to refresh automatic registry targets or explicitly supplied agent instruction files while preserving unrelated user instructions.
 
@@ -32,7 +32,7 @@ The block never changes when grimoires are added or removed — those changes ha
 ## Skill Registration
 
 Skills are `SKILL.md` files registered into agent-specific skill directories
-declared in [agent_targets.md](agent_targets.md). Registry skill modes define
+declared in [[docs/agent_targets|agent targets]]. Registry skill modes define
 whether a target receives full skill folders or pointer-only `SKILL.md` files.
 
 All registration targets are written by the same rite:
@@ -74,7 +74,7 @@ A skill is a **thin pointer**. It delegates to one of:
 
 Skills must never embed implementation logic directly. This separation keeps them portable across agent platforms.
 
-For when to choose rite-backed vs invocation-backed (and the anti-patterns to avoid), see [`script_vs_ai.md` — Applying this to skills](script_vs_ai.md#applying-this-to-skills).
+For when to choose rite-backed vs invocation-backed (and the anti-patterns to avoid), see [[docs/script_vs_ai#applying-this-to-skills|script vs ai]].
 
 ---
 
@@ -111,7 +111,7 @@ Arcana declares command families in `arcana.json`:
 
 Normal grimoires declare one skill prefix in their own `grimoire.json`, such as `jpn-*` or `oly-*`.
 
-Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` in their frontmatter. The registration rite substitutes `{{SKILL_PREFIX}}` with the declaring command family's prefix for Arcana, or with the grimoire's `skill_prefix` for grimoire-owned skills. See [skill_schema.md](skill_schema.md) and [reference.md](reference.md#grimoire-manifest) for manifest details.
+Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` in their frontmatter. The registration rite substitutes `{{SKILL_PREFIX}}` with the declaring command family's prefix for Arcana, or with the grimoire's `skill_prefix` for grimoire-owned skills. See [[docs/skill_schema|skill schema]] and [[docs/reference#grimoire-manifest|reference]] for manifest details.
 
 ---
 
@@ -138,4 +138,4 @@ To register new or updated skills in the active grimoire, run `/grm-register-ski
 - Verify the grimoire is in `~/grimoires/library.json` and the `local_path` resolves. Run `/arc-library-sync` to detect and reconcile drift.
 
 **Skill names look wrong (`{{SKILL_PREFIX}}-...`)**
-- The grimoire is missing a `grimoire.json` or its `skill_prefix` field. See [reference.md](reference.md#grimoire-manifest).
+- The grimoire is missing a `grimoire.json` or its `skill_prefix` field. See [[docs/reference#grimoire-manifest|reference]].

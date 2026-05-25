@@ -7,18 +7,18 @@ tags: [arcana/invocations, type/hub, scope/agent, hub/chapter]
 
 # Agent Invocations
 
-Agent operations - invocations that update local agent configuration or agent skill directories.
+Agent operations that update local agent configuration or agent skill directories.
 
 ## Available
 
 | Invocation | Skill | What it does |
 |---|---|---|
-| [register_skills.md](register_skills.md) | `/arc-agent-register-skills` | Register Arcana-shipped skills and every installed grimoire's own skills into supported agent skill directories |
-| [update_agent_block.md](update_agent_block.md) | `/arc-agent-update` | Refresh the canonical Grimoire instruction block in agent instruction files |
+| [[invocations/agent/register_skills|register skills]] | `/arc-agent-register-skills` | Register Arcana-shipped skills and installed grimoire skills into supported agent skill directories |
+| [[invocations/agent/update_agent_block|update agent block]] | `/arc-agent-update` | Refresh the canonical Grimoire instruction block in agent instruction files |
 
 ## Related
 
-- Help: [`../help/help.md`](../help/help.md)
-- Library operations: [`../library/library.md`](../library/library.md)
-- Grimoire active-scope registration: [`../grimoire/register_skills.md`](../grimoire/register_skills.md)
-- Agent configuration: [`../../docs/agent_configuration.md`](../../docs/agent_configuration.md)
+- Help -> [[invocations/help/help|help]]
+- Library operations -> [[invocations/library/library|library]]
+- Grimoire active-scope registration -> [[invocations/grimoire/register_skills|register skills]]
+- Agent configuration -> [[docs/agent_configuration|agent configuration]]

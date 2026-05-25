@@ -93,8 +93,8 @@ Additional verification not covered by automation:
 ## Related
 
 - **Rite**: [rites/validate_structure.py](../../../rites/validate_structure.py)
-- **Orchestrator**: [improve_arcana.md](../improve_arcana.md)
-- **Reference**: [docs/operating_model.md](../../../docs/operating_model.md)
+- **Orchestrator**: [[invocations/arcana/improve_arcana|improve arcana]]
+- **Reference**: [[docs/operating_model|operating model]]
 
 ## Notes
 

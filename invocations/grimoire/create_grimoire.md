@@ -202,7 +202,7 @@ If the relevant agent instruction file already includes the Grimoire block, also
 
 ## Related
 
-- **Chapter creation**: [`create_chapter.md`](create_chapter.md)
+- **Chapter creation**: [[invocations/grimoire/create_chapter|create chapter]]
 - **Template formula**: `ARCANA_HOME/formulae/grimoire/`
 - **Page schema**: `ARCANA_HOME/docs/page_schema.md`
 - **Skill registration**: `/arc-agent-register-skills` (reads each grimoire's `grimoire.json`)

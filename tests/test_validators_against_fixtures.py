@@ -187,8 +187,27 @@ def test_bad_links_structured_diagnostics_have_codes():
     assert result.returncode != 0
     report = json.loads(result.stdout)
     codes = [diagnostic["code"] for diagnostic in report["diagnostics"]]
+    assert "LINK_MARKDOWN_INTERNAL" in codes
     assert "LINK_MARKDOWN_BROKEN" in codes
     assert "LINK_WIKILINK_BROKEN" in codes
+
+
+def test_internal_markdown_page_link_is_caught_globally(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    leaf = grimoire / "chapters/recipes/sourdough.md"
+    leaf.write_text(
+        leaf.read_text(encoding="utf-8") + "\nSee [recipes](recipes.md).\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_links.py", grimoire, "--format", "json")
+
+    assert result.returncode != 0
+    report = json.loads(result.stdout)
+    codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+    assert "LINK_MARKDOWN_INTERNAL" in codes
 
 
 def test_verbose_wikilink_label_warns_without_failing():

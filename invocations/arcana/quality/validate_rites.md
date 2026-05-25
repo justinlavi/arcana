@@ -15,7 +15,7 @@ Judgment-based quality review of rite scripts (Python files under `rites/`).
 Covers error handling, exit codes, idempotency, portability, docstrings, size
 limits, and mutation-profile compliance.
 
-Pairs with `/arc-validate-security` (mechanical credential/unsafe-construct scan). This invocation is the human-judgment counterpart - no rite automates it. See [`docs/script_vs_ai.md`](../../../docs/script_vs_ai.md) for the split.
+Pairs with `/arc-validate-security` (mechanical credential/unsafe-construct scan). This invocation is the human-judgment counterpart - no rite automates it. See [[docs/script_vs_ai|script vs ai]] for the split.
 
 ## Invocation
 
@@ -37,7 +37,7 @@ ls rites/*.py
 
 Skip `__pycache__/`, `data/`, `templates/`. Treat `validate_*.py`, `sync_*.py`, and orchestrators (`validate.py`, `summon.py`, `register_skills.py`) as in scope.
 Load `rites/data/rite_profiles.json` before reviewing write-capable rites and
-use [`docs/rite_profiles.md`](../../../docs/rite_profiles.md) as the human
+use [[docs/rite_profiles|rite profiles]] as the human
 reference.
 
 ### 2. Per-rite checks
@@ -123,8 +123,8 @@ For each issue, edit the rite, re-run it on a clean tree to confirm exit 0, then
 
 ## Related
 
-- **Security scan**: [`../validators/validate_security.md`](../validators/validate_security.md)
+- **Security scan**: [[invocations/arcana/validators/validate_security|validate security]]
 - **Validator suite**: `/arc-validate-all`
-- **Script vs AI split**: [`../../../docs/script_vs_ai.md`](../../../docs/script_vs_ai.md)
+- **Script vs AI split**: [[docs/script_vs_ai|script vs ai]]
 - **Rites directory**: [`rites/`](../../../rites/)
-- **Orchestrator**: [`../improve_arcana.md`](../improve_arcana.md)
+- **Orchestrator**: [[invocations/arcana/improve_arcana|improve arcana]]

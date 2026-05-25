@@ -14,10 +14,10 @@ configures your AI agents, and registers the `/arc-*` and `/grm-*` skill sets.
 Cloning existing grimoires is optional and handled interactively.
 
 For the supported agent target matrix, see
-[agent_targets.md](agent_targets.md). For per-agent configuration after
-install, see [agent_configuration.md](agent_configuration.md). For library and
-manifest schemas, see [reference.md](reference.md). For the installer mode
-contract, see [summoning_contract.md](summoning_contract.md).
+[[docs/agent_targets|agent targets]]. For per-agent configuration after
+install, see [[docs/agent_configuration|agent configuration]]. For library and
+manifest schemas, see [[docs/reference|reference]]. For the installer mode
+contract, see [[docs/summoning_contract|summoning contract]].
 
 ---
 
@@ -47,8 +47,8 @@ default to avoid frozen OpenGL/GLX library drift:
 **What the summoning rite always does:**
 1. Checks runtime dependencies (`git`; Python 3 and Dear PyGui only if source fallback is needed)
 2. Installs Arcana to `~/grimoires/arcana/` (clone or pull)
-3. Injects the Grimoire routing block into automatic agent instruction targets from [agent_targets.md](agent_targets.md)
-4. Registers Arcana's `/arc-*` skills to agent skill targets from [agent_targets.md](agent_targets.md)
+3. Injects the Grimoire routing block into automatic agent instruction targets from [[docs/agent_targets|agent targets]]
+4. Registers Arcana's `/arc-*` skills to agent skill targets from [[docs/agent_targets|agent targets]]
 
 **Optional - if you have existing grimoires to clone:**
 5. Discovers grimoires via git host API (GitLab/GitHub)
@@ -99,8 +99,8 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 Release asset downloads print progress and explicit retry attempts. If a
 network stalls, the bootstrap retries and then fails over to source mode after
 the configured attempt/stall window. Advanced controls are documented in
-[release.md](release.md#bootstrap-behavior), and durable mode rules are in
-[summoning_contract.md](summoning_contract.md#release-and-source-selection).
+[[docs/release#bootstrap-behavior|release]], and durable mode rules are in
+[[docs/summoning_contract#release-and-source-selection|summoning contract]].
 
 If no scope is provided, the rite prompts interactively:
 
@@ -166,8 +166,8 @@ If you can't run the summoning rite (no network, restricted environment, etc.):
 
 1. Clone Arcana to `~/grimoires/arcana/`.
 2. Clone each grimoire to `~/grimoires/<grimoire-name>/`.
-3. Create `~/grimoires/library.json` with one entry per grimoire (see [reference.md](reference.md#local-library)).
-4. Add the Grimoire instruction block to the instruction targets listed in [agent_targets.md](agent_targets.md) — the canonical block lives at [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md). To refresh automatic targets after Arcana changes, use `/arc-agent-update`.
+3. Create `~/grimoires/library.json` with one entry per grimoire (see [[docs/reference#local-library|reference]]).
+4. Add the Grimoire instruction block to the instruction targets listed in [[docs/agent_targets|agent targets]] — the canonical block lives at [[rites/templates/grimoire_block|grimoire block]]. To refresh automatic targets after Arcana changes, use `/arc-agent-update`.
 5. Run `python3 ~/grimoires/arcana/rites/register_skills.py` to install skills into registered agent skill directories.
 
 ---
@@ -238,7 +238,7 @@ The agent should follow hubs depth-first (root hub -> chapter hub -> ... -> leaf
 - Open a new agent session (Claude Code / Codex caches skill listings)
 
 **Skill names appear as `{{SKILL_PREFIX}}-...`**
-- The grimoire is missing its `grimoire.json` manifest. Add one per [reference.md](reference.md#grimoire-manifest), then re-register.
+- The grimoire is missing its `grimoire.json` manifest. Add one per [[docs/reference#grimoire-manifest|reference]], then re-register.
 
 **Agent guesses instead of reading files**
-- The Grimoire instruction block is missing from the relevant target in [agent_targets.md](agent_targets.md), or it is stale. See [agent_configuration.md](agent_configuration.md#agent-instruction-files), then run `/arc-agent-update`.
+- The Grimoire instruction block is missing from the relevant target in [[docs/agent_targets|agent targets]], or it is stale. See [[docs/agent_configuration#agent-instruction-files|agent configuration]], then run `/arc-agent-update`.

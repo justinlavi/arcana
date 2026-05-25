@@ -7,44 +7,43 @@ tags: [arcana/invocations, type/hub, scope/arcana, hub/chapter]
 
 # Arcana Invocations
 
-Invocations that **modify Arcana itself**. Maintainer only.
+Invocations that modify Arcana itself. Maintainer only.
 
-For grimoire operations (creating chapters, improving grimoires) see [`../grimoire/grimoire.md`](../grimoire/grimoire.md). For agent, library, help, workspace, and shared support docs, route through their invocation hubs. For the canonical skill catalog, see [`../../docs/skills.md`](../../docs/skills.md).
+For grimoire operations, route to [[invocations/grimoire/grimoire|grimoire]]. For agent, library, help, workspace, and shared support docs, route through their invocation hubs. For the canonical skill catalog, see [[docs/skills|skills]].
 
 ## Available
 
 ### Improvement
 
-- **[improve_arcana.md](improve_arcana.md)** - Comprehensive Arcana improvement; orchestrates the validators and quality invocations. Skill: `/arc-improve`.
+- Arcana improvement -> [[invocations/arcana/improve_arcana|improve arcana]]
 
-Boundary enforcement lives in the grimoire layer: see [`../grimoire/validate_boundaries.md`](../grimoire/validate_boundaries.md) (skill: `/grm-validate-boundaries`). It can scan Arcana itself with the `--arcana` flag.
+Boundary enforcement lives in the grimoire layer: [[invocations/grimoire/validate_boundaries|validate boundaries]]. It can scan Arcana itself with the `--arcana` flag.
 
-### Validators (mechanical)
+### Validators
 
-Each runs independently or as part of `/arc-improve`. Each has its own dedicated skill (`/arc-validate-<name>`):
+- Directory/file integrity -> [[invocations/arcana/validators/validate_structure|validate structure]]
+- Encoding, line endings, BOMs, and mojibake -> [[invocations/arcana/validators/validate_encoding|validate encoding]]
+- Filesystem portability -> [[invocations/arcana/validators/validate_portability|validate portability]]
+- Snake_case path enforcement -> [[invocations/arcana/validators/validate_naming|validate naming]]
+- Hyphenated path examples -> [[invocations/arcana/validators/validate_semantics|validate semantics]]
+- Markdown and hub format -> [[invocations/arcana/validators/validate_format|validate format]]
+- Link resolution and hub route style -> [[invocations/arcana/validators/validate_links|validate links]]
+- Orphan detection -> [[invocations/arcana/validators/validate_orphans|validate orphans]]
+- Source provenance -> [[invocations/arcana/validators/validate_provenance|validate provenance]]
+- Credential and unsafe Python scan -> [[invocations/arcana/validators/validate_security|validate security]]
+- Skill reference resolution -> [[invocations/arcana/validators/validate_skill_refs|validate skill refs]]
+- Validator family hub -> [[invocations/arcana/validators/validators|validators]]
 
-- [`validators/validate_structure.md`](validators/validate_structure.md) - directory/file integrity
-- [`validators/validate_naming.md`](validators/validate_naming.md) - snake_case enforcement
-- [`validators/validate_semantics.md`](validators/validate_semantics.md) - hyphenated path examples in prose
-- [`validators/validate_format.md`](validators/validate_format.md) - markdown formatting
-- [`validators/validate_links.md`](validators/validate_links.md) - broken references
-- [`validators/validate_security.md`](validators/validate_security.md) - credentials & unsafe Python
+### Quality
 
-Run them all in one shot: `/arc-validate-all`. See [`validators/validators.md`](validators/validators.md) for orchestration details.
-
-### Quality (judgment-based)
-
-Manual passes for things validators can't measure:
-
-- [`quality/review_architecture.md`](quality/review_architecture.md) - whole-repo architecture and source-of-truth audit
-- [`quality/improve_documentation.md`](quality/improve_documentation.md) - duplication and clarity audit
-- [`quality/validate_rites.md`](quality/validate_rites.md) - rite-specific quality checks
-
-See [`quality/quality.md`](quality/quality.md) for usage notes.
+- Architecture and source-of-truth audit -> [[invocations/arcana/quality/review_architecture|review architecture]]
+- Documentation duplication and clarity audit -> [[invocations/arcana/quality/improve_documentation|improve documentation]]
+- Rite-specific quality checks -> [[invocations/arcana/quality/validate_rites|validate rites]]
+- Quality family hub -> [[invocations/arcana/quality/quality|quality]]
 
 ## When to run
 
 - Before any Arcana release
 - After bulk doc/rite changes
-- Monthly drift audit (run `/arc-validate-all` and review violations)
-- As phases of `/arc-improve` (the orchestrator handles ordering)
+- Monthly drift audit
+- As phases of `/arc-improve`

@@ -1,6 +1,6 @@
 ---
 name: {{SKILL_PREFIX}}-validate-orphans
-description: Detect pages no other page links to (orphans) - neither via markdown links nor wikilinks
+description: Detect pages no other page reaches through canonical wikilinks
 when_to_use: After bulk renames or after removing an Arcana hub/page; as a phase of `/arc-improve`. Cheap and read-only. For an active grimoire, use `/grm-validate-orphans`.
 user-invocable: true
 disable-model-invocation: true

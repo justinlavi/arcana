@@ -30,11 +30,11 @@ cooking-grimoire.md -> breads.md -> sourdough.md
 cooking-grimoire.md -> techniques.md -> lamination.md -> windowpane_test.md
 ```
 
-Both paths are deterministic. The structure stays only as deep as the topic warrants. Full rules in [docs/operating_model.md](docs/operating_model.md).
+Both paths are deterministic. The structure stays only as deep as the topic warrants. Full rules in [[docs/operating_model|operating model]].
 
 ### Storage layers
 
-A grimoire keeps four kinds of content side-by-side: **`sources/`** holds immutable artifacts the wiki cites; **`chapters/`** holds the LLM-authored wiki; **`inbox/`** is a transient drop zone for things waiting to be classified; **`log.md`** is an append-only record of every mutation. See [docs/operating_model.md](docs/operating_model.md) for ownership rules and the validator-enforced contracts.
+A grimoire keeps four kinds of content side-by-side: **`sources/`** holds immutable artifacts the wiki cites; **`chapters/`** holds the LLM-authored wiki; **`inbox/`** is a transient drop zone for things waiting to be classified; **`log.md`** is an append-only record of every mutation. See [[docs/operating_model|operating model]] for ownership rules and the validator-enforced contracts.
 
 ### Skills
 
@@ -64,7 +64,7 @@ Arcana ships universal operations every grimoire inherits:
 - **`/grm-register-skills`** — refresh Arcana skills plus the active grimoire's own skills.
 - **`/grm-create-chapter`**, **`/grm-analyze-semantics`** — and more.
 
-Arcana command families are prefix-explicit: `/arc-*` acts on Arcana/platform surfaces, `/grm-*` acts on an active grimoire, `/arc-library-*` acts on `~/grimoires/library.json`, `/arc-agent-*` acts on agent configuration, and `/arc-workspace-*` intentionally spans the local workspace. Full rules live in [docs/skill_schema.md](docs/skill_schema.md).
+Arcana command families are prefix-explicit: `/arc-*` acts on Arcana/platform surfaces, `/grm-*` acts on an active grimoire, `/arc-library-*` acts on `~/grimoires/library.json`, `/arc-agent-*` acts on agent configuration, and `/arc-workspace-*` intentionally spans the local workspace. Full rules live in [[docs/skill_schema|skill schema]].
 
 The human curates sources and asks questions. The LLM does the bookkeeping.
 
@@ -95,11 +95,11 @@ When you update Arcana, all your grimoires benefit — because they reference it
 ## Supported Agents
 
 Arcana automatically configures the agents it can safely write to. The current
-target matrix lives in [docs/agent_targets.md](docs/agent_targets.md):
+target matrix lives in [[docs/agent_targets|agent targets]]:
 
 - **Claude Code** — full skill registration; Arcana's `/arc-*` and `/grm-*` commands plus each grimoire's own commands
 - **Codex / ChatGPT** — pointer-only registration from the same source files
-- **GitHub Copilot, Cursor, hosted ChatGPT, and other agents** — manual instruction-block setup; see [docs/agent_configuration.md](docs/agent_configuration.md) for setup notes
+- **GitHub Copilot, Cursor, hosted ChatGPT, and other agents** — manual instruction-block setup; see [[docs/agent_configuration|agent configuration]] for setup notes
 
 ---
 
@@ -111,11 +111,11 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 
 The summoning rite installs **Arcana** — the framework — configures your AI agents, and registers the `/arc-*` and `/grm-*` skill sets. If you have existing grimoires hosted on GitHub or GitLab, the rite can discover and clone them too. Otherwise, skip straight to building your first grimoire from scratch after Arcana is up.
 
-Detailed installer mode rules live in [docs/summoning_contract.md](docs/summoning_contract.md).
+Detailed installer mode rules live in [[docs/summoning_contract|summoning contract]].
 
 Open a new agent session and run `/arc-help` to see every available command, or run `/grm-create` to start your first grimoire.
 
--> [Full installation guide](docs/installation.md) - [5-minute smoke test](docs/installation.md#verify-your-install-5-minute-smoke-test)
+-> [[docs/installation|installation]] - [[docs/installation#verify-your-install-5-minute-smoke-test|installation]]
 
 ---
 
@@ -169,15 +169,15 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 
 | | |
 |---|---|
-| [Installation](docs/installation.md) | One-command setup, manual setup, 5-minute smoke test, troubleshooting |
-| [Agent Targets](docs/agent_targets.md) | Supported agent target registry |
-| [Agent Configuration](docs/agent_configuration.md) | Claude Code, Codex, Copilot, Cursor |
-| [Skill Catalog](docs/skills.md) | Every `/arc-*` command with descriptions |
-| [Skill Schema](docs/skill_schema.md) | Command-family naming rules |
-| [Operating Model](docs/operating_model.md) | Storage layers and routing |
-| [Page Schema](docs/page_schema.md) | Frontmatter spec for every page |
-| [Obsidian Setup](docs/obsidian.md) | Open as a vault; graph-view color groups |
-| [Reference](docs/reference.md) | Terminology, schemas, path conventions |
-| [Script vs AI](docs/script_vs_ai.md) | When to use rites vs invocations |
-| [Governance](docs/governance.md) | Maintaining and versioning Arcana |
-| [Full Index](arcana.md) | Navigate everything |
+| [[docs/installation]] | One-command setup, manual setup, 5-minute smoke test, troubleshooting |
+| [[docs/agent_targets]] | Supported agent target registry |
+| [[docs/agent_configuration]] | Claude Code, Codex, Copilot, Cursor |
+| [[docs/skills]] | Every `/arc-*` command with descriptions |
+| [[docs/skill_schema]] | Command-family naming rules |
+| [[docs/operating_model]] | Storage layers and routing |
+| [[docs/page_schema]] | Frontmatter spec for every page |
+| [[docs/obsidian]] | Open as a vault; graph-view color groups |
+| [[docs/reference]] | Terminology, schemas, path conventions |
+| [[docs/script_vs_ai]] | When to use rites vs invocations |
+| [[docs/governance]] | Maintaining and versioning Arcana |
+| [[arcana]] | Navigate everything |

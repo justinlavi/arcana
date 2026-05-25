@@ -94,7 +94,7 @@ If `docs/reference.md` exists, treat it as authoritative. Otherwise propose cano
 ### 6. Token efficiency
 
 - Compare average hops to topic depth: a simple FAQ should be 2-3 hops, a deeply technical sub-topic may justifiably be 4-5. Flag mismatches.
-- Hub file token cost (roughly word count — 1.3). Flag bloated hubs.
+- Hub shape cost: count route lines, non-route prose lines, and multi-destination entries. Do not use raw word count as the primary signal because full-path wikilinks intentionally make route lines longer.
 - Cumulative cost of long names across a typical multi-chapter read.
 
 ### 7. Generate recommendations

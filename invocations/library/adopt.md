@@ -60,5 +60,5 @@ If the grimoire ships skills, also run `/grm-register-skills` from inside that g
 
 ## Related
 
-- Sync library: [`sync.md`](sync.md)
-- Create new grimoire: [`../grimoire/create_grimoire.md`](../grimoire/create_grimoire.md)
+- Sync library: [[invocations/library/sync|sync]]
+- Create new grimoire: [[invocations/grimoire/create_grimoire|create grimoire]]

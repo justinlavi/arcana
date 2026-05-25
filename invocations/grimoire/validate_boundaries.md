@@ -13,7 +13,7 @@ last_verified: 2026-05-15
 
 Judgment-based scan that enforces the magical/practical boundary: magical terminology (Invocation, Formula, Rite, Grimoire, `/arc-*`) is reserved for Arcana's system layer; grimoires use practical terminology (templates, scripts, snippets, guides).
 
-Canonical definition and full term mapping: [`docs/reference.md`](../../docs/reference.md) A "The Magical Boundary". Do not redefine the rules here - read that section first, then apply it.
+Canonical definition and full term mapping: [[docs/reference|reference]] A "The Magical Boundary". Do not redefine the rules here - read that section first, then apply it.
 
 ## Invocation
 
@@ -112,8 +112,8 @@ For each violation, report file, line, offending text, and suggested fix. Group 
 
 ## Related
 
-- **Reference**: [`docs/reference.md`](../../docs/reference.md) A "The Magical Boundary" (canonical rules and term mapping)
-- **Operating model**: [`docs/operating_model.md`](../../docs/operating_model.md) (why the boundary exists)
+- **Reference**: [[docs/reference|reference]] A "The Magical Boundary" (canonical rules and term mapping)
+- **Operating model**: [[docs/operating_model|operating model]] (why the boundary exists)
 - **Semantic naming**: `/grm-analyze-semantics` (judgment-based naming review)
 - **Orchestrator (Arcana)**: `/arc-improve`
 - **Orchestrator (grimoire)**: `/grm-improve`

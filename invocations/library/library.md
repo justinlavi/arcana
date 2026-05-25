@@ -7,17 +7,17 @@ tags: [arcana/invocations, type/hub, scope/library, hub/chapter]
 
 # Library Invocations
 
-Library operations - invocations that read or update `~/grimoires/library.json`, the local registry of installed grimoires.
+Library operations that read or update `~/grimoires/library.json`, the local registry of installed grimoires.
 
 ## Available
 
 | Invocation | Skill | What it does |
 |---|---|---|
-| [sync.md](sync.md) | `/arc-library-sync` | Reconcile the local library against actual grimoire directories under `~/grimoires/` |
-| [adopt.md](adopt.md) | `/arc-library-adopt` | Add a `grimoire.json` manifest to an unmanaged grimoire directory |
+| [[invocations/library/sync|sync]] | `/arc-library-sync` | Reconcile the local library against actual grimoire directories |
+| [[invocations/library/adopt|adopt]] | `/arc-library-adopt` | Add a `grimoire.json` manifest to an unmanaged grimoire directory |
 
 ## Related
 
-- Agent skill registration: [`../agent/register_skills.md`](../agent/register_skills.md)
-- Grimoire creation: [`../grimoire/create_grimoire.md`](../grimoire/create_grimoire.md)
-- Library schema: [`../../docs/reference.md`](../../docs/reference.md)
+- Agent skill registration -> [[invocations/agent/register_skills|register skills]]
+- Grimoire creation -> [[invocations/grimoire/create_grimoire|create grimoire]]
+- Library schema -> [[docs/reference|reference]]

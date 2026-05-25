@@ -19,9 +19,9 @@ The magical/practical boundary, page schema, hub convention, and storage layers 
 
 Anything you author following this template must conform to:
 
-- **Page schema** — every authored page carries YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`). Required-fields matrix in [`docs/page_schema.md`](../../docs/page_schema.md).
-- **Magical boundary** — system terminology (invocation, formula, rite, hub) lives in Arcana only; chapter content uses domain-natural names (`templates/`, `scripts/`, `policies/`, `recipes/`). Full rules in [`invocations/grimoire/validate_boundaries.md`](../grimoire/validate_boundaries.md).
-- **Hub convention** — every folder F has a hub at `F/<basename(F)>.md`. Depth is open-ended. See [`docs/operating_model.md`](../../docs/operating_model.md).
+- **Page schema** — every authored page carries YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`). Required-fields matrix in [[docs/page_schema|page schema]].
+- **Magical boundary** — system terminology (invocation, formula, rite, hub) lives in Arcana only; chapter content uses domain-natural names (`templates/`, `scripts/`, `policies/`, `recipes/`). Full rules in [[invocations/grimoire/validate_boundaries|validate boundaries]].
+- **Hub convention** — every folder F has a hub at `F/<basename(F)>.md`. Depth is open-ended. See [[docs/operating_model|operating model]].
 
 ---
 
@@ -34,10 +34,10 @@ Use this four-phase template when:
 
 ## When NOT to follow this pattern
 
-- The user has a single source artifact to absorb — use [`ingest.md`](../grimoire/ingest.md).
-- The user wants a chat answer promoted to a page — use [`file_answer.md`](../grimoire/file_answer.md).
+- The user has a single source artifact to absorb — use [[invocations/grimoire/ingest|ingest]].
+- The user wants a chat answer promoted to a page — use [[invocations/grimoire/file_answer|file answer]].
 - The user wants to scaffold a new chapter or grimoire — use the `create_*` invocations.
-- The user is auditing or reorganizing — use [`improve_grimoire.md`](../grimoire/improve_grimoire.md) or [`lint.md`](../grimoire/lint.md).
+- The user is auditing or reorganizing — use [[invocations/grimoire/improve_grimoire|improve grimoire]] or [[invocations/grimoire/lint|lint]].
 
 ---
 
@@ -90,7 +90,7 @@ Use this four-phase template when:
 7. **Canonical source selection.** When multiple copies of the same authoritative material exist, prefer the system-of-record (top-level repo, original publication) over embedded or vendored copies, unless the user explicitly targets a derivative.
 8. **Never store implementation values; provide query instructions instead.** Forbidden: hard-coded version numbers, configuration values, or other facts that change at the source's pace. Required: provide a `grep`/`find`/`git`-style command the reader can run to extract the current value. Templates under `chapters/<chapter>/templates/` are exempt — they are prescriptive standards, not snapshots.
 9. **Magical boundary** — domain content uses practical folder names (`templates/`, `scripts/`, `snippets/`, `policies/`, `recipes/`, `playbooks/`); never `invocations/`, `formulae/`, or `rites/`. Those exist only in Arcana.
-10. **Frontmatter required.** Every authored page declares its `type`, `title`, `tags`, `authority`, `sources` (when external/hybrid), and `last_verified`. See [`docs/page_schema.md`](../../docs/page_schema.md).
+10. **Frontmatter required.** Every authored page declares its `type`, `title`, `tags`, `authority`, `sources` (when external/hybrid), and `last_verified`. See [[docs/page_schema|page schema]].
 11. **If blocked by missing pointers**, make a best-effort guess at the canonical entry point and proceed. Ask the user one targeted question only if you cannot continue responsibly.
 
 ---
