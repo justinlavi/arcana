@@ -30,6 +30,7 @@ Breaking semantic cleanup:
 - Normalized Summoning Rite checksum verification so Windows-published CRLF `.sha256` assets verify correctly under Git Bash, and made future checksum files write LF.
 - Added release-asset download progress, byte-count reporting, explicit retry logs, and connection/stall safeguards to the Summoning Rite bootstrap so slow downloads no longer look like silent hangs.
 - Added a Python download fallback and shorter quiet-download stall timeout for Summoning Rite checksums and companion scripts when Git Bash curl/wget is flaky.
+- Updated the Summoning Rite release workflow to Node 24-backed GitHub Actions and pinned Windows builds to `windows-2025-vs2026` to remove deprecation and runner migration warnings.
 - Clarified the grimoire-first installation path in the installation guide.
 - Extended format validation to scan grimoire roots, catch unclosed fenced code blocks, and reject backtick-style Markdown tree branch markers.
 

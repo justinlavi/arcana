@@ -45,14 +45,14 @@ jobs:
           - ubuntu-22.04
           - macos-15-intel
           - macos-latest
-          - windows-latest
+          - windows-2025-vs2026
 
     steps:
       - name: Check out Arcana
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
@@ -65,7 +65,7 @@ jobs:
         run: python rites/build_summon_binary.py --clean
 
       - name: Upload workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: grimoire-summon-${{ matrix.os }}
           path: |
@@ -79,12 +79,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out Arcana
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Download built assets
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: dist/release
           merge-multiple: true

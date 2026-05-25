@@ -52,6 +52,8 @@ Artifacts are written to `dist/summon/`.
 
 Workflow: `.github/workflows/summon-release.yml`
 
+The workflow uses GitHub-maintained Node 24-backed action majors (`checkout@v6`, `setup-python@v6`, `upload-artifact@v6`, `download-artifact@v7`) to avoid the GitHub Actions Node 20 deprecation warnings. The Windows build uses the explicit `windows-2025-vs2026` runner label so the Visual Studio 2026 image migration is intentional rather than an implicit `windows-latest` redirect.
+
 Manual test build:
 1. Open **Actions** in GitHub.
 2. Run **Build Summoning Rite Releases**.
