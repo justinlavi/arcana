@@ -4,12 +4,16 @@ title: "Agent Configuration"
 aliases: ["agent-config", "agent-setup"]
 tags: [type/reference, arcana/docs]
 authority: grimoire
-last_verified: 2026-05-12
+last_verified: 2026-05-25
 ---
 
 # Arcana Agent Configuration
 
-Per-agent setup for using Arcana and grimoire skills (Claude Code, Codex/ChatGPT, Copilot, etc.). The summoning rite ([installation.md](installation.md)) configures the supported agents automatically — this doc is for manual configuration, additional agents, and per-platform nuances.
+Per-agent setup for using Arcana and grimoire skills. The agent support matrix
+lives in [agent_targets.md](agent_targets.md), backed by
+[`rites/data/agent_targets.json`](../rites/data/agent_targets.json). The
+summoning rite ([installation.md](installation.md)) configures automatic local
+targets from that registry.
 
 For installation, see [installation.md](installation.md). For library and manifest schemas, see [reference.md](reference.md). For the current Arcana skill catalog, see [skills.md](skills.md). For command naming rules, see [skill_schema.md](skill_schema.md).
 
@@ -19,29 +23,19 @@ For installation, see [installation.md](installation.md). For library and manife
 
 Each agent reads a "system instructions" file. Grimoire needs a small block in that file so the agent knows how to route through the library.
 
-**Canonical block**: [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md) — single source of truth for the instructions text. Copy this into the agent's instruction file. Do not duplicate the block in any other file — edit the canonical and the change propagates wherever it's referenced.
+**Canonical block**: [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md) — single source of truth for the instructions text. Copy this into manual targets listed in [agent_targets.md](agent_targets.md). Do not duplicate the block in any other file — edit the canonical and the change propagates wherever it's referenced.
 
-| Agent | Instruction file | Auto-configured by summoning rite? |
-|---|---|---|
-| Claude Code | `~/.claude/CLAUDE.md` | Yes |
-| Codex / ChatGPT (CLI) | `~/.codex/AGENTS.md` | Yes |
-| ChatGPT (hosted) | "Custom Instructions" field | No (paste manually) |
-| GitHub Copilot | `.github/copilot_instructions.md` | No (add manually; trim to the four key sections if length-limited) |
-
-The block never changes when grimoires are added or removed — those changes happen in the library, not the agent file. When Arcana itself changes the block, use `/arc-agent-update` to refresh existing `CLAUDE.md`, `AGENTS.md`, or other agent instruction files while preserving unrelated user instructions.
+The block never changes when grimoires are added or removed — those changes happen in the library, not the agent file. When Arcana itself changes the block, use `/arc-agent-update` to refresh automatic registry targets or explicitly supplied agent instruction files while preserving unrelated user instructions.
 
 ---
 
 ## Skill Registration
 
-Skills are `SKILL.md` files registered into agent-specific skill directories:
+Skills are `SKILL.md` files registered into agent-specific skill directories
+declared in [agent_targets.md](agent_targets.md). Registry skill modes define
+whether a target receives full skill folders or pointer-only `SKILL.md` files.
 
-| Agent | Skill directory | Files copied per skill |
-|---|---|---|
-| Claude Code | `~/.claude/skills/<name>/` | All files under `skills/<family>/<slug>/` for Arcana, or `skills/<slug>/` for a grimoire |
-| Codex / ChatGPT | `~/.codex/skills/<name>/` | `SKILL.md` only (pointer-only) |
-
-Both targets are written by the same rite:
+All registration targets are written by the same rite:
 
 ```bash
 python3 ~/grimoires/arcana/rites/register_skills.py            # all targets
@@ -49,6 +43,9 @@ python3 ~/grimoires/arcana/rites/register_skills.py --agent claude
 python3 ~/grimoires/arcana/rites/register_skills.py --agent codex
 python3 ~/grimoires/arcana/rites/register_skills.py --grimoire . # Arcana + active grimoire
 ```
+
+The valid `--agent` values come from
+[`rites/data/agent_targets.json`](../rites/data/agent_targets.json).
 
 Invoke `/arc-agent-register-skills` for a global refresh of Arcana plus every installed grimoire. Invoke `/grm-register-skills` from inside one grimoire to refresh Arcana plus that active grimoire only. The summoning rite runs the global registration for you on install.
 

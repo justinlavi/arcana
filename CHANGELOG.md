@@ -14,6 +14,8 @@
   mutating-rite plan/apply/idempotency contract.
 - Added `rites/data/summon_contract.json` and `docs/summoning_contract.md` as
   the validated Summoning Rite behavior contract.
+- Added `rites/data/agent_targets.json` and `docs/agent_targets.md` as the
+  validated registry for agent instruction files and skill registration modes.
 - Added structured validator diagnostics through `--format json` and
   `--format jsonl` on every Arcana validator and the validator orchestrator.
 
@@ -36,6 +38,9 @@
   unowned target collisions, detect grimoire prefix collisions before writing,
   rewrite generated pointer skills that predate ownership metadata, and clean
   only owned stale generated skills.
+- Updated skill registration, Summoning Rite agent injection, GUI settings,
+  diagnostics, source bootstrap, and release bundling to read agent targets
+  from the registry.
 
 ## [1.0.0] - 2026-05-25
 

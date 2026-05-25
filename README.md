@@ -93,12 +93,12 @@ When you update Arcana, all your grimoires benefit — because they reference it
 
 ## Supported Agents
 
-Arcana automatically configures the agents it can safely write to, and documents
-manual setup for the rest:
+Arcana automatically configures the agents it can safely write to. The current
+target matrix lives in [docs/agent_targets.md](docs/agent_targets.md):
 
 - **Claude Code** — full skill registration; Arcana's `/arc-*` and `/grm-*` commands plus each grimoire's own commands
 - **Codex / ChatGPT** — pointer-only registration from the same source files
-- **GitHub Copilot, Cursor, hosted ChatGPT, and other agents** — manual instruction-block setup; see [docs/agent_configuration.md](docs/agent_configuration.md) for exact files and support level
+- **GitHub Copilot, Cursor, hosted ChatGPT, and other agents** — manual instruction-block setup; see [docs/agent_configuration.md](docs/agent_configuration.md) for setup notes
 
 ---
 
@@ -169,6 +169,7 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 | | |
 |---|---|
 | [Installation](docs/installation.md) | One-command setup, manual setup, 5-minute smoke test, troubleshooting |
+| [Agent Targets](docs/agent_targets.md) | Supported agent target registry |
 | [Agent Configuration](docs/agent_configuration.md) | Claude Code, Codex, Copilot, Cursor |
 | [Skill Catalog](docs/skills.md) | Every `/arc-*` command with descriptions |
 | [Skill Schema](docs/skill_schema.md) | Command-family naming rules |

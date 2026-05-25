@@ -428,14 +428,16 @@ else
     fi
     TEMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/grimoire-summon.XXXXXX")"
     SCRIPT_DIR="$TEMP_DIR/rites"
-    mkdir -p "$SCRIPT_DIR/templates"
+    mkdir -p "$SCRIPT_DIR/templates" "$SCRIPT_DIR/data"
     echo "  [INFO]  Downloading summoning companion scripts..."
     # summon.py is the dispatcher and summon_core.py is the install engine.
-    # The Grimoire block template is canonical and must travel with source
+    # Agent-target and Grimoire block contracts must travel with source
     # bootstrap installs. summon_gui.py is only needed when the GUI runs, so
     # skip it for --cli/-h/--help to keep the source bootstrap minimal.
     download_file "$ARCANA_RAW_BASE/rites/summon.py" "$SCRIPT_DIR/summon.py"
     download_file "$ARCANA_RAW_BASE/rites/summon_core.py" "$SCRIPT_DIR/summon_core.py"
+    download_file "$ARCANA_RAW_BASE/rites/agent_targets.py" "$SCRIPT_DIR/agent_targets.py"
+    download_file "$ARCANA_RAW_BASE/rites/data/agent_targets.json" "$SCRIPT_DIR/data/agent_targets.json"
     download_file "$ARCANA_RAW_BASE/rites/templates/grimoire_block.md" "$SCRIPT_DIR/templates/grimoire_block.md"
     if should_download_gui_source "$@"; then
         download_file "$ARCANA_RAW_BASE/rites/summon_gui.py" "$SCRIPT_DIR/summon_gui.py" || \

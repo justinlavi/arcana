@@ -76,10 +76,9 @@ This refreshes Arcana-shipped `/arc-*` and `/grm-*` commands and the active grim
 
 ### 6. Refresh the agent routing block if needed
 
-Compare `ARCANA_HOME/rites/templates/grimoire_block.md` against the marked Grimoire block in:
-
-- `~/.claude/CLAUDE.md`
-- `~/.codex/AGENTS.md`
+Read `ARCANA_HOME/rites/data/agent_targets.json` and compare
+`ARCANA_HOME/rites/templates/grimoire_block.md` against the marked Grimoire
+block in automatic instruction targets (`instruction_mode: auto`).
 
 If a marked block exists and differs, replace only the marked block. If the block boundaries are ambiguous, stop and ask. Preserve all non-Grimoire content exactly. This follows the same safety rules as `/arc-agent-update`, but is included here so the normal update workflow stays one command.
 
@@ -110,3 +109,4 @@ Include the resolved active grimoire path in the summary.
 - Active-grimoire skill registration: [`register_skills.md`](register_skills.md)
 - Global agent registration: [`../agent/register_skills.md`](../agent/register_skills.md)
 - Agent block update: [`../agent/update_agent_block.md`](../agent/update_agent_block.md)
+- Agent targets: [`../../docs/agent_targets.md`](../../docs/agent_targets.md)

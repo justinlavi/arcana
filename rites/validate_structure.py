@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 from _lib import default_arcana_root
+from agent_targets import target_entries, validate_agent_targets
 from diagnostics import DiagnosticReporter, add_output_format_arg
 from rite_profiles import profile_entries, validate_rite_profiles
 from summon_contract import mode_entries, validate_summon_contract
@@ -54,6 +55,7 @@ REQUIRED_FILES = [
     "rites/summon.sh",
     "rites/register_skills.py",
     "docs/installation.md",
+    "docs/agent_targets.md",
     "docs/summoning_contract.md",
     "docs/agent_configuration.md",
     "docs/operating_model.md",
@@ -212,6 +214,28 @@ def main():
     if human:
         print()
 
+    if human:
+        print("Checking agent target registry...")
+    agent_target_contract, agent_target_errors = validate_agent_targets(ARCANA_ROOT)
+    for error in agent_target_errors:
+        reporter.error(
+            error["code"],
+            error["message"],
+            path=error.get("path"),
+            hint=error.get("hint"),
+        )
+        if human:
+            print(f"  AGENT   {error.get('path', '-')}: {error['message']}")
+    agent_target_count = (
+        len(target_entries(agent_target_contract))
+        if agent_target_contract is not None
+        else 0
+    )
+    if human and not agent_target_errors:
+        print(f"  OK       {agent_target_count} agent target(s)")
+    if human:
+        print()
+
     if not human:
         reporter.emit(
             args.format,
@@ -221,6 +245,7 @@ def main():
                 "hub_directories": len(HUB_DIRS),
                 "rite_profiles": rite_profile_count,
                 "summon_modes": summon_mode_count,
+                "agent_targets": agent_target_count,
             },
         )
         return reporter.exit_code()

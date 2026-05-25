@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "title": "Arcana Agent Target Registry",
+  "description": "Authoritative registry for agent instruction files, skill registration behavior, and automatic configuration support.",
+  "targets": [
+    {
+      "id": "claude",
+      "label": "Claude Code",
+      "instruction_target": "~/.claude/CLAUDE.md",
+      "instruction_mode": "auto",
+      "skill_target": "~/.claude/skills",
+      "skill_mode": "full",
+      "auto_configured": true,
+      "supports_model_invocation": true,
+      "summary": "Arcana injects the Grimoire block and registers full skill folders.",
+      "limitations": []
+    },
+    {
+      "id": "codex",
+      "label": "Codex / ChatGPT CLI",
+      "instruction_target": "~/.codex/AGENTS.md",
+      "instruction_mode": "auto",
+      "skill_target": "~/.codex/skills",
+      "skill_mode": "pointer",
+      "auto_configured": true,
+      "supports_model_invocation": false,
+      "summary": "Arcana injects the Grimoire block and registers pointer-only SKILL.md folders.",
+      "limitations": [
+        "Registered skill directories contain SKILL.md only."
+      ]
+    },
+    {
+      "id": "chatgpt-hosted",
+      "label": "ChatGPT (hosted)",
+      "instruction_target": "Custom Instructions",
+      "instruction_mode": "manual",
+      "skill_target": null,
+      "skill_mode": "none",
+      "auto_configured": false,
+      "supports_model_invocation": false,
+      "summary": "Paste the Grimoire block manually into Custom Instructions.",
+      "limitations": [
+        "No local skill directory is available to Arcana."
+      ]
+    },
+    {
+      "id": "github-copilot",
+      "label": "GitHub Copilot",
+      "instruction_target": ".github/copilot_instructions.md",
+      "instruction_mode": "manual",
+      "skill_target": null,
+      "skill_mode": "none",
+      "auto_configured": false,
+      "supports_model_invocation": false,
+      "summary": "Add the Grimoire block manually to repository instructions when useful.",
+      "limitations": [
+        "Project-level files require explicit user approval before editing.",
+        "Length limits may require trimming to the core routing sections."
+      ]
+    },
+    {
+      "id": "cursor",
+      "label": "Cursor",
+      "instruction_target": "Project or user rules",
+      "instruction_mode": "manual",
+      "skill_target": null,
+      "skill_mode": "none",
+      "auto_configured": false,
+      "supports_model_invocation": false,
+      "summary": "Add the Grimoire block manually to Cursor rules.",
+      "limitations": [
+        "Arcana does not manage Cursor rule files automatically."
+      ]
+    }
+  ]
+}

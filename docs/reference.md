@@ -72,7 +72,7 @@ The current Arcana skill catalog lives in **[skills.md](skills.md)** (auto-gener
 
 Skill names use command-family prefixes: Arcana ships `arc-*` for platform operations and `grm-*` for universal grimoire operations. Each grimoire ships `{skill prefix}-*` from its own manifest. The canonical schema is [skill_schema.md](skill_schema.md).
 
-Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` and the registration rite substitutes the command-family or grimoire skill prefix at install time. Skills register to `~/.claude/skills/` (Claude Code) and `~/.codex/skills/` (Codex/ChatGPT, pointer-only).
+Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` and the registration rite substitutes the command-family or grimoire skill prefix at install time. Skill targets and copy modes are defined in [agent_targets.md](agent_targets.md).
 
 ---
 
@@ -160,7 +160,7 @@ When creating a new grimoire, `/grm-create` prompts for the skill prefix and wri
 
 **Why?** Library keys match the actual folder slug. `cooking-grimoire` resolves to `~/grimoires/cooking-grimoire/`. `ARCANA_HOME` is the exception — Arcana is the engine, not a grimoire.
 
-**In `CLAUDE.md` and `AGENTS.md`**, the library maps keys to actual filesystem paths:
+**In automatic agent instruction files**, the library maps keys to actual filesystem paths:
 ```markdown
 **Library**: `~/grimoires/library.json`
 

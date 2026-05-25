@@ -12,7 +12,7 @@ owned cleanups, preserved unowned directories, and collisions without writing.
 The default mode applies the same plan to the selected agent skill targets.
 
 Usage:
-    python3 register_skills.py [--agent all|claude|codex] [--grimoire PATH] [--dry-run]
+    python3 register_skills.py [--agent all|TARGET] [--grimoire PATH] [--dry-run]
 
 Exit codes: 0 = plan completed or apply completed, 1 = apply blocked by
 collision, 2 = argparse invalid arguments.
@@ -29,6 +29,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agent_targets import skill_registration_targets
 from _lib import (
     SKILL_PREFIX_RE,
     SKILL_SLUG_RE,
@@ -55,18 +56,7 @@ GENERATED_SOURCE_RE = re.compile(
     re.DOTALL,
 )
 
-SKILL_TARGETS = {
-    "claude": {
-        "label": "Claude Code",
-        "path": Path.home() / ".claude" / "skills",
-        "pointer_only": False,
-    },
-    "codex": {
-        "label": "Codex/ChatGPT",
-        "path": Path.home() / ".codex" / "skills",
-        "pointer_only": True,
-    },
-}
+SKILL_TARGETS = skill_registration_targets(ARCANA_PATH)
 
 
 @dataclass(frozen=True)
@@ -809,9 +799,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Grimoire Skill Registration")
     parser.add_argument(
         "--agent",
-        choices=["all", "claude", "codex"],
+        choices=["all", *sorted(SKILL_TARGETS)],
         default="all",
-        help="Agent skill target to register (default: all)",
+        help="Agent skill target from rites/data/agent_targets.json (default: all)",
     )
     parser.add_argument(
         "--grimoire",

@@ -47,65 +47,9 @@ Priority labels:
 
 | ID | Priority | Item | Primary owner | Why deferred |
 |---|---|---|---|---|
-| ST-007 | P2 | Agent target registry and instruction-block single source | agent docs, registration/update rites | Agent support is described across several surfaces and can drift. |
 | ST-008 | P2 | Grimoire validation orchestrator and profiles | grimoire validators, `/grm-improve` | Would add or reshape public validation workflow. |
 | ST-009 | P3 | Richer generated skill catalog | `rites/sync_docs.py`, `docs/skills.md` | Needs catalog rendering and tests against the command-surface contract. |
 | ST-010 | P3 | Source wrapper and provenance boundary clarification | source formula, provenance docs/validators | Needs design judgment before adding mechanical checks. |
-
-## ST-007: Agent Target Registry And Instruction-Block Single Source
-
-Priority: P2
-
-Status: Deferred
-
-Primary owner: `rites/register_skills.py`, agent update rites,
-`rites/templates/grimoire_block.md`, `docs/agent_configuration.md`,
-`docs/installation.md`
-
-Current evidence:
-
-- Agent support appears in installation docs, agent configuration docs,
-  registration rites, update invocations, and the injected Grimoire block.
-- Some agents support skill registration and instruction-file updates; others
-  use manual instruction blocks only.
-- This distinction is important and has already required wording fixes.
-
-Finding:
-
-Agent support is a matrix, but Arcana does not yet have one source that both
-code and docs can consult.
-
-Desired S-tier endpoint:
-
-- A small agent-target registry that names each supported or documented agent,
-  its instruction file, skill directory behavior, auto-configuration support,
-  and limitations.
-- Docs and registration/update logic either read that registry or are checked
-  against it.
-- Adding a new agent target becomes a data change plus focused implementation,
-  not a hunt through prose.
-
-First implementable slice:
-
-1. Inventory current agent targets in a structured file or canonical doc
-   table.
-2. Add tests or a validator that checks docs mention only registered targets.
-3. Migrate registration/update docs to link to the registry.
-
-Blast radius:
-
-Medium. The first slice is mostly contract creation; later slices may change
-registration and update logic.
-
-Validation profile:
-
-- New registry consistency test or validator.
-- `python rites/validate.py --parallel`
-
-Read-path delta:
-
-Users and agents can learn "what does Arcana actually configure for this
-agent?" from one target matrix.
 
 ## ST-008: Grimoire Validation Orchestrator And Profiles
 
@@ -265,11 +209,10 @@ create a wrapper, cite a raw file, or cite an external URL.
 
 ## Suggested Implementation Sequence
 
-1. ST-007 before adding or reshaping agent targets.
-2. ST-008 before adding `grm-validate-all`; any new command must update
+1. ST-008 before adding `grm-validate-all`; any new command must update
    `rites/data/command_surface.json`.
-3. ST-009 can now render richer metadata from the command-surface contract.
-4. ST-010 after the validation and catalog contracts settle.
+2. ST-009 can now render richer metadata from the command-surface contract.
+3. ST-010 after the validation and catalog contracts settle.
 
 ## Update Triggers
 

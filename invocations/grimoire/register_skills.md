@@ -65,7 +65,12 @@ python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --agent co
 python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --agent claude
 ```
 
+Supported `--agent` values come from
+`ARCANA_HOME/rites/data/agent_targets.json`; see
+`ARCANA_HOME/docs/agent_targets.md` for the human-readable matrix.
+
 ## Related
 
 - Global registration: [`../agent/register_skills.md`](../agent/register_skills.md)
+- Agent targets: [`../../docs/agent_targets.md`](../../docs/agent_targets.md)
 - Agent configuration: [`../../docs/agent_configuration.md`](../../docs/agent_configuration.md)

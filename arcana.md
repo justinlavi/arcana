@@ -24,6 +24,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 - [README.md](README.md) — Overview and architecture
 - [docs/installation.md](docs/installation.md) — Summoning rite, manual install, 5-minute smoke test
 - [docs/summoning_contract.md](docs/summoning_contract.md) - Summoning Rite behavior contract and mode matrix
+- [docs/agent_targets.md](docs/agent_targets.md) - Supported agent target registry
 - [docs/agent_configuration.md](docs/agent_configuration.md) — Per-agent setup (Claude / Codex / Copilot)
 - [docs/skills.md](docs/skills.md) — Canonical Arcana skill catalog (auto-generated)
 - [docs/skill_schema.md](docs/skill_schema.md) — Command-family skill naming schema
@@ -106,6 +107,7 @@ How Arcana is laid out — for the rules themselves, follow the links:
 ## Rites
 
 - [rites/summon.sh](rites/summon.sh) — One-command summoning
+- [rites/agent_targets.py](rites/agent_targets.py) - Agent target registry loader and validator
 - [rites/register_skills.py](rites/register_skills.py) — Skill registration
 - [rites/sync_library.py](rites/sync_library.py) — Library reconciliation
 - [rites/sync_docs.py](rites/sync_docs.py) — Generate `docs/skills.md`

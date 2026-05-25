@@ -4,7 +4,7 @@ title: "Update Agent Grimoire Block"
 aliases: ["update-agent-block", "refresh-agent-block", "sync-agent-instructions"]
 tags: [arcana/invocations, type/playbook, scope/agent]
 authority: grimoire
-last_verified: 2026-05-18
+last_verified: 2026-05-25
 ---
 
 # Invocation: Update Agent Grimoire Block
@@ -25,10 +25,10 @@ Optional user text may name explicit files to update.
 
 ## Default Targets
 
-Inspect existing files only unless the user explicitly asks to create missing ones:
-
-- `~/.claude/CLAUDE.md`
-- `~/.codex/AGENTS.md`
+Inspect existing files only unless the user explicitly asks to create missing
+ones. Default automatic targets come from
+`ARCANA_HOME/rites/data/agent_targets.json` entries with `instruction_mode:
+auto`; see `ARCANA_HOME/docs/agent_targets.md` for the current matrix.
 
 If the user provides paths, inspect those too. If the current repository contains `AGENTS.md`, `CLAUDE.md`, `.github/copilot_instructions.md`, or similarly named agent instruction files, mention them as candidates but ask before modifying project-level files unless the user explicitly included them.
 
@@ -48,7 +48,6 @@ For each candidate file:
 2. Read the full file before editing.
 3. Determine whether it contains a Grimoire block:
   - Preferred: text between `<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->` and `<!-- END GRIMOIRE KNOWLEDGE BASE -->`.
-  - Legacy: a section headed `## Grimoire Knowledge Base`; the block runs until the next level-two heading (`## `) or end of file.
   - Ambiguous: multiple Grimoire sections, malformed markers, or surrounding text that looks user-authored. Stop and ask before editing that file.
 
 ### 3. Patch conservatively
@@ -56,7 +55,6 @@ For each candidate file:
 Apply the smallest safe edit:
 
 - Existing marked block: replace only the marked region with the canonical block.
-- Existing legacy block: replace only the `## Grimoire Knowledge Base` section with the canonical marked block.
 - No existing block in an existing default target: insert the canonical block after the first top-level heading if there is one, otherwise append it to the end. If the file is project-level or user-specified but not a default target, ask before inserting.
 
 Never rewrite, sort, reflow, or deduplicate non-Grimoire content. Preserve frontmatter, comments, headings, personal instructions, project rules, and unrelated agent configuration exactly.
@@ -86,5 +84,6 @@ This skill updates instruction files only. If the user also needs newly added sk
 ## Related
 
 - Canonical block: `ARCANA_HOME/rites/templates/grimoire_block.md`
+- Agent targets: `ARCANA_HOME/docs/agent_targets.md`
 - Agent configuration: `ARCANA_HOME/docs/agent_configuration.md`
 - Skill registration: `/arc-agent-register-skills`

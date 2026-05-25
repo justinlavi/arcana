@@ -60,8 +60,13 @@ python3 ARCANA_HOME/rites/register_skills.py --agent codex
 python3 ARCANA_HOME/rites/register_skills.py --agent claude
 ```
 
+Supported `--agent` values come from
+`ARCANA_HOME/rites/data/agent_targets.json`; see
+`ARCANA_HOME/docs/agent_targets.md` for the human-readable matrix.
+
 ## Related
 
 - Active-grimoire registration: [`../grimoire/register_skills.md`](../grimoire/register_skills.md)
 - Agent block update: [`update_agent_block.md`](update_agent_block.md)
+- Agent targets: [`../../docs/agent_targets.md`](../../docs/agent_targets.md)
 - Agent configuration: [`../../docs/agent_configuration.md`](../../docs/agent_configuration.md)

@@ -178,7 +178,11 @@ Bootstrap form (if creating from scratch):
 }
 ```
 
-If `~/.claude/CLAUDE.md` or `~/.codex/AGENTS.md` lacks a `## Grimoire Knowledge Base` section, instruct the user to paste the canonical block from `ARCANA_HOME/rites/templates/grimoire_block.md`. That block is static across new grimoires — only the library changes.
+If an automatic or manual agent instruction target from
+`ARCANA_HOME/docs/agent_targets.md` lacks a `## Grimoire Knowledge Base`
+section, instruct the user to paste the canonical block from
+`ARCANA_HOME/rites/templates/grimoire_block.md`. That block is static across
+new grimoires — only the library changes.
 
 ---
 

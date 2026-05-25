@@ -24,10 +24,9 @@ from datetime import datetime
 from pathlib import Path
 from queue import Queue
 
+from agent_targets import automatic_instruction_targets, skill_registration_targets
 from summon_core import (
     ARCANA_DIR,
-    CLAUDE_MD,
-    CODEX_AGENTS_MD,
     DEFAULT_ARCANA_URL,
     GRIMOIRE_BLOCK,
     GRIMOIRES_HOME,
@@ -390,15 +389,12 @@ def finalize_install_with_settings(installed_keys, library, log, settings):
     if installed_keys:
         update_local_library(installed_keys, library, log)
 
-    targets = settings.get("agent_targets", ["claude", "codex"])
-    if "claude" in targets:
-        inject_agent_file(log, CLAUDE_MD, "CLAUDE.md")
-    else:
-        log.info("Skipping CLAUDE.md injection (per Settings)")
-    if "codex" in targets:
-        inject_agent_file(log, CODEX_AGENTS_MD, "AGENTS.md")
-    else:
-        log.info("Skipping AGENTS.md injection (per Settings)")
+    targets = set(settings.get("agent_targets", SETTINGS_DEFAULTS["agent_targets"]))
+    for target in automatic_instruction_targets(REPO_ROOT):
+        if target["id"] in targets:
+            inject_agent_file(log, target["path"], target["title"])
+        else:
+            log.info(f"Skipping {target['title']} injection (per Settings)")
 
     if settings.get("skip_skill_registration"):
         log.info("Skipping skill registration (per Settings)")
@@ -707,7 +703,7 @@ def _collect_diagnostics():
         capture_output=True, text=True,
         env=_subprocess_env(),
     )
-    return {
+    diag = {
         "python": sys.version.split()[0],
         "python_executable": sys.executable,
         "python_for_subprocesses": py_for_pip,
@@ -720,14 +716,6 @@ def _collect_diagnostics():
         "arcana_installed": (ARCANA_DIR / ".git").is_dir(),
         "local_library": str(LOCAL_LIBRARY),
         "local_library_exists": LOCAL_LIBRARY.is_file(),
-        "claude_md": str(CLAUDE_MD),
-        "claude_md_exists": CLAUDE_MD.is_file(),
-        "codex_agents_md": str(CODEX_AGENTS_MD),
-        "codex_agents_md_exists": CODEX_AGENTS_MD.is_file(),
-        "claude_skills_dir": str(Path.home() / ".claude" / "skills"),
-        "claude_skills_present": (Path.home() / ".claude" / "skills").is_dir(),
-        "codex_skills_dir": str(Path.home() / ".codex" / "skills"),
-        "codex_skills_present": (Path.home() / ".codex" / "skills").is_dir(),
         "settings_path": str(SETTINGS_PATH),
         "settings_exists": SETTINGS_PATH.is_file(),
         "deps_path": os.environ.get("GRIMOIRE_SUMMON_PY_DEPS", ""),
@@ -735,6 +723,15 @@ def _collect_diagnostics():
         "wayland_display": os.environ.get("WAYLAND_DISPLAY", ""),
         "xdg_session_type": os.environ.get("XDG_SESSION_TYPE", ""),
     }
+    for target in automatic_instruction_targets(REPO_ROOT):
+        key = target["id"].replace("-", "_")
+        diag[f"{key}_instruction_file"] = str(target["path"])
+        diag[f"{key}_instruction_file_exists"] = target["path"].is_file()
+    for target_id, config in skill_registration_targets(REPO_ROOT).items():
+        key = target_id.replace("-", "_")
+        diag[f"{key}_skills_dir"] = str(config["path"])
+        diag[f"{key}_skills_present"] = config["path"].is_dir()
+    return diag
 
 
 def _format_diagnostics_bundle(diag):
@@ -1344,8 +1341,7 @@ class TAG:
 
     # Settings
     SET_ARCANA_URL  = "set_arcana_url"
-    SET_TGT_CLAUDE  = "set_tgt_claude"
-    SET_TGT_CODEX   = "set_tgt_codex"
+    SET_TGT_PREFIX  = "set_tgt_"
     SET_SKIP_SKILLS = "set_skip_skills"
     SET_STATUS      = "set_status"
 
@@ -1364,6 +1360,22 @@ class TAG:
 
     # Modal
     MODAL = "modal_window"
+
+
+def _agent_target_tag(target_id):
+    """Return a stable DearPyGui tag for one agent target checkbox."""
+    return f"{TAG.SET_TGT_PREFIX}{target_id}"
+
+
+def _display_home_path(path):
+    """Render a Path with ~ when it lives under the current user's home."""
+    text = str(path)
+    home = str(Path.home())
+    if text == home:
+        return "~"
+    if text.startswith(home + os.sep):
+        return "~" + text[len(home):]
+    return text
 
 
 # ---------------------------------------------------------------------------
@@ -1733,7 +1745,6 @@ def _build_install_tab(dpg, state):
     dpg.add_spacer(height=px(M.GAP, scale))
 
     # 3. Preview
-    # Up to 5 preview lines (arcana + clone + claude + codex + skills).
     with _section(dpg, state, "3.  Preview",
                   color_key="text_section_c", icon="▤",
                   height=card_h(M.TEXT * 5)):
@@ -1758,16 +1769,18 @@ def _render_preview(state):
     if not dpg.does_item_exist(TAG.INSTALL_PREVIEW):
         return
     dpg.delete_item(TAG.INSTALL_PREVIEW, children_only=True)
-    targets = state.settings.get("agent_targets", ["claude", "codex"])
+    targets = set(state.settings.get("agent_targets", SETTINGS_DEFAULTS["agent_targets"]))
     skip = state.settings.get("skip_skill_registration", False)
     sel = len(state.selected)
     items = [("arcana", "Clone or update Arcana to ~/grimoires/arcana/")]
     if sel > 0:
         items.append(("clone", f"Clone {sel} grimoire(s) into ~/grimoires/"))
-    if "claude" in targets:
-        items.append(("claude", "Inject Grimoire block into ~/.claude/CLAUDE.md"))
-    if "codex" in targets:
-        items.append(("codex", "Inject Grimoire block into ~/.codex/AGENTS.md"))
+    for target in automatic_instruction_targets(REPO_ROOT):
+        if target["id"] in targets:
+            items.append((
+                target["id"],
+                f"Inject Grimoire block into {_display_home_path(target['path'])}",
+            ))
     if not skip:
         items.append(("skills", "Register /arc-*, /grm-*, and grimoire-prefix skills to agent skills/ dirs"))
     c = GUI_COLORS
@@ -2175,14 +2188,20 @@ def _build_settings_tab(dpg, state):
 
     with _section(dpg, state, "Agent integration",
                   color_key="text_section_b", icon="✦",
-                  height=card_h(M.TEXT, M.CHECKBOX * 3)):
+                  height=card_h(M.TEXT, M.CHECKBOX * (len(automatic_instruction_targets(REPO_ROOT)) + 1))):
         dpg.add_text("Which agent instruction files to modify when installing.",
                      color=c["text_muted"])
-        targets = state.settings.get("agent_targets", ["claude", "codex"])
-        dpg.add_checkbox(label="Claude Code  (~/.claude/CLAUDE.md and ~/.claude/skills/)",
-                         tag=TAG.SET_TGT_CLAUDE, default_value=("claude" in targets))
-        dpg.add_checkbox(label="Codex/ChatGPT (~/.codex/AGENTS.md and ~/.codex/skills/)",
-                         tag=TAG.SET_TGT_CODEX,  default_value=("codex" in targets))
+        targets = set(state.settings.get("agent_targets", SETTINGS_DEFAULTS["agent_targets"]))
+        for target in automatic_instruction_targets(REPO_ROOT):
+            label = f"{target['label']}  ({_display_home_path(target['path'])}"
+            if target.get("skill_target"):
+                label += f" and {_display_home_path(target['skill_target'])}"
+            label += ")"
+            dpg.add_checkbox(
+                label=label,
+                tag=_agent_target_tag(target["id"]),
+                default_value=(target["id"] in targets),
+            )
         dpg.add_checkbox(label="Skip skill registration entirely (advanced)",
                          tag=TAG.SET_SKIP_SKILLS,
                          default_value=state.settings.get("skip_skill_registration", False))
@@ -2198,8 +2217,10 @@ def _build_settings_tab(dpg, state):
 
 def _save_settings(state):
     targets = []
-    if state.dpg.get_value(TAG.SET_TGT_CLAUDE): targets.append("claude")
-    if state.dpg.get_value(TAG.SET_TGT_CODEX):  targets.append("codex")
+    for target in automatic_instruction_targets(REPO_ROOT):
+        tag = _agent_target_tag(target["id"])
+        if state.dpg.does_item_exist(tag) and state.dpg.get_value(tag):
+            targets.append(target["id"])
     body = {
         "custom_arcana_url": state.dpg.get_value(TAG.SET_ARCANA_URL).strip(),
         "agent_targets": targets,

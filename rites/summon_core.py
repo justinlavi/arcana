@@ -20,25 +20,31 @@ from urllib.error import URLError
 from urllib.parse import quote, urlparse
 from urllib.request import Request, urlopen
 
+from agent_targets import (
+    automatic_instruction_target_ids,
+    automatic_instruction_targets,
+    skill_registration_targets,
+)
+
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
 
+RITE_DIR = Path(__file__).resolve().parent
+REPO_ROOT = RITE_DIR.parent
 GRIMOIRES_HOME = Path.home() / "grimoires"
 ARCANA_DIR = GRIMOIRES_HOME / "arcana"
 LOCAL_LIBRARY = GRIMOIRES_HOME / "library.json"
-CLAUDE_MD = Path.home() / ".claude" / "CLAUDE.md"
-CODEX_AGENTS_MD = Path.home() / ".codex" / "AGENTS.md"
-RITE_DIR = Path(__file__).resolve().parent
-REPO_ROOT = RITE_DIR.parent
 DEFAULT_ARCANA_URL = "https://github.com/justinlavi/arcana.git"
 
+
+DEFAULT_AGENT_TARGETS = automatic_instruction_target_ids(REPO_ROOT)
 SETTINGS_PATH = Path.home() / ".config" / "grimoire" / "summon.json"
 SETTINGS_DEFAULTS = {
     "version": 1,
     "last_scope_url": "",
-    "agent_targets": ["claude", "codex"],   # which agent files to inject
+    "agent_targets": DEFAULT_AGENT_TARGETS,
     "skip_skill_registration": False,
     "custom_arcana_url": "",
     "custom_arcana_ref": "",
@@ -662,8 +668,26 @@ def inject_agent_file(log, target_path, title):
 
 def inject_agent_configs(log):
     """Inject Grimoire routing blocks into supported agent instruction files."""
-    inject_agent_file(log, CLAUDE_MD, "CLAUDE.md")
-    inject_agent_file(log, CODEX_AGENTS_MD, "AGENTS.md")
+    for target in automatic_instruction_targets(REPO_ROOT):
+        inject_agent_file(log, target["path"], target["title"])
+
+
+def _registered_skill_count(skills_dir):
+    """Count Arcana-managed installed skill directories under one target."""
+    if not skills_dir.is_dir():
+        return 0
+    count = 0
+    for skill_dir in skills_dir.iterdir():
+        skill_file = skill_dir / "SKILL.md"
+        if not skill_dir.is_dir() or not skill_file.is_file():
+            continue
+        try:
+            content = skill_file.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        if "ARCANA_SKILL_OWNERSHIP" in content:
+            count += 1
+    return count
 
 
 def register_skills(log):
@@ -697,25 +721,21 @@ def register_skills(log):
         log.err(f"  python3 {register_script}")
         return False
 
-    claude_skills_dir = Path.home() / ".claude" / "skills"
-    codex_skills_dir = Path.home() / ".codex" / "skills"
-    claude_count = (
-        len(list(claude_skills_dir.glob("arc-*"))) +
-        len(list(claude_skills_dir.glob("grm-*")))
-        if claude_skills_dir.is_dir() else 0
-    )
-    codex_count = (
-        len(list(codex_skills_dir.glob("arc-*"))) +
-        len(list(codex_skills_dir.glob("grm-*")))
-        if codex_skills_dir.is_dir() else 0
-    )
-    log.ok(f"Skills registered: {claude_count} to {claude_skills_dir}, {codex_count} to {codex_skills_dir}")
-    if claude_count == 0 and codex_count == 0:
+    counts = []
+    total = 0
+    for config in skill_registration_targets(REPO_ROOT).values():
+        count = _registered_skill_count(config["path"])
+        counts.append(f"{count} to {config['path']}")
+        total += count
+    log.ok(f"Skills registered: {', '.join(counts)}")
+    if total == 0:
+        expected = ", ".join(str(config["path"]) for config in skill_registration_targets(REPO_ROOT).values())
         log.warn(
-            "No /arc-* or /grm-* skills landed in either agent directory - "
-            "this usually means neither Claude Code nor Codex is set up on this machine."
+            "No Arcana-managed skills landed in any registered agent directory - "
+            "this usually means no supported local agent is set up on this machine."
         )
-        log.warn(f"Run `mkdir -p ~/.claude/skills ~/.codex/skills && python3 {register_script}` after installing your agent of choice.")
+        log.warn(f"Expected skill target(s): {expected}")
+        log.warn(f"Re-run after installing your agent of choice: python3 {register_script}")
     return True
 
 
@@ -833,17 +853,20 @@ def _print_cli_summary(mode, installed_keys, skills_ok):
         print("  Grimoires: none landed (clone failures - see log above).")
     print()
     print(f"  Local library: {LOCAL_LIBRARY}")
-    print(f"  CLAUDE.md:     {CLAUDE_MD}")
-    print(f"  AGENTS.md:     {CODEX_AGENTS_MD}")
-    print("  Skills:        ~/.claude/skills/")
-    print("                 ~/.codex/skills/")
+    print("  Agent instruction files:")
+    for target in automatic_instruction_targets(REPO_ROOT):
+        print(f"   - {target['label']}: {target['path']}")
+    print("  Skill directories:")
+    for config in skill_registration_targets(REPO_ROOT).values():
+        print(f"   - {config['label']}: {config['path']}")
     print()
     if not skills_ok:
         print("  *** Skill registration failed - see errors above. Re-run: ***")
         print(f"      python3 {ARCANA_DIR / 'rites' / 'register_skills.py'}")
         print()
     print("  Next steps:")
-    print("    1. Open a new Claude Code or Codex/ChatGPT session")
+    agent_labels = ", ".join(target["label"] for target in automatic_instruction_targets(REPO_ROOT))
+    print(f"    1. Open a new {agent_labels} session")
     print("    2. Try: /arc-help")
     print()
 

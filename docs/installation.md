@@ -13,10 +13,11 @@ One command installs Arcana - the framework that powers all your grimoires -
 configures your AI agents, and registers the `/arc-*` and `/grm-*` skill sets.
 Cloning existing grimoires is optional and handled interactively.
 
-For per-agent configuration after install, see
-[agent_configuration.md](agent_configuration.md). For library and manifest
-schemas, see [reference.md](reference.md). For the installer mode contract, see
-[summoning_contract.md](summoning_contract.md).
+For the supported agent target matrix, see
+[agent_targets.md](agent_targets.md). For per-agent configuration after
+install, see [agent_configuration.md](agent_configuration.md). For library and
+manifest schemas, see [reference.md](reference.md). For the installer mode
+contract, see [summoning_contract.md](summoning_contract.md).
 
 ---
 
@@ -46,8 +47,8 @@ default to avoid frozen OpenGL/GLX library drift:
 **What the summoning rite always does:**
 1. Checks runtime dependencies (`git`; Python 3 and Dear PyGui only if source fallback is needed)
 2. Installs Arcana to `~/grimoires/arcana/` (clone or pull)
-3. Injects the Grimoire routing block into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
-4. Registers Arcana's `/arc-*` skills to `~/.claude/skills/` and `~/.codex/skills/`
+3. Injects the Grimoire routing block into automatic agent instruction targets from [agent_targets.md](agent_targets.md)
+4. Registers Arcana's `/arc-*` skills to agent skill targets from [agent_targets.md](agent_targets.md)
 
 **Optional - if you have existing grimoires to clone:**
 5. Discovers grimoires via git host API (GitLab/GitHub)
@@ -166,8 +167,8 @@ If you can't run the summoning rite (no network, restricted environment, etc.):
 1. Clone Arcana to `~/grimoires/arcana/`.
 2. Clone each grimoire to `~/grimoires/<grimoire-name>/`.
 3. Create `~/grimoires/library.json` with one entry per grimoire (see [reference.md](reference.md#local-library)).
-4. Add the Grimoire instruction block to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` — the canonical block lives at [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md). To refresh an existing block after Arcana changes, use `/arc-agent-update`.
-5. Run `python3 ~/grimoires/arcana/rites/register_skills.py` to install skills into agent skill directories.
+4. Add the Grimoire instruction block to the instruction targets listed in [agent_targets.md](agent_targets.md) — the canonical block lives at [`rites/templates/grimoire_block.md`](../rites/templates/grimoire_block.md). To refresh automatic targets after Arcana changes, use `/arc-agent-update`.
+5. Run `python3 ~/grimoires/arcana/rites/register_skills.py` to install skills into registered agent skill directories.
 
 ---
 
@@ -180,8 +181,8 @@ A short end-to-end check that everything wired up correctly.
 ```bash
 ls ~/grimoires/                  # arcana/ + at least one *-grimoire/ if you cloned any
 cat ~/grimoires/library.json     # lists each grimoire and its local_path
-ls ~/.claude/skills/ | grep ^arc-     # Claude Code
-ls ~/.codex/skills/  | grep ^arc-     # Codex / ChatGPT CLI
+ls ~/.claude/skills/ | grep ^arc-     # Claude Code, current full-skill target
+ls ~/.codex/skills/  | grep ^arc-     # Codex / ChatGPT CLI, current pointer target
 ```
 
 If any of these are missing, jump to the [Troubleshooting](#troubleshooting) section below.
@@ -240,4 +241,4 @@ The agent should follow hubs depth-first (root hub -> chapter hub -> ... -> leaf
 - The grimoire is missing its `grimoire.json` manifest. Add one per [reference.md](reference.md#grimoire-manifest), then re-register.
 
 **Agent guesses instead of reading files**
-- The Grimoire instruction block isn't injected into `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`, or it is stale. See [agent_configuration.md](agent_configuration.md#agent-instruction-files), then run `/arc-agent-update`.
+- The Grimoire instruction block is missing from the relevant target in [agent_targets.md](agent_targets.md), or it is stale. See [agent_configuration.md](agent_configuration.md#agent-instruction-files), then run `/arc-agent-update`.
