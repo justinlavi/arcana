@@ -11,6 +11,7 @@ parsing, exit codes, or stdout flushing is caught.
 
 import subprocess
 import sys
+import shutil
 from pathlib import Path
 
 import pytest
@@ -96,6 +97,18 @@ def test_verbose_wikilink_label_warns_without_failing():
     )
     assert "WARN" in result.stdout
     assert "Display label should be target filename only" in result.stdout
+
+
+def test_structure_validator_catches_stale_obsidian_graph(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    graph = grimoire / ".obsidian" / "graph.json"
+    graph.write_text("{}\n", encoding="utf-8")
+
+    result = _run("validate_grimoire_structure.py", grimoire)
+
+    assert result.returncode != 0
+    assert ".obsidian/graph.json" in result.stdout
 
 
 # ---------------------------------------------------------------------------

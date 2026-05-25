@@ -33,6 +33,7 @@ MANAGED_SCAFFOLD_FILES = [
     ".editorconfig",
     ".gitattributes",
     ".obsidian/app.json",
+    ".obsidian/graph.json",
     "inbox/README.md",
     "sources/README.md",
 ]

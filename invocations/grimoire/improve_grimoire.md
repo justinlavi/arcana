@@ -67,6 +67,7 @@ If `/grm-validate-structure` reports missing or stale managed scaffold files, co
 | `.editorconfig` | `ARCANA_HOME/formulae/grimoire/.editorconfig` |
 | `.gitattributes` | `ARCANA_HOME/formulae/grimoire/.gitattributes` |
 | `.obsidian/app.json` | `ARCANA_HOME/formulae/grimoire/.obsidian/app.json` |
+| `.obsidian/graph.json` | `ARCANA_HOME/formulae/grimoire/.obsidian/graph.json` |
 | `inbox/README.md` | `ARCANA_HOME/formulae/grimoire/inbox/README.md` |
 | `sources/README.md` | `ARCANA_HOME/formulae/grimoire/sources/README.md` |
 

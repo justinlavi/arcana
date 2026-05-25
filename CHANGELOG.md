@@ -377,6 +377,10 @@ settings Arcana validates.
 - Installation and scaffold docs identify both `/arc-*` and `/grm-*` skill
   sets, and placeholder examples use the canonical cooking, HR, and Project
   Alpha names.
+- `/grm-validate-structure` and `/grm-improve` now treat
+  `.obsidian/graph.json` as managed scaffold alongside `.obsidian/app.json`,
+  preserving the opinionated Obsidian graph-view color groups during grimoire
+  audits and Arcana upgrade checks.
 
 ### Public readiness
 

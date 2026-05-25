@@ -19,7 +19,8 @@ This invocation ensures:
 - Root and chapter hubs follow the folder-name convention
 - `grimoire.json` declares `name` and `skill_prefix`
 - Managed scaffold files match the current Arcana formulae
-- Obsidian configuration uses absolute wikilink creation
+- Obsidian app configuration uses absolute wikilink creation
+- Obsidian graph configuration matches Arcana's opinionated color groups
 
 ## Preconditions
 
@@ -62,6 +63,7 @@ The following files are operational support files, not grimoire-specific authore
 - `.editorconfig`
 - `.gitattributes`
 - `.obsidian/app.json`
+- `.obsidian/graph.json`
 - `inbox/README.md`
 - `sources/README.md`
 
@@ -101,7 +103,7 @@ This prevents Ctrl-clicking unresolved full-path wikilinks from creating recursi
 - Missing root files or directories
 - Missing or stale managed scaffold files
 - Missing chapter hubs
-- Obsidian configuration warnings
+- Obsidian configuration warnings, including stale app and graph settings
 
 ## Related Docs
 
