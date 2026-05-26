@@ -112,6 +112,7 @@ subject and context.
 **Arcana upgrade review**
 - Compare current grimoire practices against `ARCANA_HOME/docs/operating_model.md`, `ARCANA_HOME/docs/page_schema.md`, and `ARCANA_HOME/rites/templates/grimoire_block.md`.
 - Update stale command names, manifest field names, and operational vocabulary to current Arcana.
+- Sweep for legacy placeholder tokens and rename them to current Arcana equivalents. `/grm-validate-links` flags these mechanically as `LINK_DEPRECATED_PLACEHOLDER`; the deprecated-token map lives in `ARCANA_HOME/rites/validate_links.py` (`DEPRECATED_TOKENS`). When a future Arcana rename happens, add the legacy/current pair to that map so `/grm-improve` catches lingering references automatically. `log.md` and `CHANGELOG.md` are skipped so historical entries can keep their original wording.
 - Preserve historical log entries unless the entry is actively misleading for current operations; add a new log entry for the scaffold update.
 
 ### Phase 5: Apply fixes

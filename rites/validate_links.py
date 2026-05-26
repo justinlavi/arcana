@@ -51,6 +51,13 @@ PLACEHOLDER_TOKENS = ["{", "<", "invocation_name", "chapter_name", "file_name",
                       "related_page", "sub_topic", "related_chapter",
                       "path/to/related", "path/url/system", "Source title"]
 
+# Legacy placeholder tokens that have been renamed. Any occurrence in grimoire
+# content is flagged so /grm-improve sweeps catch terminology drift instead of
+# relying on LLM judgment alone. Format: { legacy_token: current_token }.
+DEPRECATED_TOKENS = {
+    "GRIMOIRE_ARCANA": "ARCANA_HOME",
+}
+
 
 def resolve_wikilink(target, root):
     """Return resolved Path or None."""
@@ -153,6 +160,26 @@ def main():
 
         scanable = strip_code_blocks(content)
         public_page = public_document(path, grimoire_root)
+
+        # Deprecated placeholder sweep (covers backticked references, link text,
+        # and prose mentions; runs before per-link checks so it catches uses
+        # outside of link syntax too). Skipped for append-only history files
+        # where legitimate historical entries reference legacy terminology.
+        if path.name not in {"log.md", "CHANGELOG.md"}:
+            for legacy, current in DEPRECATED_TOKENS.items():
+                for m in re.finditer(re.escape(legacy), content):
+                    line_number = content.count("\n", 0, m.start()) + 1
+                    reporter.error(
+                        "LINK_DEPRECATED_PLACEHOLDER",
+                        f"deprecated placeholder token: {legacy}",
+                        path=rel,
+                        line=line_number,
+                        hint=f"Use {current} instead.",
+                    )
+                    if human:
+                        print(f"  STYLE   {rel}:{line_number}:")
+                        print(f"          Deprecated placeholder: {legacy} -> {current}")
+
         # Standard markdown links
         for link_match in LINK_RE.finditer(scanable):
             link = link_match.group(1)
