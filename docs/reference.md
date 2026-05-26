@@ -60,7 +60,7 @@ When **creating knowledge** inside chapters:
 
 ## Authority Models
 
-Every page declares one of `external`, `grimoire`, or `hybrid` to indicate where truth lives. Full table, required-fields matrix, and rules of thumb in [[docs/page_schema#authority-models|page schema]].
+Every page declares one of `external`, `grimoire`, or `hybrid` to indicate where truth lives. Full table, required-fields matrix, and rules of thumb in [page schema](page_schema.md#authority-models).
 
 Page template: `ARCANA_HOME/formulae/page.formula.md`
 
@@ -68,11 +68,11 @@ Page template: `ARCANA_HOME/formulae/page.formula.md`
 
 ## Skills
 
-The current Arcana skill catalog lives in **[[docs/skills|skills]]** (auto-generated from each Arcana `skills/<family>/<slug>/SKILL.md`). To enumerate every skill installed for an agent — Arcana plus every grimoire — invoke `/arc-help`.
+The current Arcana skill catalog lives in **[skills](skills.md)** (auto-generated from each Arcana `skills/<family>/<slug>/SKILL.md`). To enumerate every skill installed for an agent — Arcana plus every grimoire — invoke `/arc-help`.
 
-Skill names use command-family prefixes: Arcana ships `arc-*` for platform operations and `grm-*` for universal grimoire operations. Each grimoire ships `{skill prefix}-*` from its own manifest. The canonical schema is [[docs/skill_schema|skill schema]].
+Skill names use command-family prefixes: Arcana ships `arc-*` for platform operations and `grm-*` for universal grimoire operations. Each grimoire ships `{skill prefix}-*` from its own manifest. The canonical schema is [skill schema](skill_schema.md).
 
-Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` and the registration rite substitutes the command-family or grimoire skill prefix at install time. Skill targets and copy modes are defined in [[docs/agent_targets|agent targets]].
+Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` and the registration rite substitutes the command-family or grimoire skill prefix at install time. Skill targets and copy modes are defined in [agent targets](agent_targets.md).
 
 ---
 

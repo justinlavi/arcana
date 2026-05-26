@@ -94,13 +94,15 @@ You can combine queries: `tag:#hub/chapter -path:chapters/projects/` colors only
 
 ## Full-path wikilinks
 
-Arcana supports only repository-root relative wikilinks for internal Markdown pages. Write `[[chapters/projects/cf_sw/overview|overview]]`, not `[[cf_sw_overview|overview]]`, `[[overview]]`, or `[overview](overview.md)`. The `.md` suffix is optional in wikilinks for Obsidian compatibility. Standard Markdown links remain for external URLs, same-page anchors, and local non-Markdown artifacts.
+Vault and AI-routing surfaces use repository-root relative wikilinks for internal Markdown pages. Write `[[chapters/projects/cf_sw/overview|overview]]`, not `[[cf_sw_overview|overview]]`, `[[overview]]`, or `[overview](overview.md)`. The `.md` suffix is optional in wikilinks for Obsidian compatibility.
+
+Public documentation uses standard Markdown links instead: `README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/**`, and README index files should stay clickable on GitHub/GitLab before a user installs or opens the vault. Standard Markdown links also remain correct for external URLs, same-page anchors, and local non-Markdown artifacts.
 
 If a wikilink includes display text after `|`, keep it to the target filename only, normalized for reading. The path already carries chapter, project, trip, and parent-folder context, so `[[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|overview]]` is preferred over `[[chapters/travel/trips/2026/06_fukuoka_kyoto_tokyo/overview|fukuoka kyoto tokyo trip overview]]`.
 
 Aliases remain useful as page metadata, but they are never link targets. This keeps routing deterministic, prevents global alias collisions, and avoids Ctrl/Cmd-click creating empty alias-named stubs.
 
-`validate_links` rejects alias-based and filename-only wikilinks unless the target is an actual path relative to the grimoire root, such as `[[README]]`. It also warns when display text repeats parent context instead of matching the target filename.
+`validate_links` rejects alias-based and filename-only wikilinks unless the target is an actual path relative to the grimoire root, such as `[[README]]`. It rejects wikilinks in public documentation and Markdown-page links in vault/AI surfaces, then warns when wikilink display text repeats parent context instead of matching the target filename.
 
 ### Multi-dot filenames
 
@@ -137,6 +139,6 @@ Stay opinionated about how many colors you ship - past ~8 groups the graph becom
 
 ## Related
 
-- Page schema (the source of the tags): [[docs/page_schema|page schema]]
-- Operating model: [[docs/operating_model|operating model]]
-- Agent configuration: [[docs/agent_configuration|agent configuration]]
+- Page schema (the source of the tags): [page schema](page_schema.md)
+- Operating model: [operating model](operating_model.md)
+- Agent configuration: [agent configuration](agent_configuration.md)

@@ -1,6 +1,6 @@
 ---
 name: {{SKILL_PREFIX}}-validate-links
-description: Validate Arcana links and require wikilinks for internal Markdown pages
+description: Validate Arcana links and enforce layer-aware internal link style
 when_to_use: After moving or renaming any markdown file; as a phase of `/arc-improve`; user mentions "broken link", "dead link", or "did I break any references". Cheap and read-only.
 user-invocable: true
 disable-model-invocation: true
@@ -17,7 +17,7 @@ You are running the link validator against the Arcana repository (not against gr
 python3 {{ARCANA_PATH}}/rites/validate_links.py
 ```
 
-Report broken links and internal Markdown-page style violations to the user with file:line citations. Exit code 0 means clean; non-zero means at least one checked link or page reference is invalid.
+Report broken links and layer-specific style violations to the user with file:line citations. Exit code 0 means clean; non-zero means at least one checked link or page reference is invalid.
 
 Be aware: template formula files (under `formulae/`) intentionally contain placeholder paths like `ARCANA_HOME/...` that don't resolve - these are not failures. The rite knows how to skip them; if it doesn't, treat as a rite bug, not a content bug.
 

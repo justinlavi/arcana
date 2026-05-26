@@ -16,10 +16,16 @@ def test_skill_catalog_renders_command_surface_metadata():
         "| Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |"
         in content
     )
-    assert "`/grm-validate-all` [[skills/grimoire/validate-all/SKILL]]" in content
-    assert "[[invocations/grimoire/validators/validate_all]]" in content
-    assert "`rites/validate.py`" in content
-    assert "[[invocations/meta/grimoire_directory_guard]]" in content
+    assert "[`/grm-validate-all`](../skills/grimoire/validate-all/SKILL.md)" in content
+    assert (
+        "[`validate_all.md`](../invocations/grimoire/validators/validate_all.md)"
+        in content
+    )
+    assert "[`validate.py`](../rites/validate.py)" in content
+    assert (
+        "[`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md)"
+        in content
+    )
     assert "`python rites/validate.py --grimoire GRIMOIRE_ROOT --parallel`" in content
 
 

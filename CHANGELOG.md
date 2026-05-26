@@ -56,9 +56,11 @@
   not maintain derived-page backlinks.
 - Updated frontmatter and provenance validators to enforce source-wrapper
   placement, authority, source references, and self-citation rules.
-- Updated Arcana and grimoire Markdown-page references to require full-path
-  wikilinks everywhere; `/arc-validate-links` and `/grm-validate-links` now
-  fail internal Markdown page links with `LINK_MARKDOWN_INTERNAL`.
+- Updated Arcana and grimoire internal link style to be layer-aware: public
+  docs use portable Markdown links, while vault and AI-routing surfaces use
+  full-path wikilinks. `/arc-validate-links` and `/grm-validate-links` now
+  fail layer violations with `LINK_MARKDOWN_INTERNAL` or
+  `LINK_WIKILINK_PUBLIC_DOC`.
 - Updated grimoire improvement and semantic-analysis guidance to judge router
   size by route shape and excess prose instead of a fixed 150-word cap.
 
@@ -213,7 +215,7 @@ substitutes them when installing skills into agent directories.
 | `/arc-validate-encoding` | Validate UTF-8, LF line endings, BOMs, mojibake markers, and repair artifacts in Arcana. |
 | `/arc-validate-format` | Validate Markdown formatting in Arcana. |
 | `/arc-validate-frontmatter` | Validate Arcana page frontmatter. |
-| `/arc-validate-links` | Validate Arcana links and internal Markdown-page wikilinks. |
+| `/arc-validate-links` | Validate Arcana links and layer-aware internal page style. |
 | `/arc-validate-naming` | Validate Arcana naming conventions. |
 | `/arc-validate-orphans` | Detect orphan pages in Arcana. |
 | `/arc-validate-portability` | Detect filesystem-portability issues in Arcana paths. |
@@ -248,7 +250,7 @@ substitutes them when installing skills into agent directories.
 | `/grm-validate-encoding` | Validate UTF-8/LF policy in the active grimoire. |
 | `/grm-validate-format` | Validate Markdown formatting in the active grimoire. |
 | `/grm-validate-frontmatter` | Validate page frontmatter in the active grimoire. |
-| `/grm-validate-links` | Validate links and internal Markdown-page wikilinks in the active grimoire. |
+| `/grm-validate-links` | Validate links and layer-aware internal page style in the active grimoire. |
 | `/grm-validate-orphans` | Detect orphan pages in the active grimoire. |
 | `/grm-validate-portability` | Validate filesystem portability in the active grimoire. |
 | `/grm-validate-provenance` | Validate source provenance in the active grimoire. |

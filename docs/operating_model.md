@@ -62,7 +62,11 @@ Hub-level tags (`hub/root`, `hub/chapter`, `hub/sub`) distinguish levels for the
 
 Folder-named hubs make Obsidian's graph view legible (every node has a unique, meaningful label) and make full-path wikilinks intuitive, e.g. `[[chapters/build_system/build_system|build system]]`.
 
-Internal Markdown-page references are always full-path wikilinks, whether they appear in a hub, a leaf, a skill, or a reference page. Standard Markdown links are reserved for external URLs, same-page anchors, and local non-Markdown artifacts.
+Internal page link style is layer-aware:
+
+- Public documentation (`README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/**`, and README index files) uses standard Markdown links so repository browsing on Git hosts remains clickable.
+- Vault and AI-routing surfaces (root hubs, chapter pages, invocation files, skill sources, and formula templates) use full-path wikilinks for internal Markdown-page pointers.
+- External URLs, same-page anchors, and local non-Markdown artifacts use standard Markdown links in every layer.
 
 ## What Grimoire Is
 

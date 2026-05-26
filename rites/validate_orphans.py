@@ -2,7 +2,8 @@
 """Detect orphan pages in a grimoire.
 
 A page is an orphan when no other markdown file in the grimoire reaches it
-through a full-path wikilink.
+through a valid layer-specific page link: Markdown links in public docs and
+full-path wikilinks in vault/AI surfaces.
 
 Pages that are themselves entry points are excluded from the orphan check:
   * the grimoire root hub (`<grimoire>/<grimoire>.md`)
@@ -17,10 +18,12 @@ Exit codes: 0 = no orphans, 1 = orphans found
 """
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
 from _lib import (
+    LINK_RE,
     WIKILINK_RE,
     add_grimoire_arg,
     resolve_grimoire_arg,
@@ -32,6 +35,8 @@ from diagnostics import DiagnosticReporter, add_output_format_arg
 
 EXEMPT_FILENAMES = {"README.md", "CHANGELOG.md", "CONTRIBUTING.md", "log.md", "VERSION", "SKILL.md"}
 SKIP_DIRS = {"sources", "inbox", ".git", "skills", "tests"}
+PUBLIC_DOC_DIRS = {"docs"}
+PUBLIC_DOC_FILENAMES = {"README.md", "CONTRIBUTING.md", "CHANGELOG.md"}
 
 
 def is_hub(path):
@@ -48,8 +53,40 @@ def collect_pages(root):
     return pages
 
 
+def public_document(path, root):
+    """Return True when a Markdown file uses portable public-doc links."""
+    rel = path.relative_to(root)
+    if path.name in PUBLIC_DOC_FILENAMES:
+        return True
+    return bool(rel.parts and rel.parts[0] in PUBLIC_DOC_DIRS)
+
+
+def resolve_markdown_page_link(link, src, root):
+    """Resolve a public-doc Markdown link to an internal Markdown page."""
+    target_path = link.split("#")[0].split("?")[0]
+    if not target_path:
+        return None
+    if re.match(r"^[a-z]+://", target_path) or target_path.startswith("mailto:"):
+        return None
+    if target_path.startswith("/"):
+        target = root / target_path.lstrip("/")
+    else:
+        target = (src.parent / target_path).resolve()
+    try:
+        target = target.resolve()
+    except OSError:
+        return None
+    try:
+        target.relative_to(root)
+    except ValueError:
+        return None
+    if target.is_file() and target.suffix == ".md":
+        return target
+    return None
+
+
 def collect_inbound(pages, root):
-    """Return set of pages with at least one inbound wikilink."""
+    """Return set of pages with at least one valid inbound page link."""
     inbound = set()
     for src in pages:
         try:
@@ -57,6 +94,12 @@ def collect_inbound(pages, root):
         except OSError:
             continue
         scanable = strip_code_blocks(content)
+
+        if public_document(src, root):
+            for m in LINK_RE.finditer(scanable):
+                path_target = resolve_markdown_page_link(m.group(1), src, root)
+                if path_target is not None:
+                    inbound.add(path_target.resolve())
 
         for m in WIKILINK_RE.finditer(scanable):
             body_raw = wikilink_target_body(m.group(1))

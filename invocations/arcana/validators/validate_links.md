@@ -11,7 +11,7 @@ last_verified: 2026-05-25
 
 ## Purpose
 
-Detect broken internal references in Arcana documentation and enforce wikilink-only internal Markdown-page references everywhere.
+Detect broken internal references in Arcana documentation and enforce layer-aware internal page link style.
 
 ## Invocation
 
@@ -36,22 +36,26 @@ python3 rites/validate_links.py
 
 ### Step 2: Review Link Findings
 
-The rite scans Markdown files, verifies resolvable internal references, and enforces page-link style:
+The rite scans Markdown files, verifies resolvable internal references, and enforces page-link style by layer:
 
-- Internal Markdown-page references must use repository-root relative wikilinks.
-- Standard Markdown links are limited to external URLs, same-page anchors, and local non-Markdown artifacts.
+- Public documentation (`README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/**`, and README index files) uses relative Markdown links so Git-host browsing remains clickable.
+- Vault and AI-routing surfaces use repository-root relative wikilinks for internal Markdown-page pointers.
+- External URLs, same-page anchors, and local non-Markdown artifacts use standard Markdown links in every layer.
 - Wikilink display labels should match the target filename stem, normalized for reading.
 
 **Link types validated**:
 
 - Full-path wikilinks: `[[docs/page_schema|page schema]]`
+- Internal Markdown links in public docs: `[page schema](page_schema.md)`
 - Intra-document anchors: `[text](#section)` (skipped as local anchors)
 - Non-Markdown local artifacts: `[script](../rites/validate_links.py)`
 
-**Internal-page style enforced**:
+**Layer style enforced**:
 
-- Valid page reference: `Topic -> [[chapters/path/to/page|page]]`
-- Invalid page reference: `Topic -> [page](../path/to/page.md)`
+- Valid public-doc page reference: `[Installation](docs/installation.md)`
+- Invalid public-doc page reference: `[[docs/installation|installation]]`
+- Valid vault/AI page reference: `Topic -> [[chapters/path/to/page|page]]`
+- Invalid vault/AI page reference: `Topic -> [page](../path/to/page.md)`
 
 **Link types skipped**:
 
@@ -64,18 +68,22 @@ The rite scans Markdown files, verifies resolvable internal references, and enfo
 For each finding:
 
 1. If the target is broken, update the path or remove the reference.
-2. If an internal Markdown-page reference uses Markdown link syntax, replace it with a repository-root relative wikilink.
-3. If a wikilink label is verbose, shorten the display label to the target filename stem.
-4. Re-run the validator.
+2. If a public document uses a wikilink, replace it with a relative Markdown link.
+3. If a vault or AI-routing surface uses a Markdown link to an internal page, replace it with a repository-root relative wikilink.
+4. If a wikilink label is verbose, shorten the display label to the target filename stem.
+5. Re-run the validator.
 
 Example:
 
 ```markdown
-<!-- Invalid for an internal Markdown page -->
+<!-- Invalid in a vault/AI surface -->
 Quickstart -> [quickstart](../docs/quickstart.md)
 
-<!-- Valid -->
+<!-- Valid in a vault/AI surface -->
 Quickstart -> [[docs/quickstart|quickstart]]
+
+<!-- Valid in public docs -->
+[Quickstart](docs/quickstart.md)
 ```
 
 ## Outputs
@@ -83,7 +91,7 @@ Quickstart -> [[docs/quickstart|quickstart]]
 **Console output**:
 
 - Broken links with source file and line where available
-- Internal Markdown-page style violations with source file and line
+- Layer-specific style violations with source file and line
 - Wikilink label warnings
 - Exit code: 0 (clean) or 1 (errors found)
 
@@ -91,14 +99,24 @@ Quickstart -> [[docs/quickstart|quickstart]]
 
 - `LINK_MARKDOWN_BROKEN`
 - `LINK_MARKDOWN_INTERNAL`
+- `LINK_WIKILINK_PUBLIC_DOC`
 - `LINK_WIKILINK_BROKEN`
 - `LINK_LABEL_VERBOSE`
 
 ## Link Standards
 
-### Internal Page References
+### Public Documentation
 
-All internal Markdown-page references use full-path wikilinks:
+Public documentation uses portable Markdown links for internal pages:
+
+```markdown
+[Installation](docs/installation.md)
+[Page schema](page_schema.md)
+```
+
+### Vault And AI Surfaces
+
+Root hubs, chapter pages, invocation files, skill sources, and formula templates use full-path wikilinks for internal Markdown pages:
 
 ```markdown
 - Create a grimoire -> [[invocations/grimoire/create_grimoire|create grimoire]]
@@ -107,7 +125,7 @@ All internal Markdown-page references use full-path wikilinks:
 
 ### Standard Markdown Links
 
-Markdown links remain valid for external URLs, same-page anchors, and local non-Markdown artifacts. They are not valid for internal Markdown pages.
+Markdown links remain valid for external URLs, same-page anchors, and local non-Markdown artifacts in every layer.
 
 ```markdown
 See [the external project](https://example.com/project).

@@ -78,6 +78,6 @@ Before publishing or changing summon behavior:
 
 ## Related
 
-- [[docs/installation|installation]]
-- [[docs/release|release]]
-- [[docs/agent_configuration|agent configuration]]
+- [installation](installation.md)
+- [release](release.md)
+- [agent configuration](agent_configuration.md)

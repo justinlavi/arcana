@@ -1,6 +1,6 @@
 ---
 name: {{SKILL_PREFIX}}-validate-orphans
-description: Detect pages no other page reaches through canonical wikilinks
+description: Detect pages no other page reaches through valid layer-specific links
 when_to_use: After bulk renames or after removing an Arcana hub/page; as a phase of `/arc-improve`. Cheap and read-only. For an active grimoire, use `/grm-validate-orphans`.
 user-invocable: true
 disable-model-invocation: true

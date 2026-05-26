@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Validates internal links and canonical wikilinks in markdown files.
+"""Validates internal links with layer-aware Markdown/wikilink policy.
 
 Resolves two link forms:
 
-  1. Wikilinks: `[[path/to/page|display text]]` - resolved only as a
-     repository-root relative path, with `.md` optional.
-  2. Standard markdown links: `[text](path/to/file.ext)` - only for
-     external URLs, same-page anchors, and non-Markdown local artifacts.
+  1. Standard Markdown links: `[text](path/to/file.md)` - required in
+     public documentation such as README files and docs/.
+  2. Wikilinks: `[[path/to/page|display text]]` - required in vault and
+     AI-routing surfaces, resolved as repository-root relative paths.
 
-Internal Markdown-page references must use full-path wikilinks everywhere,
-not just in hubs.
+External URLs, same-page anchors, and non-Markdown local artifacts use
+standard Markdown links in every layer.
 
 Warns when wikilink display text repeats ancestor context instead of matching
 the target filename stem. The path carries location; the label should name the
@@ -42,6 +42,9 @@ SKIP_DIRS = {
 
 SKIP_FILES = set()
 
+PUBLIC_DOC_DIRS = {"docs"}
+PUBLIC_DOC_FILENAMES = {"README.md", "CONTRIBUTING.md", "CHANGELOG.md"}
+
 PLACEHOLDER_TOKENS = ["{", "<", "invocation_name", "chapter_name", "file_name",
                       "ARCANA_HOME", "GRIMOIRE_PATH", "ARCANA_PATH",
                       "Chapter Name", "Title", "Sub-topic", "filename",
@@ -67,6 +70,19 @@ def label_key(text):
     text = text.replace("_", " ").replace("-", " ")
     text = re.sub(r"\s+", " ", text)
     return text.strip().lower()
+
+
+def rel_posix(path, root):
+    """Return a repository-root relative path using POSIX separators."""
+    return path.relative_to(root).as_posix()
+
+
+def public_document(path, root):
+    """Return True when a Markdown file is meant to render portably on Git hosts."""
+    rel = path.relative_to(root)
+    if path.name in PUBLIC_DOC_FILENAMES:
+        return True
+    return bool(rel.parts and rel.parts[0] in PUBLIC_DOC_DIRS)
 
 
 def resolve_markdown_link(target_path, source_path, root):
@@ -98,7 +114,7 @@ def markdown_page_reference(target_path, resolved):
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="Validate internal links and canonical wikilinks")
+    parser = argparse.ArgumentParser(description="Validate internal links with layer-aware style rules")
     add_grimoire_arg(parser)
     add_output_format_arg(parser)
     args = parser.parse_args()
@@ -115,10 +131,10 @@ def main():
         print(f"Grimoire root: {grimoire_root}")
         print()
 
-        print("Scanning markdown files for broken links and invalid page link styles...")
+        print("Scanning markdown files for broken links and layer-specific link styles...")
 
     for path in sorted(grimoire_root.rglob("*.md")):
-        rel = str(path.relative_to(grimoire_root))
+        rel = rel_posix(path, grimoire_root)
 
         if path.name in SKIP_FILES:
             continue
@@ -136,6 +152,7 @@ def main():
         files_checked += 1
 
         scanable = strip_code_blocks(content)
+        public_page = public_document(path, grimoire_root)
         # Standard markdown links
         for link_match in LINK_RE.finditer(scanable):
             link = link_match.group(1)
@@ -159,10 +176,10 @@ def main():
             except ValueError:
                 internal = False
 
-            if internal and markdown_page_reference(target_path, resolved):
+            if internal and markdown_page_reference(target_path, resolved) and not public_page:
                 reporter.error(
                     "LINK_MARKDOWN_INTERNAL",
-                    f"internal Markdown page uses a markdown link instead of a wikilink: {link}",
+                    f"vault/AI surface uses a markdown link instead of a wikilink: {link}",
                     path=rel,
                     line=line_number,
                     hint="Use a repository-root relative wikilink, e.g. [[path/to/page|page]].",
@@ -171,7 +188,7 @@ def main():
                 if human:
                     print(f"  STYLE   {rel}:{line_number}:")
                     print(f"          Markdown page link: {link}")
-                    print("          Use a full-path wikilink for internal Markdown pages.")
+                    print("          Use a full-path wikilink in vault and AI-routing surfaces.")
 
             if not resolved.exists():
                 reporter.error(
@@ -188,9 +205,24 @@ def main():
         # Wikilinks
         for wl_match in WIKILINK_RE.finditer(scanable):
             target = wl_match.group(1)
+            line_number = scanable.count("\n", 0, wl_match.start()) + 1
             if any(tok in target for tok in PLACEHOLDER_TOKENS):
                 continue
             resolved = resolve_wikilink(target, grimoire_root)
+            if public_page:
+                reporter.error(
+                    "LINK_WIKILINK_PUBLIC_DOC",
+                    f"public documentation uses a wikilink instead of a Markdown link: [[{target}]]",
+                    path=rel,
+                    line=line_number,
+                    hint="Use a relative Markdown link so README/docs pages remain clickable on Git hosts.",
+                    docs_reference="docs/operating_model.md",
+                )
+                if human:
+                    print(f"  STYLE   {rel}:{line_number}:")
+                    print(f"          Public-doc wikilink: [[{target}]]")
+                    print("          Use a relative Markdown link for public documentation.")
+                continue
             if resolved is None:
                 reporter.error(
                     "LINK_WIKILINK_BROKEN",
@@ -227,7 +259,7 @@ def main():
     print()
     print("==================================")
     if reporter.error_count() == 0:
-        print("Link validation passed (no broken links or invalid page link styles found)")
+        print("Link validation passed (no broken links or layer-style violations found)")
         if reporter.warning_count():
             print(f"Link label warnings: {reporter.warning_count()}")
         return 0

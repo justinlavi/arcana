@@ -178,7 +178,7 @@ find invocations/ -name "*.md" ! -name "$(basename "$(pwd)").md" | wc -l   # lea
 - Make them idempotent and safe
 - Exit codes: 0 = success, 1 = failure
 - If they write files, declare a mutation profile in
-  [[docs/rite_profiles|rite profiles]]
+  [rite profiles](rite_profiles.md)
 
 **DON'T**:
 - Try to understand meaning or context
@@ -206,7 +206,7 @@ find invocations/ -name "*.md" ! -name "$(basename "$(pwd)").md" | wc -l   # lea
 
 Write-capable rites use one of four profiles. The contract lives in
 [`rites/data/rite_profiles.json`](../rites/data/rite_profiles.json), with a
-human-readable view in [[docs/rite_profiles|rite profiles]].
+human-readable view in [rite profiles](rite_profiles.md).
 
 | Profile | Use when | Required behavior |
 |---|---|---|

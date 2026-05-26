@@ -192,7 +192,7 @@ def test_bad_links_structured_diagnostics_have_codes():
     assert "LINK_WIKILINK_BROKEN" in codes
 
 
-def test_internal_markdown_page_link_is_caught_globally(tmp_path):
+def test_markdown_page_link_is_caught_in_vault_surface(tmp_path):
     grimoire = tmp_path / "good_grimoire"
     shutil.copytree(GOOD, grimoire)
     leaf = grimoire / "chapters/recipes/sourdough.md"
@@ -208,6 +208,39 @@ def test_internal_markdown_page_link_is_caught_globally(tmp_path):
     report = json.loads(result.stdout)
     codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
     assert "LINK_MARKDOWN_INTERNAL" in codes
+
+
+def test_markdown_page_link_is_allowed_in_public_doc(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    readme = grimoire / "README.md"
+    readme.write_text(
+        readme.read_text(encoding="utf-8") + "\nSee [recipes](chapters/recipes/recipes.md).\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_links.py", grimoire, "--format", "json")
+
+    assert result.returncode == 0, result.stdout
+
+
+def test_wikilink_is_caught_in_public_doc(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    readme = grimoire / "README.md"
+    readme.write_text(
+        readme.read_text(encoding="utf-8") + "\nSee [[chapters/recipes/recipes|recipes]].\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_links.py", grimoire, "--format", "json")
+
+    assert result.returncode != 0
+    report = json.loads(result.stdout)
+    codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+    assert "LINK_WIKILINK_PUBLIC_DOC" in codes
 
 
 def test_verbose_wikilink_label_warns_without_failing():
