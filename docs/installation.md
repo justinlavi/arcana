@@ -170,6 +170,11 @@ If you can't run the summoning rite (no network, restricted environment, etc.):
 4. Add the Grimoire instruction block to the instruction targets listed in [agent targets](agent_targets.md) — the canonical block lives at [grimoire block](../rites/templates/grimoire_block.md). To refresh automatic targets after Arcana changes, use `/arc-agent-update`.
 5. Run `python3 ~/grimoires/arcana/rites/register_skills.py` to install skills into registered agent skill directories.
 
+If an existing installation is far behind and its registered slash commands no
+longer match current Arcana, pull Arcana first, then follow
+[Arcana Recovery](../RECOVERY.md). Recovery does not depend on any installed
+skill being correct.
+
 ---
 
 ## Verify Your Install (5-minute smoke test)

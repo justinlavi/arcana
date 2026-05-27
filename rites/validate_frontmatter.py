@@ -43,6 +43,7 @@ SCAN_DIRS = ["docs", "invocations", "formulae", "chapters"]
 EXEMPT_FILENAMES = {
     "SKILL.md",
     "README.md",
+    "RECOVERY.md",
     "CHANGELOG.md",
     "CONTRIBUTING.md",
     "VERSION",

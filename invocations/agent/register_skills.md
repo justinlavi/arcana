@@ -31,6 +31,11 @@ and collisions. Apply mode refuses to overwrite unowned skill directories.
 Generated pointer skills without ownership metadata are rewritten when their
 provenance points back to an Arcana or grimoire skill source.
 
+For major Arcana command-family changes, use `--reset-managed` to replace the
+registered Arcana and grimoire skill namespaces from current source. This is
+the supported version of manually deleting old `/arc-*`, `/grm-*`, and
+domain-prefixed skill directories before re-registering.
+
 ### 1. Run the registration rite
 
 ```bash
@@ -51,6 +56,18 @@ Preview without writing:
 
 ```bash
 python3 ARCANA_HOME/rites/register_skills.py --dry-run
+```
+
+Preview a managed-namespace reset:
+
+```bash
+python3 ARCANA_HOME/rites/register_skills.py --reset-managed --dry-run
+```
+
+Replace managed namespaces and register fresh copies:
+
+```bash
+python3 ARCANA_HOME/rites/register_skills.py --reset-managed
 ```
 
 Target one supported agent:

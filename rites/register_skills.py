@@ -12,7 +12,7 @@ owned cleanups, preserved unowned directories, and collisions without writing.
 The default mode applies the same plan to the selected agent skill targets.
 
 Usage:
-    python3 register_skills.py [--agent all|TARGET] [--grimoire PATH] [--dry-run]
+    python3 register_skills.py [--agent all|TARGET] [--grimoire PATH] [--dry-run] [--reset-managed]
 
 Exit codes: 0 = plan completed or apply completed, 1 = apply blocked by
 collision, 2 = argparse invalid arguments.
@@ -548,7 +548,11 @@ def detect_command_collisions(specs: list[SkillSpec]) -> list[PlanAction]:
     return actions
 
 
-def build_registration_plan(skills_target: Path, specs: list[SkillSpec]) -> dict[str, Any]:
+def build_registration_plan(
+    skills_target: Path,
+    specs: list[SkillSpec],
+    reset_managed: bool = False,
+) -> dict[str, Any]:
     """Build a complete create/update/cleanup/collision plan."""
     blocking = detect_prefix_collisions(specs) + detect_command_collisions(specs)
     if blocking:
@@ -563,6 +567,8 @@ def build_registration_plan(skills_target: Path, specs: list[SkillSpec]) -> dict
             if not skill_dir.is_dir():
                 continue
             if not skill_dir.name.startswith(prefixes):
+                continue
+            if reset_managed:
                 continue
             if skill_dir.name in desired:
                 continue
@@ -595,6 +601,14 @@ def build_registration_plan(skills_target: Path, specs: list[SkillSpec]) -> dict
             ))
             continue
         if target_dir.is_dir():
+            if reset_managed:
+                actions.append(PlanAction(
+                    action="create",
+                    command_name=command_name,
+                    target_dir=target_dir,
+                    spec=spec,
+                ))
+                continue
             owner = read_skill_ownership(target_dir, desired_spec=spec, known_specs=specs)
             if not owner:
                 blocking.append(PlanAction(
@@ -631,6 +645,28 @@ def build_registration_plan(skills_target: Path, specs: list[SkillSpec]) -> dict
             ))
 
     return {"actions": actions, "blocked": blocking}
+
+
+def reset_managed_skill_dirs(
+    skills_target: Path,
+    specs: list[SkillSpec],
+    dry_run: bool,
+) -> int:
+    """Remove skill dirs in the desired managed namespaces before registering."""
+    prefixes = tuple(f"{prefix}-" for prefix in sorted({spec.skill_prefix for spec in specs}))
+    if not skills_target.is_dir() or not prefixes:
+        return 0
+
+    reset_count = 0
+    for skill_dir in sorted(skills_target.iterdir()):
+        if not skill_dir.is_dir() or not skill_dir.name.startswith(prefixes):
+            continue
+        verb = "Would reset managed namespace" if dry_run else "Reset managed namespace"
+        info(f"{verb}: /{skill_dir.name}")
+        reset_count += 1
+        if not dry_run:
+            shutil.rmtree(skill_dir)
+    return reset_count
 
 
 def print_plan(plan: dict[str, Any], dry_run: bool) -> None:
@@ -739,6 +775,7 @@ def register_target(
     config: dict[str, Any],
     dry_run: bool = False,
     grimoire_path: str | None = None,
+    reset_managed: bool = False,
 ):
     """Plan and optionally register all skills for one agent target."""
     label = config["label"]
@@ -750,7 +787,15 @@ def register_target(
         info("Pointer-only registration - copying SKILL.md files only")
 
     specs = collect_desired_skill_specs(grimoire_path)
-    plan = build_registration_plan(skills_target, specs)
+    blocking = detect_prefix_collisions(specs) + detect_command_collisions(specs)
+    reset_count = 0
+    if reset_managed and not blocking:
+        reset_count = reset_managed_skill_dirs(skills_target, specs, dry_run)
+    plan = (
+        {"actions": [], "blocked": blocking}
+        if blocking
+        else build_registration_plan(skills_target, specs, reset_managed=dry_run and reset_managed)
+    )
     print_plan(plan, dry_run)
 
     planned_registered = sum(
@@ -778,6 +823,9 @@ def register_target(
     print(f"  {label}: {action} {registered} skill(s)")
     if cleaned > 0:
         print(f"  {label}: {cleanup_action} {cleaned} owned stale skill(s)")
+    if reset_count > 0:
+        reset_action = "would reset" if dry_run else "reset"
+        print(f"  {label}: {reset_action} {reset_count} managed namespace skill dir(s)")
     if preserved > 0:
         print(f"  {label}: preserved {preserved} unowned skill dir(s)")
     if blocked > 0:
@@ -789,6 +837,7 @@ def register_target(
         "label": label,
         "registered": registered,
         "cleaned": cleaned,
+        "reset": reset_count,
         "preserved": preserved,
         "blocked": blocked,
         "mode": "plan" if dry_run else "apply",
@@ -815,6 +864,14 @@ def main() -> int:
         action="store_true",
         help="Show what would be done without making changes",
     )
+    parser.add_argument(
+        "--reset-managed",
+        action="store_true",
+        help=(
+            "Remove existing skill dirs in the managed Arcana/grimoire namespaces "
+            "before registering. Use after major Arcana command-family changes."
+        ),
+    )
     args = parser.parse_args()
 
     print()
@@ -828,15 +885,25 @@ def main() -> int:
     if args.grimoire:
         info(f"Grimoire scope: {resolve_grimoire_path(args.grimoire)}")
         print()
+    if args.reset_managed:
+        info("Reset managed mode - existing managed namespace skill dirs will be replaced")
+        print()
 
     results = []
     for agent_name, config in selected_targets(args.agent):
-        results.append(register_target(agent_name, config, args.dry_run, args.grimoire))
+        results.append(register_target(
+            agent_name,
+            config,
+            args.dry_run,
+            args.grimoire,
+            args.reset_managed,
+        ))
 
     print()
     print("  ----------------------------")
     total_registered = sum(result["registered"] for result in results)
     total_cleaned = sum(result["cleaned"] for result in results)
+    total_reset = sum(result["reset"] for result in results)
     total_preserved = sum(result["preserved"] for result in results)
     total_blocked = sum(result["blocked"] for result in results)
     if args.dry_run:
@@ -847,6 +914,9 @@ def main() -> int:
         print(f"  Cleaned:    {total_cleaned} owned stale skill registration(s)")
     if total_preserved:
         print(f"  Preserved:  {total_preserved} unowned skill dir(s)")
+    if total_reset:
+        reset_label = "Planned reset" if args.dry_run else "Reset"
+        print(f"  {reset_label}:      {total_reset} managed namespace skill dir(s)")
     if total_blocked:
         print(f"  Blocked:    {total_blocked} collision(s)")
     print()

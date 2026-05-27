@@ -15,7 +15,7 @@ from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ARCANA_ROOT = default_arcana_root()
 
-UPPERCASE_EXCEPTIONS = {"README.md", "CHANGELOG.md", "CONTRIBUTING.md",
+UPPERCASE_EXCEPTIONS = {"README.md", "RECOVERY.md", "CHANGELOG.md", "CONTRIBUTING.md",
                         "CLAUDE.md", "AGENTS.md", "LICENSE.md",
                         "IMPLEMENTATION_PLAN.md", "VERSION"}
 

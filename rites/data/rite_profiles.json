@@ -54,8 +54,8 @@
       "plan_command": "python rites/register_skills.py --dry-run",
       "apply_command": "python rites/register_skills.py",
       "writes": ["supported agent skill directories under the user's home directory"],
-      "idempotency": "Rerunning with the same inputs produces the same rendered skill files; stale cleanup removes only skill directories with Arcana ownership metadata or generated provenance.",
-      "validation_profile": "python rites/register_skills.py --dry-run; temp-target pytest coverage for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, and prefix collisions.",
+      "idempotency": "Rerunning with the same inputs produces the same rendered skill files; stale cleanup removes only skill directories with Arcana ownership metadata or generated provenance. With --reset-managed, current managed namespace directories are replaced before re-registration.",
+      "validation_profile": "python rites/register_skills.py --dry-run; temp-target pytest coverage for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions.",
       "tests": ["tests/test_register_skills.py", "tests/test_rite_profiles.py"]
     },
     {

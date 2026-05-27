@@ -74,6 +74,19 @@ python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT
 
 This refreshes Arcana-shipped `/arc-*` and `/grm-*` commands and the active grimoire's own `<skill prefix>-*` commands without scanning every installed grimoire.
 
+If Arcana changed command families, renamed skills, or the registration report
+is blocked by stale legacy skill directories, preview and then run the managed
+reset mode:
+
+```bash
+python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --reset-managed --dry-run
+python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --reset-managed
+```
+
+This replaces registered skill directories in Arcana's namespaces and the
+active grimoire's skill prefix, then registers fresh copies from current
+source.
+
 ### 6. Refresh the agent routing block if needed
 
 Read `ARCANA_HOME/rites/data/agent_targets.json` and compare

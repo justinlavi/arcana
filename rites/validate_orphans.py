@@ -33,10 +33,10 @@ from _lib import (
 )
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
-EXEMPT_FILENAMES = {"README.md", "CHANGELOG.md", "CONTRIBUTING.md", "log.md", "VERSION", "SKILL.md"}
+EXEMPT_FILENAMES = {"README.md", "RECOVERY.md", "CHANGELOG.md", "CONTRIBUTING.md", "log.md", "VERSION", "SKILL.md"}
 SKIP_DIRS = {"sources", "inbox", ".git", "skills", "tests"}
 PUBLIC_DOC_DIRS = {"docs"}
-PUBLIC_DOC_FILENAMES = {"README.md", "CONTRIBUTING.md", "CHANGELOG.md"}
+PUBLIC_DOC_FILENAMES = {"README.md", "RECOVERY.md", "CONTRIBUTING.md", "CHANGELOG.md"}
 
 
 def is_hub(path):

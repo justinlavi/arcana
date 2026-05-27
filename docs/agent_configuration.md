@@ -42,12 +42,18 @@ python3 ~/grimoires/arcana/rites/register_skills.py            # all targets
 python3 ~/grimoires/arcana/rites/register_skills.py --agent claude
 python3 ~/grimoires/arcana/rites/register_skills.py --agent codex
 python3 ~/grimoires/arcana/rites/register_skills.py --grimoire . # Arcana + active grimoire
+python3 ~/grimoires/arcana/rites/register_skills.py --reset-managed --dry-run
+python3 ~/grimoires/arcana/rites/register_skills.py --reset-managed
 ```
 
 The valid `--agent` values come from
 [`rites/data/agent_targets.json`](../rites/data/agent_targets.json).
 
 Invoke `/arc-agent-register-skills` for a global refresh of Arcana plus every installed grimoire. Invoke `/grm-register-skills` from inside one grimoire to refresh Arcana plus that active grimoire only. The summoning rite runs the global registration for you on install.
+
+Use `--reset-managed` after major Arcana command-family changes or when old
+registered skill directories block a refresh. Dry-run first to preview the
+directories that would be replaced.
 
 For the normal "bring this machine up to date" workflow, run `/grm-update-arcana`. It can run from a grimoire root or a broader workspace such as `~/grimoires/`; if more than one registered grimoire is available, the agent asks which one to treat as active. It pulls Arcana, validates it, refreshes the local library, updates agent integration when needed, re-registers skills, and checks the active grimoire against the current structure rules.
 
@@ -127,6 +133,9 @@ To register new or updated skills in the active grimoire, run `/grm-register-ski
 
 **Agent doesn't see new skills**
 - Run `/grm-register-skills` from the active grimoire, or `/arc-agent-register-skills` for a global refresh. Then open a new agent session (Claude Code / Codex caches skill listings).
+
+**Agent skills are badly stale or have old prefixes**
+- Pull Arcana, then follow [Arcana Recovery](../RECOVERY.md). It is the stable path for cases where the installed slash-command layer cannot repair itself.
 
 **Arcana may be stale**
 - Run `/grm-update-arcana`. If the current workspace is not inside a grimoire, the agent resolves or asks for the active grimoire from `~/grimoires/library.json`.

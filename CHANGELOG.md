@@ -24,6 +24,8 @@
   command-surface metadata.
 - Added provenance/frontmatter regression coverage for source wrappers and
   source-layer boundaries.
+- Added root-level `RECOVERY.md` as a stable bridge for stale installations
+  whose registered skills or agent instructions are too old to self-repair.
 
 ### Changed
 
@@ -44,6 +46,9 @@
   unowned target collisions, detect grimoire prefix collisions before writing,
   rewrite generated pointer skills that predate ownership metadata, and clean
   only owned stale generated skills.
+- Added `--reset-managed` to skill registration so major Arcana command-family
+  updates can replace registered Arcana and grimoire skill namespaces before
+  re-registering fresh copies.
 - Updated skill registration, Summoning Rite agent injection, GUI settings,
   diagnostics, source bootstrap, and release bundling to read agent targets
   from the registry.

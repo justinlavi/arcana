@@ -328,9 +328,9 @@
       "rite_owner": "rites/register_skills.py",
       "preconditions": ["Registered active grimoire", "Supported agent target or all supported targets"],
       "mutation_profile": "plan_apply",
-      "mutation_behavior": "Plans and writes Arcana-shipped skills and active-grimoire skills into supported agent skill directories; generated SKILL.md files carry Arcana ownership metadata, generated provenance can prove ownership, unowned collisions block apply, and stale cleanup touches only owned generated skills.",
+      "mutation_behavior": "Plans and writes Arcana-shipped skills and active-grimoire skills into supported agent skill directories; generated SKILL.md files carry Arcana ownership metadata, generated provenance can prove ownership, unowned collisions block apply, stale cleanup touches only owned generated skills, and --reset-managed replaces current managed namespace directories before re-registering.",
       "log_behavior": "Does not append grimoire logs.",
-      "validation_profile": "python rites/register_skills.py --grimoire GRIMOIRE_ROOT --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, and prefix collisions.",
+      "validation_profile": "python rites/register_skills.py --grimoire GRIMOIRE_ROOT --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions.",
       "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
@@ -523,9 +523,9 @@
       "rite_owner": "rites/register_skills.py",
       "preconditions": ["Arcana root", "Supported agent target or all supported targets"],
       "mutation_profile": "plan_apply",
-      "mutation_behavior": "Plans and writes Arcana-shipped skills and installed grimoire skills into supported agent skill directories; generated SKILL.md files carry Arcana ownership metadata, generated provenance can prove ownership, unowned collisions block apply, and stale cleanup touches only owned generated skills.",
+      "mutation_behavior": "Plans and writes Arcana-shipped skills and installed grimoire skills into supported agent skill directories; generated SKILL.md files carry Arcana ownership metadata, generated provenance can prove ownership, unowned collisions block apply, stale cleanup touches only owned generated skills, and --reset-managed replaces current managed namespace directories before re-registering.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
-      "validation_profile": "python rites/register_skills.py --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, and prefix collisions.",
+      "validation_profile": "python rites/register_skills.py --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions.",
       "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {

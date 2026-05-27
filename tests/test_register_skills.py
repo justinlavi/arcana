@@ -91,6 +91,62 @@ def test_register_skills_preserves_unowned_collision(tmp_path, monkeypatch):
     assert (existing / "SKILL.md").read_text(encoding="utf-8") == "user-authored\n"
 
 
+def test_register_skills_reset_managed_replaces_unowned_collision(tmp_path, monkeypatch):
+    target = tmp_path / "codex" / "skills"
+    existing = target / "arc-help"
+    existing.mkdir(parents=True)
+    (existing / "SKILL.md").write_text("user-authored\n", encoding="utf-8", newline="\n")
+    outside_namespace = target / "personal-tool"
+    outside_namespace.mkdir()
+    (outside_namespace / "SKILL.md").write_text("keep me\n", encoding="utf-8", newline="\n")
+    monkeypatch.setattr(register_skills, "LOCAL_LIBRARY", tmp_path / "missing-library.json")
+
+    result = register_skills.register_target(
+        "codex",
+        {
+            "label": "Codex Test",
+            "path": target,
+            "pointer_only": True,
+        },
+        dry_run=False,
+        reset_managed=True,
+    )
+
+    content = (existing / "SKILL.md").read_text(encoding="utf-8")
+    assert result["blocked"] == 0
+    assert result["reset"] == 1
+    assert "ARCANA_SKILL_OWNERSHIP" in content
+    assert "user-authored" not in content
+    assert (outside_namespace / "SKILL.md").read_text(encoding="utf-8") == "keep me\n"
+
+
+def test_register_skills_reset_managed_dry_run_does_not_write(tmp_path, monkeypatch, capsys):
+    target = tmp_path / "codex" / "skills"
+    existing = target / "arc-help"
+    existing.mkdir(parents=True)
+    (existing / "SKILL.md").write_text("user-authored\n", encoding="utf-8", newline="\n")
+    monkeypatch.setattr(register_skills, "LOCAL_LIBRARY", tmp_path / "missing-library.json")
+
+    result = register_skills.register_target(
+        "codex",
+        {
+            "label": "Codex Test",
+            "path": target,
+            "pointer_only": True,
+        },
+        dry_run=True,
+        reset_managed=True,
+    )
+
+    output = capsys.readouterr().out
+    assert result["mode"] == "plan"
+    assert result["blocked"] == 0
+    assert result["reset"] == 1
+    assert "Would reset managed namespace: /arc-help" in output
+    assert "Would create: /arc-help" in output
+    assert (existing / "SKILL.md").read_text(encoding="utf-8") == "user-authored\n"
+
+
 def test_register_skills_updates_generated_provenance_without_marker(tmp_path, monkeypatch):
     target = tmp_path / "codex" / "skills"
     existing = target / "arc-help"

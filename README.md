@@ -115,6 +115,10 @@ Detailed installer mode rules live in [summoning contract](docs/summoning_contra
 
 Open a new agent session and run `/arc-help` to see every available command, or run `/grm-create` to start your first grimoire.
 
+If an old installation has stale or broken slash commands, pull Arcana with any
+Git client and open [Arcana Recovery](RECOVERY.md). It is the stable bridge for
+getting agent skills and grimoires back in sync after large Arcana changes.
+
 -> [installation](docs/installation.md) - [installation](docs/installation.md#verify-your-install-5-minute-smoke-test)
 
 ---
@@ -125,6 +129,7 @@ Open a new agent session and run `/arc-help` to see every available command, or 
 ~/grimoires/
 |-- arcana/                       # The engine - install once, reference forever
 |   |-- arcana.md                 # Root hub
+|   |-- RECOVERY.md               # Stable stale-install recovery bridge
 |   |-- invocations/              # AI-guided workflows
 |   |-- formulae/                 # Templates for hubs, chapters, pages, sources
 |   |-- rites/                    # Python automation scripts
@@ -169,6 +174,7 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 
 | | |
 |---|---|
+| [Recovery](RECOVERY.md) | Stable bridge for stale installations and broken skill registrations |
 | [Installation](docs/installation.md) | One-command setup, manual setup, 5-minute smoke test, troubleshooting |
 | [Agent Targets](docs/agent_targets.md) | Supported agent target registry |
 | [Agent Configuration](docs/agent_configuration.md) | Claude Code, Codex, Copilot, Cursor |

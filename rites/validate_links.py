@@ -43,7 +43,7 @@ SKIP_DIRS = {
 SKIP_FILES = set()
 
 PUBLIC_DOC_DIRS = {"docs"}
-PUBLIC_DOC_FILENAMES = {"README.md", "CONTRIBUTING.md", "CHANGELOG.md"}
+PUBLIC_DOC_FILENAMES = {"README.md", "RECOVERY.md", "CONTRIBUTING.md", "CHANGELOG.md"}
 
 PLACEHOLDER_TOKENS = ["{", "<", "invocation_name", "chapter_name", "file_name",
                       "ARCANA_HOME", "GRIMOIRE_PATH", "ARCANA_PATH",
