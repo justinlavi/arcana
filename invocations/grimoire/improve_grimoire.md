@@ -53,7 +53,9 @@ Before editing the grimoire:
 
 Invoke `/grm-validate-all` and collect the deterministic validator report. It
 covers structure, encoding, portability, format, frontmatter, links, orphans,
-and provenance.
+provenance, and documented file-tree drift (`/grm-validate-doc-trees`, which
+catches stale ASCII directory diagrams in READMEs / hubs / how-tos when
+chapters or skills are renamed, added, or removed).
 
 Stop and report if any validator returns hard errors that would invalidate later phases (e.g. missing root hub).
 

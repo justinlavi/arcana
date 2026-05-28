@@ -50,6 +50,7 @@ The grimoire profile runs:
 - `validate_links.py`
 - `validate_orphans.py`
 - `validate_provenance.py`
+- `validate_doc_trees.py`
 
 ## Workflow
 

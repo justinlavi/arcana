@@ -34,6 +34,21 @@
       "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {
+      "command": "/arc-validate-doc-trees",
+      "family": "arcana",
+      "skill_source": "skills/arcana/validate-doc-trees/SKILL.md",
+      "invocation": "invocations/arcana/validators/validate_doc_trees.md",
+      "guard": null,
+      "owner_type": "rite",
+      "rite_owner": "rites/validate_doc_trees.py",
+      "preconditions": ["Arcana root"],
+      "mutation_profile": "read_only",
+      "mutation_behavior": "Scans Arcana Markdown for ASCII directory-tree diagrams and compares each resolvable diagram to the filesystem.",
+      "log_behavior": "Does not append grimoire or Arcana logs.",
+      "validation_profile": "python rites/validate_doc_trees.py",
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
+    },
+    {
       "command": "/arc-validate-encoding",
       "family": "arcana",
       "skill_source": "skills/arcana/validate-encoding/SKILL.md",
@@ -391,6 +406,21 @@
       "mutation_behavior": "Uses deterministic search aids and judgment to report boundary violations in the active grimoire.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "Run as a judgment pass; confirm fixes with /grm-validate-structure and /grm-validate-links when files change.",
+      "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
+    },
+    {
+      "command": "/grm-validate-doc-trees",
+      "family": "grimoire",
+      "skill_source": "skills/grimoire/validate-doc-trees/SKILL.md",
+      "invocation": "invocations/grimoire/validators/validate_doc_trees.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "rite",
+      "rite_owner": "rites/validate_doc_trees.py",
+      "preconditions": ["Registered active grimoire"],
+      "mutation_profile": "read_only",
+      "mutation_behavior": "Scans active-grimoire Markdown for ASCII directory-tree diagrams and compares each resolvable diagram to the filesystem.",
+      "log_behavior": "Does not append grimoire logs.",
+      "validation_profile": "python rites/validate_doc_trees.py --grimoire GRIMOIRE_ROOT",
       "generated_docs_impact": "Rendered by docs/skills.md from skill frontmatter and command-surface metadata; rerun python rites/sync_docs.py --apply after either source changes."
     },
     {

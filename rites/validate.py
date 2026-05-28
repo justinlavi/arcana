@@ -39,6 +39,7 @@ ARCANA_RITES = [
     "validate_provenance.py",
     "validate_skill_refs.py",
     "validate_security.py",
+    "validate_doc_trees.py",
 ]
 
 GRIMOIRE_RITES = [
@@ -50,6 +51,7 @@ GRIMOIRE_RITES = [
     "validate_links.py",
     "validate_orphans.py",
     "validate_provenance.py",
+    "validate_doc_trees.py",
 ]
 
 RITES = ARCANA_RITES

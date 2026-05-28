@@ -27,6 +27,7 @@ For the aggregate command, see [[invocations/arcana/validators/validate_all|vali
 | [[invocations/arcana/validators/validate_provenance|validate provenance]] | `/arc-validate-provenance` | Every external/hybrid page cites real sources under `sources/` |
 | [[invocations/arcana/validators/validate_security|validate security]] | `/arc-validate-security` | Credential patterns and unsafe Python constructs in rites |
 | [[invocations/arcana/validators/validate_skill_refs|validate skill refs]] | `/arc-validate-skill-refs` | Slash-command references and command-surface entries resolve |
+| [[invocations/arcana/validators/validate_doc_trees|validate doc trees]] | `/arc-validate-doc-trees` | ASCII directory diagrams match the filesystem |
 
 ## Run them all
 

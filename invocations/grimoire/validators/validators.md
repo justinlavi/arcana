@@ -21,6 +21,7 @@ Mechanical validators that operate on the resolved active grimoire. Each wraps a
 | [[invocations/grimoire/validators/validate_orphans|validate orphans]] | `/grm-validate-orphans` | Pages are reachable from other pages |
 | [[invocations/grimoire/validators/validate_portability|validate portability]] | `/grm-validate-portability` | Windows-safe paths |
 | [[invocations/grimoire/validators/validate_provenance|validate provenance]] | `/grm-validate-provenance` | External/hybrid pages cite real sources |
+| [[invocations/grimoire/validators/validate_doc_trees|validate doc trees]] | `/grm-validate-doc-trees` | ASCII directory diagrams match the filesystem |
 
 ## Related
 
