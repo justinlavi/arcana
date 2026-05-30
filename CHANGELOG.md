@@ -91,6 +91,13 @@
   home as authoritative: it is reconciled as a path correction rather than
   reported stale, so `--apply` cannot drop or mis-resolve a present grimoire
   whose recorded `local_path` uses the `$HOME` token under an overridden `--home`.
+- The summoning rite's GUI install path reuses the core `install_arcana` /
+  `install_grimoire` engine through an injected cancellable git runner, so it
+  performs the same partial-working-tree recovery as the CLI instead of
+  reporting a broken clone as success.
+- `git` invocations in the summoning rite run with a timeout and
+  `GIT_TERMINAL_PROMPT=0`, so a stalled fetch or an authentication prompt fails
+  fast instead of hanging the install indefinitely.
 
 ## [1.0.0] - 2026-05-25
 

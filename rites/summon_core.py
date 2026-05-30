@@ -153,15 +153,23 @@ def system_python():
     return sys.executable
 
 
+GIT_TIMEOUT = 600  # seconds; backstop so a stalled fetch cannot hang the install
+
+
 def git(*args, cwd=None, log=None):
     """Run a git command. Returns (success: bool, stdout: str)."""
+    env = _subprocess_env()
+    if env is None:
+        env = dict(os.environ)
+    env.setdefault("GIT_TERMINAL_PROMPT", "0")  # fail instead of blocking on an auth prompt
     try:
         result = subprocess.run(
             ["git"] + list(args),
             cwd=cwd,
             capture_output=True,
             text=True,
-            env=_subprocess_env(),
+            env=env,
+            timeout=GIT_TIMEOUT,
         )
         if result.returncode != 0 and log is not None:
             stderr = (result.stderr or "").rstrip()
@@ -169,6 +177,13 @@ def git(*args, cwd=None, log=None):
                 for line in stderr.splitlines():
                     log.line(line)
         return result.returncode == 0, result.stdout.strip()
+    except subprocess.TimeoutExpired:
+        if log is not None:
+            log.line(
+                f"git timed out after {GIT_TIMEOUT}s - check network access "
+                "and that authentication is configured"
+            )
+        return False, ""
     except FileNotFoundError:
         if log is not None:
             log.line("git executable not found on PATH")
@@ -517,13 +532,13 @@ def working_tree_populated(target_dir):
     return any((target_dir / s).exists() for s in WORKING_TREE_SENTINELS)
 
 
-def attempt_working_tree_recovery(target_dir, name, log):
+def attempt_working_tree_recovery(target_dir, name, log, git_fn=git):
     """Re-run checkout from HEAD to recover a partial working tree.
 
     Returns True if recovery succeeded (sentinel present afterward), False otherwise.
     """
     log.warn(f"{name}: .git/ present but working tree is partial - attempting recovery")
-    ok, _ = git("-C", str(target_dir), "checkout", "HEAD", "--", ".", log=log)
+    ok, _ = git_fn("-C", str(target_dir), "checkout", "HEAD", "--", ".", log=log)
     if ok and working_tree_populated(target_dir):
         log.ok(f"{name}: working tree recovered via `git checkout HEAD -- .`")
         return True
@@ -537,23 +552,26 @@ def attempt_working_tree_recovery(target_dir, name, log):
     return False
 
 
-def install_arcana(arcana_url, log):
+def install_arcana(arcana_url, log, git_fn=git, cancel_event=None):
     """Clone or update Arcana."""
     log.info("Installing Arcana...")
+    if cancel_event is not None and cancel_event.is_set():
+        log.warn("Cancelled before Arcana install")
+        return False
     if (ARCANA_DIR / ".git").is_dir():
         log.info("Arcana already installed - pulling latest...")
-        ok, _ = git("-C", str(ARCANA_DIR), "pull", "--ff-only", log=log)
+        ok, _ = git_fn("-C", str(ARCANA_DIR), "pull", "--ff-only", log=log)
         if ok:
             log.ok(f"Arcana updated: {ARCANA_DIR}")
         else:
             log.warn("Arcana pull failed (local changes?) - skipping update")
             log.ok(f"Arcana exists: {ARCANA_DIR}")
         if not working_tree_populated(ARCANA_DIR):
-            if not attempt_working_tree_recovery(ARCANA_DIR, "Arcana", log):
+            if not attempt_working_tree_recovery(ARCANA_DIR, "Arcana", log, git_fn):
                 return False
     elif arcana_url:
         log.info(f"Cloning Arcana from {arcana_url}...")
-        ok, _ = git("clone", arcana_url, str(ARCANA_DIR), log=log)
+        ok, _ = git_fn("clone", arcana_url, str(ARCANA_DIR), log=log)
         if not ok:
             log.err("Failed to clone Arcana - check network and git credentials")
             if (ARCANA_DIR / ".git").is_dir() and not working_tree_populated(ARCANA_DIR):
@@ -563,7 +581,7 @@ def install_arcana(arcana_url, log):
                 )
             return False
         if not working_tree_populated(ARCANA_DIR):
-            if not attempt_working_tree_recovery(ARCANA_DIR, "Arcana", log):
+            if not attempt_working_tree_recovery(ARCANA_DIR, "Arcana", log, git_fn):
                 return False
         log.ok(f"Arcana cloned to {ARCANA_DIR}")
     else:
@@ -575,22 +593,26 @@ def install_arcana(arcana_url, log):
     return True
 
 
-def install_grimoire(key, entry, log):
+def install_grimoire(key, entry, log, git_fn=git, cancel_event=None):
     """Clone or update a single grimoire. Returns True on success."""
     name = entry.get("name", key)
     url = entry.get("online_path", "")
     target = GRIMOIRES_HOME / key
 
+    if cancel_event is not None and cancel_event.is_set():
+        log.warn(f"Cancelled before installing {name}")
+        return False
+
     if (target / ".git").is_dir():
         log.info(f"{name} already installed - pulling latest...")
-        ok, _ = git("-C", str(target), "pull", "--ff-only", log=log)
+        ok, _ = git_fn("-C", str(target), "pull", "--ff-only", log=log)
         if ok:
             log.ok(f"{name} updated: {target}")
         else:
             log.warn(f"{name} pull failed (local changes?) - skipping update")
             log.ok(f"{name} exists: {target}")
         if not working_tree_populated(target):
-            if not attempt_working_tree_recovery(target, name, log):
+            if not attempt_working_tree_recovery(target, name, log, git_fn):
                 return False
         return True
     elif target.is_dir():
@@ -598,7 +620,7 @@ def install_grimoire(key, entry, log):
         return True
     else:
         log.info(f"Cloning {name} from {url}...")
-        ok, _ = git("clone", url, str(target), log=log)
+        ok, _ = git_fn("clone", url, str(target), log=log)
         if not ok:
             log.err(f"Failed to clone {name} - check VPN and git credentials")
             if (target / ".git").is_dir() and not working_tree_populated(target):
@@ -608,7 +630,7 @@ def install_grimoire(key, entry, log):
                 )
             return False
         if not working_tree_populated(target):
-            if not attempt_working_tree_recovery(target, name, log):
+            if not attempt_working_tree_recovery(target, name, log, git_fn):
                 return False
         log.ok(f"Cloned {name} to {target}")
         return True

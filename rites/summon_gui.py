@@ -10,6 +10,7 @@ persistence, background workers with cancellation, theme system, the four
 tabs, log panel) supports it.
 """
 
+import functools
 import json
 import os
 import re
@@ -275,13 +276,17 @@ class Worker:
 
 def git_cancellable(*args, log=None, proc_slot=None):
     """git() variant using Popen + ProcSlot so workers can SIGTERM mid-op."""
+    env = _subprocess_env()
+    if env is None:
+        env = dict(os.environ)
+    env.setdefault("GIT_TERMINAL_PROMPT", "0")  # fail instead of blocking on an auth prompt
     try:
         proc = subprocess.Popen(
             ["git"] + list(args),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            env=_subprocess_env(),
+            env=env,
         )
     except FileNotFoundError:
         if log is not None:
@@ -303,80 +308,15 @@ def git_cancellable(*args, log=None, proc_slot=None):
 
 
 def install_arcana_cancellable(arcana_url, log, cancel_event, proc_slot):
-    """install_arcana with cancellation support."""
-    log.info("Installing Arcana...")
-    if cancel_event.is_set():
-        log.warn("Cancelled before Arcana install")
-        return False
-
-    if (ARCANA_DIR / ".git").is_dir():
-        log.info("Arcana already installed - pulling latest...")
-        ok, _ = git_cancellable(
-            "-C", str(ARCANA_DIR), "pull", "--ff-only",
-            log=log, proc_slot=proc_slot,
-        )
-        if ok:
-            log.ok(f"Arcana updated: {ARCANA_DIR}")
-        else:
-            log.warn("Arcana pull failed (local changes?) - skipping update")
-            log.ok(f"Arcana exists: {ARCANA_DIR}")
-    elif arcana_url:
-        log.info(f"Cloning Arcana from {arcana_url}...")
-        ok, _ = git_cancellable(
-            "clone", arcana_url, str(ARCANA_DIR),
-            log=log, proc_slot=proc_slot,
-        )
-        if ok:
-            log.ok(f"Arcana cloned to {ARCANA_DIR}")
-        else:
-            log.err("Failed to clone Arcana - check network and git credentials")
-            return False
-    else:
-        if ARCANA_DIR.is_dir():
-            log.ok(f"Arcana exists: {ARCANA_DIR}")
-        else:
-            log.err("Cannot detect Arcana origin URL")
-            return False
-    return True
+    """install_arcana with cancellation and working-tree recovery via the core engine."""
+    git_fn = functools.partial(git_cancellable, proc_slot=proc_slot)
+    return install_arcana(arcana_url, log, git_fn=git_fn, cancel_event=cancel_event)
 
 
 def install_grimoire_cancellable(key, entry, log, cancel_event, proc_slot):
-    """install_grimoire with cancellation support."""
-    name = entry.get("name", key)
-    url = entry.get("online_path", "")
-    target = GRIMOIRES_HOME / key
-
-    if cancel_event.is_set():
-        log.warn(f"Cancelled before installing {name}")
-        return False
-
-    if (target / ".git").is_dir():
-        log.info(f"{name} already installed - pulling latest...")
-        ok, _ = git_cancellable(
-            "-C", str(target), "pull", "--ff-only",
-            log=log, proc_slot=proc_slot,
-        )
-        if ok:
-            log.ok(f"{name} updated: {target}")
-        else:
-            log.warn(f"{name} pull failed (local changes?) - skipping update")
-            log.ok(f"{name} exists: {target}")
-        return True
-    elif target.is_dir():
-        log.warn(f"{name} directory exists but is not a git repo - skipping")
-        return True
-    else:
-        log.info(f"Cloning {name} from {url}...")
-        ok, _ = git_cancellable(
-            "clone", url, str(target),
-            log=log, proc_slot=proc_slot,
-        )
-        if ok:
-            log.ok(f"Cloned {name} to {target}")
-            return True
-        else:
-            log.err(f"Failed to clone {name}")
-            return False
+    """install_grimoire with cancellation and working-tree recovery via the core engine."""
+    git_fn = functools.partial(git_cancellable, proc_slot=proc_slot)
+    return install_grimoire(key, entry, log, git_fn=git_fn, cancel_event=cancel_event)
 
 
 # ---------------------------------------------------------------------------

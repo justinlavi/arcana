@@ -151,3 +151,120 @@ def test_gui_settings_can_skip_skill_registration(monkeypatch):
 
     assert result is True
     assert calls == ["agent"]
+
+
+class _FullLog:
+    def __init__(self):
+        self.events = []
+
+    def info(self, m):
+        self.events.append(("info", m))
+
+    def ok(self, m):
+        self.events.append(("ok", m))
+
+    def warn(self, m):
+        self.events.append(("warn", m))
+
+    def err(self, m):
+        self.events.append(("err", m))
+
+    def line(self, m):
+        self.events.append(("line", m))
+
+
+def test_git_sets_timeout_and_disables_terminal_prompt(monkeypatch):
+    captured = {}
+
+    def fake_run(cmd, **kwargs):
+        captured["cmd"] = cmd
+        captured["kwargs"] = kwargs
+        return SimpleNamespace(returncode=0, stdout="out\n", stderr="")
+
+    monkeypatch.setattr(summon_core.subprocess, "run", fake_run)
+    success, out = summon_core.git("status")
+
+    assert success is True and out == "out"
+    assert captured["kwargs"]["timeout"] == summon_core.GIT_TIMEOUT
+    assert captured["kwargs"]["env"]["GIT_TERMINAL_PROMPT"] == "0"
+
+
+def test_git_returns_false_on_timeout(monkeypatch):
+    def fake_run(cmd, **kwargs):
+        raise summon_core.subprocess.TimeoutExpired(cmd, kwargs.get("timeout"))
+
+    monkeypatch.setattr(summon_core.subprocess, "run", fake_run)
+    success, out = summon_core.git("clone", "url", "dest")
+
+    assert success is False
+    assert out == ""
+
+
+def test_install_arcana_recovers_partial_working_tree(tmp_path, monkeypatch):
+    arcana_dir = tmp_path / "arcana"
+    (arcana_dir / ".git").mkdir(parents=True)  # repo present, working tree empty
+    monkeypatch.setattr(summon_core, "ARCANA_DIR", arcana_dir)
+
+    calls = []
+
+    def fake_git(*args, log=None, **_kwargs):
+        calls.append(args)
+        if "checkout" in args:
+            (arcana_dir / "arcana.json").write_text("{}", encoding="utf-8")
+        return True, ""
+
+    result = summon_core.install_arcana("", _FullLog(), git_fn=fake_git)
+
+    assert result is True
+    assert any("checkout" in c for c in calls)  # recovery attempted (the CLI-only path)
+    assert (arcana_dir / "arcana.json").exists()
+
+
+def test_install_arcana_fails_when_recovery_cannot_populate(tmp_path, monkeypatch):
+    arcana_dir = tmp_path / "arcana"
+    (arcana_dir / ".git").mkdir(parents=True)
+    monkeypatch.setattr(summon_core, "ARCANA_DIR", arcana_dir)
+
+    def fake_git(*args, log=None, **_kwargs):
+        return True, ""  # commands "succeed" but never populate a sentinel
+
+    result = summon_core.install_arcana("", _FullLog(), git_fn=fake_git)
+    assert result is False
+
+
+def test_install_arcana_respects_cancel_event():
+    class _Cancelled:
+        def is_set(self):
+            return True
+
+    called = []
+
+    def fake_git(*args, **_kwargs):
+        called.append(args)
+        return True, ""
+
+    result = summon_core.install_arcana(
+        "url", _FullLog(), git_fn=fake_git, cancel_event=_Cancelled()
+    )
+    assert result is False
+    assert called == []
+
+
+def test_gui_install_arcana_cancellable_delegates_to_core(monkeypatch):
+    recorded = {}
+
+    def fake_install_arcana(arcana_url, log, git_fn=None, cancel_event=None):
+        recorded["url"] = arcana_url
+        recorded["git_fn"] = git_fn
+        recorded["cancel_event"] = cancel_event
+        return True
+
+    monkeypatch.setattr(summon_gui, "install_arcana", fake_install_arcana)
+
+    cancel_sentinel = object()
+    result = summon_gui.install_arcana_cancellable("u", _FullLog(), cancel_sentinel, object())
+
+    assert result is True
+    assert recorded["url"] == "u"
+    assert recorded["cancel_event"] is cancel_sentinel
+    assert callable(recorded["git_fn"])  # proc-slot-bound cancellable git
