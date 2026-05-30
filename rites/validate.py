@@ -26,33 +26,17 @@ from diagnostics import add_output_format_arg, human_label, human_location
 RITE_DIR = Path(__file__).resolve().parent
 ARCANA_ROOT = Path(os.environ.get("ARCANA_HOME", RITE_DIR.parent))
 
-ARCANA_RITES = [
-    "validate_structure.py",
-    "validate_encoding.py",
-    "validate_portability.py",
-    "validate_naming.py",
-    "validate_semantics.py",
-    "validate_format.py",
-    "validate_frontmatter.py",
-    "validate_links.py",
-    "validate_orphans.py",
-    "validate_provenance.py",
-    "validate_skill_refs.py",
-    "validate_security.py",
-    "validate_doc_trees.py",
-]
+VALIDATORS_CONTRACT = RITE_DIR / "data" / "validators.json"
 
-GRIMOIRE_RITES = [
-    "validate_grimoire_structure.py",
-    "validate_encoding.py",
-    "validate_portability.py",
-    "validate_format.py",
-    "validate_frontmatter.py",
-    "validate_links.py",
-    "validate_orphans.py",
-    "validate_provenance.py",
-    "validate_doc_trees.py",
-]
+
+def _load_validator_lists():
+    """Load the canonical Arcana and grimoire validator sequences."""
+    with open(VALIDATORS_CONTRACT, encoding="utf-8") as f:
+        data = json.load(f)
+    return data["arcana"], data["grimoire"]
+
+
+ARCANA_RITES, GRIMOIRE_RITES = _load_validator_lists()
 
 RITES = ARCANA_RITES
 

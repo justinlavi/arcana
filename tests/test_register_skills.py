@@ -70,6 +70,20 @@ def test_register_skills_apply_is_idempotent_for_pointer_target(tmp_path, monkey
     assert all(path.name == "SKILL.md" for path in target.rglob("*") if path.is_file())
 
 
+def test_register_skills_apply_leaves_no_staging_dir(tmp_path, monkeypatch):
+    target = tmp_path / "codex" / "skills"
+    monkeypatch.setattr(register_skills, "LOCAL_LIBRARY", tmp_path / "missing-library.json")
+
+    register_skills.register_target(
+        "codex",
+        {"label": "Codex Test", "path": target, "pointer_only": True},
+        dry_run=False,
+    )
+
+    assert (target / "arc-help" / "SKILL.md").is_file()
+    assert list(target.glob("*.tmp")) == []  # staging is swapped in, never left behind
+
+
 def test_register_skills_preserves_unowned_collision(tmp_path, monkeypatch):
     target = tmp_path / "codex" / "skills"
     existing = target / "arc-help"

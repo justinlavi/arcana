@@ -636,6 +636,16 @@ def install_grimoire(key, entry, log, git_fn=git, cancel_event=None):
         return True
 
 
+def write_json_atomic(path, data):
+    """Write JSON to path atomically: full content to a temp file, then os.replace."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(data, f, indent=2)
+        f.write("\n")
+    os.replace(tmp, path)
+
+
 def update_local_library(installed_keys, library, log):
     """Update ~/grimoires/library.json with installed grimoires."""
     log.info("Updating local library...")
@@ -657,9 +667,7 @@ def update_local_library(installed_keys, library, log):
         }
         local["grimoires"][key] = local_entry
 
-    with open(LOCAL_LIBRARY, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(local, f, indent=2)
-        f.write("\n")
+    write_json_atomic(LOCAL_LIBRARY, local)
     log.ok(f"Local library updated: {LOCAL_LIBRARY}")
 
 

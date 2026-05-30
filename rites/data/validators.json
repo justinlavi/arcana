@@ -1,0 +1,28 @@
+{
+  "arcana": [
+    "validate_structure.py",
+    "validate_encoding.py",
+    "validate_portability.py",
+    "validate_naming.py",
+    "validate_semantics.py",
+    "validate_format.py",
+    "validate_frontmatter.py",
+    "validate_links.py",
+    "validate_orphans.py",
+    "validate_provenance.py",
+    "validate_skill_refs.py",
+    "validate_security.py",
+    "validate_doc_trees.py"
+  ],
+  "grimoire": [
+    "validate_grimoire_structure.py",
+    "validate_encoding.py",
+    "validate_portability.py",
+    "validate_format.py",
+    "validate_frontmatter.py",
+    "validate_links.py",
+    "validate_orphans.py",
+    "validate_provenance.py",
+    "validate_doc_trees.py"
+  ]
+}

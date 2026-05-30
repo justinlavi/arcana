@@ -6,6 +6,9 @@
 
 - Added `.github/workflows/ci.yml` running the test suite and validator
   orchestrator on pull requests and pushes to `main`.
+- Added `rites/data/validators.json` as the single source of truth for the
+  Arcana and grimoire validator sequences; `rites/validate.py` loads the lists
+  from it instead of hardcoding them.
 - Added `docs/architecture_backlog.md` as the durable review queue for
   deferred S-tier architecture work found during `/arc-improve`.
 - Added `formulae/grimoire/scaffold_contract.json` as the shared grimoire
@@ -98,6 +101,15 @@
 - `git` invocations in the summoning rite run with a timeout and
   `GIT_TERMINAL_PROMPT=0`, so a stalled fetch or an authentication prompt fails
   fast instead of hanging the install indefinitely.
+- The rite-profile write-detector recognizes `os.rename`/`os.replace`/`os.write`,
+  `shutil.move`, and single-argument `Path.replace`/`Path.rename`, so a rite
+  whose only durable write uses an atomic-rename idiom can no longer escape the
+  "every write-capable rite is profiled" check.
+- Destructive writes are now atomic. `register_skills.write_rendered_skill`
+  renders into a staging directory and swaps it in with `os.replace`, removing
+  the rmtree-then-write window that could destroy or half-write a skill. The
+  summoning rite writes `library.json` through a shared atomic temp-file writer,
+  and `append_log.py` appends each entry with a single `O_APPEND` write.
 
 ## [1.0.0] - 2026-05-25
 

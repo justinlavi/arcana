@@ -25,6 +25,7 @@ Exit codes: 0 = appended, 1 = invalid arguments, 2 = log.md missing
 
 import argparse
 import datetime
+import os
 import sys
 from pathlib import Path
 
@@ -72,8 +73,14 @@ def main():
         lines.append(f"- {sanitize(key).strip()}: {sanitize(value).strip()}")
     lines.append("")
 
-    with open(log, "a", encoding="utf-8") as f:
-        f.write("\n".join(lines))
+    blob = ("\n".join(lines)).encode("utf-8")
+    fd = os.open(log, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)
+    try:
+        view = memoryview(blob)
+        while view:
+            view = view[os.write(fd, view):]
+    finally:
+        os.close(fd)
 
     print(f"  [OK]    Appended to {log}")
     return 0

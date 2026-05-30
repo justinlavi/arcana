@@ -21,6 +21,17 @@ REQUIRED_STRING_FIELDS = {
 REQUIRED_LIST_FIELDS = {"writes", "tests"}
 
 
+_MUTATING_ATTRS = {
+    "write_text", "write_bytes", "mkdir", "unlink", "rmtree", "copyfile", "copytree",
+}
+_OS_MUTATORS = {
+    "replace", "rename", "remove", "removedirs", "makedirs", "mkdir", "rmdir",
+    "symlink", "link", "write", "truncate",
+}
+_SHUTIL_MUTATORS = {"move", "copy", "copy2", "copyfile", "copytree", "rmtree"}
+_PATH_MOVE_ATTRS = {"replace", "rename"}
+
+
 class _WriteVisitor(ast.NodeVisitor):
     """Detect obvious file-system writes in a Python rite."""
 
@@ -29,11 +40,17 @@ class _WriteVisitor(ast.NodeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         func = node.func
         if isinstance(func, ast.Attribute):
-            if func.attr in {"write_text", "write_bytes", "mkdir", "unlink"}:
+            attr = func.attr
+            if attr in _MUTATING_ATTRS:
                 self.mutates = True
-            if func.attr in {"rmtree", "copyfile", "copytree"}:
+            elif attr == "open" and _mode_arg_writes(node):
                 self.mutates = True
-            if func.attr == "open" and _mode_arg_writes(node):
+            elif _is_module_call(func, "os") and attr in _OS_MUTATORS:
+                self.mutates = True
+            elif _is_module_call(func, "shutil") and attr in _SHUTIL_MUTATORS:
+                self.mutates = True
+            elif attr in _PATH_MOVE_ATTRS and _is_single_positional(node):
+                # Path.replace(target) / Path.rename(target); str.replace takes 2 args.
                 self.mutates = True
         elif isinstance(func, ast.Name):
             if func.id == "open" and _mode_arg_writes(node):
@@ -50,6 +67,24 @@ def _mode_arg_writes(node: ast.Call) -> bool:
         if keyword.arg == "mode" and isinstance(keyword.value, ast.Constant):
             mode = keyword.value.value
     return isinstance(mode, str) and any(flag in mode for flag in ("w", "a", "x"))
+
+
+def _is_module_call(func: ast.Attribute, module: str) -> bool:
+    """True when an attribute call's receiver is the named module (e.g. os.rename)."""
+    return isinstance(func.value, ast.Name) and func.value.id == module
+
+
+def _is_single_positional(node: ast.Call) -> bool:
+    """True when a call has exactly one positional arg and no keyword/star args.
+
+    Distinguishes the file-system `Path.replace(target)` / `Path.rename(target)`
+    from `str.replace(old, new)`, which takes two arguments.
+    """
+    return (
+        len(node.args) == 1
+        and not node.keywords
+        and not any(isinstance(arg, ast.Starred) for arg in node.args)
+    )
 
 
 def load_rite_profiles(root: Path) -> dict[str, Any]:

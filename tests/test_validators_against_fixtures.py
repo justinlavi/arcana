@@ -388,3 +388,18 @@ def test_grimoire_validator_suite_fails_bad_fixture():
         if validator_report["status"] == "fail"
     }
     assert "validate_frontmatter" in failing
+
+
+def test_orchestrator_loads_validator_lists_from_contract():
+    data = json.loads((RITES / "data" / "validators.json").read_text(encoding="utf-8"))
+    assert validate.ARCANA_RITES == data["arcana"]
+    assert validate.GRIMOIRE_RITES == data["grimoire"]
+
+
+def test_validators_contract_lists_only_real_validators():
+    data = json.loads((RITES / "data" / "validators.json").read_text(encoding="utf-8"))
+    assert data["arcana"] and data["grimoire"]
+    for name in set(data["arcana"]) | set(data["grimoire"]):
+        assert (RITES / name).is_file(), (
+            f"{name} is declared in validators.json but does not exist"
+        )

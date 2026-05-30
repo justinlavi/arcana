@@ -47,6 +47,7 @@ from summon_core import (
     resolve_arcana_url,
     system_python,
     update_local_library,
+    write_json_atomic,
 )
 
 
@@ -462,9 +463,7 @@ def _worker_remove_grimoire(key, log, cancel_event, proc_slot, **_kw):
                 lib = json.load(f)
             if key in lib.get("grimoires", {}):
                 del lib["grimoires"][key]
-                with open(LOCAL_LIBRARY, "w") as f:
-                    json.dump(lib, f, indent=2)
-                    f.write("\n")
+                write_json_atomic(LOCAL_LIBRARY, lib)
                 log.ok(f"Removed {key} from {LOCAL_LIBRARY}")
         except (json.JSONDecodeError, OSError) as e:
             log.warn(f"Could not update library.json: {e}")

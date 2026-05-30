@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
 import sys
@@ -729,18 +730,34 @@ def write_rendered_skill(
     pointer_only: bool,
     owner: dict[str, Any] | None = None,
 ) -> bool:
-    """Write one rendered generated skill directory."""
+    """Write one rendered generated skill directory atomically.
+
+    The full file set is rendered into a staging directory first, then swapped
+    into place with os.replace, so an interrupt cannot leave a half-written or
+    destroyed skill directory.
+    """
+    if (
+        target_dir.exists()
+        and not owner
+        and not read_skill_ownership(target_dir, desired_spec=spec)
+    ):
+        warn(f"Refusing to overwrite unowned skill directory: {target_dir}")
+        return False
+
+    staging = target_dir.with_name(target_dir.name + ".tmp")
+    if staging.exists():
+        shutil.rmtree(staging)
+    staging.mkdir(parents=True, exist_ok=True)
+    for filename, content in render_skill_files(spec, pointer_only).items():
+        with open(staging / filename, "w", encoding="utf-8", newline="\n") as f:
+            f.write(content)
+
     if target_dir.exists():
-        if not owner and not read_skill_ownership(target_dir, desired_spec=spec):
-            warn(f"Refusing to overwrite unowned skill directory: {target_dir}")
-            return False
         if not remove_owned_skill_dir(target_dir, skills_target, owner=owner):
+            shutil.rmtree(staging, ignore_errors=True)
             return False
 
-    target_dir.mkdir(parents=True, exist_ok=True)
-    for filename, content in render_skill_files(spec, pointer_only).items():
-        with open(target_dir / filename, "w", encoding="utf-8", newline="\n") as f:
-            f.write(content)
+    os.replace(staging, target_dir)
     ok(f"Registered: /{spec.command_name} ({spec.source_label})")
     return True
 
