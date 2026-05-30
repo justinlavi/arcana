@@ -167,13 +167,10 @@ def diff_library(scan, library, home):
     for key in sorted(library_keys):
         entry = library["grimoires"][key]
         raw = entry.get("local_path", "")
-        resolved = resolve_local_path(raw)
-
-        if not resolved.is_dir():
-            stale.append({"key": key, "raw_path": raw})
-            continue
 
         if key in disk_index:
+            # Physically present under the active home: never stale. Correct the
+            # recorded path when it differs from the canonical form.
             expected = expected_local_path(home, key)
             if raw != expected:
                 mismatched.append(
@@ -181,15 +178,19 @@ def diff_library(scan, library, home):
                 )
             else:
                 ok_keys.append(key)
+            continue
+
+        # Not present on disk under home: resolve the recorded path to classify
+        # it as a still-valid out-of-home grimoire or a stale entry.
+        resolved = resolve_local_path(raw)
+        if not resolved.is_dir():
+            stale.append({"key": key, "raw_path": raw})
+            continue
+        manifest, errors = load_manifest(resolved)
+        if manifest is None or errors:
+            stale.append({"key": key, "raw_path": raw})
         else:
-            # Library entry points to an existing directory that doesn't appear in
-            # our scan (e.g., outside home, or scan classified it as unmanaged).
-            # Treat as stale only if the directory lacks a valid grimoire.json.
-            manifest, errors = load_manifest(resolved)
-            if manifest is None or errors:
-                stale.append({"key": key, "raw_path": raw})
-            else:
-                ok_keys.append(key)
+            ok_keys.append(key)
 
     return {
         "missing": missing,

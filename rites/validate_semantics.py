@@ -17,7 +17,7 @@ import re
 import sys
 from pathlib import Path
 
-from _lib import default_arcana_root, ok, warn
+from _lib import default_arcana_root, is_skipped, ok, warn
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ARCANA_ROOT = default_arcana_root()
@@ -47,7 +47,7 @@ def scan_markdown_files(root, predicate):
         if path.name in SKIP_FILES:
             continue
         rel = str(path.relative_to(root))
-        if any(rel.startswith(sd) for sd in SKIP_DIRS):
+        if is_skipped(rel, SKIP_DIRS):
             continue
         try:
             content = path.read_text(encoding="utf-8", errors="replace")

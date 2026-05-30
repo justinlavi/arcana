@@ -166,4 +166,52 @@ def test_skill_slug_regex_rejects_mixed_case():
 def test_date_regex_basic():
     assert _lib.DATE_RE.match("2026-05-15")
     assert not _lib.DATE_RE.match("2026-5-15")
+
+
+# ---------------------------------------------------------------------------
+# is_skipped
+# ---------------------------------------------------------------------------
+
+
+def test_is_skipped_matches_single_segment_dir():
+    assert _lib.is_skipped("sources/article.md", {"sources"})
+    assert _lib.is_skipped(Path("inbox/note.md"), {"inbox", "tests"})
+
+
+def test_is_skipped_does_not_match_sibling_prefix():
+    # The bug this guards: a sibling sharing a name prefix must not be skipped.
+    assert not _lib.is_skipped("sources_extra/page.md", {"sources"})
+    assert not _lib.is_skipped("inbox_archive/page.md", {"inbox"})
+
+
+def test_is_skipped_matches_multi_segment_prefix():
+    skip = {"invocations/arcana/validators"}
+    assert _lib.is_skipped("invocations/arcana/validators/x.md", skip)
+    assert not _lib.is_skipped("invocations/arcana/validators_extra/x.md", skip)
+
+
+def test_is_skipped_is_anchored_at_path_start():
+    assert not _lib.is_skipped("chapters/sources/x.md", {"sources"})
+
+
+def test_is_skipped_normalizes_backslashes():
+    assert _lib.is_skipped("sources\\article.md", {"sources"})
+
+
+# ---------------------------------------------------------------------------
+# public_document
+# ---------------------------------------------------------------------------
+
+
+def test_public_document_top_level_filenames(tmp_path):
+    assert _lib.public_document(tmp_path / "README.md", tmp_path)
+    assert _lib.public_document(tmp_path / "CHANGELOG.md", tmp_path)
+
+
+def test_public_document_docs_tree(tmp_path):
+    assert _lib.public_document(tmp_path / "docs" / "installation.md", tmp_path)
+
+
+def test_public_document_vault_surface_is_not_public(tmp_path):
+    assert not _lib.public_document(tmp_path / "chapters" / "recipes" / "sourdough.md", tmp_path)
     assert not _lib.DATE_RE.match("not-a-date")

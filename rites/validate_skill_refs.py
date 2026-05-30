@@ -24,7 +24,7 @@ import re
 import sys
 from pathlib import Path
 
-from _lib import default_arcana_root, ok, warn
+from _lib import default_arcana_root, is_skipped, ok, warn
 import command_surface as command_surface_contract
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
@@ -117,7 +117,7 @@ def scan_for_skill_refs(prefixes):
         if path.name in SKIP_FILES:
             continue
         rel = str(path.relative_to(ARCANA_ROOT)).replace("\\", "/")
-        if any(rel.startswith(sd) for sd in SKIP_DIRS):
+        if is_skipped(rel, SKIP_DIRS):
             continue
         try:
             content = path.read_text(encoding="utf-8", errors="replace")

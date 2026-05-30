@@ -27,6 +27,8 @@ from _lib import (
     LINK_RE,
     WIKILINK_RE,
     add_grimoire_arg,
+    is_skipped,
+    public_document,
     resolve_grimoire_arg,
     resolve_wikilink_path,
     strip_code_blocks,
@@ -41,9 +43,6 @@ SKIP_DIRS = {
 }
 
 SKIP_FILES = set()
-
-PUBLIC_DOC_DIRS = {"docs"}
-PUBLIC_DOC_FILENAMES = {"README.md", "RECOVERY.md", "CONTRIBUTING.md", "CHANGELOG.md"}
 
 PLACEHOLDER_TOKENS = ["{", "<", "invocation_name", "chapter_name", "file_name",
                       "ARCANA_HOME", "GRIMOIRE_PATH", "ARCANA_PATH",
@@ -82,14 +81,6 @@ def label_key(text):
 def rel_posix(path, root):
     """Return a repository-root relative path using POSIX separators."""
     return path.relative_to(root).as_posix()
-
-
-def public_document(path, root):
-    """Return True when a Markdown file is meant to render portably on Git hosts."""
-    rel = path.relative_to(root)
-    if path.name in PUBLIC_DOC_FILENAMES:
-        return True
-    return bool(rel.parts and rel.parts[0] in PUBLIC_DOC_DIRS)
 
 
 def resolve_markdown_link(target_path, source_path, root):
@@ -145,7 +136,7 @@ def main():
 
         if path.name in SKIP_FILES:
             continue
-        if any(rel.startswith(sd) for sd in SKIP_DIRS):
+        if is_skipped(rel, SKIP_DIRS):
             continue
 
         try:

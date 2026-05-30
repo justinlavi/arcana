@@ -82,6 +82,15 @@
 - `append_log.py` strips CR/LF from the op, title, skill, and field values it
   records, so a value containing a newline can no longer forge a second log
   heading or entry line.
+- Skip-directory matching is now segment-aware and shared from `_lib.is_skipped`.
+  `validate_links`, `validate_security`, `validate_skill_refs`, `validate_semantics`,
+  and `repair_links` no longer skip a sibling that merely shares a name prefix
+  with a skip directory (e.g. `sources_extra/` was wrongly excluded by `sources`).
+  `_lib.public_document` is likewise shared by the link and orphan validators.
+- `sync_library.py` treats a grimoire that physically exists under the active
+  home as authoritative: it is reconciled as a path correction rather than
+  reported stale, so `--apply` cannot drop or mis-resolve a present grimoire
+  whose recorded `local_path` uses the `$HOME` token under an overridden `--home`.
 
 ## [1.0.0] - 2026-05-25
 

@@ -26,6 +26,8 @@ from _lib import (
     LINK_RE,
     WIKILINK_RE,
     add_grimoire_arg,
+    is_skipped,
+    public_document,
     resolve_grimoire_arg,
     resolve_wikilink_path,
     strip_code_blocks,
@@ -35,8 +37,6 @@ from diagnostics import DiagnosticReporter, add_output_format_arg
 
 EXEMPT_FILENAMES = {"README.md", "RECOVERY.md", "CHANGELOG.md", "CONTRIBUTING.md", "log.md", "VERSION", "SKILL.md"}
 SKIP_DIRS = {"sources", "inbox", ".git", "skills", "tests"}
-PUBLIC_DOC_DIRS = {"docs"}
-PUBLIC_DOC_FILENAMES = {"README.md", "RECOVERY.md", "CONTRIBUTING.md", "CHANGELOG.md"}
 
 
 def is_hub(path):
@@ -46,19 +46,10 @@ def is_hub(path):
 def collect_pages(root):
     pages = []
     for path in sorted(root.rglob("*.md")):
-        rel_parts = path.relative_to(root).parts
-        if rel_parts and rel_parts[0] in SKIP_DIRS:
+        if is_skipped(path.relative_to(root), SKIP_DIRS):
             continue
         pages.append(path)
     return pages
-
-
-def public_document(path, root):
-    """Return True when a Markdown file uses portable public-doc links."""
-    rel = path.relative_to(root)
-    if path.name in PUBLIC_DOC_FILENAMES:
-        return True
-    return bool(rel.parts and rel.parts[0] in PUBLIC_DOC_DIRS)
 
 
 def resolve_markdown_page_link(link, src, root):

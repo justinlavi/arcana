@@ -98,6 +98,31 @@ def test_bad_frontmatter_structured_diagnostics_have_codes():
     assert "FRONTMATTER_MISSING_TYPE" in codes
 
 
+def test_validator_scans_sibling_of_skip_dir(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    extra = grimoire / "sources_extra"
+    extra.mkdir()
+    (extra / "broken.md").write_text(
+        "---\n"
+        'type: reference\n'
+        'title: "Broken"\n'
+        "tags: []\n"
+        "authority: grimoire\n"
+        "last_verified: 2026-05-25\n"
+        "---\n\n"
+        "See [[chapters/nope/nope|nope]].\n",
+        encoding="utf-8",
+    )
+
+    result = _run("validate_links.py", grimoire)
+
+    # `sources_extra` shares a prefix with the skipped `sources` dir; it must
+    # still be scanned, so the broken wikilink inside it is caught.
+    assert result.returncode != 0
+    assert "sources_extra" in result.stdout
+
+
 def test_source_type_is_reserved_for_sources_layer(tmp_path):
     grimoire = tmp_path / "good_grimoire"
     shutil.copytree(GOOD, grimoire)

@@ -33,6 +33,7 @@ from _lib import (
     add_grimoire_arg,
     err,
     info,
+    is_skipped,
     ok,
     resolve_grimoire_arg,
     resolve_wikilink_path,
@@ -265,7 +266,7 @@ def iter_target_files(grimoire_root: Path):
         rel = str(path.relative_to(grimoire_root))
         if path.name in SKIP_FILES:
             continue
-        if any(rel.startswith(sd) for sd in SKIP_DIRS):
+        if is_skipped(rel, SKIP_DIRS):
             continue
         yield path
 

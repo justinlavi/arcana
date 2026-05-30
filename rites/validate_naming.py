@@ -10,7 +10,7 @@ import sys
 import json
 from pathlib import Path
 
-from _lib import default_arcana_root, ok, warn
+from _lib import default_arcana_root, is_skipped, ok, warn
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ARCANA_ROOT = default_arcana_root()
@@ -31,8 +31,7 @@ def check_naming(glob_pattern, label, ext, reporter, human):
         print(f"Checking {label} naming...")
     for path in sorted(ARCANA_ROOT.rglob(glob_pattern)):
         name = path.name
-        rel_parts = path.relative_to(ARCANA_ROOT).parts
-        if rel_parts and rel_parts[0] in SKIP_DIRS:
+        if is_skipped(path.relative_to(ARCANA_ROOT), SKIP_DIRS):
             continue
 
         if name in UPPERCASE_EXCEPTIONS:

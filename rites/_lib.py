@@ -347,3 +347,44 @@ def iter_pages(
             if path in seen or path.name in exempt_set:
                 continue
             yield path
+
+
+# ---------------------------------------------------------------------------
+# Path skip / public-doc classification
+# ---------------------------------------------------------------------------
+
+PUBLIC_DOC_DIRS = {"docs"}
+PUBLIC_DOC_FILENAMES = {"README.md", "RECOVERY.md", "CONTRIBUTING.md", "CHANGELOG.md"}
+
+
+def is_skipped(rel, skip_dirs: Iterable[str]) -> bool:
+    """Return True when a root-relative path falls inside a skip directory.
+
+    `rel` may be a Path or a string. A skip entry matches as a leading path
+    prefix at segment boundaries: a single-segment entry like ``sources`` skips
+    ``sources/...`` but never a sibling like ``sources_extra/...``, and a
+    multi-segment entry like ``invocations/arcana/validators`` skips only that
+    subtree.
+    """
+    if isinstance(rel, Path):
+        parts = rel.parts
+    else:
+        parts = tuple(p for p in str(rel).replace("\\", "/").split("/") if p)
+    for sd in skip_dirs:
+        sd_parts = tuple(p for p in str(sd).replace("\\", "/").split("/") if p)
+        if sd_parts and parts[: len(sd_parts)] == sd_parts:
+            return True
+    return False
+
+
+def public_document(path: Path, root: Path) -> bool:
+    """Return True when a Markdown file is meant to render portably on Git hosts.
+
+    Public docs - the top-level README/RECOVERY/CONTRIBUTING/CHANGELOG plus the
+    ``docs/`` tree - use standard Markdown links; vault and AI-routing surfaces
+    use full-path wikilinks.
+    """
+    if path.name in PUBLIC_DOC_FILENAMES:
+        return True
+    rel = path.relative_to(root)
+    return bool(rel.parts and rel.parts[0] in PUBLIC_DOC_DIRS)
