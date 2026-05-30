@@ -91,7 +91,7 @@ def test_register_skills_preserves_unowned_collision(tmp_path, monkeypatch):
     assert (existing / "SKILL.md").read_text(encoding="utf-8") == "user-authored\n"
 
 
-def test_register_skills_reset_managed_replaces_unowned_collision(tmp_path, monkeypatch):
+def test_register_skills_reset_managed_preserves_unowned_collision(tmp_path, monkeypatch):
     target = tmp_path / "codex" / "skills"
     existing = target / "arc-help"
     existing.mkdir(parents=True)
@@ -112,19 +112,63 @@ def test_register_skills_reset_managed_replaces_unowned_collision(tmp_path, monk
         reset_managed=True,
     )
 
-    content = (existing / "SKILL.md").read_text(encoding="utf-8")
-    assert result["blocked"] == 0
-    assert result["reset"] == 1
-    assert "ARCANA_SKILL_OWNERSHIP" in content
-    assert "user-authored" not in content
+    # An unowned directory that shares a managed prefix is never reset/overwritten;
+    # it surfaces as a collision and is left byte-identical.
+    assert result["reset"] == 0
+    assert result["blocked"] == 1
+    assert (existing / "SKILL.md").read_text(encoding="utf-8") == "user-authored\n"
     assert (outside_namespace / "SKILL.md").read_text(encoding="utf-8") == "keep me\n"
+
+
+def test_reset_managed_skill_dirs_removes_owned_preserves_unowned(tmp_path):
+    skills_target = tmp_path / "skills"
+
+    unowned = skills_target / "arc-mycustom"
+    unowned.mkdir(parents=True)
+    (unowned / "SKILL.md").write_text("hand-authored, no marker\n", encoding="utf-8", newline="\n")
+
+    owned = skills_target / "arc-stale"
+    owned.mkdir()
+    marker = register_skills.ownership_comment({
+        "schema_version": register_skills.OWNERSHIP_SCHEMA_VERSION,
+        "generation": register_skills.REGISTER_GENERATION,
+        "registered_by": "arcana",
+        "command": "/arc-stale",
+    })
+    (owned / "SKILL.md").write_text(f"---\nname: arc-stale\n---\n{marker}\n", encoding="utf-8", newline="\n")
+
+    spec = register_skills.SkillSpec(
+        command_name="arc-help",
+        command_slug="help",
+        skill_prefix="arc",
+        source_dir=tmp_path / "src",
+        source_label="Arcana",
+        source_kind="arcana",
+        source_key="arcana",
+        source_repo="arcana",
+    )
+
+    removed = register_skills.reset_managed_skill_dirs(skills_target, [spec], dry_run=False)
+
+    assert removed == 1
+    assert not owned.exists()
+    assert unowned.exists()
+    assert (unowned / "SKILL.md").read_text(encoding="utf-8") == "hand-authored, no marker\n"
 
 
 def test_register_skills_reset_managed_dry_run_does_not_write(tmp_path, monkeypatch, capsys):
     target = tmp_path / "codex" / "skills"
-    existing = target / "arc-help"
-    existing.mkdir(parents=True)
-    (existing / "SKILL.md").write_text("user-authored\n", encoding="utf-8", newline="\n")
+    owned = target / "arc-help"
+    owned.mkdir(parents=True)
+    marker = register_skills.ownership_comment({
+        "schema_version": register_skills.OWNERSHIP_SCHEMA_VERSION,
+        "generation": register_skills.REGISTER_GENERATION,
+        "registered_by": "arcana",
+        "command": "/arc-help",
+    })
+    (owned / "SKILL.md").write_text(
+        f"---\nname: arc-help\n---\n{marker}\nowned body\n", encoding="utf-8", newline="\n"
+    )
     monkeypatch.setattr(register_skills, "LOCAL_LIBRARY", tmp_path / "missing-library.json")
 
     result = register_skills.register_target(
@@ -144,7 +188,7 @@ def test_register_skills_reset_managed_dry_run_does_not_write(tmp_path, monkeypa
     assert result["reset"] == 1
     assert "Would reset managed namespace: /arc-help" in output
     assert "Would create: /arc-help" in output
-    assert (existing / "SKILL.md").read_text(encoding="utf-8") == "user-authored\n"
+    assert (owned / "SKILL.md").read_text(encoding="utf-8").endswith("owned body\n")
 
 
 def test_register_skills_updates_generated_provenance_without_marker(tmp_path, monkeypatch):

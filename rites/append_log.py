@@ -32,6 +32,11 @@ VALID_OPS = {"ingest", "query", "lint", "improve", "file-answer",
              "rebuild-index", "create", "manual"}
 
 
+def sanitize(value: str) -> str:
+    """Collapse CR/LF to spaces so a value cannot forge extra log lines."""
+    return value.replace("\r", " ").replace("\n", " ")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Append a log entry")
     parser.add_argument("--grimoire", type=Path, default=Path.cwd(),
@@ -56,15 +61,15 @@ def main():
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     lines = [
         "",
-        f"## [{timestamp}] {args.op} | {args.title}",
-        f"- skill: {args.skill}",
+        f"## [{timestamp}] {sanitize(args.op)} | {sanitize(args.title)}",
+        f"- skill: {sanitize(args.skill)}",
     ]
     for kv in args.field:
         if "=" not in kv:
             print(f"  [WARN] Skipping malformed --field '{kv}' (expected key=value)", file=sys.stderr)
             continue
         key, _, value = kv.partition("=")
-        lines.append(f"- {key.strip()}: {value.strip()}")
+        lines.append(f"- {sanitize(key).strip()}: {sanitize(value).strip()}")
     lines.append("")
 
     with open(log, "a", encoding="utf-8") as f:

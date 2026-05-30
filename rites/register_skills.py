@@ -652,7 +652,13 @@ def reset_managed_skill_dirs(
     specs: list[SkillSpec],
     dry_run: bool,
 ) -> int:
-    """Remove skill dirs in the desired managed namespaces before registering."""
+    """Remove owned skill dirs in the desired managed namespaces before registering.
+
+    Only directories whose Arcana ownership can be proven - via the ownership
+    marker or generated-source provenance - are removed. A directory that shares
+    a managed prefix but carries no Arcana ownership is preserved; it surfaces as
+    a collision in the registration plan instead of being deleted.
+    """
     prefixes = tuple(f"{prefix}-" for prefix in sorted({spec.skill_prefix for spec in specs}))
     if not skills_target.is_dir() or not prefixes:
         return 0
@@ -661,11 +667,16 @@ def reset_managed_skill_dirs(
     for skill_dir in sorted(skills_target.iterdir()):
         if not skill_dir.is_dir() or not skill_dir.name.startswith(prefixes):
             continue
+        owner = read_skill_ownership(skill_dir, known_specs=specs)
+        if not owner:
+            info(f"Preserve unowned: /{skill_dir.name} (no Arcana ownership marker)")
+            continue
         verb = "Would reset managed namespace" if dry_run else "Reset managed namespace"
         info(f"{verb}: /{skill_dir.name}")
-        reset_count += 1
-        if not dry_run:
-            shutil.rmtree(skill_dir)
+        if dry_run:
+            reset_count += 1
+        elif remove_owned_skill_dir(skill_dir, skills_target, owner=owner):
+            reset_count += 1
     return reset_count
 
 
@@ -868,8 +879,9 @@ def main() -> int:
         "--reset-managed",
         action="store_true",
         help=(
-            "Remove existing skill dirs in the managed Arcana/grimoire namespaces "
-            "before registering. Use after major Arcana command-family changes."
+            "Remove owned skill dirs in the managed Arcana/grimoire namespaces "
+            "before registering; unowned dirs sharing a prefix are preserved. "
+            "Use after major Arcana command-family changes."
         ),
     )
     args = parser.parse_args()
@@ -886,7 +898,7 @@ def main() -> int:
         info(f"Grimoire scope: {resolve_grimoire_path(args.grimoire)}")
         print()
     if args.reset_managed:
-        info("Reset managed mode - existing managed namespace skill dirs will be replaced")
+        info("Reset managed mode - owned managed namespace skill dirs will be replaced")
         print()
 
     results = []
