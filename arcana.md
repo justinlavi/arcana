@@ -22,6 +22,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 
 - Overview and architecture -> [[README|README]]
 - Stale installation recovery -> [[RECOVERY|RECOVERY]]
+- Contributing guide -> [[CONTRIBUTING|CONTRIBUTING]]
 - Installation and smoke test -> [[docs/installation|installation]]
 - Summoning behavior contract -> [[docs/summoning_contract|summoning contract]]
 - Agent target registry -> [[docs/agent_targets|agent targets]]

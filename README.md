@@ -186,4 +186,10 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 | [Reference](docs/reference.md) | Terminology, schemas, path conventions |
 | [Script Vs Ai](docs/script_vs_ai.md) | When to use rites vs invocations |
 | [Governance](docs/governance.md) | Maintaining and versioning Arcana |
+| [Command Surface](docs/command_surface.md) | Public slash-command contract |
+| [Rite Profiles](docs/rite_profiles.md) | Mutating-rite plan/apply/append contract |
+| [Release](docs/release.md) | Release and publish workflow |
+| [Architecture Backlog](docs/architecture_backlog.md) | Deferred architecture work queue |
+| [VS Code](docs/vscode.md) | VS Code wikilink setup |
+| [Contributing](CONTRIBUTING.md) | How to contribute to Arcana |
 | [Arcana](arcana.md) | Navigate everything |

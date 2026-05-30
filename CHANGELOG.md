@@ -130,6 +130,10 @@
   hub, `arcana.json`, a skill - now selects the structure and reference
   validators instead of selecting nothing, closing a path where `--auto` could
   green-light a missing file.
+- The README documentation table now lists every `docs/` page, and both the
+  README and `arcana.md` link `CONTRIBUTING.md`, which was previously unreachable
+  from any routing surface. A test enforces this coverage so the indexes cannot
+  silently drift out of sync with `docs/`.
 
 ## [1.0.0] - 2026-05-25
 
