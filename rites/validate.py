@@ -81,19 +81,36 @@ def run_rite(name, profile="arcana", target_root=None):
 
 
 def git_changed_files(root):
-    """Get list of changed files from git, relative to the target root."""
+    """Return [(status, path)] for changes vs HEAD, else all tracked files.
+
+    status is a single letter: 'A' added, 'M' modified, 'D' deleted. A rename is
+    expanded into a 'D' for the old path and an 'A' for the new path so deletions
+    are never lost. The `git ls-files` fallback (no diff) reports every tracked
+    file as present ('M').
+    """
     try:
         result = subprocess.run(
-            ["git", "diff", "--name-only", "HEAD"],
+            ["git", "diff", "--name-status", "HEAD"],
             capture_output=True, text=True, cwd=str(root),
         )
         if result.returncode == 0 and result.stdout.strip():
-            return result.stdout.strip().splitlines()
+            changes = []
+            for line in result.stdout.strip().splitlines():
+                parts = line.split("\t")
+                status = parts[0][:1]
+                if status in ("R", "C") and len(parts) >= 3:
+                    changes.append(("D", parts[1]))
+                    changes.append(("A", parts[2]))
+                elif len(parts) >= 2:
+                    changes.append((status, parts[1]))
+            return changes
         result = subprocess.run(
             ["git", "ls-files"],
             capture_output=True, text=True, cwd=str(root),
         )
-        return result.stdout.strip().splitlines() if result.returncode == 0 else []
+        if result.returncode == 0:
+            return [("M", f) for f in result.stdout.strip().splitlines() if f]
+        return []
     except FileNotFoundError:
         return []
 
@@ -101,19 +118,30 @@ def git_changed_files(root):
 def determine_smart_rites(profile="arcana", target_root=None):
     """Determine which validators to run based on changed files."""
     target_root = target_root or ARCANA_ROOT
-    changed = git_changed_files(target_root)
-    if not changed:
+    changes = git_changed_files(target_root)
+    if not changes:
         return list(GRIMOIRE_RITES if profile == "grimoire" else ARCANA_RITES)
 
     if profile == "grimoire":
-        return determine_smart_grimoire_rites(changed, target_root)
+        return determine_smart_grimoire_rites(changes, target_root)
 
     needed = set()
     # Portability and encoding scan path/content globally.
-    if changed:
-        needed.add("validate_portability.py")
-        needed.add("validate_encoding.py")
-    for f in changed:
+    needed.add("validate_portability.py")
+    needed.add("validate_encoding.py")
+    for status, f in changes:
+        if status == "D":
+            # A deleted file can't be read, but its removal must still trigger the
+            # structure check (it may be required) and reference checks (a removed
+            # page can break inbound links or orphan others).
+            needed.add("validate_structure.py")
+            if f.endswith(".md"):
+                needed.add("validate_links.py")
+                needed.add("validate_orphans.py")
+            if f.startswith("skills/"):
+                needed.add("validate_skill_refs.py")
+            continue
+
         path = target_root / f
         if not path.exists():
             continue
@@ -153,14 +181,22 @@ def determine_smart_rites(profile="arcana", target_root=None):
     return [r for r in ARCANA_RITES if r in needed] if needed else list(ARCANA_RITES)
 
 
-def determine_smart_grimoire_rites(changed, target_root):
+def determine_smart_grimoire_rites(changes, target_root):
     """Determine grimoire validators to run based on changed files."""
     needed = set()
-    if changed:
-        needed.add("validate_portability.py")
-        needed.add("validate_encoding.py")
+    needed.add("validate_portability.py")
+    needed.add("validate_encoding.py")
 
-    for f in changed:
+    for status, f in changes:
+        if status == "D":
+            # A deleted file still needs the structure check (it may be required)
+            # and link/orphan checks (a removed page can break references).
+            needed.add("validate_grimoire_structure.py")
+            if f.endswith(".md"):
+                needed.add("validate_links.py")
+                needed.add("validate_orphans.py")
+            continue
+
         path = target_root / f
         if not path.exists():
             continue

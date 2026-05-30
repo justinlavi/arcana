@@ -22,7 +22,12 @@ generated docs impact
 `/arc-validate-skill-refs` validates the matrix. It checks that every
 Arcana-shipped public skill appears exactly once, that each listed skill,
 invocation, guard, and rite path exists, and that every contract entry uses a
-known owner and mutation profile.
+known owner and mutation profile. It also cross-checks that each rite-owned
+command's `mutation_profile` agrees with the rite-profile contract
+([`../rites/data/rite_profiles.json`](../rites/data/rite_profiles.json)): a
+command whose `rite_owner` is profiled must share that rite's profile, and a
+command whose `rite_owner` is not write-capable (absent from the contract) must
+be `read_only`.
 `docs/skills.md` renders the same matrix as the generated skill catalog.
 
 ## Fields

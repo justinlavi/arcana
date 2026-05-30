@@ -26,6 +26,7 @@ from pathlib import Path
 
 from _lib import default_arcana_root, is_skipped, ok, warn
 import command_surface as command_surface_contract
+import rite_profiles as rite_profiles_contract
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ARCANA_ROOT = default_arcana_root()
@@ -136,6 +137,29 @@ def scan_for_skill_refs(prefixes):
                 yield rel, lineno, full
 
 
+def mutation_profile_mismatches(surface_entries, rite_profile_entries):
+    """Return rite-owned commands whose mutation_profile disagrees with the rite.
+
+    A command's rite_owner that has a rite-profile entry must share that entry's
+    profile; a rite_owner with no profile entry is not write-capable (the
+    rite-profile contract requires every write-capable rite to be profiled), so
+    the command must be read_only. Returns tuples of
+    (command, rite_owner, command_mutation_profile, expected_profile).
+    """
+    rp_by_path = {entry.get("path"): entry for entry in rite_profile_entries}
+    mismatches = []
+    for entry in surface_entries:
+        if entry.get("owner_type") != "rite":
+            continue
+        owner = entry.get("rite_owner")
+        actual = entry.get("mutation_profile")
+        profile = rp_by_path.get(owner)
+        expected = profile.get("profile") if profile else "read_only"
+        if actual != expected:
+            mismatches.append((entry.get("command"), owner, actual, expected))
+    return mismatches
+
+
 def main():
     import argparse
 
@@ -212,6 +236,37 @@ def main():
     if human:
         print()
 
+    mutation_drift = 0
+    if surface_contract is not None:
+        try:
+            rite_profile_list = rite_profiles_contract.profile_entries(
+                rite_profiles_contract.load_rite_profiles(ARCANA_ROOT)
+            )
+        except (OSError, json.JSONDecodeError) as exc:
+            rite_profile_list = []
+            reporter.error(
+                "COMMAND_SURFACE_RITE_PROFILES_READ",
+                f"could not read rite-profile contract: {exc}",
+                path="rites/data/rite_profiles.json",
+                hint="Ensure rites/data/rite_profiles.json is valid JSON.",
+            )
+        for command, owner, actual, expected in mutation_profile_mismatches(
+            command_surface_contract.command_entries(surface_contract), rite_profile_list
+        ):
+            mutation_drift += 1
+            reporter.error(
+                "COMMAND_SURFACE_MUTATION_PROFILE_DRIFT",
+                f"{command} mutation_profile {actual!r} disagrees with {owner} (expected {expected!r})",
+                path="rites/data/command_surface.json",
+                hint="Align command_surface.mutation_profile with the rite's profile in rite_profiles.json.",
+            )
+            if human:
+                warn(f"{command}: mutation_profile {actual!r} != expected {expected!r}")
+    if human and not mutation_drift:
+        ok("Command mutation profiles agree with the rite-profile contract.")
+    if human:
+        print()
+
     if not human:
         reporter.emit(
             args.format,
@@ -221,6 +276,7 @@ def main():
                 "dangling_references": len(dangling),
                 "command_surface_entries": surface_entries,
                 "command_surface_errors": len(surface_errors),
+                "mutation_profile_drift": mutation_drift,
             },
         )
         return reporter.exit_code()

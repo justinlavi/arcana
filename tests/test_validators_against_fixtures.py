@@ -9,6 +9,7 @@ grimoire-skill flows do - via subprocess invocation, so any breakage in argv
 parsing, exit codes, or stdout flushing is caught.
 """
 
+import os
 import subprocess
 import sys
 import shutil
@@ -403,3 +404,93 @@ def test_validators_contract_lists_only_real_validators():
         assert (RITES / name).is_file(), (
             f"{name} is declared in validators.json but does not exist"
         )
+
+
+# ---------------------------------------------------------------------------
+# Negative coverage - validators must FAIL on a violation, not only pass clean
+# ---------------------------------------------------------------------------
+
+
+def _run_arcana(script: str, arcana_home: Path, *extra_args: str) -> subprocess.CompletedProcess:
+    """Run an Arcana-profile validator against an alternate root via ARCANA_HOME."""
+    return subprocess.run(
+        [sys.executable, str(RITES / script), *extra_args],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env={**os.environ, "ARCANA_HOME": str(arcana_home)},
+    )
+
+
+def _codes(result: subprocess.CompletedProcess) -> set:
+    return {d["code"] for d in json.loads(result.stdout)["diagnostics"]}
+
+
+def _make_min_grimoire(root: Path) -> Path:
+    (root / "chapters" / "recipes").mkdir(parents=True)
+    (root / "grimoire.json").write_text(
+        '{"name": "g", "skill_prefix": "gg", "description": "x"}\n', encoding="utf-8"
+    )
+    (root / "log.md").write_text("# Log\n", encoding="utf-8")
+    (root / "g.md").write_text(
+        '---\ntype: hub\ntitle: "G"\ntags: [hub/root]\n---\n'
+        "# G\n- [[chapters/recipes/recipes|recipes]]\n",
+        encoding="utf-8",
+    )
+    (root / "chapters" / "recipes" / "recipes.md").write_text(
+        '---\ntype: hub\ntitle: "Recipes"\ntags: [hub/chapter]\n---\n# Recipes\n',
+        encoding="utf-8",
+    )
+    return root
+
+
+def test_validate_security_flags_exec_in_a_rite(tmp_path):
+    (tmp_path / "rites").mkdir()
+    (tmp_path / "rites" / "evil.py").write_text("def f():\n    exec(payload)\n", encoding="utf-8")
+
+    result = _run_arcana("validate_security.py", tmp_path, "--format", "json")
+
+    assert result.returncode != 0
+    assert "SECURITY_EXEC" in _codes(result)
+
+
+def test_validate_portability_check_segments_flags_violations():
+    import validate_portability as vp
+
+    assert any(code == "PORTABILITY_RESERVED_CHAR" for code, _ in vp.check_segments(["a<b.md"]))
+    assert any(code == "PORTABILITY_RESERVED_BASENAME" for code, _ in vp.check_segments(["CON.md"]))
+    assert any(code == "PORTABILITY_TRAILING_DOT_SPACE" for code, _ in vp.check_segments(["trailing ."]))
+    assert vp.check_segments(["fine_name.md"]) == []
+
+
+def test_validate_orphans_flags_unreachable_island(tmp_path):
+    g = _make_min_grimoire(tmp_path / "g")
+    (g / "chapters" / "recipes" / "island.md").write_text(
+        '---\ntype: concept\ntitle: "Island"\ntags: []\n'
+        "authority: grimoire\nlast_verified: 2026-05-25\n---\n# Island\n",
+        encoding="utf-8",
+    )
+
+    result = _run("validate_orphans.py", g, "--format", "json")
+
+    assert result.returncode != 0
+    assert "ORPHAN_PAGE" in _codes(result)
+
+
+def test_validate_doc_trees_flags_drifted_diagram(tmp_path):
+    g = tmp_path / "g"
+    (g / "chapters").mkdir(parents=True)
+    (g / "grimoire.json").write_text(
+        '{"name": "g", "skill_prefix": "gg", "description": "x"}\n', encoding="utf-8"
+    )
+    (g / "log.md").write_text("# Log\n", encoding="utf-8")
+    (g / "g.md").write_text(
+        '---\ntype: hub\ntitle: "G"\ntags: [hub/root]\n---\n'
+        "# G\n\n```\nchapters/\n|-- ghost.md\n```\n",
+        encoding="utf-8",
+    )
+
+    result = _run("validate_doc_trees.py", g, "--format", "json")
+
+    assert result.returncode != 0
+    assert "DOC_TREE_MISSING_ENTRY" in _codes(result)

@@ -14,9 +14,14 @@ Resolution order, first hit wins:
 
 Ambiguous and unresolvable cases are reported and skipped - never guessed.
 
-Defaults to dry-run; pass ``--apply`` to write changes. Exit codes: 0 = nothing
-to do or dry-run succeeded, 1 = any link was unresolvable / ambiguous (even
-after applying the resolvable ones).
+Defaults to dry-run; pass ``--apply`` to write changes.
+
+Exit codes: ``--apply`` returns 0 when it completes successfully - resolvable
+links are written, and any remaining ambiguous/unresolvable links are reported
+for human follow-up rather than treated as a failure. Dry-run returns 1 when
+there is actionable work (repairs to apply, or links needing attention) and 0
+when the grimoire is already clean. Placeholder-like links are reported and
+skipped, never silently dropped.
 """
 
 from __future__ import annotations
@@ -143,8 +148,11 @@ def repair_line(
     index: dict[str, list[Path]],
     rel: str,
     line_no: int,
-) -> tuple[str, list[str], list[str], list[str]]:
-    """Repair a single non-fence line. Returns (new_line, fixes, ambis, unresolvables)."""
+) -> tuple[str, list[str], list[str], list[str], list[str]]:
+    """Repair a single non-fence line.
+
+    Returns (new_line, fixes, ambis, unresolvables, skipped_placeholders).
+    """
     # Mask inline backticks with same-length spaces so positions within this
     # line stay aligned between the scanable view and the actual line we rewrite.
     scanable = INLINE_CODE_RE.sub(lambda m: " " * len(m.group()), line)
@@ -153,10 +161,15 @@ def repair_line(
     fixes: list[str] = []
     ambis: list[str] = []
     unresolvables: list[str] = []
+    skipped: list[str] = []
 
     for match in WIKILINK_RE.finditer(scanable):
         target = match.group(1)
         if is_placeholder(target):
+            skipped.append(
+                f"  [SKIP]  {rel}:{line_no}: [[{target}]] - looks like a template "
+                "placeholder; not repaired"
+            )
             continue
         if resolve_wikilink_path(wikilink_target_body(target), grimoire_root) is not None:
             continue
@@ -205,13 +218,13 @@ def repair_line(
         )
 
     if not edits:
-        return line, fixes, ambis, unresolvables
+        return line, fixes, ambis, unresolvables, skipped
 
     # Apply right-to-left so earlier offsets in this line stay valid.
     new_line = line
     for start, end, new_wikilink in sorted(edits, key=lambda e: e[0], reverse=True):
         new_line = new_line[:start] + new_wikilink + new_line[end:]
-    return new_line, fixes, ambis, unresolvables
+    return new_line, fixes, ambis, unresolvables, skipped
 
 
 def repair_file(
@@ -219,17 +232,18 @@ def repair_file(
     grimoire_root: Path,
     index: dict[str, list[Path]],
     apply: bool,
-) -> tuple[list[str], list[str], list[str]]:
-    """Return (repairs, ambiguous, unresolvable) report lines for this file."""
+) -> tuple[list[str], list[str], list[str], list[str]]:
+    """Return (repairs, ambiguous, unresolvable, skipped) report lines for this file."""
     rel = str(path.relative_to(grimoire_root))
     try:
         original = path.read_text(errors="replace")
     except OSError as exc:
-        return [], [], [f"  [ERROR] {rel}: read failed: {exc}"]
+        return [], [], [f"  [ERROR] {rel}: read failed: {exc}"], []
 
     repair_lines: list[str] = []
     ambiguous_lines: list[str] = []
     unresolvable_lines: list[str] = []
+    skipped_lines: list[str] = []
 
     in_fence = False
     new_lines: list[str] = []
@@ -244,20 +258,21 @@ def repair_file(
             new_lines.append(line)
             continue
 
-        new_line, fixes, ambis, unr = repair_line(
+        new_line, fixes, ambis, unr, skip = repair_line(
             line, path, grimoire_root, index, rel, line_no
         )
         new_lines.append(new_line)
         repair_lines.extend(fixes)
         ambiguous_lines.extend(ambis)
         unresolvable_lines.extend(unr)
+        skipped_lines.extend(skip)
 
     if apply and repair_lines:
         new_content = "".join(new_lines)
         if new_content != original:
             path.write_text(new_content)
 
-    return repair_lines, ambiguous_lines, unresolvable_lines
+    return repair_lines, ambiguous_lines, unresolvable_lines, skipped_lines
 
 
 def iter_target_files(grimoire_root: Path):
@@ -300,15 +315,17 @@ def main() -> int:
     all_repairs: list[str] = []
     all_ambiguous: list[str] = []
     all_unresolvable: list[str] = []
+    all_skipped: list[str] = []
     files_touched = 0
 
     for path in iter_target_files(grimoire_root):
-        r, a, u = repair_file(path, grimoire_root, index, args.apply)
+        r, a, u, s = repair_file(path, grimoire_root, index, args.apply)
         if r:
             files_touched += 1
         all_repairs.extend(r)
         all_ambiguous.extend(a)
         all_unresolvable.extend(u)
+        all_skipped.extend(s)
 
     if all_repairs:
         print(f"Repairs ({len(all_repairs)}):")
@@ -328,10 +345,17 @@ def main() -> int:
             print(line)
         print()
 
+    if all_skipped:
+        print(f"Skipped - placeholder-like, not repaired ({len(all_skipped)}):")
+        for line in all_skipped:
+            print(line)
+        print()
+
     print("==================================")
     summary = (
         f"Repairs: {len(all_repairs)} across {files_touched} file(s); "
-        f"ambiguous: {len(all_ambiguous)}; unresolvable: {len(all_unresolvable)}"
+        f"ambiguous: {len(all_ambiguous)}; unresolvable: {len(all_unresolvable)}; "
+        f"skipped: {len(all_skipped)}"
     )
     if args.apply and all_repairs:
         ok(summary + " - applied")
@@ -340,7 +364,13 @@ def main() -> int:
     else:
         ok(summary)
 
-    return 1 if (all_ambiguous or all_unresolvable) else 0
+    needs_attention = bool(all_ambiguous or all_unresolvable)
+    if args.apply:
+        # The apply itself succeeded; ambiguous/unresolvable links are reported
+        # for human follow-up, not treated as a failure of this run.
+        return 0
+    # Dry-run behaves as a check: signal when there is actionable work.
+    return 1 if (all_repairs or needs_attention) else 0
 
 
 if __name__ == "__main__":

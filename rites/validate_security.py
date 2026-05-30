@@ -104,7 +104,7 @@ def main():
                     warn(f"Script uses eval() (security risk): {path.relative_to(ARCANA_ROOT)}")
                 unsafe += 1
 
-            if "exec(" in content and "__name__" not in content:
+            if "exec(" in content:
                 reporter.error(
                     "SECURITY_EXEC",
                     "script uses exec()",

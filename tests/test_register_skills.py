@@ -84,6 +84,27 @@ def test_register_skills_apply_leaves_no_staging_dir(tmp_path, monkeypatch):
     assert list(target.glob("*.tmp")) == []  # staging is swapped in, never left behind
 
 
+def test_read_skill_ownership_handles_braces_in_payload(tmp_path):
+    skill = tmp_path / "arc-weird"
+    skill.mkdir()
+    payload = {
+        "schema_version": register_skills.OWNERSHIP_SCHEMA_VERSION,
+        "generation": register_skills.REGISTER_GENERATION,
+        "registered_by": "arcana",
+        "command": "/arc-weird",
+        "source_label": "weird } --> label",
+    }
+    marker = register_skills.ownership_comment(payload)
+    (skill / "SKILL.md").write_text(f"---\nname: arc-weird\n---\n{marker}\n", encoding="utf-8")
+
+    owner = register_skills.read_skill_ownership(skill)
+
+    # A '}' or '-->' inside a value must not truncate the parse into None.
+    assert owner is not None
+    assert owner["command"] == "/arc-weird"
+    assert owner["source_label"] == "weird } --> label"
+
+
 def test_register_skills_preserves_unowned_collision(tmp_path, monkeypatch):
     target = tmp_path / "codex" / "skills"
     existing = target / "arc-help"

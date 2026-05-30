@@ -36,6 +36,11 @@
 
 - Raised the minimum supported Python to 3.10 (`requires-python`); the test
   suite and rites use 3.10+ APIs, and 3.9 is end-of-life.
+- `/arc-validate-skill-refs` now cross-checks the command-surface and
+  rite-profile contracts: a rite-owned command's `mutation_profile` must match
+  its rite's profile, and a command whose `rite_owner` is not write-capable must
+  be `read_only`. This locks the safety posture that gates unattended execution
+  to a single source instead of convention.
 - Updated the architecture review workflow to persist substantial deferred
   items to the architecture backlog instead of leaving them only in chat
   summaries.
@@ -110,6 +115,21 @@
   the rmtree-then-write window that could destroy or half-write a skill. The
   summoning rite writes `library.json` through a shared atomic temp-file writer,
   and `append_log.py` appends each entry with a single `O_APPEND` write.
+- `validate_security`'s `exec()` check now fires: it previously suppressed
+  itself on any file containing `__name__`, which is every rite (each ships an
+  `if __name__ == "__main__":` guard), so the dynamic-exec guard never ran.
+- `register_skills.py` parses the ownership marker with a JSON decoder instead
+  of a brace regex, so a payload value containing `}` or `-->` no longer
+  truncates the parse and misclassifies an owned skill as unowned.
+- `repair_links.py --apply` returns 0 on success: ambiguous/unresolvable links
+  are reported as human follow-ups rather than failing the run. Placeholder-like
+  links (e.g. `[[Title]]`) are now reported as skipped instead of being silently
+  dropped, and dry-run returns non-zero only when there is actionable work.
+- `validate.py` smart/auto selection is deletion-aware. It reads
+  `git diff --name-status` (expanding renames), so deleting a required file - a
+  hub, `arcana.json`, a skill - now selects the structure and reference
+  validators instead of selecting nothing, closing a path where `--auto` could
+  green-light a missing file.
 
 ## [1.0.0] - 2026-05-25
 

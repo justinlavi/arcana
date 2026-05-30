@@ -75,3 +75,41 @@ def test_skill_ref_validator_reports_command_surface_counts():
     report = json.loads(result.stdout)
     assert report["checked"]["command_surface_entries"] == len(discover_skill_commands(REPO_ROOT))
     assert report["checked"]["command_surface_errors"] == 0
+
+
+def test_mutation_profile_mismatches_flags_only_disagreements():
+    from validate_skill_refs import mutation_profile_mismatches
+
+    surface = [
+        {"command": "/a", "owner_type": "rite", "rite_owner": "rites/w.py", "mutation_profile": "apply_only"},
+        {"command": "/b", "owner_type": "rite", "rite_owner": "rites/w.py", "mutation_profile": "plan_apply"},
+        {"command": "/c", "owner_type": "rite", "rite_owner": "rites/ro.py", "mutation_profile": "read_only"},
+        {"command": "/d", "owner_type": "rite", "rite_owner": "rites/ro.py", "mutation_profile": "apply_only"},
+        {"command": "/e", "owner_type": "judgment", "rite_owner": None, "mutation_profile": "read_only"},
+    ]
+    rite_profiles = [{"path": "rites/w.py", "profile": "apply_only"}]
+
+    flagged = {m[0] for m in mutation_profile_mismatches(surface, rite_profiles)}
+    # /b disagrees with its profiled rite; /d is unprofiled so must be read_only.
+    assert flagged == {"/b", "/d"}
+
+
+def test_real_contracts_have_no_mutation_profile_drift():
+    import rite_profiles
+    from validate_skill_refs import mutation_profile_mismatches
+
+    contract, _ = validate_command_surface(REPO_ROOT)
+    rp = rite_profiles.profile_entries(rite_profiles.load_rite_profiles(REPO_ROOT))
+    assert mutation_profile_mismatches(command_entries(contract), rp) == []
+
+
+def test_skill_ref_report_includes_mutation_profile_drift():
+    result = subprocess.run(
+        [sys.executable, str(RITES / "validate_skill_refs.py"), "--format", "json"],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stdout
+    report = json.loads(result.stdout)
+    assert report["checked"]["mutation_profile_drift"] == 0
