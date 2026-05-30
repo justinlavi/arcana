@@ -17,6 +17,10 @@ from pathlib import Path
 
 import pytest
 
+# rites/ is on sys.path via tests/conftest.py; the orchestrator's validator
+# lists are the source of truth for the expected validator counts and names.
+import validate
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 RITES = REPO_ROOT / "rites"
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -24,6 +28,9 @@ GOOD = FIXTURES / "good_grimoire"
 BAD_FRONT = FIXTURES / "bad_frontmatter"
 BAD_LINKS = FIXTURES / "bad_links"
 WARN_LABELS = FIXTURES / "warn_labels"
+
+ARCANA_VALIDATOR_NAMES = {Path(name).stem for name in validate.ARCANA_RITES}
+GRIMOIRE_VALIDATOR_NAMES = {Path(name).stem for name in validate.GRIMOIRE_RITES}
 
 
 def _run(script: str, grimoire: Path, *extra_args: str) -> subprocess.CompletedProcess:
@@ -310,9 +317,11 @@ def test_full_validator_suite_emits_structured_aggregate_report():
     report = json.loads(result.stdout)
     assert report["validator"] == "validate"
     assert report["status"] == "pass"
-    assert report["checked"]["validators"] == 12
-    assert len(report["reports"]) == 12
-    assert {validator_report["validator"] for validator_report in report["reports"]}
+    assert report["checked"]["validators"] == len(validate.ARCANA_RITES)
+    assert len(report["reports"]) == len(validate.ARCANA_RITES)
+    assert {
+        validator_report["validator"] for validator_report in report["reports"]
+    } == ARCANA_VALIDATOR_NAMES
 
 
 def test_grimoire_validator_suite_passes_good_fixture():
@@ -328,18 +337,11 @@ def test_grimoire_validator_suite_passes_good_fixture():
     assert report["validator"] == "validate"
     assert report["profile"] == "grimoire"
     assert report["status"] == "pass"
-    assert report["checked"]["validators"] == 8
-    assert len(report["reports"]) == 8
-    assert {validator_report["validator"] for validator_report in report["reports"]} == {
-        "validate_grimoire_structure",
-        "validate_encoding",
-        "validate_portability",
-        "validate_format",
-        "validate_frontmatter",
-        "validate_links",
-        "validate_orphans",
-        "validate_provenance",
-    }
+    assert report["checked"]["validators"] == len(validate.GRIMOIRE_RITES)
+    assert len(report["reports"]) == len(validate.GRIMOIRE_RITES)
+    assert {
+        validator_report["validator"] for validator_report in report["reports"]
+    } == GRIMOIRE_VALIDATOR_NAMES
 
 
 def test_grimoire_validator_suite_fails_bad_fixture():
