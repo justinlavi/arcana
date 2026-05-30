@@ -4,6 +4,8 @@
 
 ### Added
 
+- Added `.github/workflows/ci.yml` running the test suite and validator
+  orchestrator on pull requests and pushes to `main`.
 - Added `docs/architecture_backlog.md` as the durable review queue for
   deferred S-tier architecture work found during `/arc-improve`.
 - Added `formulae/grimoire/scaffold_contract.json` as the shared grimoire
@@ -29,6 +31,8 @@
 
 ### Changed
 
+- Raised the minimum supported Python to 3.10 (`requires-python`); the test
+  suite and rites use 3.10+ APIs, and 3.9 is end-of-life.
 - Updated the architecture review workflow to persist substantial deferred
   items to the architecture backlog instead of leaving them only in chat
   summaries.

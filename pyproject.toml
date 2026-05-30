@@ -7,7 +7,7 @@ name = "arcana-grimoire"
 version = "1.0.0"
 description = "Engine for grimoires - structured, AI-navigable knowledge bases the LLM keeps current."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "Justin Lavi", email = "jlavi@proton.me" }]
