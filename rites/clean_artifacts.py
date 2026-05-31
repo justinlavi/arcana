@@ -33,9 +33,13 @@ def clean_location(base_path, label, dry_run=False):
     count = sum(1 for f in arts.rglob("*") if f.is_file())
     if dry_run:
         print(f"  [DRY]   Would remove {arts} ({count} file(s))")
-    else:
+        return count
+    try:
         shutil.rmtree(arts)
-        print(f"  [OK]    Cleaned {arts} ({count} file(s))")
+    except OSError as exc:
+        print(f"  [WARN]  Could not remove {arts}: {exc}")
+        return 0
+    print(f"  [OK]    Cleaned {arts} ({count} file(s))")
     return count
 
 

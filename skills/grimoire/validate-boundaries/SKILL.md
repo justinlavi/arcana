@@ -3,6 +3,7 @@ name: {{SKILL_PREFIX}}-validate-boundaries
 description: Validate magical boundary compliance - grimoires must not borrow Arcana's system terminology
 when_to_use: Before publishing or releasing a grimoire; after restructuring chapters; during PR review of grimoire changes; user mentions "magical boundary", "system vs content terminology", or "is my grimoire using Arcana words it shouldn't".
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read Write Edit
 ---
 

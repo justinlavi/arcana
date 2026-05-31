@@ -494,3 +494,15 @@ def test_validate_doc_trees_flags_drifted_diagram(tmp_path):
 
     assert result.returncode != 0
     assert "DOC_TREE_MISSING_ENTRY" in _codes(result)
+
+
+def test_parallel_validator_reports_are_sorted():
+    result = subprocess.run(
+        [sys.executable, str(RITES / "validate.py"), "--parallel", "--format", "json"],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert result.returncode == 0, result.stdout[-2000:]
+    names = [r["validator"] for r in json.loads(result.stdout)["reports"]]
+    assert names == sorted(names)

@@ -2,6 +2,7 @@
 name: {{SKILL_PREFIX}}-improve
 description: Improve Arcana itself - maintainer only
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read Write Edit
 ---
 

@@ -46,7 +46,7 @@ The role is transferable — record handovers in the CHANGELOG.
 
 Include in Arcana if it applies to **every** grimoire that references it:
 
-- **Documentation**: README, installation, quickstart, operating model, reference, governance.
+- **Documentation**: README, installation, operating model, reference, governance.
 - **Invocations**: grimoire operations, Arcana maintenance, agent configuration, library management, workspace operations, help, and shared meta fragments.
 - **Formulae**: grimoire scaffold, chapter hubs, pages, sources, log entries, and invocation skeletons.
 - **Rites**: validation, registration, library sync, etc.

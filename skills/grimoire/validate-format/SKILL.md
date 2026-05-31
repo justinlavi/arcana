@@ -3,6 +3,7 @@ name: {{SKILL_PREFIX}}-validate-format
 description: Validate Markdown formatting in the active grimoire
 when_to_use: User asks whether grimoire Markdown is well-formed; after editing tables, code fences, or directory tree examples; before committing grimoire changes.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 

@@ -119,7 +119,7 @@ If an old installation has stale or broken slash commands, pull Arcana with any
 Git client and open [Arcana Recovery](RECOVERY.md). It is the stable bridge for
 getting agent skills and grimoires back in sync after large Arcana changes.
 
--> [installation](docs/installation.md) - [installation](docs/installation.md#verify-your-install-5-minute-smoke-test)
+-> [installation](docs/installation.md) - [5-minute smoke test](docs/installation.md#verify-your-install-5-minute-smoke-test)
 
 ---
 

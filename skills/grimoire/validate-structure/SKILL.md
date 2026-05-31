@@ -3,6 +3,7 @@ name: {{SKILL_PREFIX}}-validate-structure
 description: Validate grimoire structure and managed scaffold files against current Arcana formulae
 when_to_use: User asks if their grimoire is correctly structured, after pulling a newer Arcana version, after creating or restructuring chapters, before committing grimoire changes, or as a quick sanity check. Mechanical/deterministic - no judgment. For Arcana itself, use /arc-validate-structure.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 

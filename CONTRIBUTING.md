@@ -6,7 +6,7 @@ Thank you for your interest. Arcana is an opinionated framework with a small sur
 
 ## Quick orientation
 
-Arcana has four working layers. Almost every PR touches exactly one of them:
+Arcana has five working layers. Almost every PR touches exactly one of them:
 
 | Layer | What lives there | Read first |
 |---|---|---|

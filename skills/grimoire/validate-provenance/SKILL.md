@@ -3,6 +3,7 @@ name: {{SKILL_PREFIX}}-validate-provenance
 description: Validate source provenance in the active grimoire
 when_to_use: User asks whether sourced grimoire pages cite real artifacts; after ingesting sources or editing pages with external/hybrid authority; before committing grimoire changes.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 

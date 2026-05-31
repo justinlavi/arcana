@@ -3,6 +3,7 @@ name: {{SKILL_PREFIX}}-validate-orphans
 description: Detect orphan pages in the active grimoire
 when_to_use: User asks whether grimoire pages are reachable; after moving, adding, or deleting grimoire pages; before committing grimoire changes.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 

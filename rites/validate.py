@@ -349,6 +349,8 @@ def run_parallel(rites, output_format="human", profile="arcana", target_root=Non
             if not ok:
                 failed += 1
 
+    # Reports arrive in completion order; sort for deterministic output.
+    reports.sort(key=lambda report: report.get("validator", ""))
     suite_report = empty_suite_report(rites, reports, profile, target_root)
     if not human:
         emit_suite_report(suite_report, output_format)

@@ -177,7 +177,6 @@ When creating new grimoires, use these placeholders in formula templates:
 |------------|------------|--------------|
 | `{{GRIMOIRE_NAME}}` | Display name; brand only - used in the root-hub H1 | `Cooking`, `HR`, `Project Alpha` |
 | `{{GRIMOIRE_NAME_LOWER}}` | Lowercase display name for aliases and prose | `cooking`, `hr`, `project alpha` |
-| `{{GRIMOIRE_TOKEN}}` | All-caps token | `COOKING`, `HR` |
 | `{{GRIMOIRE_DOMAIN}}` | Subject area / category | `cooking`, `human resources` |
 | `{{GRIMOIRE_PURPOSE}}` | Short tagline, 2–5 words; used in the manifest `description` and as an italic subtitle in the root hub | `personal cooking knowledge`, `HR runbooks and policies`, `Project Alpha knowledge` |
 | `{{GRIMOIRE_PURPOSE_DETAILED}}` | Long-form description; lives **only** in `README.md`; never duplicated to manifest or hub | `recipes, techniques, equipment, and ingredient inventories — the full personal cooking reference` |
@@ -187,8 +186,9 @@ When creating new grimoires, use these placeholders in formula templates:
 | `{{CHAPTER_ROUTES}}` | Generated routing pointers (filled by create_grimoire) | - |
 | `{{CHAPTER_LIST}}` | List of chapters with descriptions | - |
 | `{{CHAPTER_TREE}}` | Directory tree of chapters | - |
+| `{{CHAPTER_TITLE}}` | Chapter hub display title (H1 and frontmatter title) | `Recipes`, `Onboarding` |
+| `{{CHAPTER_NAME}}` | Chapter folder slug used in tags and routing paths | `recipes`, `onboarding` |
 | `{{EXAMPLE_CHAPTER}}` | One example chapter name | `recipes`, `onboarding` |
-| `{{OWNER_DOMAIN}}` | Who maintains this grimoire | `Personal`, `People Ops` |
 | `{{CREATION_DATE}}` | ISO date the grimoire was created | `2026-05-13` |
 
 **Description-duplication policy.** Three description-shaped placeholders, each with a single canonical home:

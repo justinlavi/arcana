@@ -41,6 +41,11 @@
   its rite's profile, and a command whose `rite_owner` is not write-capable must
   be `read_only`. This locks the safety posture that gates unattended execution
   to a single source instead of convention.
+- Aligned validator skills with the documented auto-invocation policy: every
+  individual validator (`grm-validate-*`, `arc-validate-encoding`) and the
+  maintainer-only `/arc-improve` now set `disable-model-invocation: true`, while
+  the `/arc-validate-all` and `/grm-validate-all` orchestrators stay the
+  auto-invoke entry points. A test enforces the split.
 - Updated the architecture review workflow to persist substantial deferred
   items to the architecture backlog instead of leaving them only in chat
   summaries.
@@ -134,6 +139,18 @@
   README and `arcana.md` link `CONTRIBUTING.md`, which was previously unreachable
   from any routing surface. A test enforces this coverage so the indexes cannot
   silently drift out of sync with `docs/`.
+- `clean_artifacts.py` wraps each `rmtree` so one unreadable or locked artifacts
+  directory warns and is skipped instead of aborting the whole cleanup run.
+- `validate.py --parallel` sorts validator reports before emitting them, so its
+  JSON output is byte-stable run-to-run regardless of completion order.
+- `docs/reference.md`'s placeholder table now matches the scaffolding tokens:
+  the real `{{CHAPTER_TITLE}}`/`{{CHAPTER_NAME}}` placeholders are documented and
+  the phantom `{{OWNER_DOMAIN}}`/`{{GRIMOIRE_TOKEN}}` (used in no formula) are
+  removed. A test machine-checks the table against the formulae and create-*
+  invocations so it cannot drift again.
+- Fixed on-ramp doc inaccuracies: `CONTRIBUTING.md` said "four working layers"
+  but lists five; the README had a doubled `installation` link label; and
+  `governance.md` referenced a non-existent `quickstart` doc.
 
 ## [1.0.0] - 2026-05-25
 

@@ -3,6 +3,7 @@ name: {{SKILL_PREFIX}}-validate-links
 description: Validate grimoire links and enforce layer-aware internal link style
 when_to_use: User asks about broken links in a grimoire; after moving or renaming grimoire pages; before committing grimoire changes.
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Bash Read
 ---
 
