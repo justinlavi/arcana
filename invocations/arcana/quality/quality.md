@@ -14,6 +14,7 @@ Judgment-based invocations for improving Arcana quality beyond what mechanical v
 - Architecture review -> [[invocations/arcana/quality/review_architecture|review architecture]]
 - Documentation quality -> [[invocations/arcana/quality/improve_documentation|improve documentation]]
 - Rite quality -> [[invocations/arcana/quality/validate_rites|validate rites]]
+- Contract coherence -> [[invocations/arcana/quality/audit_contract_coherence|audit contract coherence]]
 - Deferred architecture queue -> [[docs/architecture_backlog|architecture backlog]]
 
 ## When to use

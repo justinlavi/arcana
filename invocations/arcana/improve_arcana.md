@@ -92,7 +92,21 @@ when they need maintainer review after the current conversation.
 
 Follow the rite-specific quality check at [[invocations/arcana/quality/validate_rites|validate rites]]. It's a judgment-based invocation (no dedicated skill - it runs as part of this orchestrator) that inspects rite scripts for style, error handling, exit codes, and idempotency. Apply fixes and re-run the validator suite from Phase 1.
 
-### Phase 5: Documentation quality
+### Phase 5: Contract coherence
+
+Cast the contract-coherence audit:
+
+- [[invocations/arcana/quality/audit_contract_coherence|audit contract coherence]]
+
+It is judgment-based (no standalone slash command - it runs as part of this
+orchestrator) and verifies that the free-text fields in
+`rites/data/command_surface.json` and `rites/data/rite_profiles.json` are TRUE of
+the code. It behaviorally probes the envelope-wired rites on disposable temp
+targets via `--format json` and code-reads the rest. Apply prose-wrong fixes to
+the contract JSON; defer code-wrong findings to Phase 4 or the maintainer; then
+re-run the validator suite from Phase 1.
+
+### Phase 6: Documentation quality
 
 Cast the documentation improvement invocation:
 
@@ -106,10 +120,10 @@ Apply the fixes it surfaces. Prefer:
 - Generated views over hand-maintained lists (see `rites/sync_docs.py` for the pattern).
 - Splitting overloaded docs; deleting docs nothing else needs.
 
-### Phase 6: Re-validate
+### Phase 7: Re-validate
 
-After applying architecture, rite, and documentation fixes, run the validator
-suite once more:
+After applying architecture, contract-coherence, rite, and documentation fixes,
+run the validator suite once more:
 
 ```bash
 python3 rites/validate.py
@@ -117,7 +131,7 @@ python3 rites/validate.py
 
 Link anchors, skill references, and structure checks are the most likely to break from a documentation reshuffle.
 
-### Phase 7: Sync generated docs
+### Phase 8: Sync generated docs
 
 If anything that feeds an auto-generated index changed (skills, invocation catalog, chapters):
 
@@ -127,7 +141,7 @@ python3 rites/sync_docs.py --apply
 
 Then re-run validators a final time.
 
-### Phase 8: Version & changelog
+### Phase 9: Version & changelog
 
 If the pass produced user-visible changes:
 
@@ -144,10 +158,11 @@ If the pass produced user-visible changes:
 
 - Phase 2 depends on Phase 1 output.
 - Phase 3 should happen after Phase 1 is clean - judgment work is wasted if mechanical issues are still masking real problems.
-- Phase 5 should happen after Phase 3 so documentation cleanup can use the architecture review's source-of-truth map.
-- Phase 6 must run after Phases 3-5 (link anchors drift when docs move).
-- If Phase 7 changes generated docs, rerun Phase 6 afterward.
-- Phase 8 happens last so the changelog describes the final validated state.
+- Phase 5 (contract coherence) depends on Phase 1 being clean - the structural floor must hold before semantic claims are worth auditing - and runs after Phase 4 so the rite-quality reading is fresh. Its prose edits touch only the contract JSON, so the renumbered Phase 7 (re-validate) must run after it.
+- Phase 6 should happen after Phase 3 so documentation cleanup can use the architecture review's source-of-truth map.
+- Phase 7 must run after Phases 3-6 (link anchors drift when docs move).
+- If Phase 8 changes generated docs, rerun Phase 7 afterward.
+- Phase 9 happens last so the changelog describes the final validated state.
 
 ## Non-negotiable rules
 
@@ -185,6 +200,7 @@ architecture queue:
 
 - Validator pass/fail summary
 - Architecture review summary (review lanes, source-of-truth issues, naming/boundary findings, AI-efficiency findings)
+- Contract coherence summary (claims audited by evidence tier, verdict tally, prose-wrong contract edits applied, code-wrong findings deferred)
 - Fixes applied (counts by category)
 - Documentation duplication / clarity fixes applied
 - Remaining items needing human follow-up
@@ -206,6 +222,7 @@ After:
 
 - [ ] Validator suite green
 - [ ] Architecture review completed or explicitly skipped with reason
+- [ ] Contract coherence audited or explicitly skipped with reason
 - [ ] Generated docs synced (`rites/sync_docs.py --apply`)
 - [ ] Smoke-test key skills: `/grm-create`, `/arc-help`, `/grm-improve`
 - [ ] `CHANGELOG.md` updated if changes are user-visible
@@ -217,6 +234,7 @@ After:
 - Individual validators: see `invocations/arcana/validators/validators.md`
 - Architecture quality: [[invocations/arcana/quality/review_architecture|review architecture]]
 - Rite quality: [[invocations/arcana/quality/validate_rites|validate rites]]
+- Contract coherence: [[invocations/arcana/quality/audit_contract_coherence|audit contract coherence]]
 - Documentation quality: [[invocations/arcana/quality/improve_documentation|improve documentation]]
 - Doc generator: `rites/sync_docs.py`
 - Grimoire equivalent: `/grm-improve`

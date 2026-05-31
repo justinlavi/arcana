@@ -17,8 +17,19 @@
   `summary` counts, with `status` deriving to `noop` (the process exit code
   still carries any actionable signal). Apply modes record their writes as
   mutations with `status` `ok`.
-
-## [1.0.0] - 2026-05-30
+- Contract-coherence audit phase for `/arc-improve`
+  (`invocations/arcana/quality/audit_contract_coherence.md`, new Phase 5). It
+  audits whether the free-text fields in `rites/data/command_surface.json`
+  (`mutation_behavior`, `log_behavior`, `validation_profile`) and
+  `rites/data/rite_profiles.json` (`writes`, `idempotency`,
+  `plan_command`/`apply_command`, `validation_profile`) are true of the rite
+  code - the semantic layer the mechanical validators cannot reach. It
+  behaviorally probes the five `ResultReporter`-wired rites on disposable temp
+  targets via `--format json` (asserting idempotency, write scope, and mode from
+  the envelope plus an independent disk diff) and code-reads the rest, recording
+  the evidence tier on every verdict. It surfaces drift: prose-wrong claims are
+  corrected in the contract JSON, code-wrong findings defer to Phase 4 rite
+  quality. `/arc-improve` is renumbered to nine phases.
 
 Arcana 1.0.0 defines Arcana as a framework for creating, installing, routing,
 validating, and maintaining grimoires: structured, AI-navigable knowledge
