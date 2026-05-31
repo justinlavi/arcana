@@ -21,7 +21,6 @@ REQUIRED_STRING_FIELDS = {
     "mutation_behavior",
     "log_behavior",
     "validation_profile",
-    "generated_docs_impact",
 }
 REQUIRED_LIST_FIELDS = {"preconditions"}
 OPTIONAL_PATH_FIELDS = {"guard", "rite_owner"}

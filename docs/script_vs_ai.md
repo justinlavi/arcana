@@ -18,7 +18,9 @@ last_verified: 2026-05-12
 **Rites (Scripts) = Simple, Deterministic Tasks**
 **Invocations (AI) = Contextual, Intelligent Analysis**
 
-As AI capabilities expand exponentially (more intelligence, parallelism, context, reasoning), the balance shifts toward AI handling increasingly complex tasks. Scripts should remain focused on what they do best: simple, fast, deterministic operations.
+As AI capabilities expand (more intelligence, parallelism, context, reasoning), the balance shifts toward AI handling increasingly complex tasks. Scripts stay focused on what they do best: simple, fast, deterministic operations. A rite earns its place only when the check is genuinely mechanical *and* cheaper or more reproducible than spawning an agent - not by default, and not forever.
+
+This boundary decides **where a check lives** (mechanical work goes to a rite; judgment goes to an invocation), which is orthogonal to **how much compute the work gets**. Fanning a judgment task out across many subagents - per-page review, per-chapter audit - is still invocation-class AI work, not a third category between rite and invocation. Keep the two questions separate: "is this judgment?" decides rite versus invocation; "does this judgment parallelize?" decides one agent versus many.
 
 ---
 
@@ -318,7 +320,7 @@ Ask: "Does this require understanding context and meaning?"
 | **Purpose** | Simple, fast, deterministic | Contextual, intelligent, adaptive |
 | **Tasks** | Find, count, check, extract | Analyze, judge, suggest, improve |
 | **Context** | None needed | Essential |
-| **Evolution** | Stays simple forever | Expands with AI capabilities |
+| **Evolution** | Stays mechanical; justified only when deterministic and cheaper than an agent | Expands with AI capabilities |
 | **Speed** | <1 second | Seconds to minutes |
 | **Output** | Facts (✅/❌, counts, lists) | Insights (suggestions, analysis) |
 

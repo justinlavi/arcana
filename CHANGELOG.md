@@ -1,168 +1,6 @@
 # Changelog
 
-## [Unreleased]
-
-### Added
-
-- Added `.github/workflows/ci.yml` running the test suite and validator
-  orchestrator on pull requests and pushes to `main`.
-- Added `rites/data/validators.json` as the single source of truth for the
-  Arcana and grimoire validator sequences; `rites/validate.py` loads the lists
-  from it instead of hardcoding them.
-- Added `docs/architecture_backlog.md` as the durable review queue for
-  deferred S-tier architecture work found during `/arc-improve`.
-- Added `formulae/grimoire/scaffold_contract.json` as the shared grimoire
-  scaffold inventory consumed by creation, audit, validation, and tests.
-- Added `rites/data/command_surface.json` and `docs/command_surface.md` as
-  the validated public command-surface contract.
-- Added `rites/data/rite_profiles.json` and `docs/rite_profiles.md` as the
-  mutating-rite plan/apply/idempotency contract.
-- Added `rites/data/summon_contract.json` and `docs/summoning_contract.md` as
-  the validated Summoning Rite behavior contract.
-- Added `rites/data/agent_targets.json` and `docs/agent_targets.md` as the
-  validated registry for agent instruction files and skill registration modes.
-- Added `/grm-validate-all`, backed by `rites/validate.py --grimoire`, as the
-  full deterministic validation profile for active grimoires.
-- Added structured validator diagnostics through `--format json` and
-  `--format jsonl` on every Arcana validator and the validator orchestrator.
-- Added regression coverage for the generated skill catalog's
-  command-surface metadata.
-- Added provenance/frontmatter regression coverage for source wrappers and
-  source-layer boundaries.
-- Added root-level `RECOVERY.md` as a stable bridge for stale installations
-  whose registered skills or agent instructions are too old to self-repair.
-
-### Changed
-
-- Raised the minimum supported Python to 3.10 (`requires-python`); the test
-  suite and rites use 3.10+ APIs, and 3.9 is end-of-life.
-- `/arc-validate-skill-refs` now cross-checks the command-surface and
-  rite-profile contracts: a rite-owned command's `mutation_profile` must match
-  its rite's profile, and a command whose `rite_owner` is not write-capable must
-  be `read_only`. This locks the safety posture that gates unattended execution
-  to a single source instead of convention.
-- Aligned validator skills with the documented auto-invocation policy: every
-  individual validator (`grm-validate-*`, `arc-validate-encoding`) and the
-  maintainer-only `/arc-improve` now set `disable-model-invocation: true`, while
-  the `/arc-validate-all` and `/grm-validate-all` orchestrators stay the
-  auto-invoke entry points. A test enforces the split.
-- Updated the architecture review workflow to persist substantial deferred
-  items to the architecture backlog instead of leaving them only in chat
-  summaries.
-- Updated `/grm-create`, `/grm-improve`, and `/grm-validate-structure` to use
-  the scaffold contract for managed grimoire scaffold files.
-- Updated `rites/validate.py` to aggregate validator reports from structured
-  diagnostics and to support Arcana and grimoire validation profiles.
-- Updated `/arc-validate-skill-refs` to verify command-surface coverage,
-  workflow owners, guard paths, rite paths, mutation profiles, and validation
-  profiles for every Arcana-shipped public command.
-- Updated rite-quality guidance and skill-registration behavior so dry-run
-  output is treated as a plan, with temp-target tests for dry-run and repeated
-  apply.
-- Updated skill registration to embed Arcana ownership metadata, block
-  unowned target collisions, detect grimoire prefix collisions before writing,
-  rewrite generated pointer skills that predate ownership metadata, and clean
-  only owned stale generated skills.
-- Added `--reset-managed` to skill registration so major Arcana command-family
-  updates can replace registered Arcana and grimoire skill namespaces before
-  re-registering fresh copies.
-- Updated skill registration, Summoning Rite agent injection, GUI settings,
-  diagnostics, source bootstrap, and release bundling to read agent targets
-  from the registry.
-- Updated grimoire improvement, lint, and update workflows to route mechanical
-  health checks through the grimoire validation profile.
-- Updated `docs/skills.md` generation to render workflow, ownership, guard,
-  mutation, rite, and validation metadata from the command-surface contract.
-- Clarified the source-layer model: raw artifacts and source wrappers live in
-  `sources/`, authored synthesis lives in `chapters/`, and source wrappers do
-  not maintain derived-page backlinks.
-- Updated frontmatter and provenance validators to enforce source-wrapper
-  placement, authority, source references, and self-citation rules.
-- Updated Arcana and grimoire internal link style to be layer-aware: public
-  docs use portable Markdown links, while vault and AI-routing surfaces use
-  full-path wikilinks. `/arc-validate-links` and `/grm-validate-links` now
-  fail layer violations with `LINK_MARKDOWN_INTERNAL` or
-  `LINK_WIKILINK_PUBLIC_DOC`.
-- Updated grimoire improvement and semantic-analysis guidance to judge router
-  size by route shape and excess prose instead of a fixed 150-word cap.
-
-### Fixed
-
-- `register_skills.py --reset-managed` now removes only skill directories with
-  proven Arcana ownership (ownership marker or generated-source provenance).
-  Directories that share a managed prefix but were not generated by Arcana are
-  preserved and surface as collisions instead of being deleted.
-- `append_log.py` strips CR/LF from the op, title, skill, and field values it
-  records, so a value containing a newline can no longer forge a second log
-  heading or entry line.
-- Skip-directory matching is now segment-aware and shared from `_lib.is_skipped`.
-  `validate_links`, `validate_security`, `validate_skill_refs`, `validate_semantics`,
-  and `repair_links` no longer skip a sibling that merely shares a name prefix
-  with a skip directory (e.g. `sources_extra/` was wrongly excluded by `sources`).
-  `_lib.public_document` is likewise shared by the link and orphan validators.
-- `sync_library.py` treats a grimoire that physically exists under the active
-  home as authoritative: it is reconciled as a path correction rather than
-  reported stale, so `--apply` cannot drop or mis-resolve a present grimoire
-  whose recorded `local_path` uses the `$HOME` token under an overridden `--home`.
-- The summoning rite's GUI install path reuses the core `install_arcana` /
-  `install_grimoire` engine through an injected cancellable git runner, so it
-  performs the same partial-working-tree recovery as the CLI instead of
-  reporting a broken clone as success.
-- `git` invocations in the summoning rite run with a timeout and
-  `GIT_TERMINAL_PROMPT=0`, so a stalled fetch or an authentication prompt fails
-  fast instead of hanging the install indefinitely.
-- The rite-profile write-detector recognizes `os.rename`/`os.replace`/`os.write`,
-  `shutil.move`, and single-argument `Path.replace`/`Path.rename`, so a rite
-  whose only durable write uses an atomic-rename idiom can no longer escape the
-  "every write-capable rite is profiled" check.
-- Destructive writes are now atomic. `register_skills.write_rendered_skill`
-  renders into a staging directory and swaps it in with `os.replace`, removing
-  the rmtree-then-write window that could destroy or half-write a skill. The
-  summoning rite writes `library.json` through a shared atomic temp-file writer,
-  and `append_log.py` appends each entry with a single `O_APPEND` write.
-- `validate_security`'s `exec()` check now fires: it previously suppressed
-  itself on any file containing `__name__`, which is every rite (each ships an
-  `if __name__ == "__main__":` guard), so the dynamic-exec guard never ran.
-- `register_skills.py` parses the ownership marker with a JSON decoder instead
-  of a brace regex, so a payload value containing `}` or `-->` no longer
-  truncates the parse and misclassifies an owned skill as unowned.
-- `repair_links.py --apply` returns 0 on success: ambiguous/unresolvable links
-  are reported as human follow-ups rather than failing the run. Placeholder-like
-  links (e.g. `[[Title]]`) are now reported as skipped instead of being silently
-  dropped, and dry-run returns non-zero only when there is actionable work.
-- `validate.py` smart/auto selection is deletion-aware. It reads
-  `git diff --name-status` (expanding renames), so deleting a required file - a
-  hub, `arcana.json`, a skill - now selects the structure and reference
-  validators instead of selecting nothing, closing a path where `--auto` could
-  green-light a missing file.
-- The README documentation table now lists every `docs/` page, and both the
-  README and `arcana.md` link `CONTRIBUTING.md`, which was previously unreachable
-  from any routing surface. A test enforces this coverage so the indexes cannot
-  silently drift out of sync with `docs/`.
-- `clean_artifacts.py` wraps each `rmtree` so one unreadable or locked artifacts
-  directory warns and is skipped instead of aborting the whole cleanup run.
-- `validate.py --parallel` sorts validator reports before emitting them, so its
-  JSON output is byte-stable run-to-run regardless of completion order.
-- `docs/reference.md`'s placeholder table now matches the scaffolding tokens:
-  the real `{{CHAPTER_TITLE}}`/`{{CHAPTER_NAME}}` placeholders are documented and
-  the phantom `{{OWNER_DOMAIN}}`/`{{GRIMOIRE_TOKEN}}` (used in no formula) are
-  removed. A test machine-checks the table against the formulae and create-*
-  invocations so it cannot drift again.
-- Fixed on-ramp doc inaccuracies: `CONTRIBUTING.md` said "four working layers"
-  but lists five; the README had a doubled `installation` link label; and
-  `governance.md` referenced a non-existent `quickstart` doc.
-- `docs/page_schema.md` states a concrete default stale window (90 days) instead
-  of "the configured stale window" (no such config field exists); `lint.md` and
-  the grimoire scaffold README reference the same default.
-- The summoning rite's GitHub/GitLab host detection is anchored to hostname
-  labels and domain suffixes, so a self-hosted host such as `gitlab.github.io`
-  routes to GitLab instead of being misrouted to the GitHub API.
-- The summon contract documents the four download-tuning env vars
-  (`GRIMOIRE_SUMMON_CONNECT_TIMEOUT`/`STALL_TIMEOUT`/`QUIET_STALL_TIMEOUT`/`MIN_SPEED`),
-  and its test now checks both directions so a new `GRIMOIRE_SUMMON_*` knob
-  cannot escape the documented surface.
-
-## [1.0.0] - 2026-05-25
+## [1.0.0] - 2026-05-30
 
 Arcana 1.0.0 defines Arcana as a framework for creating, installing, routing,
 validating, and maintaining grimoires: structured, AI-navigable knowledge
@@ -310,6 +148,7 @@ substitutes them when installing skills into agent directories.
 |---|---|
 | `/arc-improve` | Maintainer workflow for improving Arcana itself through validation plus architecture, rite, and documentation quality review. |
 | `/arc-validate-all` | Run the full Arcana validator suite. |
+| `/arc-validate-doc-trees` | Validate that ASCII directory diagrams in Arcana docs match the filesystem. |
 | `/arc-validate-encoding` | Validate UTF-8, LF line endings, BOMs, mojibake markers, and repair artifacts in Arcana. |
 | `/arc-validate-format` | Validate Markdown formatting in Arcana. |
 | `/arc-validate-frontmatter` | Validate Arcana page frontmatter. |
@@ -345,6 +184,7 @@ substitutes them when installing skills into agent directories.
 | `/grm-update-arcana` | Pull/update Arcana, validate it, refresh agent integration, register skills, and check active-grimoire health. |
 | `/grm-validate-all` | Run the full deterministic validator profile against the active grimoire. |
 | `/grm-validate-boundaries` | Ensure grimoires do not use Arcana-only system terminology. |
+| `/grm-validate-doc-trees` | Validate that ASCII directory diagrams in the active grimoire match the filesystem. |
 | `/grm-validate-encoding` | Validate UTF-8/LF policy in the active grimoire. |
 | `/grm-validate-format` | Validate Markdown formatting in the active grimoire. |
 | `/grm-validate-frontmatter` | Validate page frontmatter in the active grimoire. |
@@ -359,10 +199,34 @@ aggregate `/arc-validate-all` is the default Arcana validation entry point;
 `/grm-validate-all` is the default active-grimoire mechanical validation entry
 point.
 
+### Validated contracts
+
+Several machine-readable contracts are the single source of truth for their
+domains and are cross-checked against the repository by rites and tests:
+
+- `rites/data/validators.json` - the Arcana and grimoire validator sequences
+  that `rites/validate.py` runs.
+- `rites/data/command_surface.json` - every public command mapped to its skill
+  source, invocation, workflow owner, guard, mutation profile, and validation
+  profile.
+- `rites/data/rite_profiles.json` - the plan/apply/append/idempotency profile of
+  every write-capable rite, cross-checked against an AST write-detector.
+- `rites/data/summon_contract.json` - the Summoning Rite's modes, pipeline,
+  release assets, and bootstrap environment variables.
+- `rites/data/agent_targets.json` - the agent instruction files and
+  skill-registration modes Arcana writes to.
+- `formulae/grimoire/scaffold_contract.json` - the grimoire scaffold inventory
+  consumed by creation, audit, validation, and tests.
+
+`/arc-validate-skill-refs` asserts that a rite-owned command's mutation profile
+matches its rite profile, keeping the command-surface and rite-profile contracts
+aligned.
+
 ### Validation suite
 
 Mechanical rites are independently invocable and orchestrated by
-`rites/validate.py`:
+`rites/validate.py`, which loads its validator sequences from
+`rites/data/validators.json`:
 
 - `validate_structure` - Arcana layout and required hub files.
 - `validate_grimoire_structure` - grimoire layout, manifest schema, Obsidian
@@ -383,9 +247,12 @@ Mechanical rites are independently invocable and orchestrated by
 - `validate_portability` - reserved path characters and reserved basenames.
 - `validate_encoding` - invalid UTF-8, BOMs, CRLF drift, mojibake markers,
   numeric range question-mark artifacts, and repair artifacts.
+- `validate_doc_trees` - ASCII directory diagrams in docs and hubs match the
+  actual filesystem.
 
 The orchestrator runs sequentially, in parallel, or in smart mode against
-working-tree changes.
+working-tree changes. Smart mode reads `git diff --name-status`, so deleting a
+required file still selects the structure and reference validators.
 
 ### Maintenance model
 
@@ -474,7 +341,7 @@ path:
 9. Clone Arcana and selected grimoires under `~/grimoires/`.
 10. Write `~/grimoires/library.json`.
 11. Inject the marked Grimoire instruction block into agent instruction files.
-12. Run skill registration even when no domain grimoires were selected.
+12. Run skill registration even when no domain grimoires are selected.
 
 The bootstrap includes release-asset progress, byte-count reporting, explicit
 retry logs, connection/stall safeguards, Python download fallback for flaky
@@ -538,30 +405,35 @@ settings Arcana validates.
 - `docs/vscode.md` - VS Code wikilink setup.
 - `docs/governance.md` - maintenance and versioning.
 - `docs/release.md` - release workflow.
+- `docs/command_surface.md` - public command-surface contract.
+- `docs/rite_profiles.md` - mutating-rite profile contract.
+- `docs/summoning_contract.md` - Summoning Rite behavior contract.
+- `docs/agent_targets.md` - agent target and skill-registration registry.
+- `docs/architecture_backlog.md` - deferred architecture work queue.
 - `docs/skills.md` - generated Arcana skill catalog.
+- `RECOVERY.md` - stable recovery bridge for stale installations.
 - `invocations/arcana/quality/review_architecture.md` - judgment-based
   whole-repo architecture review used by `/arc-improve`.
 - Installation and scaffold docs identify both `/arc-*` and `/grm-*` skill
   sets, and placeholder examples use the canonical cooking, HR, and Project
   Alpha names.
-- `/grm-validate-structure` and `/grm-improve` now treat
-  `.obsidian/graph.json` as managed scaffold alongside `.obsidian/app.json`,
-  preserving the opinionated Obsidian graph-view color groups during grimoire
-  audits and Arcana upgrade checks.
-- `/arc-improve` architecture review now has a repeatable S-tier protocol for
+- `/grm-validate-structure` and `/grm-improve` treat `.obsidian/graph.json` as
+  managed scaffold alongside `.obsidian/app.json`, preserving the opinionated
+  Obsidian graph-view color groups during grimoire audits and upgrade checks.
+- The `/arc-improve` architecture review follows a repeatable S-tier protocol:
   parallel review lanes, synthesis, AI read-path tracing, and deferred
   architecture opportunities.
-- Public validator skills now route through invocation leaves, `/grm-create`
-  explicitly copies managed Obsidian scaffold files, and low-risk docs were
-  tightened around frontmatter scope, agent support, boundary examples, and
-  judgment-versus-mechanical workflow ownership.
+- Public validator skills route through invocation leaves, and `/grm-create`
+  copies the managed Obsidian scaffold files.
 
 ### Public readiness
 
 - `LICENSE` - MIT.
 - `CONTRIBUTING.md` - contributor onramp.
-- `pyproject.toml` - pure-stdlib runtime with optional `[dev]`, `[gui]`, and
-  `[build]` extras.
+- `pyproject.toml` - pure-stdlib runtime (Python 3.10+) with optional `[dev]`,
+  `[gui]`, and `[build]` extras.
 - `tests/` - pytest suite with fixture grimoires and validator coverage.
+- `.github/workflows/ci.yml` - runs the test suite and validator orchestrator on
+  pull requests and pushes to main.
 - `.github/workflows/summon-release.yml` - release binary build workflow.
 - `.gitattributes` and `.editorconfig` - repository text-file policy.

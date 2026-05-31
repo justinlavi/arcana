@@ -42,6 +42,34 @@ The registration rite substitutes `{{SKILL_PREFIX}}` with the command family's p
 
 Some `/grm-*` commands intentionally maintain Arcana from the active grimoire context. For example, `/grm-update-arcana` updates Arcana, refreshes agent integration, and then checks the active grimoire against the updated framework. Keep these rare and name the external target explicitly. These commands may resolve the active grimoire from `~/grimoires/library.json`; they should not require terminal cwd when an unambiguous grimoire can be selected.
 
+## SKILL.md Structure
+
+Every source skill is a `SKILL.md` with YAML frontmatter and a Markdown body.
+
+| Frontmatter field | Required | Purpose |
+|---|---|---|
+| `name` | yes | `{{SKILL_PREFIX}}-<registered-slug>`; the registration rite substitutes the family prefix. |
+| `description` | yes | One line shown in the agent's slash-command picker. |
+| `when_to_use` | optional | Natural-language triggers that let an agent surface the skill for a matching problem. |
+| `user-invocable` | optional | `true` exposes the command for explicit user invocation. |
+| `disable-model-invocation` | optional | `true` stops an agent from auto-invoking the skill; only user-typed commands trigger it. Set it on destructive or maintainer-only skills and on individual validators, so the `validate-all` orchestrators stay the auto-invoke entry points. |
+| `allowed-tools` | optional | Space-separated tools the skill may use, e.g. `Bash Read`. |
+
+The auto-invocation policy and per-agent support matrix live in
+[agent configuration](agent_configuration.md).
+
+The body either runs a rite or loads an invocation, following the same boundary
+that separates rites from invocations:
+
+- **Rite-backed**: the body runs `python3 {{ARCANA_PATH}}/rites/<name>.py` and reports the result.
+- **Invocation-backed**: the body inlines its invocation at runtime with a `!cat` directive so the agent reads and follows it:
+
+```text
+!`cat {{ARCANA_PATH}}/invocations/<area>/<name>.md`
+```
+
+`{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` are resolved by the registration rite.
+
 ## Reusable Rites
 
 A rite may support more than one target through flags such as `--grimoire`, but user-facing skills must not be target-polymorphic. Expose one clear skill per target and let both skills call the same rite when reuse is appropriate.

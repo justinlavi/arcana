@@ -46,7 +46,6 @@ be `read_only`.
 | `mutation_behavior` | Plain-language write behavior. |
 | `log_behavior` | Whether the command appends or creates a grimoire log entry. |
 | `validation_profile` | Checks that prove the command's work. |
-| `generated_docs_impact` | How generated docs reflect the command. |
 
 ## Maintenance
 

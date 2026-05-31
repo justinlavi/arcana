@@ -186,7 +186,22 @@ new grimoires — only the library changes.
 
 ---
 
-## Step 7: Validate
+## Step 7: Register Skills
+
+If the new grimoire declares a `skill_prefix` in `grimoire.json`, register its
+skills so its `/<prefix>-*` commands become available:
+
+```bash
+python3 ARCANA_HOME/rites/register_skills.py --grimoire .
+```
+
+Then tell the user to reopen their agent session - Claude Code and Codex cache
+the skill listing at startup, so the new `/<prefix>-*` commands appear only after
+a restart.
+
+---
+
+## Step 8: Validate
 
 ```bash
 python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire .

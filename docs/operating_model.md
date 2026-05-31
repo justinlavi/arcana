@@ -102,92 +102,29 @@ Internal page link style is layer-aware:
 
 ## Content Types And Drift Management
 
-### Core Principle
-**Grimoire supports multiple authority modes.** It can route to external sources, act as canonical source of truth for domain-owned knowledge, or combine both in hybrid pages.
+A grimoire supports multiple authority modes: a page can route to external
+sources, be the canonical source of truth for domain-owned knowledge, or combine
+both. Implementation details owned by active code or config systems stay
+externally authoritative; operational procedures, policy, and normalized domain
+knowledge can be grimoire-authoritative when explicitly declared.
 
-Implementation details owned by active code/config systems should remain externally authoritative.
-Operational procedures, policy, tribal knowledge normalization, and domain standards can be authoritative in Grimoire when explicitly declared.
+Every page declares one authority model (`external`, `grimoire`, or `hybrid`).
+The full definitions, required-fields matrix, and rules of thumb live in
+[page schema](page_schema.md#authority-models) - the canonical home for the
+authority model.
 
-### Knowledge Authority Model
+To keep authored knowledge from drifting out of sync with the systems it
+describes:
 
-Every knowledge page must declare one authority model:
-
-**External**
-- Use when truth is owned outside Grimoire (repos, services, platforms).
-- Page role: deterministic router + contextual guidance.
-- Requires external source pointers and query-first extraction patterns.
-
-**Grimoire**
-- Use when the page itself is intended to be canonical truth for the domain.
-- Page role: authoritative record in Grimoire.
-- Requires explicit scope and change control.
-
-**Hybrid**
-- Use when Grimoire owns canonical synthesis while external systems still own implementation details.
-- Page role: policy/process authority + external source map.
-- Requires both change control and external pointers.
-
-**How to choose**: If changing source code/config in another repo changes truth -> External. If editing this page is how truth changes -> Grimoire. If both -> Hybrid.
-
-### Content Type Taxonomy
-
-**Type 1: Source Pointers (Zero Drift Risk)**
-- Pure file/line references to authoritative sources
-- Example: "Build options live in `project_alpha/CMakeLists.txt` lines 10-25"
-- Validation: File exists, lines exist
-- No duplication of implementation details
-
-**Type 2: High-Level Invariants (Low Drift Risk)**
-- Behavioral contracts and architectural patterns
-- Example: "`configure_package()` only includes if `CMakeLists.txt` exists"
-- Validation: Behavioral test (does it still work this way?)
-- Rarely changes; represents stable architecture
-
-**Type 3: Policy Documents (Low Drift Risk)**
-- Domain standards and conventions
-- Example: "Platform-specific code must live behind `ops` abstractions"
-- Validation: Domain agreement and code review enforcement
-- Changes require deliberate policy decisions
-
-**Type 4: Observed Patterns (Medium Drift Risk)**
-- Snapshots of current state with source references
-- Example: "Observed brace style: Allman (as of SHA xyz)"
-- Validation: SHA-stamped, must be revalidated periodically
-- Must be labeled "as of [date] - VERIFY BEFORE USE"
-- Include query commands to extract current values
-
-**Type 5: Prescriptive Templates (Controlled Drift)**
-- Code/config templates in `chapters/*/templates/`
-- These ARE the standard (not a snapshot of it)
-- Purpose: Ensure consistency across projects
-- Updates to templates propagate standard changes across projects
-- Exception to "no source of truth" rule by design
-
-**Type 6: Canonical Operational Knowledge (Grimoire Authority, Controlled Drift)**
-- Domain-owned procedures, handover playbooks, and policy-like guidance whose source of truth is the Grimoire page
-- Example: VM handover runbook that exists only in Grimoire
-- Validation: Review cadence + change authority + explicit scope boundaries
-- Must include change control and provenance metadata
-
-**Type 7: FORBIDDEN (High Drift Risk)**
-- Stored implementation values without query instructions
-- Example: Storing `EXAMPLE_LOG_FORMAT = INLINE` without extraction command
-- This type should never exist in Grimoire
-- Always convert to Type 4 (Observed Patterns with queries)
-
-### Query-First Pattern
-When documenting project-specific values or configuration in **External** or **Hybrid** pages:
-1. Provide bash/grep commands to extract current values from source
-2. Include "Primary Sources" with exact file paths
-3. Show example values labeled "as of [date] - VERIFY BEFORE USE"
-4. Use query instructions that can be run to get current values
-
-### Canonical-in-Grimoire Pattern
-When documenting **Grimoire** authority pages:
-1. Add explicit source-of-truth statement ("this page is canonical for X")
-2. Define in-scope vs out-of-scope boundaries
-3. Define change control (triggers, cadence, approval path)
-4. Link external inputs as evidence only (not required as primary authority)
-
+- **External and hybrid pages are query-first.** Cite the authoritative source by
+  path or URL and give a command to extract current values rather than copying
+  them inline. A snapshot of a current value carries an
+  "as of <date> - verify before use" label.
+- **Grimoire-authoritative pages carry change control.** Add an explicit
+  source-of-truth statement, in-scope vs out-of-scope boundaries, and a review
+  cadence; cite external inputs as evidence, not as the primary authority.
+- **Never store an implementation value with no way to re-derive it.** A stored
+  value with no query or source pointer is guaranteed to drift; convert it to a
+  source pointer or a labeled, query-backed snapshot.
 
 ---
