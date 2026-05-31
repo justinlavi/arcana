@@ -40,6 +40,93 @@ The role is transferable — record handovers in the CHANGELOG.
 
 ---
 
+## Autonomous Maintainer
+
+Arcana is built to be kept current by an agent, not only a person. The
+machine-readable signals the system emits — validator diagnostics, the
+mutating-rite result envelopes (`--format json`), and the contract-coherence
+audit — let an agent **verify its own work**, which is what makes unattended
+maintenance safe.
+
+"Autonomous" means *no prior approval is needed*, never *invisible*: every
+unattended action is recorded (an Arcana-visible change in `CHANGELOG.md` under
+`[Unreleased]`; a grimoire operation in `log.md`), and the rite envelopes leave a
+machine-readable trail.
+
+### The unattended-safe gate
+
+An agent may act **unattended** only when all four conditions hold:
+
+1. **Deterministic** — the change is mechanical (a fix with one correct form), or
+   a prose-wrong contract fix the
+   [contract-coherence audit](../invocations/arcana/quality/audit_contract_coherence.md)
+   flagged: a verifiable claim about the code, edited in contract data only, with
+   code-wrong findings deferred. A content change that needs a judgment call is
+   not deterministic — propose it instead.
+2. **Verifiable** — `python3 rites/validate.py` exits 0 afterward, or the rite's
+   `--format json` envelope reports the expected `status` and `mutations`.
+3. **Non-destructive** — it deletes no unowned content and is reversible through
+   git.
+4. **Not on the human-sign-off list** below.
+
+If any condition fails, the change is **proposed**, not applied: surface it for
+one confirmation (the `/grm-lint` / `/grm-improve` model) or escalate to the
+human maintainer.
+
+### Unattended
+
+| Action | Rite / command | Verification |
+|---|---|---|
+| Run the validator suite | `/arc-validate-all` (`python3 rites/validate.py`) | exit 0 |
+| Apply mechanical fixes (broken links the rite located, format, frontmatter, encoding, snake_case) | an `/arc-validate-all` finding plus a direct edit | re-run the validator to exit 0 |
+| Repair unambiguous wikilinks | `/grm-repair-links --apply` | envelope `status` `ok`; ambiguous links are surfaced, never guessed |
+| Regenerate generated indexes | `python3 rites/sync_docs.py --apply` | drift gate clean afterward |
+| Correct prose-wrong contract drift | the contract-coherence audit | the originating probe plus a validator pass |
+| Append the changelog | edit `CHANGELOG.md` under `[Unreleased]` | — |
+| Append a grimoire log entry | `append_log` | envelope: one `append` mutation |
+
+### Propose, then apply on one confirmation
+
+Reversible but judgment-bearing, or writing outside the repo:
+
+- Orphan wiring, terminology standardization, page promotion, merging duplicates.
+- Any change touching more than ten files.
+- Reconciling the grimoire library or registering skills into agent directories
+  under the user's home (`/arc-library-sync`, `/arc-agent-register-skills`,
+  `/grm-register-skills`).
+
+### Human sign-off required
+
+- **Version bumps and release tags** — semver decisions across `VERSION`,
+  `CHANGELOG.md`, and git tags (see [Versioning](#versioning) and
+  [Change Workflow](#change-workflow)).
+- **Breaking changes** and **deprecations** (see
+  [Deprecation Policy](#deprecation-policy)). Never break a grimoire without a
+  deprecation cycle.
+- **Deleting or removing content**, changing the public command surface, or any
+  force-overwrite.
+- **Running the installer** against a real environment, and **transferring the
+  maintainer role**.
+
+### In every tier
+
+- **Never auto-delete unowned content.** Skill cleanup removes only Arcana-owned,
+  generated-provenance directories; everything else is preserved.
+- **Leave the tree green.** An unattended pass that cannot return
+  `python3 rites/validate.py` to exit 0 reverts its change and surfaces the
+  problem instead.
+- **Record what was done** — unattended is not unlogged.
+
+The skill layer already encodes part of this: destructive and maintainer-only
+skills set `disable-model-invocation: true` so an agent will not auto-invoke them
+(see [agent configuration](agent_configuration.md)); propose-tier commands stay
+auto-invocable — the propose-then-confirm step gates the apply, not whether an
+agent may surface the command. The safety posture of every command lives in the
+[command surface](command_surface.md) and [rite profiles](rite_profiles.md)
+contracts.
+
+---
+
 ## What Belongs in Arcana
 
 ### ✅ Universal content (Arcana)

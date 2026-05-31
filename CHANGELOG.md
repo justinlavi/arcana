@@ -39,6 +39,17 @@
   are available, falling back to the linear flow otherwise; the orchestrator
   keeps apply, confirmation, and log phases. `/arc-improve`'s architecture review
   references the same fragment, so the lane contract lives in exactly one place.
+- Autonomous-maintainer role in `docs/governance.md`: an explicit contract for
+  what an agent may do unattended versus what needs human sign-off. A four-part
+  gate (deterministic, verifiable, non-destructive, not on the sign-off list)
+  bounds the unattended tier; the machine-readable signals from the structured
+  rite envelopes, validator diagnostics, and the contract-coherence audit are
+  what let an agent verify its own work. Mechanical fixes, index regeneration,
+  unambiguous link repair, prose-wrong contract fixes, and changelog/log appends
+  are unattended; library/skill writes and >10-file changes are propose-then-
+  confirm; semver bumps, breaking changes, deprecations, deletions, and command-
+  surface changes require a human. Unowned content is never auto-deleted and the
+  tree is always left validator-green.
 
 ### Changed
 
