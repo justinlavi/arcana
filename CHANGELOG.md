@@ -30,6 +30,22 @@
   the evidence tier on every verdict. It surfaces drift: prose-wrong claims are
   corrected in the contract JSON, code-wrong findings defer to Phase 4 rite
   quality. `/arc-improve` is renumbered to nine phases.
+- Shared subagent review-lane protocol
+  (`invocations/meta/subagent_lanes.md`): one home for the optional parallel-lane
+  machinery - the portability rule, the per-lane output contract, the dispatch
+  template, the synthesis rule, and the serial fallback. `/grm-improve` and
+  `/grm-lint` gain an optional "parallelize the judgment passes" subsection that
+  splits their independent read-only analysis phases into lanes when subagents
+  are available, falling back to the linear flow otherwise; the orchestrator
+  keeps apply, confirmation, and log phases. `/arc-improve`'s architecture review
+  references the same fragment, so the lane contract lives in exactly one place.
+
+### Changed
+
+- `invocations/arcana/quality/review_architecture.md` references the shared
+  subagent-lane fragment for the generic lane contract, dispatch template, and
+  serial fallback, keeping only its Arcana-specific lane table, synthesis matrix,
+  and grading rubric inline.
 
 Arcana 1.0.0 defines Arcana as a framework for creating, installing, routing,
 validating, and maintaining grimoires: structured, AI-navigable knowledge

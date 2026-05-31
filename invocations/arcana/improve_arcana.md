@@ -79,8 +79,9 @@ root/docs, invocations, rites, formulae/tests, skills/agents, release/install,
 and cross-cutting AI efficiency. Keep validation, synthesis, and final edits in
 the maintainer context. If subagents are unavailable, run the same lanes
 serially and report that the pass was serialized.
-Require each lane to return the structured lane schema from the architecture
-review guide, then merge findings into the synthesis matrix before editing.
+Require each lane to return the lane output contract from
+[[invocations/meta/subagent_lanes|subagent lanes]], then merge findings into the
+synthesis matrix before editing.
 
 Apply local fixes directly; defer large moves, public command changes,
 generated-output rewrites, or changes affecting more than ten files with a

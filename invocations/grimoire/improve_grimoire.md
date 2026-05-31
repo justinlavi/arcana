@@ -117,6 +117,17 @@ subject and context.
 - Sweep for legacy placeholder tokens and rename them to current Arcana equivalents. `/grm-validate-links` flags these mechanically as `LINK_DEPRECATED_PLACEHOLDER`; the deprecated-token map lives in `ARCANA_HOME/rites/validate_links.py` (`DEPRECATED_TOKENS`). When a future Arcana rename happens, add the legacy/current pair to that map so `/grm-improve` catches lingering references automatically. `log.md` and `CHANGELOG.md` are skipped so historical entries can keep their original wording.
 - Preserve historical log entries unless the entry is actively misleading for current operations; add a new log entry for the scaffold update.
 
+### Optional: parallelize the judgment passes
+
+The analysis phases above (Phase 2 inventory, Phase 3 semantic, Phase 4 judgment passes) are independent read-only scans. If, and only if, this agent can spawn subagents, you MAY run them as parallel read-only lanes for depth; otherwise run the phases exactly as written above, in order. Either way the orchestrator owns Phase 5 apply and Phase 6 re-validate, and `/grm-validate-boundaries` classification stays a judgment call in the main context. Lane mechanics, the per-lane output contract, and the serial fallback live in [[invocations/meta/subagent_lanes|subagent lanes]]. The lanes for this workflow:
+
+| Lane | Covers | Primary question |
+|---|---|---|
+| router-and-canonical | Phases 2, 4 | Are routers pointer-only (one line, one destination, no prose), and is each duplicated topic reduced to one canonical leaf with orphans wired or deleted? |
+| semantic-naming | Phase 3 | Where do names or terminology hurt discoverability, and which quick-win renames cut hop count disproportionate to topic depth? |
+| boundary-and-freshness | Phase 4 | Where does content cross the magical boundary or leak proprietary terms, and which leaves are >90 days stale or cite files/SHAs that no longer exist (surface as TODO)? |
+| arcana-upgrade | Phase 4 | Where has the grimoire drifted from current Arcana - stale command names, manifest fields, deprecated placeholder tokens, or missing/stale managed scaffold files? |
+
 ### Phase 5: Apply fixes
 
 Edit files directly:
@@ -184,4 +195,5 @@ Surface in chat (do not write report files):
 - Judgment boundary pass: `/grm-validate-boundaries`
 - Semantic: `/grm-analyze-semantics`
 - Authoring: `/grm-create-chapter`
+- Optional parallel analysis: [[invocations/meta/subagent_lanes|subagent lanes]]
 - Arcana counterpart (maintainer only): `/arc-improve`

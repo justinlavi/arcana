@@ -78,6 +78,17 @@ For each pair of pages in the same chapter or sharing a `domain/<...>` tag:
 - If they discuss the same entity/concept, ensure each links to the other.
 - Suggest full-path wikilink additions where bidirectional links are missing.
 
+### Optional: parallelize the judgment passes
+
+Phases 2-5 (stale claims, ghost references, contradictions, missing cross-references) are independent read-only scans. If, and only if, this agent can spawn subagents, you MAY run them as parallel read-only lanes; otherwise run the phases exactly as written above, in order. The orchestrator always owns Phase 1 mechanical rites, Phase 6 confirm-then-apply, Phase 7 log append, and Phase 8 re-validate; lanes only surface and propose. Lane mechanics, the per-lane output contract, and the serial fallback live in [[invocations/meta/subagent_lanes|subagent lanes]]. The lanes for this workflow:
+
+| Lane | Covers | Primary question |
+|---|---|---|
+| stale-claims | Phase 2 | Which pages are past the stale window, categorized critical (hub-referenced) / normal (leaf) / historical (deprecated)? Surface only; never auto-update last_verified. |
+| ghost-references | Phase 3 | Which entity-shaped tokens appear in 3+ pages with no canonical page, with frequency and source pages listed for the user to promote? |
+| contradictions | Phase 4 | Where do numerical, procedural, or definitional claims conflict, with file:line citations? Flag only; do not pick a winner. |
+| missing-cross-refs | Phase 5 | Which page pairs in the same chapter or sharing a domain tag discuss the same concept but lack reciprocal full-path wikilinks, and what wikilinks close the gap? |
+
 ### Phase 6: Apply fixes
 
 Group findings by category. For each group ask the user:
@@ -134,4 +145,5 @@ Surface in chat:
 - Mechanical: `/grm-validate-all`
 - Semantic / naming: `/grm-analyze-semantics`
 - Page schema: `ARCANA_HOME/docs/page_schema.md`
+- Optional parallel analysis: [[invocations/meta/subagent_lanes|subagent lanes]]
 - Comprehensive grimoire pass: `/grm-improve` (lint runs as one phase of improve)

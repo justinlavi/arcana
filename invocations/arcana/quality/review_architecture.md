@@ -80,35 +80,11 @@ independently.
 | Release and install | `.github/`, `docs/release.md`, `docs/installation.md`, summoning rites | Is install/update/release behavior documented once and resilient across platforms? |
 | Cross-cutting AI efficiency | All surfaces | For common workflows, what is the shortest useful read path and where does it force inference? |
 
-Give each lane the same output contract:
-
-- `lane`: one of the lane names above.
-- `scope_reviewed`: concrete files or globs inspected.
-- `commands_run`: read-only checks run, or `none`.
-- `findings`: top 5 findings, ordered by user impact and maintenance risk.
-- Each finding includes `id`, `priority` (`P0`-`P3`), `evidence`
-  (`file:line` references), `invariant`, `recommendation`, `action`
-  (`apply_now`, `defer`, `codify`, `retain`), `blast_radius`, and
-  `read_path_delta`.
-- `deferred_opportunities`: changes too broad for the current pass.
-- `workflow_updates`: instructions that should be added to future
-  `/arc-improve` or architecture reviews.
-
-Use this template for each delegated lane:
-
-```text
-Audit Arcana for S-tier architecture in this lane only.
-Repo root: ARCANA_HOME.
-Lane:
-Scope:
-Do not edit files unless explicitly assigned this lane's write scope.
-Find source-of-truth drift, duplicated contracts, AI/human read-path friction,
-missing tests, unsafe mutation behavior, and unclear ownership.
-Return the lane output schema from review_architecture.md.
-```
-
-When worker agents are allowed to edit, assign disjoint write scopes. Otherwise
-use read-only explorers and let the maintainer apply the integrated patch.
+Give each lane the generic output contract, dispatch template, and write-scope
+discipline in [[invocations/meta/subagent_lanes|subagent lanes]]; lanes return
+that contract. This Arcana pass dispatches each lane to find source-of-truth
+drift, duplicated contracts, AI/human read-path friction, missing tests, unsafe
+mutation behavior, and unclear ownership.
 
 ### 3. Synthesize lane reports
 
@@ -315,6 +291,7 @@ In the final `/arc-improve` report, include:
 ## Related
 
 - Orchestrator: [[invocations/arcana/improve_arcana|improve arcana]]
+- Generic lane protocol: [[invocations/meta/subagent_lanes|subagent lanes]]
 - Documentation quality: [[invocations/arcana/quality/improve_documentation|improve documentation]]
 - Rite quality: [[invocations/arcana/quality/validate_rites|validate rites]]
 - Script vs AI split: [[docs/script_vs_ai|script vs ai]]

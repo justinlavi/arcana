@@ -137,7 +137,11 @@ def main():
     inv_violations = 0
 
     # Pattern templates and shared fragments aren't standalone invocations.
-    INVOCATION_EXEMPT = {"base_invocation.md", "grimoire_directory_guard.md"}
+    INVOCATION_EXEMPT = {
+        "base_invocation.md",
+        "grimoire_directory_guard.md",
+        "subagent_lanes.md",
+    }
 
     if invocations_dir.is_dir():
         for path in sorted(invocations_dir.rglob("*.md")):
