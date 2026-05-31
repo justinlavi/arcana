@@ -37,6 +37,7 @@ from _lib import (
     resolve_local_path,
     warn,
 )
+from diagnostics import ResultReporter, add_output_format_arg
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -255,59 +256,99 @@ def write_library(library, library_path):
 # ---------------------------------------------------------------------------
 
 
-def print_report(scan, diff, home, library_path, apply_mode):
-    print()
-    print(f"  Grimoire home:  {home}")
-    print(f"  Library file:   {library_path}")
-    print(f"  Mode:           {'apply' if apply_mode else 'dry-run (use --apply to write changes)'}")
-    print()
+def print_report(scan, diff, home, library_path, apply_mode, human=True, reporter=None):
+    if human:
+        print()
+        print(f"  Grimoire home:  {home}")
+        print(f"  Library file:   {library_path}")
+        print(f"  Mode:           {'apply' if apply_mode else 'dry-run (use --apply to write changes)'}")
+        print()
 
     if scan["warnings"]:
-        print("  Structural warnings:")
+        if human:
+            print("  Structural warnings:")
         for w in scan["warnings"]:
-            warn(w)
-        print()
+            if human:
+                warn(w)
+            if reporter is not None:
+                reporter.message("warning", w)
+        if human:
+            print()
 
     if scan["unmanaged"]:
-        print("  Unmanaged directories (no grimoire.json - won't be added):")
+        if human:
+            print("  Unmanaged directories (no grimoire.json - won't be added):")
         for path in scan["unmanaged"]:
-            info(f"{path.name}/  -> add grimoire.json or move out of {home}")
-        print()
+            if human:
+                info(f"{path.name}/  -> add grimoire.json or move out of {home}")
+            if reporter is not None:
+                reporter.message(
+                    "warning",
+                    f"unmanaged: {path.name}/ (no grimoire.json - won't be added)",
+                    path=path,
+                )
+        if human:
+            print()
 
-    print(f"  Found {len(scan['grimoires'])} valid grimoire(s) on disk.")
-    print(f"  Library currently lists {len(diff['ok']) + len(diff['mismatched']) + len(diff['stale'])} entry(ies).")
-    print()
+    if human:
+        print(f"  Found {len(scan['grimoires'])} valid grimoire(s) on disk.")
+        print(f"  Library currently lists {len(diff['ok']) + len(diff['mismatched']) + len(diff['stale'])} entry(ies).")
+        print()
 
     drift_count = len(diff["missing"]) + len(diff["stale"]) + len(diff["mismatched"])
 
     if diff["missing"]:
-        print("  Missing from library (will be added):")
+        if human:
+            print("  Missing from library (will be added):")
         for key in diff["missing"]:
-            ok(f"+ {key}")
-        print()
+            if human:
+                ok(f"+ {key}")
+            if reporter is not None:
+                reporter.message("info", f"missing: {key} (will be added)")
+        if human:
+            print()
 
     if diff["stale"]:
-        print("  Stale library entries (will be removed):")
+        if human:
+            print("  Stale library entries (will be removed):")
         for s in diff["stale"]:
-            warn(f"- {s['key']}  (path no longer resolves: {s['raw_path']})")
-        print()
+            if human:
+                warn(f"- {s['key']}  (path no longer resolves: {s['raw_path']})")
+            if reporter is not None:
+                reporter.message(
+                    "warning",
+                    f"stale: {s['key']} (path no longer resolves: {s['raw_path']})",
+                )
+        if human:
+            print()
 
     if diff["mismatched"]:
-        print("  Mismatched local_path (will be corrected):")
+        if human:
+            print("  Mismatched local_path (will be corrected):")
         for m in diff["mismatched"]:
-            warn(
-                f"~ {m['key']}  current='{m['raw_path']}'  expected='{m['expected_path']}'"
-            )
-        print()
+            if human:
+                warn(
+                    f"~ {m['key']}  current='{m['raw_path']}'  expected='{m['expected_path']}'"
+                )
+            if reporter is not None:
+                reporter.message(
+                    "warning",
+                    f"mismatched: {m['key']} current='{m['raw_path']}' "
+                    f"expected='{m['expected_path']}'",
+                )
+        if human:
+            print()
 
     if drift_count == 0:
-        ok("Library is in sync with disk. No changes needed.")
-        print()
+        if human:
+            ok("Library is in sync with disk. No changes needed.")
+            print()
         return False
 
     if not apply_mode:
-        print(f"  {drift_count} drift item(s) detected. Re-run with --apply to write changes.")
-        print()
+        if human:
+            print(f"  {drift_count} drift item(s) detected. Re-run with --apply to write changes.")
+            print()
     return True
 
 
@@ -329,29 +370,55 @@ def main():
         default=DEFAULT_HOME,
         help=f"Override grimoire home directory (default: {DEFAULT_HOME})",
     )
+    add_output_format_arg(parser)
     args = parser.parse_args()
+    human = args.format == "human"
 
     home = args.home.expanduser().resolve() if args.home else DEFAULT_HOME
     library_path = home / "library.json"
 
-    print()
-    print("  Grimoire Library Sync")
-    print("  ----------------------------")
+    reporter = ResultReporter(
+        "sync_library", root=home, mode="apply" if args.apply else "plan"
+    )
+
+    if human:
+        print()
+        print("  Grimoire Library Sync")
+        print("  ----------------------------")
 
     scan = scan_grimoire_home(home)
     library = load_library(library_path)
     diff = diff_library(scan, library, home)
 
-    has_drift = print_report(scan, diff, home, library_path, args.apply)
+    has_drift = print_report(
+        scan, diff, home, library_path, args.apply, human=human, reporter=reporter
+    )
 
+    applied = False
     if args.apply and has_drift:
         new_library = build_synced_library(scan, library, home)
         write_library(new_library, library_path)
-        ok(f"Library written: {library_path}")
-        print()
-        print("  Re-register skills to pick up any new grimoires:")
-        print("    /arc-agent-register-skills")
-        print()
+        applied = True
+        reporter.mutation("write", path=library_path, detail="reconciled library")
+        if human:
+            ok(f"Library written: {library_path}")
+            print()
+            print("  Re-register skills to pick up any new grimoires:")
+            print("    /arc-agent-register-skills")
+            print()
+
+    if not human:
+        reporter.emit(
+            args.format,
+            summary={
+                "missing": len(diff["missing"]),
+                "stale": len(diff["stale"]),
+                "mismatched": len(diff["mismatched"]),
+                "ok": len(diff["ok"]),
+                "unmanaged": len(scan["unmanaged"]),
+                "applied": applied,
+            },
+        )
 
     sys.exit(0)
 

@@ -180,3 +180,102 @@ def human_location(diagnostic: dict[str, Any] | Diagnostic) -> str:
 
 def human_label(severity: str) -> str:
     return "ERROR" if severity == "error" else "WARN"
+
+
+# ---------------------------------------------------------------------------
+# Mutating-rite outcomes
+# ---------------------------------------------------------------------------
+
+RESULT_STATUSES = ("ok", "noop", "blocked", "error")
+
+
+def normalize_path(path: str | Path | None, root: Path | None) -> str | None:
+    """Return a root-relative POSIX path string, or the path as-is."""
+    if path is None:
+        return None
+    if isinstance(path, Path):
+        if root is not None:
+            try:
+                return path.relative_to(root).as_posix()
+            except ValueError:
+                pass
+        return path.as_posix()
+    return str(path).replace("\\", "/")
+
+
+class ResultReporter:
+    """Collect and emit the outcome of a mutating rite.
+
+    Validators report findings via DiagnosticReporter; mutating rites report an
+    outcome - what changed, under which mode, and whether it succeeded. The JSON
+    envelope lets an orchestrator run a rite and verify the result instead of
+    parsing human prose. Human output stays the rite's own concern; this only
+    emits the `json`/`jsonl` envelope.
+    """
+
+    def __init__(self, rite: str, root: Path | None = None, mode: str | None = None) -> None:
+        self.rite = rite
+        self.root = root
+        self.mode = mode  # "plan" | "apply" | "append" | None
+        self.mutations: list[dict[str, Any]] = []
+        self.messages: list[dict[str, Any]] = []
+        self._status: str | None = None
+
+    def mutation(self, action: str, path: str | Path | None = None, detail: str | None = None) -> None:
+        self.mutations.append({
+            "action": action,
+            "path": normalize_path(path, self.root),
+            "detail": detail,
+        })
+
+    def message(self, severity: str, text: str, path: str | Path | None = None) -> None:
+        self.messages.append({
+            "severity": severity,
+            "message": text,
+            "path": normalize_path(path, self.root),
+        })
+
+    def set_status(self, status: str) -> None:
+        self._status = status
+
+    def status(self) -> str:
+        if self._status is not None:
+            return self._status
+        if any(message["severity"] == "error" for message in self.messages):
+            return "error"
+        return "ok" if self.mutations else "noop"
+
+    def exit_code(self) -> int:
+        """Default exit code; rites with richer conventions may override."""
+        return 0 if self.status() in ("ok", "noop") else 1
+
+    def report(self, summary: dict[str, Any] | None = None) -> dict[str, Any]:
+        return {
+            "rite": self.rite,
+            "status": self.status(),
+            "mode": self.mode,
+            "root": str(self.root) if self.root is not None else None,
+            "summary": summary or {},
+            "mutations": self.mutations,
+            "messages": self.messages,
+        }
+
+    def emit(self, output_format: str, summary: dict[str, Any] | None = None) -> None:
+        report = self.report(summary=summary)
+        if output_format == "json":
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return
+        if output_format == "jsonl":
+            for mutation in report["mutations"]:
+                print(json.dumps({"type": "mutation", **mutation}, sort_keys=True))
+            for message in report["messages"]:
+                print(json.dumps({"type": "message", **message}, sort_keys=True))
+            print(json.dumps({
+                "type": "summary",
+                "rite": report["rite"],
+                "status": report["status"],
+                "mode": report["mode"],
+                **report["summary"],
+            }, sort_keys=True))
+            return
+        raise ValueError(f"unknown result output format: {output_format}")

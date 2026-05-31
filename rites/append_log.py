@@ -10,7 +10,8 @@ Format documented in formulae/log_entry.formula.md:
 
 Usage:
     python3 rites/append_log.py --grimoire <path> --op <op> --title "<title>" \
-        [--skill /<skill_prefix>-<verb>] [--field key=value ...]
+        [--skill /<skill_prefix>-<verb>] [--field key=value ...] \
+        [--format human|json|jsonl]
 
 Args:
     --grimoire   Path to the grimoire root (default: cwd)
@@ -28,6 +29,8 @@ import datetime
 import os
 import sys
 from pathlib import Path
+
+from diagnostics import ResultReporter, add_output_format_arg
 
 VALID_OPS = {"ingest", "query", "lint", "improve", "file-answer",
              "rebuild-index", "create", "manual"}
@@ -47,16 +50,28 @@ def main():
     parser.add_argument("--skill", default="manual", help="Skill that performed the op")
     parser.add_argument("--field", action="append", default=[],
                         help="Extra `key=value` body line (repeatable)")
+    add_output_format_arg(parser)
     args = parser.parse_args()
-
-    if args.op not in VALID_OPS:
-        print(f"  [ERROR] Invalid op '{args.op}'. Must be one of: {sorted(VALID_OPS)}", file=sys.stderr)
-        return 1
+    human = args.format == "human"
 
     grimoire = args.grimoire.expanduser().resolve()
+    reporter = ResultReporter("append_log", root=grimoire, mode="append")
     log = grimoire / "log.md"
+
+    if args.op not in VALID_OPS:
+        reporter.message("error", f"invalid op '{args.op}' (must be one of {sorted(VALID_OPS)})")
+        if human:
+            print(f"  [ERROR] Invalid op '{args.op}'. Must be one of: {sorted(VALID_OPS)}", file=sys.stderr)
+        else:
+            reporter.emit(args.format)
+        return 1
+
     if not log.is_file():
-        print(f"  [ERROR] log.md not found at {log}", file=sys.stderr)
+        reporter.message("error", f"log.md not found at {log}", path=log)
+        if human:
+            print(f"  [ERROR] log.md not found at {log}", file=sys.stderr)
+        else:
+            reporter.emit(args.format)
         return 2
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -65,9 +80,13 @@ def main():
         f"## [{timestamp}] {sanitize(args.op)} | {sanitize(args.title)}",
         f"- skill: {sanitize(args.skill)}",
     ]
+    skipped_fields = 0
     for kv in args.field:
         if "=" not in kv:
-            print(f"  [WARN] Skipping malformed --field '{kv}' (expected key=value)", file=sys.stderr)
+            reporter.message("warning", f"skipping malformed --field '{kv}' (expected key=value)")
+            if human:
+                print(f"  [WARN] Skipping malformed --field '{kv}' (expected key=value)", file=sys.stderr)
+            skipped_fields += 1
             continue
         key, _, value = kv.partition("=")
         lines.append(f"- {sanitize(key).strip()}: {sanitize(value).strip()}")
@@ -82,7 +101,11 @@ def main():
     finally:
         os.close(fd)
 
-    print(f"  [OK]    Appended to {log}")
+    reporter.mutation("append", path=log, detail=f"{sanitize(args.op)} | {sanitize(args.title)}")
+    if human:
+        print(f"  [OK]    Appended to {log}")
+    else:
+        reporter.emit(args.format, summary={"skipped_fields": skipped_fields})
     return 0
 
 

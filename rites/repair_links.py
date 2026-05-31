@@ -45,6 +45,7 @@ from _lib import (
     warn,
     wikilink_target_body,
 )
+from diagnostics import ResultReporter, add_output_format_arg
 
 
 INLINE_CODE_RE = re.compile(r"`[^`]*`")
@@ -148,10 +149,15 @@ def repair_line(
     index: dict[str, list[Path]],
     rel: str,
     line_no: int,
+    reporter: ResultReporter,
+    apply: bool,
 ) -> tuple[str, list[str], list[str], list[str], list[str]]:
     """Repair a single non-fence line.
 
     Returns (new_line, fixes, ambis, unresolvables, skipped_placeholders).
+    Structured records (mutations/messages) are collected into ``reporter``.
+    Repairs are recorded as mutations only in ``apply`` mode (when they are
+    actually written to disk); in plan mode they surface via the summary counts.
     """
     # Mask inline backticks with same-length spaces so positions within this
     # line stay aligned between the scanable view and the actual line we rewrite.
@@ -170,6 +176,11 @@ def repair_line(
                 f"  [SKIP]  {rel}:{line_no}: [[{target}]] - looks like a template "
                 "placeholder; not repaired"
             )
+            reporter.message(
+                "info",
+                f"{rel}:{line_no}: [[{target}]] looks like a template placeholder; not repaired",
+                path=source_path,
+            )
             continue
         if resolve_wikilink_path(wikilink_target_body(target), grimoire_root) is not None:
             continue
@@ -178,6 +189,11 @@ def repair_line(
         if "/" in body or not body:
             unresolvables.append(
                 f"  [SKIP]  {rel}:{line_no}: [[{target}]] - partial path or empty, not a simple basename"
+            )
+            reporter.message(
+                "warning",
+                f"{rel}:{line_no}: [[{target}]] is a partial path or empty, not a simple basename",
+                path=source_path,
             )
             continue
 
@@ -201,10 +217,21 @@ def repair_line(
                 unresolvables.append(
                     f"  [MISS] {rel}:{line_no}: [[{target}]] - no file named {body}.md anywhere in chapters/"
                 )
+                reporter.message(
+                    "warning",
+                    f"{rel}:{line_no}: [[{target}]] has no file named {body}.md anywhere in chapters/",
+                    path=source_path,
+                )
             else:
                 cand_rels = [str(c.relative_to(grimoire_root)) for c in candidates]
                 ambis.append(
                     f"  [AMBI] {rel}:{line_no}: [[{target}]] - {len(candidates)} candidates: {', '.join(cand_rels)}{fallback_note}"
+                )
+                reporter.message(
+                    "warning",
+                    f"{rel}:{line_no}: [[{target}]] is ambiguous - {len(candidates)} candidates: "
+                    f"{', '.join(cand_rels)}{fallback_note}",
+                    path=source_path,
                 )
             continue
 
@@ -216,6 +243,12 @@ def repair_line(
         fixes.append(
             f"  [FIX]   {rel}:{line_no}: [[{target}]] -> {new_wikilink}{fallback_note}"
         )
+        if apply:
+            reporter.mutation(
+                "repair",
+                path=source_path,
+                detail=f"[[{target}]] -> {new_wikilink}{fallback_note}",
+            )
 
     if not edits:
         return line, fixes, ambis, unresolvables, skipped
@@ -232,12 +265,17 @@ def repair_file(
     grimoire_root: Path,
     index: dict[str, list[Path]],
     apply: bool,
+    reporter: ResultReporter,
 ) -> tuple[list[str], list[str], list[str], list[str]]:
-    """Return (repairs, ambiguous, unresolvable, skipped) report lines for this file."""
+    """Return (repairs, ambiguous, unresolvable, skipped) report lines for this file.
+
+    Structured records (mutations/messages) are collected into ``reporter``.
+    """
     rel = str(path.relative_to(grimoire_root))
     try:
         original = path.read_text(errors="replace")
     except OSError as exc:
+        reporter.message("warning", f"{rel}: read failed: {exc}", path=path)
         return [], [], [f"  [ERROR] {rel}: read failed: {exc}"], []
 
     repair_lines: list[str] = []
@@ -259,7 +297,7 @@ def repair_file(
             continue
 
         new_line, fixes, ambis, unr, skip = repair_line(
-            line, path, grimoire_root, index, rel, line_no
+            line, path, grimoire_root, index, rel, line_no, reporter, apply
         )
         new_lines.append(new_line)
         repair_lines.extend(fixes)
@@ -296,21 +334,31 @@ def main() -> int:
         action="store_true",
         help="Write changes (default: dry-run, report only)",
     )
+    add_output_format_arg(parser)
     args = parser.parse_args()
+    human = args.format == "human"
     grimoire_root = resolve_grimoire_arg(args.grimoire)
 
-    print()
-    print("Repairing Wikilinks")
-    print("==================================")
-    print(f"Grimoire root: {grimoire_root}")
-    print(f"Mode:          {'apply' if args.apply else 'dry-run'}")
-    print()
+    reporter = ResultReporter(
+        "repair_links",
+        root=grimoire_root,
+        mode="apply" if args.apply else "plan",
+    )
+
+    if human:
+        print()
+        print("Repairing Wikilinks")
+        print("==================================")
+        print(f"Grimoire root: {grimoire_root}")
+        print(f"Mode:          {'apply' if args.apply else 'dry-run'}")
+        print()
 
     index = build_basename_index(grimoire_root)
-    info(f"Indexed {sum(len(v) for v in index.values())} chapter pages "
-         f"under {len(index)} distinct basenames "
-         f"({sum(1 for v in index.values() if len(v) > 1)} basename collisions)")
-    print()
+    if human:
+        info(f"Indexed {sum(len(v) for v in index.values())} chapter pages "
+             f"under {len(index)} distinct basenames "
+             f"({sum(1 for v in index.values() if len(v) > 1)} basename collisions)")
+        print()
 
     all_repairs: list[str] = []
     all_ambiguous: list[str] = []
@@ -319,7 +367,7 @@ def main() -> int:
     files_touched = 0
 
     for path in iter_target_files(grimoire_root):
-        r, a, u, s = repair_file(path, grimoire_root, index, args.apply)
+        r, a, u, s = repair_file(path, grimoire_root, index, args.apply, reporter)
         if r:
             files_touched += 1
         all_repairs.extend(r)
@@ -327,44 +375,57 @@ def main() -> int:
         all_unresolvable.extend(u)
         all_skipped.extend(s)
 
-    if all_repairs:
-        print(f"Repairs ({len(all_repairs)}):")
-        for line in all_repairs:
-            print(line)
-        print()
+    if human:
+        if all_repairs:
+            print(f"Repairs ({len(all_repairs)}):")
+            for line in all_repairs:
+                print(line)
+            print()
 
-    if all_ambiguous:
-        print(f"Ambiguous - needs human resolution ({len(all_ambiguous)}):")
-        for line in all_ambiguous:
-            print(line)
-        print()
+        if all_ambiguous:
+            print(f"Ambiguous - needs human resolution ({len(all_ambiguous)}):")
+            for line in all_ambiguous:
+                print(line)
+            print()
 
-    if all_unresolvable:
-        print(f"Unresolvable - no target found ({len(all_unresolvable)}):")
-        for line in all_unresolvable:
-            print(line)
-        print()
+        if all_unresolvable:
+            print(f"Unresolvable - no target found ({len(all_unresolvable)}):")
+            for line in all_unresolvable:
+                print(line)
+            print()
 
-    if all_skipped:
-        print(f"Skipped - placeholder-like, not repaired ({len(all_skipped)}):")
-        for line in all_skipped:
-            print(line)
-        print()
+        if all_skipped:
+            print(f"Skipped - placeholder-like, not repaired ({len(all_skipped)}):")
+            for line in all_skipped:
+                print(line)
+            print()
 
-    print("==================================")
+        print("==================================")
+
     summary = (
         f"Repairs: {len(all_repairs)} across {files_touched} file(s); "
         f"ambiguous: {len(all_ambiguous)}; unresolvable: {len(all_unresolvable)}; "
         f"skipped: {len(all_skipped)}"
     )
-    if args.apply and all_repairs:
-        ok(summary + " - applied")
-    elif all_repairs:
-        info(summary + " - dry-run, pass --apply to write")
-    else:
-        ok(summary)
+    if human:
+        if args.apply and all_repairs:
+            ok(summary + " - applied")
+        elif all_repairs:
+            info(summary + " - dry-run, pass --apply to write")
+        else:
+            ok(summary)
 
     needs_attention = bool(all_ambiguous or all_unresolvable)
+
+    if not human:
+        reporter.emit(args.format, summary={
+            "repairs": len(all_repairs),
+            "ambiguous": len(all_ambiguous),
+            "unresolvable": len(all_unresolvable),
+            "skipped": len(all_skipped),
+            "files_touched": files_touched,
+        })
+
     if args.apply:
         # The apply itself succeeded; ambiguous/unresolvable links are reported
         # for human follow-up, not treated as a failure of this run.

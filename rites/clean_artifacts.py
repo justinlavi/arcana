@@ -8,6 +8,7 @@ terminology extracts, and parallel run results.
 Usage:
     python3 rites/clean_artifacts.py             # clean all
     python3 rites/clean_artifacts.py --dry-run    # preview only
+    python3 rites/clean_artifacts.py --format json  # machine-readable envelope
 """
 
 import argparse
@@ -16,6 +17,7 @@ import sys
 from pathlib import Path
 
 from _lib import load_library, resolve_local_path
+from diagnostics import ResultReporter, add_output_format_arg
 
 ARCANA_PATH = Path(__file__).resolve().parent.parent
 GRIMOIRES_HOME = Path.home() / "grimoires"
@@ -24,7 +26,7 @@ LOCAL_LIBRARY = GRIMOIRES_HOME / "library.json"
 ARTIFACTS_DIR_NAME = ".artifacts"
 
 
-def clean_location(base_path, label, dry_run=False):
+def clean_location(base_path, label, dry_run=False, human=True):
     """Remove .artifacts/ under base_path/rites/. Returns file count removed."""
     arts = base_path / "rites" / ARTIFACTS_DIR_NAME
     if not arts.is_dir():
@@ -32,14 +34,17 @@ def clean_location(base_path, label, dry_run=False):
 
     count = sum(1 for f in arts.rglob("*") if f.is_file())
     if dry_run:
-        print(f"  [DRY]   Would remove {arts} ({count} file(s))")
+        if human:
+            print(f"  [DRY]   Would remove {arts} ({count} file(s))")
         return count
     try:
         shutil.rmtree(arts)
     except OSError as exc:
-        print(f"  [WARN]  Could not remove {arts}: {exc}")
+        if human:
+            print(f"  [WARN]  Could not remove {arts}: {exc}")
         return 0
-    print(f"  [OK]    Cleaned {arts} ({count} file(s))")
+    if human:
+        print(f"  [OK]    Cleaned {arts} ({count} file(s))")
     return count
 
 
@@ -47,20 +52,47 @@ def main():
     parser = argparse.ArgumentParser(description="Clean Grimoire rite artifacts")
     parser.add_argument("--dry-run", action="store_true",
                         help="Show what would be removed without deleting")
+    add_output_format_arg(parser)
     args = parser.parse_args()
+    human = args.format == "human"
 
-    print()
-    print("  Grimoire Artifact Cleanup")
-    print("  ----------------------------")
-    print()
+    mode = "plan" if args.dry_run else "apply"
+    reporter = ResultReporter("clean_artifacts", root=None, mode=mode)
 
-    if args.dry_run:
-        print("  [INFO]  Dry run mode - no files will be deleted")
+    if human:
+        print()
+        print("  Grimoire Artifact Cleanup")
+        print("  ----------------------------")
         print()
 
-    total = 0
+        if args.dry_run:
+            print("  [INFO]  Dry run mode - no files will be deleted")
+            print()
 
-    total += clean_location(ARCANA_PATH, "Arcana", args.dry_run)
+    total = 0
+    locations = 0
+
+    def record(base_path, label):
+        nonlocal total, locations
+        arts = base_path / "rites" / ARTIFACTS_DIR_NAME
+        had_artifacts = arts.is_dir()
+        count = clean_location(base_path, label, args.dry_run, human=human)
+        if not had_artifacts:
+            return
+        if not args.dry_run and arts.is_dir():
+            # rmtree failed (e.g. locked); clean_location already warned in human mode.
+            reporter.message("warning", f"Could not remove {arts}", path=arts)
+            return
+        locations += 1
+        total += count
+        if args.dry_run:
+            # Plan mode writes nothing: report the planned removal as a message.
+            # A mutation means a change actually made on disk.
+            reporter.message("info", f"Would remove {arts} ({count} file(s))", path=arts)
+        else:
+            reporter.mutation("remove", path=arts, detail=f"{count} file(s)")
+
+    record(ARCANA_PATH, "Arcana")
 
     if LOCAL_LIBRARY.is_file():
         library = load_library(LOCAL_LIBRARY)
@@ -68,19 +100,26 @@ def main():
             entry = library["grimoires"][key]
             local_path = resolve_local_path(entry.get("local_path", ""))
             if local_path.is_dir():
-                total += clean_location(local_path, key, args.dry_run)
+                record(local_path, key)
     else:
-        print("  [INFO]  No local library - only Arcana cleaned")
+        reporter.message("info", "No local library - only Arcana cleaned")
+        if human:
+            print("  [INFO]  No local library - only Arcana cleaned")
 
-    print()
-    print("  ----------------------------")
-    if total == 0:
-        print("  Nothing to clean.")
-    elif args.dry_run:
-        print(f"  Would remove {total} file(s).")
+    if human:
+        print()
+        print("  ----------------------------")
+        if total == 0:
+            print("  Nothing to clean.")
+        elif args.dry_run:
+            print(f"  Would remove {total} file(s).")
+        else:
+            print(f"  Removed {total} file(s).")
+        print()
     else:
-        print(f"  Removed {total} file(s).")
-    print()
+        reporter.emit(args.format, summary={"locations": locations, "files": total})
+
+    return 0
 
 
 if __name__ == "__main__":

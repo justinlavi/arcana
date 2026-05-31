@@ -1,5 +1,23 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Mutating rites (`append_log`, `repair_links`, `sync_library`,
+  `adopt_grimoire`, `clean_artifacts`) accept `--format human|json|jsonl` and
+  emit a structured outcome envelope through the shared `ResultReporter` in
+  `rites/diagnostics.py`. The envelope carries `rite`, `status`, `mode`,
+  `root`, `summary`, `mutations`, and `messages`, giving an orchestrator the
+  same machine-readable signal for rite outcomes that `DiagnosticReporter`
+  already provides for validator findings. Human output and exit codes are
+  unchanged.
+- A `mutation` in the envelope means a change made on disk: plan and dry-run
+  modes record no mutations and report pending work through `messages` and the
+  `summary` counts, with `status` deriving to `noop` (the process exit code
+  still carries any actionable signal). Apply modes record their writes as
+  mutations with `status` `ok`.
+
 ## [1.0.0] - 2026-05-30
 
 Arcana 1.0.0 defines Arcana as a framework for creating, installing, routing,

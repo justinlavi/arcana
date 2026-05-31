@@ -11,6 +11,7 @@ in the local library, then `/arc-agent-register-skills` if it ships skills.
 Usage:
     python3 adopt_grimoire.py <directory> --skill-prefix <prefix> [--description "<desc>"]
                                           [--name <name>] [--home <path>]
+                                          [--format human|json|jsonl]
 
 Args:
     <directory>   - directory name under ~/grimoires/ (e.g. "lus-grimoire")
@@ -19,6 +20,7 @@ Args:
     --description - one-line description (defaults to a placeholder)
     --name        - canonical name (defaults to the directory name)
     --home        - override grimoire home (default: ~/grimoires)
+    --format      - output format: human (default), json, or jsonl
 
 Exit codes: 0 = manifest written, 1 = validation failed, 2 = collision
 """
@@ -29,6 +31,7 @@ import sys
 from pathlib import Path
 
 from _lib import SKILL_PREFIX_RE, err, info, ok
+from diagnostics import ResultReporter, add_output_format_arg
 
 DEFAULT_HOME = Path.home() / "grimoires"
 
@@ -64,15 +67,19 @@ def main():
     parser.add_argument("--description", default="", help="One-line description")
     parser.add_argument("--name", default="", help="Canonical name (defaults to directory name)")
     parser.add_argument("--home", type=Path, default=DEFAULT_HOME, help=f"Grimoire home (default: {DEFAULT_HOME})")
+    add_output_format_arg(parser)
     args = parser.parse_args()
+    human = args.format == "human"
 
     home = args.home.expanduser().resolve()
+    reporter = ResultReporter("adopt_grimoire", root=home, mode="apply")
 
-    print()
-    print("  Adopt Grimoire")
-    print("  ----------------------------")
-    print(f"  Home:        {home}")
-    print()
+    if human:
+        print()
+        print("  Adopt Grimoire")
+        print("  ----------------------------")
+        print(f"  Home:        {home}")
+        print()
 
     # Resolve the target directory.
     candidate = Path(args.directory)
@@ -80,31 +87,56 @@ def main():
     target = target.resolve()
 
     if not target.is_dir():
-        err(f"Directory does not exist: {target}")
+        reporter.message("error", f"Directory does not exist: {target}", path=target)
+        if human:
+            err(f"Directory does not exist: {target}")
+        else:
+            reporter.emit(args.format)
         return 1
 
-    info(f"Target:      {target}")
+    if human:
+        info(f"Target:      {target}")
 
     # Validate skill_prefix.
     if not SKILL_PREFIX_RE.fullmatch(args.skill_prefix):
-        err(f"Invalid skill_prefix '{args.skill_prefix}' (must match {SKILL_PREFIX_RE.pattern})")
+        reporter.message(
+            "error",
+            f"Invalid skill_prefix '{args.skill_prefix}' (must match {SKILL_PREFIX_RE.pattern})",
+        )
+        if human:
+            err(f"Invalid skill_prefix '{args.skill_prefix}' (must match {SKILL_PREFIX_RE.pattern})")
+        else:
+            reporter.emit(args.format)
         return 1
-    info(f"Skill prefix: {args.skill_prefix}")
+    if human:
+        info(f"Skill prefix: {args.skill_prefix}")
 
     # Refuse to overwrite an existing manifest.
     manifest_path = target / "grimoire.json"
     if manifest_path.is_file():
-        err(f"grimoire.json already exists at {manifest_path}")
-        info("To change an adopted grimoire's skill prefix, edit the manifest by hand.")
+        reporter.message("error", f"grimoire.json already exists at {manifest_path}", path=manifest_path)
+        if human:
+            err(f"grimoire.json already exists at {manifest_path}")
+            info("To change an adopted grimoire's skill prefix, edit the manifest by hand.")
+        else:
+            reporter.emit(args.format)
         return 1
 
     # Detect skill_prefix collisions across home.
     existing = find_existing_skill_prefixes(home)
     if args.skill_prefix in existing:
-        err(
+        reporter.message(
+            "error",
             f"Skill prefix '{args.skill_prefix}' is already used by '{existing[args.skill_prefix]}'. "
-            "Pick a different skill prefix."
+            "Pick a different skill prefix.",
         )
+        if human:
+            err(
+                f"Skill prefix '{args.skill_prefix}' is already used by '{existing[args.skill_prefix]}'. "
+                "Pick a different skill prefix."
+            )
+        else:
+            reporter.emit(args.format)
         return 2
 
     name = args.name or target.name
@@ -117,13 +149,17 @@ def main():
     }
 
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    ok(f"Wrote {manifest_path}")
-    print()
+    reporter.mutation("write", path=manifest_path, detail="grimoire.json")
+    if human:
+        ok(f"Wrote {manifest_path}")
+        print()
 
-    print("  Next steps:")
-    print("    1. Run /arc-library-sync to verify, then --apply to register.")
-    print("    2. If this grimoire ships skills, run /arc-agent-register-skills.")
-    print()
+        print("  Next steps:")
+        print("    1. Run /arc-library-sync to verify, then --apply to register.")
+        print("    2. If this grimoire ships skills, run /arc-agent-register-skills.")
+        print()
+    else:
+        reporter.emit(args.format, summary={"name": name, "skill_prefix": args.skill_prefix})
     return 0
 
 
