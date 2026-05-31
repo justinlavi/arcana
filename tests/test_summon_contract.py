@@ -1,6 +1,7 @@
 """Contract tests for the Summoning Rite behavior matrix."""
 
 import json
+import re
 from pathlib import Path
 
 from summon_contract import (
@@ -60,5 +61,12 @@ def test_summon_contract_environment_controls_match_bootstrap():
     contract = json.loads((REPO_ROOT / CONTRACT_PATH).read_text(encoding="utf-8"))
     bootstrap = (REPO_ROOT / "rites" / "summon.sh").read_text(encoding="utf-8")
 
-    for entry in bootstrap_environment_entries(contract):
-        assert entry["name"] in bootstrap
+    documented = {entry["name"] for entry in bootstrap_environment_entries(contract)}
+    for name in documented:
+        assert name in bootstrap, f"{name} is in the contract but not used in summon.sh"
+
+    # Reverse direction: every GRIMOIRE_SUMMON_* the shell assigns a default to
+    # must be documented in the contract, so new knobs can't escape the surface.
+    assigned = set(re.findall(r"(GRIMOIRE_SUMMON_[A-Z_]+):=", bootstrap))
+    undocumented = sorted(assigned - documented)
+    assert not undocumented, f"summon.sh assigns env vars absent from the contract: {undocumented}"

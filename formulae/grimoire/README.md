@@ -97,7 +97,7 @@ Add the canonical Grimoire instruction block to your agent file using `/arc-agen
 
 - Routers are pointer lists - no prose narrative inside a hub.
 - Pages declare their authority (`external` / `grimoire` / `hybrid`) and cite sources.
-- Stale claims (over `last_verified` window) are flagged by `/grm-lint` and revisited.
+- Stale claims (older than the stale window, default 90 days) are flagged by `/grm-lint` and revisited.
 - The activity log is append-only; never delete entries.
 - All paths are relative inside this grimoire; cross-grimoire references use `ARCANA_HOME/`-style placeholders.
 - Text files use UTF-8 without BOM and LF line endings. Unicode is allowed; mojibake and repair artifacts are not.

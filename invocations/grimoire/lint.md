@@ -46,7 +46,7 @@ Stop and report if structure or frontmatter has hard errors — they invalidate 
 
 ### Phase 2: Stale claims
 
-For every page with `last_verified` older than 90 days (or older than the user's configured window):
+For every page with `last_verified` older than the stale window (default 90 days; or a window the user specifies):
 
 - List page, last_verified, and chapter.
 - Categorize: critical (referenced by hubs), normal (leaf), historical (status: deprecated).

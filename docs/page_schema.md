@@ -102,7 +102,7 @@ last_verified: 2026-05-12
 | `tags` | every page | Use `/`-separated namespaces: `chapter/<name>`, `type/<type>`, `domain/<...>`. Drives Dataview and Obsidian tag panes. |
 | `sources` | required for `authority: external`, `authority: hybrid`, and `type: source` | Paths or URLs. At least one entry must resolve. Validator checks `sources/...` paths exist on disk. |
 | `authority` | every page except `hub` / `log-entry` | One of the three values above. |
-| `last_verified` | every page except `hub` / `log-entry` | ISO date the page was last hand-verified or auto-checked. `/grm-lint` flags pages older than the configured stale window. |
+| `last_verified` | every page except `hub` / `log-entry` | ISO date the page was last hand-verified or auto-checked. `/grm-lint` flags pages older than the stale window (default: 90 days). |
 
 ### Required-fields matrix
 

@@ -151,6 +151,16 @@
 - Fixed on-ramp doc inaccuracies: `CONTRIBUTING.md` said "four working layers"
   but lists five; the README had a doubled `installation` link label; and
   `governance.md` referenced a non-existent `quickstart` doc.
+- `docs/page_schema.md` states a concrete default stale window (90 days) instead
+  of "the configured stale window" (no such config field exists); `lint.md` and
+  the grimoire scaffold README reference the same default.
+- The summoning rite's GitHub/GitLab host detection is anchored to hostname
+  labels and domain suffixes, so a self-hosted host such as `gitlab.github.io`
+  routes to GitLab instead of being misrouted to the GitHub API.
+- The summon contract documents the four download-tuning env vars
+  (`GRIMOIRE_SUMMON_CONNECT_TIMEOUT`/`STALL_TIMEOUT`/`QUIET_STALL_TIMEOUT`/`MIN_SPEED`),
+  and its test now checks both directions so a new `GRIMOIRE_SUMMON_*` knob
+  cannot escape the documented surface.
 
 ## [1.0.0] - 2026-05-25
 

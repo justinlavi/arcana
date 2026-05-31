@@ -192,6 +192,22 @@
     {
       "name": "GRIMOIRE_SUMMON_PY_DEPS",
       "purpose": "Set the Python dependency cache used by source GUI mode."
+    },
+    {
+      "name": "GRIMOIRE_SUMMON_CONNECT_TIMEOUT",
+      "purpose": "Set the connection timeout (seconds) for downloads."
+    },
+    {
+      "name": "GRIMOIRE_SUMMON_STALL_TIMEOUT",
+      "purpose": "Set the stall timeout (seconds) before a slow download is aborted."
+    },
+    {
+      "name": "GRIMOIRE_SUMMON_QUIET_STALL_TIMEOUT",
+      "purpose": "Set the stall timeout (seconds) for quiet download operations."
+    },
+    {
+      "name": "GRIMOIRE_SUMMON_MIN_SPEED",
+      "purpose": "Set the minimum download speed (bytes/sec) below which a transfer is treated as stalled."
     }
   ],
   "release_assets": [

@@ -261,11 +261,13 @@ def _library_key_from_repo_path(path):
 
 
 def _is_github_host(host):
-    return host == "github.com" or "github" in host
+    h = host.lower()
+    return h == "github.com" or h.endswith(".github.com") or h.split(".")[0] == "github"
 
 
 def _is_gitlab_host(host):
-    return host == "gitlab.com" or "gitlab" in host
+    h = host.lower()
+    return h == "gitlab.com" or h.endswith(".gitlab.com") or h.split(".")[0] == "gitlab"
 
 
 # ---------------------------------------------------------------------------

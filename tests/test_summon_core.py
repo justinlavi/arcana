@@ -250,6 +250,18 @@ def test_install_arcana_respects_cancel_event():
     assert called == []
 
 
+def test_host_detection_is_anchored():
+    assert summon_core._is_github_host("github.com")
+    assert summon_core._is_github_host("api.github.com")
+    assert summon_core._is_github_host("github.acme.com")  # self-hosted GitHub Enterprise
+    assert not summon_core._is_github_host("mygithub.com")
+    assert summon_core._is_gitlab_host("gitlab.com")
+    assert summon_core._is_gitlab_host("gitlab.acme.com")  # self-hosted GitLab
+    # gitlab.github.io is a GitLab host; the old substring check matched both.
+    assert summon_core._is_gitlab_host("gitlab.github.io")
+    assert not summon_core._is_github_host("gitlab.github.io")
+
+
 def test_gui_install_arcana_cancellable_delegates_to_core(monkeypatch):
     recorded = {}
 
