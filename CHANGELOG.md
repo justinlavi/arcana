@@ -50,6 +50,18 @@
   confirm; semver bumps, breaking changes, deprecations, deletions, and command-
   surface changes require a human. Unowned content is never auto-deleted and the
   tree is always left validator-green.
+- Generative negative-coverage gate for the validator suite
+  (`tests/test_negative_coverage.py` + `tests/fixtures/negative_specs.json`).
+  Every validator carries a minimal violating fixture (file contents
+  base64-encoded so the spec is inert to validators that scan `tests/`) that the
+  gate materializes in a temp dir and runs in `--format json`, asserting each
+  promised diagnostic code still fires - so a refactor that silently stops
+  detecting a violation is caught. A completeness check statically enumerates
+  every code each validator can emit and fails unless each is triggered by a
+  fixture or listed in a documented allowlist (I/O-only or mutually-exclusive
+  codes), so a new code cannot ship without coverage. Triggered fail-on-dirty
+  coverage rose from roughly a dozen hand-built codes to 60 across all 13
+  validators.
 
 ### Changed
 

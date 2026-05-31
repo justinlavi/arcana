@@ -1,0 +1,302 @@
+{
+  "validate_doc_trees": {
+    "allowlist": {
+      "DOC_TREE_PARSE_FAILED": "fires only on an internal scan exception"
+    },
+    "expected_codes": [
+      "DOC_TREE_MISSING_ENTRY",
+      "DOC_TREE_UNLISTED_ENTRY"
+    ],
+    "files": {
+      "README.md": "IyBHCgpGaXh0dXJlLgo=",
+      "chapters/recipes/extra/extra.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkV4dHJhIgphbGlhc2VzOiBbImV4dHJhLWh1YiJdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2h1YiwgaHViL2NoYXB0ZXJdCi0tLQoKIyBFeHRyYQo=",
+      "chapters/recipes/recipes.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIlJlY2lwZXMiCmFsaWFzZXM6IFsicmVjaXBlcy1odWIiXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9odWIsIGh1Yi9jaGFwdGVyXQotLS0KCiMgUmVjaXBlcwoKLSBTb3VyZG91Z2ggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIEV4dHJhIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9leHRyYS9leHRyYXxleHRyYV1dCgpgYGAKcmVjaXBlcy8K4pSc4pSA4pSAIHNvdXJkb3VnaC5tZArilJTilIDilIAgZ2hvc3QvCmBgYAo=",
+      "chapters/recipes/sourdough.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTb3VyZG91Z2giCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgU291cmRvdWdoCgpUZXh0Lgo=",
+      "g.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkciCmFsaWFzZXM6IFsiZy1yb290Il0KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvaHViLCBodWIvcm9vdF0KLS0tCgojIEcKCi0gUmVjaXBlcyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvcmVjaXBlc3xyZWNpcGVzXV0K",
+      "grimoire.json": "ewogICJuYW1lIjogImciLAogICJza2lsbF9wcmVmaXgiOiAiZ2ciLAogICJkZXNjcmlwdGlvbiI6ICJuZWcgZml4dHVyZSIKfQo=",
+      "inbox/README.md": "IyBpbmJveAo=",
+      "log.md": "IyBBY3Rpdml0eSBMb2cKCi0tLQo=",
+      "sources/README.md": "IyBzb3VyY2VzCg=="
+    },
+    "run_mode": "grimoire"
+  },
+  "validate_encoding": {
+    "allowlist": {
+      "ENCODING_READ_ERROR": "requires an unreadable file (I/O failure)"
+    },
+    "expected_codes": [
+      "ENCODING_BOM",
+      "ENCODING_CRLF",
+      "ENCODING_MOJIBAKE",
+      "ENCODING_REPAIR_ARTIFACT",
+      "ENCODING_UTF8"
+    ],
+    "files": {
+      "README.md": "IyBHCgpGaXh0dXJlLgo=",
+      "chapters/recipes/e_badutf8.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJVIgp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGdyaW1vaXJlCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIFUKCmludmFsaWQg//4gYnl0ZXMK",
+      "chapters/recipes/e_bom.md": "77u/LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJCIgp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGdyaW1vaXJlCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIEIK",
+      "chapters/recipes/e_crlf.md": "LS0tDQp0eXBlOiBjb25jZXB0DQp0aXRsZTogIkMiDQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQ0KYXV0aG9yaXR5OiBncmltb2lyZQ0KbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQ0KLS0tDQoNCiMgQw0K",
+      "chapters/recipes/e_moji.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJNb2ppIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGdyaW1vaXJlCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIE0KCkNhZsODwqkgbmHDg8KvdmUgcsODwqlzdW3Dg8KpLgo=",
+      "chapters/recipes/e_repair.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJSZXAiCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgUgoKcmFuZ2UgMTA/MjAgaXRlbXMuCg==",
+      "chapters/recipes/recipes.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIlJlY2lwZXMiCmFsaWFzZXM6IFsicmVjaXBlcy1odWIiXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9odWIsIGh1Yi9jaGFwdGVyXQotLS0KCiMgUmVjaXBlcwoKLSBTb3VyZG91Z2ggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQo=",
+      "chapters/recipes/sourdough.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTb3VyZG91Z2giCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgU291cmRvdWdoCgpUZXh0Lgo=",
+      "g.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkciCmFsaWFzZXM6IFsiZy1yb290Il0KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvaHViLCBodWIvcm9vdF0KLS0tCgojIEcKCi0gUmVjaXBlcyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvcmVjaXBlc3xyZWNpcGVzXV0K",
+      "grimoire.json": "ewogICJuYW1lIjogImciLAogICJza2lsbF9wcmVmaXgiOiAiZ2ciLAogICJkZXNjcmlwdGlvbiI6ICJuZWcgZml4dHVyZSIKfQo=",
+      "inbox/README.md": "IyBpbmJveAo=",
+      "log.md": "IyBBY3Rpdml0eSBMb2cKCi0tLQo=",
+      "sources/README.md": "IyBzb3VyY2VzCg=="
+    },
+    "run_mode": "grimoire"
+  },
+  "validate_format": {
+    "allowlist": {},
+    "expected_codes": [
+      "FORMAT_FORMULA_MISSING_TITLE",
+      "FORMAT_HUB_TOO_LONG",
+      "FORMAT_MISSING_INVOCATION_SECTION",
+      "FORMAT_SHORT_TABLE_DELIMITER",
+      "FORMAT_TREE_BACKTICK_MARKER",
+      "FORMAT_UNCLOSED_CODE_FENCE"
+    ],
+    "files": {
+      "README.md": "IyBHCgpGaXh0dXJlLgo=",
+      "chapters/recipes/fmt.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJGbXQiCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgRm10Cgp8IGEgfCBiIHwKfCAtLSB8IC0tIHwKfCAxIHwgMiB8CgpgYGAKcmVjaXBlcy8KYC0tIHNvdXJkb3VnaC5tZAo=",
+      "chapters/recipes/recipes.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIlJlY2lwZXMiCmFsaWFzZXM6IFsicmVjaXBlcy1odWIiXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9odWIsIGh1Yi9jaGFwdGVyXQotLS0KCiMgUmVjaXBlcwoKLSBTb3VyZG91Z2ggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQo=",
+      "chapters/recipes/sourdough.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTb3VyZG91Z2giCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgU291cmRvdWdoCgpUZXh0Lgo=",
+      "formulae/bar.formula.md": "bm8gdGl0bGUgaGVhZGluZwoKYm9keQo=",
+      "g.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkciCmFsaWFzZXM6IFsiZy1yb290Il0KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvaHViLCBodWIvcm9vdF0KLS0tCgojIEcKCi0gUmVjaXBlcyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvcmVjaXBlc3xyZWNpcGVzXV0K",
+      "grimoire.json": "ewogICJuYW1lIjogImciLAogICJza2lsbF9wcmVmaXgiOiAiZ2ciLAogICJkZXNjcmlwdGlvbiI6ICJuZWcgZml4dHVyZSIKfQo=",
+      "inbox/README.md": "IyBpbmJveAo=",
+      "invocations/bighub/bighub.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkJpZyIKYWxpYXNlczogWyJiaWctaHViIl0KdGFnczogW3R5cGUvaHViLCBodWIvY2hhcHRlcl0KLS0tCgojIEJpZwoKLSBpdGVtIDAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAyIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSA1IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSA4IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMzAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMzEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMzIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMzMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMzQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMzUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMzYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMzcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMzggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMzkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNDAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNDEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNDIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNDMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNDQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNDUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNDYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNDcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNDggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNDkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNTAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNTEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNTIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNTMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNTQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNTUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNTYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNTcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNTggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNTkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNjAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNjEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNjIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNjMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNjQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNjUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNjYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNjcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNjggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNjkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNzAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNzEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNzIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNzMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNzQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNzUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNzYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNzcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNzggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gNzkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gODAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gODEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gODIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gODMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gODQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gODUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gODYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gODcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gODggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gODkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gOTAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gOTEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gOTIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gOTMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gOTQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gOTUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gOTYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gOTcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gOTggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gOTkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTAwIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDEwMSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMDIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTAzIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDEwNCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMDUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTA2IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDEwNyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMDggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTA5IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDExMCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMTEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTEyIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDExMyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMTQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTE1IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDExNiAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMTcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTE4IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDExOSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMjAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTIxIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDEyMiAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMjMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTI0IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDEyNSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMjYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTI3IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDEyOCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMjkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTMwIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDEzMSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMzIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTMzIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDEzNCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMzUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTM2IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDEzNyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxMzggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTM5IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE0MCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNDEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTQyIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE0MyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNDQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTQ1IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE0NiAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNDcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTQ4IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE0OSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNTAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTUxIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE1MiAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNTMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTU0IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE1NSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNTYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTU3IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE1OCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNTkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTYwIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE2MSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNjIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTYzIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE2NCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNjUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTY2IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE2NyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNjggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTY5IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE3MCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNzEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTcyIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE3MyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNzQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTc1IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE3NiAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxNzcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTc4IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE3OSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxODAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTgxIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE4MiAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxODMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTg0IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE4NSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxODYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTg3IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE4OCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxODkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTkwIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE5MSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxOTIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTkzIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE5NCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxOTUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTk2IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDE5NyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAxOTggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMTk5IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDIwMCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAyMDEgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjAyIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDIwMyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAyMDQgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjA1IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDIwNiAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAyMDcgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjA4IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDIwOSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAyMTAgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjExIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDIxMiAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAyMTMgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjE0IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDIxNSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAyMTYgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjE3IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDIxOCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAyMTkgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjIwIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDIyMSAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAyMjIgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjIzIC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDIyNCAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAyMjUgLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjI2IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0KLSBpdGVtIDIyNyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHNvdXJkb3VnaF1dCi0gaXRlbSAyMjggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQotIGl0ZW0gMjI5IC0+IFtbY2hhcHRlcnMvcmVjaXBlcy9zb3VyZG91Z2h8c291cmRvdWdoXV0K",
+      "invocations/foo.md": "LS0tCnR5cGU6IHBsYXlib29rCnRpdGxlOiAiRm9vIgphbGlhc2VzOiBbImZvby14Il0KdGFnczogW3R5cGUvcGxheWJvb2tdCi0tLQoKIyBGb28KCk5vIHJlcXVpcmVkIHNlY3Rpb25zIGhlcmUuCg==",
+      "log.md": "IyBBY3Rpdml0eSBMb2cKCi0tLQo=",
+      "sources/README.md": "IyBzb3VyY2VzCg=="
+    },
+    "run_mode": "grimoire"
+  },
+  "validate_frontmatter": {
+    "allowlist": {
+      "FRONTMATTER_READ_ERROR": "requires an unreadable file (I/O failure), not stageable as content"
+    },
+    "expected_codes": [
+      "FRONTMATTER_INVALID_AUTHORITY",
+      "FRONTMATTER_INVALID_DATE",
+      "FRONTMATTER_INVALID_DATE_FORMAT",
+      "FRONTMATTER_INVALID_TYPE",
+      "FRONTMATTER_LIST_REQUIRED",
+      "FRONTMATTER_MISSING",
+      "FRONTMATTER_MISSING_REQUIRED",
+      "FRONTMATTER_MISSING_SOURCES",
+      "FRONTMATTER_MISSING_TYPE",
+      "FRONTMATTER_SOURCE_MISSING",
+      "FRONTMATTER_SOURCE_OUTSIDE_SOURCES"
+    ],
+    "files": {
+      "README.md": "IyBHCgpGaXh0dXJlLgo=",
+      "chapters/recipes/p_badauth.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJCYWRBdXRoIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGJvZ3VzCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIFAKClRleHQuCg==",
+      "chapters/recipes/p_baddate.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJCYWREYXRlIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGdyaW1vaXJlCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMTMtNDUKLS0tCgojIFAKClRleHQuCg==",
+      "chapters/recipes/p_baddatefmt.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJCYWREYXRlRm10IgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGdyaW1vaXJlCmxhc3RfdmVyaWZpZWQ6IDA1LTIwMjYKLS0tCgojIFAKClRleHQuCg==",
+      "chapters/recipes/p_badtype.md": "LS0tCnR5cGU6IGJvZ3VzCnRpdGxlOiAiQmFkVHlwZSIKYWxpYXNlczogW10KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvY29uY2VwdF0KLS0tCgojIFAKClRleHQuCg==",
+      "chapters/recipes/p_listreq.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJMaXN0UmVxIgphbGlhc2VzOiBbXQp0YWdzOiBncmltb2lyZS9nCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgUAoKVGV4dC4K",
+      "chapters/recipes/p_missing.md": "bm8gZnJvbnRtYXR0ZXIgaGVyZQoKIyB4Cg==",
+      "chapters/recipes/p_nosrc.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJOb1NyYyIKYWxpYXNlczogW10KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvY29uY2VwdF0KYXV0aG9yaXR5OiBleHRlcm5hbApzb3VyY2VzOiBbXQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo=",
+      "chapters/recipes/p_notype.md": "LS0tCnRpdGxlOiAiTm9UeXBlIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQotLS0KCiMgUAoKVGV4dC4K",
+      "chapters/recipes/p_reqmissing.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJSZXFNaXNzIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQotLS0KCiMgUAoKVGV4dC4K",
+      "chapters/recipes/p_srcmiss.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTcmNNaXNzIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsic291cmNlcy9ub3BlLm1kIl0KbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgUAoKVGV4dC4K",
+      "chapters/recipes/p_srcoutside.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlNyYyIKYWxpYXNlczogW10KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvY29uY2VwdF0KLS0tCgojIFAKClRleHQuCg==",
+      "chapters/recipes/recipes.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIlJlY2lwZXMiCmFsaWFzZXM6IFsicmVjaXBlcy1odWIiXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9odWIsIGh1Yi9jaGFwdGVyXQotLS0KCiMgUmVjaXBlcwoKLSBTb3VyZG91Z2ggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQo=",
+      "chapters/recipes/sourdough.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTb3VyZG91Z2giCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgU291cmRvdWdoCgpUZXh0Lgo=",
+      "g.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkciCmFsaWFzZXM6IFsiZy1yb290Il0KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvaHViLCBodWIvcm9vdF0KLS0tCgojIEcKCi0gUmVjaXBlcyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvcmVjaXBlc3xyZWNpcGVzXV0K",
+      "grimoire.json": "ewogICJuYW1lIjogImciLAogICJza2lsbF9wcmVmaXgiOiAiZ2ciLAogICJkZXNjcmlwdGlvbiI6ICJuZWcgZml4dHVyZSIKfQo=",
+      "inbox/README.md": "IyBpbmJveAo=",
+      "log.md": "IyBBY3Rpdml0eSBMb2cKCi0tLQo=",
+      "sources/README.md": "IyBzb3VyY2VzCg=="
+    },
+    "run_mode": "grimoire"
+  },
+  "validate_grimoire_structure": {
+    "allowlist": {
+      "GRIMOIRE_STRUCTURE_CONTRACT": "fires only when the Arcana scaffold contract itself is malformed (environment)",
+      "GRIMOIRE_STRUCTURE_CONTRACT_READ": "fires only when the Arcana scaffold contract is unreadable (I/O)",
+      "GRIMOIRE_STRUCTURE_FORMULA_MISSING_MANAGED": "environment: Arcana formula missing a managed file",
+      "GRIMOIRE_STRUCTURE_FORMULA_ROOT_MISSING": "environment: Arcana formula root absent",
+      "GRIMOIRE_STRUCTURE_JSON_UNREADABLE": "fires only on a malformed-JSON read failure (I/O)",
+      "GRIMOIRE_STRUCTURE_JSON_VALUE": "requires grimoire.json with a wrong-typed field; this fixture exercises the missing-required-key path",
+      "GRIMOIRE_STRUCTURE_MISSING_MANIFEST": "mutually exclusive with INVALID_MANIFEST; this fixture exercises the present-but-incomplete manifest path",
+      "GRIMOIRE_STRUCTURE_STALE_MANAGED": "requires a managed scaffold file present but divergent from its Arcana formula source; this fixture exercises the missing-managed path"
+    },
+    "expected_codes": [
+      "GRIMOIRE_STRUCTURE_INVALID_MANIFEST",
+      "GRIMOIRE_STRUCTURE_JSON_MISSING",
+      "GRIMOIRE_STRUCTURE_MISSING_CHAPTER_HUB",
+      "GRIMOIRE_STRUCTURE_MISSING_DIR",
+      "GRIMOIRE_STRUCTURE_MISSING_FILE",
+      "GRIMOIRE_STRUCTURE_MISSING_MANAGED",
+      "GRIMOIRE_STRUCTURE_MISSING_ROOT_HUB",
+      "GRIMOIRE_STRUCTURE_SOURCES_CHAPTERS"
+    ],
+    "files": {
+      "chapters/foo/note.md": "IyBub3RlCg==",
+      "grimoire.json": "ewogICJuYW1lIjogImciCn0K",
+      "sources/chapters/x.md": "c3RyYXkK"
+    },
+    "run_mode": "grimoire"
+  },
+  "validate_links": {
+    "allowlist": {
+      "LINK_DEPRECATED_PLACEHOLDER": "depends on the live DEPRECATED_TOKENS map; tentative",
+      "LINK_WIKILINK_PUBLIC_DOC": "fires only on Arcana public docs/ surface; not present in a grimoire"
+    },
+    "expected_codes": [
+      "LINK_LABEL_VERBOSE",
+      "LINK_MARKDOWN_BROKEN",
+      "LINK_MARKDOWN_INTERNAL",
+      "LINK_WIKILINK_BROKEN"
+    ],
+    "files": {
+      "README.md": "IyBHCgpGaXh0dXJlLgo=",
+      "chapters/recipes/l_dep.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJEZXAiCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgeAoKUGF0aCBHUklNT0lSRV9QQVRIL2Zvby4K",
+      "chapters/recipes/l_mbroken.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJNQnJva2VuIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGdyaW1vaXJlCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIHgKClNlZSBbdGV4dF0obm9wZS5tZCkuCg==",
+      "chapters/recipes/l_minternal.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJNSW50ZXJuYWwiCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgeAoKU2VlIFtzb3VyZG91Z2hdKHNvdXJkb3VnaC5tZCkuCg==",
+      "chapters/recipes/l_verbose.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJWZXJib3NlIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGdyaW1vaXJlCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIHgKClNlZSBbW2NoYXB0ZXJzL3JlY2lwZXMvc291cmRvdWdofHRoZSB3aG9sZSBzb3VyZG91Z2ggZXhwbGFpbmVyXV0uCg==",
+      "chapters/recipes/l_wbroken.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJXQnJva2VuIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGdyaW1vaXJlCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIHgKClNlZSBbW2NoYXB0ZXJzL25vcGUvbm9wZXxub3BlXV0uCg==",
+      "chapters/recipes/recipes.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIlJlY2lwZXMiCmFsaWFzZXM6IFsicmVjaXBlcy1odWIiXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9odWIsIGh1Yi9jaGFwdGVyXQotLS0KCiMgUmVjaXBlcwoKLSBTb3VyZG91Z2ggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQo=",
+      "chapters/recipes/sourdough.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTb3VyZG91Z2giCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgU291cmRvdWdoCgpUZXh0Lgo=",
+      "g.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkciCmFsaWFzZXM6IFsiZy1yb290Il0KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvaHViLCBodWIvcm9vdF0KLS0tCgojIEcKCi0gUmVjaXBlcyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvcmVjaXBlc3xyZWNpcGVzXV0K",
+      "grimoire.json": "ewogICJuYW1lIjogImciLAogICJza2lsbF9wcmVmaXgiOiAiZ2ciLAogICJkZXNjcmlwdGlvbiI6ICJuZWcgZml4dHVyZSIKfQo=",
+      "inbox/README.md": "IyBpbmJveAo=",
+      "log.md": "IyBBY3Rpdml0eSBMb2cKCi0tLQo=",
+      "sources/README.md": "IyBzb3VyY2VzCg=="
+    },
+    "run_mode": "grimoire"
+  },
+  "validate_naming": {
+    "allowlist": {
+      "SKILL_SCHEMA_DIRECT_SKILL_FILE": "requires a declared family dir with a direct SKILL.md instead of nested skill folders",
+      "SKILL_SCHEMA_MANIFEST_READ": "fires only when arcana.json is unreadable (I/O)",
+      "SKILL_SCHEMA_MISSING_DIR": "superseded by the more specific MISSING_FAMILY_DIR in this fixture",
+      "SKILL_SCHEMA_MISSING_FAMILIES": "fires on the empty/absent-families path; this fixture exercises the malformed-family-entries path",
+      "SKILL_SCHEMA_MISSING_SKILL_FILE": "requires a declared family dir present but without SKILL.md",
+      "SKILL_SCHEMA_NAME_MISMATCH": "requires a SKILL.md inside a declared family whose name differs from its folder",
+      "SKILL_SCHEMA_NO_FAMILIES": "fires on the empty-families path; mutually exclusive with malformed-but-present family entries"
+    },
+    "expected_codes": [
+      "NAMING_CAMELCASE",
+      "NAMING_HYPHENATED",
+      "SKILL_SCHEMA_FAMILY_INVALID",
+      "SKILL_SCHEMA_FAMILY_MISSING_PATH",
+      "SKILL_SCHEMA_FILE_OUTSIDE_FAMILIES",
+      "SKILL_SCHEMA_MISSING_FAMILY_DIR",
+      "SKILL_SCHEMA_UNEXPECTED_FAMILY_DIR"
+    ],
+    "files": {
+      "arcana.json": "ewogICJuYW1lIjogImFyY2FuYSIsCiAgInNraWxsX3ByZWZpeCI6ICJhcmMiLAogICJza2lsbF9mYW1pbGllcyI6IHsKICAgICJiYWRfc3RyIjogIm5vdC1hbi1vYmplY3QiLAogICAgIm5vX3BhdGgiOiB7InNraWxsX3ByZWZpeCI6ICJhcmMifSwKICAgICJnaG9zdCI6IHsic2tpbGxfcHJlZml4IjogImFyYyIsICJwYXRoIjogInNraWxscy9naG9zdCJ9CiAgfQp9Cg==",
+      "docs/BadName.md": "IyB4Cg==",
+      "docs/bad-name.md": "IyB4Cg==",
+      "skills/rogue/widget/SKILL.md": "LS0tCm5hbWU6IHdyb25nLW5hbWUKLS0tCiMgV2lkZ2V0Cg=="
+    },
+    "run_mode": "arcana_home"
+  },
+  "validate_orphans": {
+    "allowlist": {},
+    "expected_codes": [
+      "ORPHAN_PAGE"
+    ],
+    "files": {
+      "README.md": "IyBHCgpGaXh0dXJlLgo=",
+      "chapters/recipes/lonely.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJMb25lbHkiCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgUAoKVGV4dC4K",
+      "chapters/recipes/recipes.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIlJlY2lwZXMiCmFsaWFzZXM6IFsicmVjaXBlcy1odWIiXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9odWIsIGh1Yi9jaGFwdGVyXQotLS0KCiMgUmVjaXBlcwoKLSBTb3VyZG91Z2ggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQo=",
+      "chapters/recipes/sourdough.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTb3VyZG91Z2giCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgU291cmRvdWdoCgpUZXh0Lgo=",
+      "g.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkciCmFsaWFzZXM6IFsiZy1yb290Il0KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvaHViLCBodWIvcm9vdF0KLS0tCgojIEcKCi0gUmVjaXBlcyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvcmVjaXBlc3xyZWNpcGVzXV0K",
+      "grimoire.json": "ewogICJuYW1lIjogImciLAogICJza2lsbF9wcmVmaXgiOiAiZ2ciLAogICJkZXNjcmlwdGlvbiI6ICJuZWcgZml4dHVyZSIKfQo=",
+      "inbox/README.md": "IyBpbmJveAo=",
+      "log.md": "IyBBY3Rpdml0eSBMb2cKCi0tLQo=",
+      "sources/README.md": "IyBzb3VyY2VzCg=="
+    },
+    "run_mode": "grimoire"
+  },
+  "validate_provenance": {
+    "allowlist": {},
+    "expected_codes": [
+      "PROVENANCE_INBOX_SOURCE",
+      "PROVENANCE_MISSING_SOURCES",
+      "PROVENANCE_SOURCES_LIST_REQUIRED",
+      "PROVENANCE_SOURCE_MISSING",
+      "PROVENANCE_SOURCE_WRAPPER_AUTHORITY",
+      "PROVENANCE_SOURCE_WRAPPER_MISSING_SOURCES",
+      "PROVENANCE_SOURCE_WRAPPER_SELF_REFERENCE"
+    ],
+    "files": {
+      "README.md": "IyBHCgpGaXh0dXJlLgo=",
+      "chapters/recipes/pp_inbox.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJJbmJveCIKYWxpYXNlczogW10KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvY29uY2VwdF0KYXV0aG9yaXR5OiBleHRlcm5hbApzb3VyY2VzOiBbImluYm94L3gubWQiXQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo=",
+      "chapters/recipes/pp_listreq.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJMaXN0UmVxIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6ICJzb3VyY2VzL3gubWQiCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIFAKClRleHQuCg==",
+      "chapters/recipes/pp_nosrc.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJOb1NyYyIKYWxpYXNlczogW10KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvY29uY2VwdF0KYXV0aG9yaXR5OiBleHRlcm5hbApsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo=",
+      "chapters/recipes/pp_srcmiss.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTcmNNaXNzIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsic291cmNlcy9ub3BlLm1kIl0KbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgUAoKVGV4dC4K",
+      "chapters/recipes/recipes.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIlJlY2lwZXMiCmFsaWFzZXM6IFsicmVjaXBlcy1odWIiXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9odWIsIGh1Yi9jaGFwdGVyXQotLS0KCiMgUmVjaXBlcwoKLSBTb3VyZG91Z2ggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQo=",
+      "chapters/recipes/sourdough.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTb3VyZG91Z2giCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgU291cmRvdWdoCgpUZXh0Lgo=",
+      "g.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkciCmFsaWFzZXM6IFsiZy1yb290Il0KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvaHViLCBodWIvcm9vdF0KLS0tCgojIEcKCi0gUmVjaXBlcyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvcmVjaXBlc3xyZWNpcGVzXV0K",
+      "grimoire.json": "ewogICJuYW1lIjogImciLAogICJza2lsbF9wcmVmaXgiOiAiZ2ciLAogICJkZXNjcmlwdGlvbiI6ICJuZWcgZml4dHVyZSIKfQo=",
+      "inbox/README.md": "IyBpbmJveAo=",
+      "log.md": "IyBBY3Rpdml0eSBMb2cKCi0tLQo=",
+      "sources/README.md": "IyBzb3VyY2VzCg==",
+      "sources/w_auth.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlciCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKc291cmNlczogWyJodHRwczovL3giXQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo=",
+      "sources/w_nosrc.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlcyIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIFAKClRleHQuCg==",
+      "sources/w_self.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlczIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsic291cmNlcy93X3NlbGYubWQiXQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo="
+    },
+    "run_mode": "grimoire"
+  },
+  "validate_security": {
+    "allowlist": {},
+    "expected_codes": [
+      "SECURITY_CREDENTIAL_PATTERN",
+      "SECURITY_EVAL",
+      "SECURITY_EXEC"
+    ],
+    "files": {
+      "arcana.json": "ewogICJuYW1lIjogImFyY2FuYSIKfQo=",
+      "docs/creds.md": "IyBOb3RlcwoKYXBpX2tleSA9ICJBS0lBSU9TRk9ETk43RVhBTVBMRSIK",
+      "rites/danger.py": "ZGVmIHJ1bihzKToKICAgIHJldHVybiBldmFsKHMpCgpkZWYgcnVuMihzKToKICAgIGV4ZWMocykK"
+    },
+    "run_mode": "arcana_home"
+  },
+  "validate_semantics": {
+    "allowlist": {},
+    "expected_codes": [
+      "SEMANTICS_HYPHENATED_EXAMPLE"
+    ],
+    "files": {
+      "arcana.json": "ewogICJuYW1lIjogImFyY2FuYSIKfQo=",
+      "docs/x.md": "IyBYCgpSb3V0ZSB2aWEgY2hhcHRlcnMvZm9vLWJhci9iYXogZm9yIGRldGFpbHMuCg=="
+    },
+    "run_mode": "arcana_home"
+  },
+  "validate_skill_refs": {
+    "allowlist": {
+      "COMMAND_SURFACE_MUTATION_PROFILE_DRIFT": "requires a fully-valid command_surface.json + matching skills/invocations/rites/rite_profiles scaffold with a deliberate profile mismatch; exercised by the real validator against live contracts",
+      "COMMAND_SURFACE_RITE_PROFILES_READ": "fires only when rite_profiles.json is unreadable (I/O)",
+      "SKILL_REFS_MANIFEST_READ": "fires only when arcana.json is unreadable (I/O)"
+    },
+    "expected_codes": [
+      "SKILL_REFS_DANGLING"
+    ],
+    "files": {
+      "arcana.json": "ewogICJuYW1lIjogImFyY2FuYSIsCiAgInNraWxsX3ByZWZpeCI6ICJhcmMiLAogICJza2lsbF9mYW1pbGllcyI6IHsiYXJjYW5hIjogeyJza2lsbF9wcmVmaXgiOiAiYXJjIiwgInBhdGgiOiAic2tpbGxzL2FyY2FuYSJ9fQp9Cg==",
+      "docs/x.md": "IyBYCgpTZWUgL2FyYy1naG9zdCBmb3IgZGV0YWlscy4K"
+    },
+    "run_mode": "arcana_home"
+  },
+  "validate_structure": {
+    "allowlist": {},
+    "expected_codes": [
+      "STRUCTURE_FORBIDDEN_GRIMOIRE_LAYER",
+      "STRUCTURE_MISSING_DIR",
+      "STRUCTURE_MISSING_FILE",
+      "STRUCTURE_MISSING_HUB"
+    ],
+    "files": {
+      "arcana.json": "ewogICJuYW1lIjogImFyY2FuYSIKfQo=",
+      "chapters/.gitkeep": ""
+    },
+    "run_mode": "arcana_home"
+  }
+}
