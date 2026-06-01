@@ -82,6 +82,27 @@
   itself as the human step. The new mode is registered in
   `rites/data/summon_contract.json` (`agent_reconcile`) and documented in
   `docs/summoning_contract.md` and `RECOVERY.md`.
+- Invocation eval tier: model-in-the-loop behavioral coverage for the judgment
+  half of Arcana (the `invocations/**/*.md` playbooks). `tests/eval_harness.py`
+  materializes a seeded, validate-clean fixture grimoire, runs a playbook through
+  an injectable `model_fn(prompt, cwd)` seam, and judges the agent's structured
+  decision - deterministic assertions first (`list_any`, `field_equals`,
+  `field_in`, `file_exists`/`file_absent`, `file_from_decision_exists`), with a
+  one-binary-criterion-per-call LLM judge (evidence-quote required) as the tagged
+  fallback. Starter scenarios cover `/grm-ingest` layer classification,
+  `/grm-lint` seeded-contradiction detection, and `/grm-file-answer` placement +
+  faithfulness, in `tests/fixtures/invocation_eval_specs.json` (scenario file
+  contents base64-encoded so deliberately-shaped fixtures stay inert to the
+  validators that scan `tests/`).
+- The eval tier stays beneath the fast gate: it is not a rite and is never run by
+  `rites/validate.py`; the default seam shells to `claude` and refuses unless
+  `ARCANA_EVAL_MODEL` is set; and the model run carries a `pytest` `eval` marker
+  that `pyproject.toml` deselects by default (`-m "not eval"`). The fast gate runs
+  only the deterministic scaffolding (`tests/test_eval_scaffolding.py`: specs
+  valid, invocations exist, fixtures materialize validate-clean, prompt assembly,
+  assertion and judge wiring) with no model. Opt in with
+  `ARCANA_EVAL_MODEL=1 python -m pytest -m eval`. Documented in `docs/evals.md`;
+  the always-on model-in-CI job is deferred until a reliable gateway exists.
 
 ### Changed
 

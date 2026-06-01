@@ -185,6 +185,7 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 | [Obsidian](docs/obsidian.md) | Open as a vault; graph-view color groups |
 | [Reference](docs/reference.md) | Terminology, schemas, path conventions |
 | [Script Vs Ai](docs/script_vs_ai.md) | When to use rites vs invocations |
+| [Evals](docs/evals.md) | Model-in-the-loop behavioral coverage for invocations |
 | [Governance](docs/governance.md) | Maintaining and versioning Arcana |
 | [Command Surface](docs/command_surface.md) | Public slash-command contract |
 | [Rite Profiles](docs/rite_profiles.md) | Mutating-rite plan/apply/append contract |

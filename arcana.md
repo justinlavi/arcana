@@ -36,6 +36,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Obsidian setup -> [[docs/obsidian|obsidian]]
 - VS Code wikilink setup -> [[docs/vscode|vscode]]
 - Script vs AI boundaries -> [[docs/script_vs_ai|script vs ai]]
+- Invocation eval tier -> [[docs/evals|evals]]
 - Rite mutation profiles -> [[docs/rite_profiles|rite profiles]]
 - Architecture backlog -> [[docs/architecture_backlog|architecture backlog]]
 - Governance and versioning -> [[docs/governance|governance]]

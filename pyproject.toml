@@ -70,4 +70,10 @@ py-modules = []
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
-addopts = ["-ra", "--strict-markers"]
+# `-m "not eval"` deselects the model-in-the-loop invocation eval tier by default,
+# so the fast gate (`pytest -q`) runs only deterministic, model-free scaffolding.
+# Opt in with: ARCANA_EVAL_MODEL=1 python -m pytest -m eval
+addopts = ["-ra", "--strict-markers", "-m", "not eval"]
+markers = [
+    "eval: model-in-the-loop invocation eval (deselected by default; needs ARCANA_EVAL_MODEL)",
+]
