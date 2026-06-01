@@ -101,7 +101,7 @@ Draft releases are useful for private review, but they are not useful for unauth
 The durable mode matrix is in
 [summoning contract](summoning_contract.md#release-and-source-selection).
 
-`rites/summon.sh` prefers release assets when run through the public curl pipe, except on Linux GUI sessions where it uses the Python source launcher by default. The Linux source-first GUI path avoids frozen GLFW/GLX library drift across fast-moving distro render stacks while preserving binary use for CLI/headless Linux and for macOS/Windows. Running from a local checkout keeps using local source by default, which is better for Arcana development.
+`rites/summon.sh` prefers release assets when run through the public curl pipe on every platform — Linux, macOS, and Windows alike. If any release step fails (download, checksum, extraction, or execution) it falls back to the Python source launcher, so a distro whose render stack rejects the frozen GUI libraries still completes via source. Running from a local checkout keeps using local source by default, which is better for Arcana development.
 
 Public curl flow:
 1. Detect OS and architecture.

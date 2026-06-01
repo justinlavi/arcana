@@ -16,7 +16,7 @@
       ],
       "required_behaviors": [
         "Find or install Python 3 only with explicit user consent.",
-        "Prefer release binaries for public piped installs except Linux GUI auto mode.",
+        "Prefer release binaries for public piped installs on every platform (Linux, macOS, Windows).",
         "Download summon.py, summon_core.py, the Grimoire block template, and summon_gui.py when GUI mode is possible.",
         "Verify release checksums before running binaries.",
         "Fall back to Python source when release download, checksum, extraction, or execution fails.",
@@ -270,8 +270,8 @@
       "contract": "The dispatcher falls back to CLI when GUI startup fails."
     },
     {
-      "id": "linux_gui_source_first",
-      "contract": "Public piped installs use source mode by default on Linux GUI sessions unless GRIMOIRE_SUMMON_BINARY=always."
+      "id": "binary_first_all_platforms",
+      "contract": "Public piped installs prefer the release binary on Linux, macOS, and Windows alike; source download is the automatic fallback. GRIMOIRE_SUMMON_BINARY=never forces source mode."
     }
   ]
 }

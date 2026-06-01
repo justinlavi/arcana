@@ -50,14 +50,12 @@ settings, but the default GUI path should match the CLI post-install shape.
 
 ## Release And Source Selection
 
-Public piped shell installs are release-first by default. The bootstrap tries
-the matching release archive, verifies its checksum, extracts it, and runs the
-binary. If any release step fails, it falls back to Python source.
-
-Linux GUI sessions are source-first by default because frozen GUI/OpenGL
-libraries drift across distributions. Set `GRIMOIRE_SUMMON_BINARY=always` to
-test the Linux release binary directly, or `GRIMOIRE_SUMMON_BINARY=never` to
-force source mode.
+Public piped shell installs are release-first by default on every platform —
+Linux, macOS, and Windows alike. The bootstrap tries the matching release
+archive, verifies its checksum, extracts it, and runs the binary. If any release
+step fails (download, checksum, extraction, or execution), it falls back to
+Python source. Set `GRIMOIRE_SUMMON_BINARY=never` to force source mode, or
+`always` to skip the local-source shortcut below.
 
 Local checkout runs use local source by default. This keeps Arcana development
 loops pointed at the working tree.

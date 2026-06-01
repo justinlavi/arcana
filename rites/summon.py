@@ -68,13 +68,21 @@ def main():
     parser.add_argument("--gui", action="store_true", help="Force GUI mode (Dear PyGui)")
 
     # Agent-legibility surface: --check / --reconcile route to summon_state
-    # instead of the interactive installer (see rites/summon_state.py).
-    from summon_state import add_state_args, is_state_invocation
-    add_state_args(parser)
+    # instead of the interactive installer (see rites/summon_state.py). It is only
+    # available on a full Arcana checkout; the piped bootstrap and release binary
+    # ship the install-only subset, so a missing summon_state degrades to the
+    # installer path rather than failing the install.
+    try:
+        from summon_state import add_state_args, is_state_invocation, run_state_command
+        state_surface = True
+    except ImportError:
+        state_surface = False
+
+    if state_surface:
+        add_state_args(parser)
     args = parser.parse_args()
 
-    if is_state_invocation(args):
-        from summon_state import run_state_command
+    if state_surface and is_state_invocation(args):
         sys.exit(run_state_command(args))
 
     use_gui, skip_reason = _detect_gui_mode(args)

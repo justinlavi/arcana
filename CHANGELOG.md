@@ -72,7 +72,12 @@
   envelope as a superset plus `operation`, `run_id`, `started_at`/`ended_at`,
   `steps`, and `final_state`) so an orchestrator can diff intent against outcome
   without parsing prose. Remediation is structured and tier-tagged
-  (`summary.next_actions`), not free text.
+  (`summary.next_actions`), not free text. The `summon_state` import in
+  `rites/summon.py` is guarded: the piped bootstrap and release binary ship the
+  install-only script subset, so when `summon_state` (or its `sync_library` /
+  `diagnostics` dependencies) is absent the dispatcher degrades to the installer
+  path instead of failing the install. The full surface is available from a
+  cloned Arcana checkout, where `--check` / `--reconcile` run.
 - The reconcile engine backs the offline core of `RECOVERY.md` while keeping the
   governance boundaries: it refuses to reconcile a base that fails
   `validate.py`; it never deletes a library entry unless `--prune` (every removal
@@ -106,6 +111,15 @@
 
 ### Changed
 
+- The Summoning Rite prefers the release binary on **every** platform - Linux,
+  macOS, and Windows alike - when run through the public curl pipe. The previous
+  Linux-GUI-source-first special case is removed (`should_prefer_source_for_linux_gui`
+  in `rites/summon.sh`); the existing source download remains the automatic
+  fallback when the binary download, checksum, extraction, or execution fails, so
+  a distro whose render stack rejects the frozen GUI libraries still completes via
+  source. `GRIMOIRE_SUMMON_BINARY=never` forces source mode. Reflected in
+  `rites/data/summon_contract.json` (parity check `binary_first_all_platforms`),
+  `docs/summoning_contract.md`, and `docs/release.md`.
 - `invocations/arcana/quality/review_architecture.md` references the shared
   subagent-lane fragment for the generic lane contract, dispatch template, and
   serial fallback, keeping only its Arcana-specific lane table, synthesis matrix,

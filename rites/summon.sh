@@ -233,21 +233,6 @@ arg_disables_gui() {
     return 1
 }
 
-has_display_session() {
-    [[ -n "${DISPLAY:-}" || -n "${WAYLAND_DISPLAY:-}" || "${XDG_SESSION_TYPE:-}" == "x11" || "${XDG_SESSION_TYPE:-}" == "wayland" ]]
-}
-
-should_prefer_source_for_linux_gui() {
-    local platform
-
-    [[ "$GRIMOIRE_SUMMON_BINARY" == "auto" ]] || return 1
-    [[ ! -f "$SCRIPT_SOURCE" ]] || return 1
-    platform="$(summon_platform 2>/dev/null || true)"
-    [[ "$platform" == linux-* ]] || return 1
-    arg_disables_gui "$@" && return 1
-    has_display_session
-}
-
 verify_checksum() {
     local checksum="$1"
     local normalized="$checksum.normalized"
@@ -311,10 +296,10 @@ should_try_binary() {
     if [[ "$GRIMOIRE_SUMMON_BINARY" == "always" ]]; then
         return 0
     fi
-    if should_prefer_source_for_linux_gui "$@"; then
-        echo "  [INFO]  Linux GUI session detected - using Python source launcher"
-        return 1
-    fi
+    # Public piped installs prefer the release binary on every platform (Linux,
+    # macOS, Windows alike); source download is the automatic fallback when the
+    # binary download, checksum, extraction, or execution fails. Local checkout
+    # runs use local source.
     [[ ! -f "$SCRIPT_SOURCE" ]]
 }
 
