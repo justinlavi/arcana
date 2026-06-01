@@ -28,6 +28,7 @@ def test_summon_contract_is_valid():
         "python_gui",
         "release_binary",
         "release_workflow",
+        "agent_reconcile",
     }
 
 

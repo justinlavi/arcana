@@ -977,3 +977,12 @@ def run_cli(args):
     print()
     skills_ok = finalize_install(installed_keys, library, log)
     _print_cli_summary(mode, installed_keys, skills_ok)
+
+    # Leave a machine-readable record of the install so an orchestrator can
+    # diff intent vs outcome. Lazy import breaks the summon_state<->summon_core
+    # cycle; best-effort so a transcript failure never fails the install.
+    try:
+        from summon_state import record_install_transcript
+        record_install_transcript(GRIMOIRES_HOME, REPO_ROOT, installed_keys, skills_ok)
+    except Exception:
+        pass

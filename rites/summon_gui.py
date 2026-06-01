@@ -368,6 +368,15 @@ def _worker_discover(scope_url, token, log, cancel_event, proc_slot, **_kw):
     return {"entries": entries, "count": len(entries)}
 
 
+def _record_install_transcript_safe(installed_keys, skills_ok):
+    """Best-effort install transcript; never lets a transcript failure surface."""
+    try:
+        from summon_state import record_install_transcript
+        record_install_transcript(GRIMOIRES_HOME, REPO_ROOT, installed_keys, skills_ok)
+    except Exception:
+        pass
+
+
 def _worker_install_arcana(arcana_url, log, cancel_event, proc_slot, **_kw):
     """Install/update Arcana only."""
     if not check_git(log):
@@ -384,6 +393,7 @@ def _worker_install_arcana(arcana_url, log, cancel_event, proc_slot, **_kw):
     skills_ok = finalize_install_with_settings(
         [], {"grimoires": {}}, log, settings,
     )
+    _record_install_transcript_safe([], skills_ok)
     return {"ok": True, "skills_ok": skills_ok}
 
 
@@ -415,6 +425,7 @@ def _worker_install_full(arcana_url, library, keys, log, cancel_event, proc_slot
             installed.append(key)
 
     skills_ok = finalize_install_with_settings(installed, library, log, settings)
+    _record_install_transcript_safe(installed, skills_ok)
     return {"ok": True, "installed": installed, "skills_ok": skills_ok}
 
 

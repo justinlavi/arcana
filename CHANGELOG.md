@@ -62,6 +62,26 @@
   codes), so a new code cannot ship without coverage. Triggered fail-on-dirty
   coverage rose from roughly a dozen hand-built codes to 60 across all 13
   validators.
+- Agent-legible Summoning Rite surface (`rites/summon_state.py`, reached through
+  `python3 rites/summon.py --check | --reconcile [--apply] [--prune]`). `--check`
+  reports Arcana, library, agent-block, and skill drift read-only and exits 1
+  when drift is found; `--reconcile --apply` reconciles the local library
+  additively and re-registers skills. Both emit the shared `ResultReporter`
+  envelope under `--format json|jsonl`, and every install, check, and reconcile
+  writes a durable transcript to `~/.cache/grimoire/summon-last.json` (the
+  envelope as a superset plus `operation`, `run_id`, `started_at`/`ended_at`,
+  `steps`, and `final_state`) so an orchestrator can diff intent against outcome
+  without parsing prose. Remediation is structured and tier-tagged
+  (`summary.next_actions`), not free text.
+- The reconcile engine backs the offline core of `RECOVERY.md` while keeping the
+  governance boundaries: it refuses to reconcile a base that fails
+  `validate.py`; it never deletes a library entry unless `--prune` (every removal
+  is recorded as a mutation); it reports rather than rewrites agent instruction
+  blocks (detecting both the heading and BEGIN/END sentinels, so a marker-form
+  block is not mislabeled as drift); and it leaves the network pull of Arcana
+  itself as the human step. The new mode is registered in
+  `rites/data/summon_contract.json` (`agent_reconcile`) and documented in
+  `docs/summoning_contract.md` and `RECOVERY.md`.
 
 ### Changed
 

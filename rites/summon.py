@@ -66,7 +66,16 @@ def main():
     )
     parser.add_argument("--cli", action="store_true", help="Force terminal mode (no GUI)")
     parser.add_argument("--gui", action="store_true", help="Force GUI mode (Dear PyGui)")
+
+    # Agent-legibility surface: --check / --reconcile route to summon_state
+    # instead of the interactive installer (see rites/summon_state.py).
+    from summon_state import add_state_args, is_state_invocation
+    add_state_args(parser)
     args = parser.parse_args()
+
+    if is_state_invocation(args):
+        from summon_state import run_state_command
+        sys.exit(run_state_command(args))
 
     use_gui, skip_reason = _detect_gui_mode(args)
 

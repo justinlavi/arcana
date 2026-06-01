@@ -28,6 +28,23 @@ If Arcana lives somewhere else, give the agent the real path to this file.
 The installed slash-command layer may be stale. Treat the pulled Arcana source
 tree as the source of truth, not the agent's currently registered skill files.
 
+### Structured shortcut
+
+For a machine-readable view of the offline, deterministic part of this playbook
+(steps 3-5), run the engine directly:
+
+```bash
+python3 rites/summon.py --check --format json     # report drift, read-only
+python3 rites/summon.py --reconcile --apply       # reconcile library + re-register skills
+```
+
+`--check` exits non-zero when there is drift; `--reconcile --apply` refuses on a
+base that fails `validate.py`, preserves stale library entries unless `--prune`
+is given, and reports (never rewrites) agent instruction blocks. Every run writes
+`~/.cache/grimoire/summon-last.json`. The network pull (step 2) and agent-block
+refresh (step 6) remain manual. The numbered steps below stay authoritative when
+the shortcut reports something it cannot fix.
+
 ### 1. Resolve Arcana
 
 Prefer the directory containing this file. If the user only gave a conventional
