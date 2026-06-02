@@ -253,7 +253,10 @@ Mechanical rites are independently invocable and orchestrated by
 `rites/validate.py`, which loads its validator sequences from
 `rites/data/validators.json`:
 
-- `validate_structure` - Arcana layout and required hub files.
+- `validate_structure` - Arcana layout, required hub files, and documentation
+  index coverage (every `docs/*.md` and `CONTRIBUTING.md` is reachable from both
+  routing surfaces, `arcana.md` and `README.md`, so a new doc never drifts out
+  of the primer).
 - `validate_grimoire_structure` - grimoire layout, manifest schema, the
   folder-named hub if-and-only-if (folder-named pages declare `type: hub` and
   hubs are folder-named), Obsidian app settings, and Arcana-managed scaffold

@@ -2,33 +2,36 @@
 
 Locks the invariant that a new docs/ page is added to both the arcana.md routing
 hub and the README documentation table, instead of silently drifting out of one.
+
+The check itself lives in `validate_structure.doc_index_violations` so the
+runtime validator (`/arc-validate-structure`, `/arc-validate-all`) and these
+tests share one implementation; these tests assert it stays clean on the live
+Arcana tree.
 """
 
-from pathlib import Path
+import validate_structure
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+ROOT = validate_structure.ARCANA_ROOT
 
 
-def _doc_names():
-    return sorted(p.name for p in (REPO_ROOT / "docs").glob("*.md"))
+def _paths(code=None, path=None):
+    return [
+        viol_path
+        for viol_code, viol_path, _ in validate_structure.doc_index_violations(ROOT)
+        if (code is None or viol_code == code) and (path is None or viol_path == path)
+    ]
 
 
 def test_arcana_hub_routes_to_every_doc():
-    arcana = (REPO_ROOT / "arcana.md").read_text(encoding="utf-8")
-    # arcana.md is a vault surface: it links docs via [[docs/<stem>|...]] wikilinks.
-    missing = [name for name in _doc_names() if f"docs/{name[:-3]}" not in arcana]
+    missing = _paths(code="STRUCTURE_DOC_NOT_IN_HUB")
     assert not missing, f"arcana.md does not route to: {missing}"
 
 
 def test_readme_links_every_doc():
-    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
-    # README is a public doc: it links docs via standard (docs/<name>) Markdown links.
-    missing = [name for name in _doc_names() if f"docs/{name}" not in readme]
+    missing = _paths(code="STRUCTURE_DOC_NOT_IN_README")
     assert not missing, f"README.md does not link: {missing}"
 
 
 def test_contributing_is_reachable_from_routing_surfaces():
-    arcana = (REPO_ROOT / "arcana.md").read_text(encoding="utf-8")
-    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "CONTRIBUTING" in arcana, "CONTRIBUTING.md not referenced from arcana.md"
-    assert "CONTRIBUTING" in readme, "CONTRIBUTING.md not referenced from README.md"
+    missing = _paths(path="CONTRIBUTING.md")
+    assert not missing, f"CONTRIBUTING.md is not referenced from: {missing}"

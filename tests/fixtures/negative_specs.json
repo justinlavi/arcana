@@ -294,14 +294,19 @@
   "validate_structure": {
     "allowlist": {},
     "expected_codes": [
+      "STRUCTURE_DOC_NOT_IN_HUB",
+      "STRUCTURE_DOC_NOT_IN_README",
       "STRUCTURE_FORBIDDEN_GRIMOIRE_LAYER",
       "STRUCTURE_MISSING_DIR",
       "STRUCTURE_MISSING_FILE",
       "STRUCTURE_MISSING_HUB"
     ],
     "files": {
+      "README.md": "IyBBcmNhbmEKCkZpeHR1cmUgcmVhZG1lLgo=",
       "arcana.json": "ewogICJuYW1lIjogImFyY2FuYSIKfQo=",
-      "chapters/.gitkeep": ""
+      "arcana.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkFyY2FuYSIKdGFnczogW3R5cGUvaHViXQotLS0KCiMgQXJjYW5hCg==",
+      "chapters/.gitkeep": "",
+      "docs/orphan.md": "LS0tCnR5cGU6IHJlZmVyZW5jZQp0aXRsZTogIk9ycGhhbiIKdGFnczogW3R5cGUvcmVmZXJlbmNlLCBhcmNhbmEvZG9jc10KYXV0aG9yaXR5OiBncmltb2lyZQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTI1Ci0tLQoKIyBPcnBoYW4K"
     },
     "run_mode": "arcana_home"
   }

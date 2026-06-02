@@ -8,6 +8,12 @@ Hub convention (v2):
     For any folder F that acts as a router, the hub file is F/<basename(F)>.md.
     The Arcana root hub is arcana.md; the grimoire/ invocation router is
     invocations/grimoire/grimoire.md; etc.
+
+Documentation index coverage:
+    Every docs/*.md page (and CONTRIBUTING.md) must be reachable from both
+    routing surfaces - arcana.md and README.md - so a new doc never silently
+    falls out of the primer. This makes that coverage a runtime validator check,
+    not only a pytest assertion.
 """
 
 import sys
@@ -94,6 +100,46 @@ def hub_path(rel_dir):
     return folder / f"{folder.name}.md"
 
 
+def _docs_files(root):
+    """Return every docs/*.md page, sorted; empty when docs/ is absent."""
+    docs = root / "docs"
+    return sorted(docs.glob("*.md")) if docs.is_dir() else []
+
+
+def doc_index_violations(root):
+    """Return (code, path, message) for any docs/ page or CONTRIBUTING.md the
+    routing surfaces fail to reference.
+
+    A new docs/ page must be reachable from both routing surfaces so it never
+    silently falls out of the primer: arcana.md (the vault hub, which links docs
+    as `[[docs/<stem>|...]]`) and README.md (the public doc, which links them as
+    `(docs/<name>)`). This is the runtime form of the coverage tests/test_doc_indexes
+    asserts; both share this single implementation.
+    """
+    hub = root / "arcana.md"
+    readme = root / "README.md"
+    hub_text = hub.read_text(encoding="utf-8", errors="replace") if hub.is_file() else None
+    readme_text = readme.read_text(encoding="utf-8", errors="replace") if readme.is_file() else None
+
+    violations = []
+    for doc in _docs_files(root):
+        if hub_text is not None and f"docs/{doc.stem}" not in hub_text:
+            violations.append(("STRUCTURE_DOC_NOT_IN_HUB", f"docs/{doc.name}",
+                               f"docs/{doc.name} is not routed from arcana.md"))
+        if readme_text is not None and f"docs/{doc.name}" not in readme_text:
+            violations.append(("STRUCTURE_DOC_NOT_IN_README", f"docs/{doc.name}",
+                               f"docs/{doc.name} is not linked from README.md"))
+
+    if (root / "CONTRIBUTING.md").is_file():
+        if hub_text is not None and "CONTRIBUTING" not in hub_text:
+            violations.append(("STRUCTURE_DOC_NOT_IN_HUB", "CONTRIBUTING.md",
+                               "CONTRIBUTING.md is not referenced from arcana.md"))
+        if readme_text is not None and "CONTRIBUTING" not in readme_text:
+            violations.append(("STRUCTURE_DOC_NOT_IN_README", "CONTRIBUTING.md",
+                               "CONTRIBUTING.md is not referenced from README.md"))
+    return violations
+
+
 def main():
     import argparse
 
@@ -168,6 +214,18 @@ def main():
         else:
             if human:
                 print(f"  OK       {rel}")
+    if human:
+        print()
+
+    if human:
+        print("Checking documentation index coverage...")
+    doc_violations = doc_index_violations(ARCANA_ROOT)
+    for code, path, message in doc_violations:
+        reporter.error(code, message, path=path, docs_reference="docs/governance.md")
+        if human:
+            print(f"  MISSING  {message}")
+    if human and not doc_violations:
+        print("  OK       every docs/ page is routed from arcana.md and linked from README.md")
     if human:
         print()
 
