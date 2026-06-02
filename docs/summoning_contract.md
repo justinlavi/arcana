@@ -60,6 +60,29 @@ Python source. Set `GRIMOIRE_SUMMON_BINARY=never` to force source mode, or
 Local checkout runs use local source by default. This keeps Arcana development
 loops pointed at the working tree.
 
+## Bootstrap Environment Controls
+
+The canonical set of environment variables the shell bootstrap honors (mirrors
+`bootstrap_environment` in `rites/data/summon_contract.json`). `installation.md`
+and `release.md` link here rather than restating these.
+
+| Variable | Purpose |
+|---|---|
+| `ARCANA_URL` | Override the Arcana repository URL. |
+| `ARCANA_REF` | Override the raw-source ref for companion-script downloads. |
+| `GRIMOIRE_SUMMON_BINARY` | Release-binary behavior: `auto` (default - release-first on every platform, source fallback; a local checkout uses source), `always` (force release-binary lookup), or `never` (force the Python source bootstrap). |
+| `GRIMOIRE_SUMMON_RELEASE_TAG` | Download release assets from a specific tag instead of `latest`. |
+| `GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS` | Release and companion-script download retry count. |
+| `GRIMOIRE_SUMMON_RETRY_DELAY` | Delay between download attempts. |
+| `GRIMOIRE_SUMMON_CONNECT_TIMEOUT` | Connection timeout (seconds) for downloads. |
+| `GRIMOIRE_SUMMON_STALL_TIMEOUT` | Stall timeout (seconds) before a slow download is aborted. |
+| `GRIMOIRE_SUMMON_QUIET_STALL_TIMEOUT` | Stall timeout (seconds) for quiet downloads such as checksums and companion scripts. |
+| `GRIMOIRE_SUMMON_MIN_SPEED` | Minimum download speed (bytes/sec) below which a transfer counts as stalled. |
+| `GRIMOIRE_SUMMON_PY_DEPS` | Python dependency cache used by source GUI mode. |
+
+When curl/wget cannot fetch a file after the configured attempts, the bootstrap
+tries a Python `urllib` download fallback if Python is already on PATH.
+
 ## Agent-Legible State Surface
 
 `rites/summon.py --check` and `--reconcile` route to `rites/summon_state.py`

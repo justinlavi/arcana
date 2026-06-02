@@ -117,6 +117,14 @@ python3 rites/register_skills.py --reset-managed
 This is the supported path for migrations such as old all-`/grm-*` installs
 moving to current `/arc-*`, `/grm-*`, and domain-prefixed skill families.
 
+If registration reports `Preserve unowned` entries or `without Arcana ownership
+marker` collisions under a managed prefix, those are directories the rite could
+not prove it owns - often a skill whose source was renamed or removed. Apply the
+propose-then-confirm judgment in
+[Reconcile skill orphans](invocations/meta/skill_orphan_reconcile.md): classify
+each as a stale Arcana artifact or user-authored, remove the stale ones on one
+confirmation, then re-register.
+
 ### 6. Refresh Agent Routing Instructions
 
 Do not assume the agent instruction block is current. Read:
@@ -178,4 +186,5 @@ prefixes only.
 - [Agent configuration](docs/agent_configuration.md)
 - [Skill schema](docs/skill_schema.md)
 - [Register agent skills](invocations/agent/register_skills.md)
+- [Reconcile skill orphans](invocations/meta/skill_orphan_reconcile.md)
 - [Update Arcana from a grimoire](invocations/grimoire/update_arcana.md)

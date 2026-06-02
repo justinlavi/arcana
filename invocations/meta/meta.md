@@ -13,6 +13,7 @@ Shared invocation fragments and templates. User-facing operations belong in thei
 
 - Generic invocation execution template -> [[invocations/meta/base_invocation|base invocation]]
 - Active-grimoire directory guard -> [[invocations/meta/grimoire_directory_guard|grimoire directory guard]]
+- Optional skill-orphan reconcile step -> [[invocations/meta/skill_orphan_reconcile|skill orphan reconcile]]
 - Optional parallel review-lane protocol -> [[invocations/meta/subagent_lanes|subagent lanes]]
 
 ## Related

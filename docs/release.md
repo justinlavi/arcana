@@ -69,7 +69,8 @@ Manual test build:
 5. Download the workflow artifacts and test them locally.
 6. Run bootstrap smoke checks for `GRIMOIRE_SUMMON_BINARY=auto`,
    `GRIMOIRE_SUMMON_BINARY=always`, and `GRIMOIRE_SUMMON_BINARY=never`.
-7. Confirm Linux GUI auto mode uses the source path by default.
+7. Confirm auto mode uses the release binary on every platform, with source
+   fallback when a release step fails.
 8. Confirm Windows Git Bash downloads the `.zip` asset and runs
    `grimoire-summon.exe`.
 9. Confirm a missing or checksum-failed release binary falls back to source.
@@ -98,38 +99,18 @@ Draft releases are useful for private review, but they are not useful for unauth
 
 ## Bootstrap Behavior
 
-The durable mode matrix is in
-[summoning contract](summoning_contract.md#release-and-source-selection).
+The release/source selection logic and the full `GRIMOIRE_SUMMON_*` environment
+matrix are canonical in the summoning contract - do not restate them here:
 
-`rites/summon.sh` prefers release assets when run through the public curl pipe on every platform — Linux, macOS, and Windows alike. If any release step fails (download, checksum, extraction, or execution) it falls back to the Python source launcher, so a distro whose render stack rejects the frozen GUI libraries still completes via source. Running from a local checkout keeps using local source by default, which is better for Arcana development.
+- [Release and source selection](summoning_contract.md#release-and-source-selection)
+- [Bootstrap environment controls](summoning_contract.md#bootstrap-environment-controls)
 
-Public curl flow:
-1. Detect OS and architecture.
-2. Download `grimoire-summon-{platform}.tar.gz` on Linux/macOS or `grimoire-summon-{platform}.zip` on Windows from GitHub Releases.
-3. Download and verify the matching `.sha256` checksum.
-4. Extract and run `grimoire-summon` on Linux/macOS or `grimoire-summon.exe` on Windows.
-5. Fall back to the Python source bootstrap if any release step fails.
+This section covers only release-publishing specifics.
 
-On Linux with a detected display session, `GRIMOIRE_SUMMON_BINARY=auto` skips steps 2-4 and goes straight to source mode. Use `GRIMOIRE_SUMMON_BINARY=always` to test the Linux release binary directly.
-
-Binary controls:
-- `GRIMOIRE_SUMMON_BINARY=auto` - default. Piped scripts try release binaries except Linux GUI sessions; local scripts use source.
-- `GRIMOIRE_SUMMON_BINARY=always` - force release binary lookup.
-- `GRIMOIRE_SUMMON_BINARY=never` - force Python source bootstrap.
-- `GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0` - download from a specific release tag instead of `latest`.
-- `GRIMOIRE_SUMMON_CONNECT_TIMEOUT=20` - seconds to wait for a download connection.
-- `GRIMOIRE_SUMMON_STALL_TIMEOUT=120` and `GRIMOIRE_SUMMON_MIN_SPEED=1` - fail a stalled download after the transfer stays below the minimum speed for the timeout window.
-- `GRIMOIRE_SUMMON_QUIET_STALL_TIMEOUT=30` - shorter stall timeout for small quiet downloads such as checksums and companion scripts.
-- `GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS=3` and `GRIMOIRE_SUMMON_RETRY_DELAY=2` - retry release and companion-script downloads with explicit attempt logging.
-
-If curl/wget cannot fetch a file after the configured attempts, the bootstrap tries a Python `urllib` download fallback when Python is already available on PATH.
-
-GitHub's `latest` release URL resolves only to a non-draft, non-prerelease release. For prerelease testing, set `GRIMOIRE_SUMMON_RELEASE_TAG` to the exact tag.
-
-Example test command for a repeatedly overwritten prerelease:
+GitHub's `latest` release URL resolves only to a non-draft, non-prerelease
+release. For prerelease testing, set `GRIMOIRE_SUMMON_RELEASE_TAG` to the exact
+tag so the bootstrap pulls that asset instead of `latest`:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0 bash
 ```
-
-If no matching release binary is available or checksum verification fails, the script falls back to the Python source bootstrap.

@@ -270,6 +270,20 @@
       "validation_profile": "python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT"
     },
     {
+      "command": "/grm-help",
+      "family": "grimoire",
+      "skill_source": "skills/grimoire/help/SKILL.md",
+      "invocation": "invocations/grimoire/help.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "judgment",
+      "rite_owner": null,
+      "preconditions": ["Active grimoire", "Arcana skill catalog"],
+      "mutation_profile": "read_only",
+      "mutation_behavior": "Reads the generated Arcana skill catalog and the active grimoire's own skill frontmatter; presents the /grm-* family and the grimoire's own skills.",
+      "log_behavior": "Does not append grimoire or Arcana logs.",
+      "validation_profile": "python rites/sync_docs.py --apply when Arcana skill frontmatter or command-surface metadata changes."
+    },
+    {
       "command": "/grm-improve",
       "family": "grimoire",
       "skill_source": "skills/grimoire/improve/SKILL.md",

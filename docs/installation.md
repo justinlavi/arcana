@@ -35,14 +35,13 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 
 The script installs from the public Arcana GitHub repository by default. When run from a cloned Arcana checkout, it detects the checkout's git origin automatically.
 
-When run from the public curl command, the summoning rite is release-first
-except on Linux GUI sessions, where it uses the Python source launcher by
-default to avoid frozen OpenGL/GLX library drift:
-1. Detects the current OS and architecture.
-2. Downloads the matching `grimoire-summon-*` asset from the latest GitHub Release (`.tar.gz` on Linux/macOS, `.zip` on Windows Git Bash).
-3. Verifies the `.sha256` checksum.
-4. Runs the binary.
-5. Falls back to the Python source bootstrap if the release asset is unavailable or exits abnormally.
+When run from the public curl command, the summoning rite is release-first on
+every platform (Linux, macOS, Windows): it downloads the matching
+`grimoire-summon-*` asset from the latest GitHub Release, verifies its `.sha256`
+checksum, and runs the binary, falling back to the Python source bootstrap if any
+release step fails. The full release/source selection rules and the
+`GRIMOIRE_SUMMON_*` controls are canonical in
+[summoning contract](summoning_contract.md#release-and-source-selection).
 
 **What the summoning rite always does:**
 1. Checks runtime dependencies (`git`; Python 3 and Dear PyGui only if source fallback is needed)
@@ -98,9 +97,9 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 
 Release asset downloads print progress and explicit retry attempts. If a
 network stalls, the bootstrap retries and then fails over to source mode after
-the configured attempt/stall window. Advanced controls are documented in
-[release](release.md#bootstrap-behavior), and durable mode rules are in
-[summoning contract](summoning_contract.md#release-and-source-selection).
+the configured attempt/stall window. The download and mode controls
+(`GRIMOIRE_SUMMON_*`) and the durable mode rules are canonical in
+[summoning contract](summoning_contract.md#bootstrap-environment-controls).
 
 If no scope is provided, the rite prompts interactively:
 

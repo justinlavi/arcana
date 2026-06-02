@@ -101,6 +101,24 @@ def test_load_manifest_flags_invalid_skill_prefix(tmp_path):
     assert any("invalid skill_prefix" in e for e in errors)
 
 
+def test_load_manifest_handles_permission_error(tmp_path, monkeypatch):
+    # An unstattable grimoire.json must degrade to an error, not raise, so a
+    # restricted directory under the grimoire home cannot crash a scan.
+    restricted = tmp_path / "restricted"
+    restricted.mkdir()
+    real_is_file = Path.is_file
+
+    def fake_is_file(self):
+        if self.name == "grimoire.json":
+            raise PermissionError("[Errno 13] Permission denied")
+        return real_is_file(self)
+
+    monkeypatch.setattr(Path, "is_file", fake_is_file)
+    metadata, errors = _lib.load_manifest(restricted)
+    assert metadata is None
+    assert errors and "could not access" in errors[0]
+
+
 # ---------------------------------------------------------------------------
 # load_library
 # ---------------------------------------------------------------------------

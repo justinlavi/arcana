@@ -43,12 +43,12 @@ from diagnostics import ResultReporter, add_output_format_arg
 
 SCHEMA_VERSION = 1
 
-# Two idempotency sentinels coexist in the wild: `inject_agent_file` keys off
-# the heading, while the template / RECOVERY.md / `/arc-agent-update` use the
-# BEGIN/END markers. A block written by either path is "present"; reporting
-# only one would mislabel the other as drift and invite a double-injection.
-HEADING_SENTINEL = "## Grimoire Knowledge Base"
-BEGIN_SENTINEL = "<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->"
+# Idempotency sentinels for the injected Grimoire block. A block written by any
+# path - the injector, the template, RECOVERY.md, or /arc-agent-update - counts
+# as present when EITHER sentinel is found; reporting only one would mislabel the
+# other as drift and invite a double-injection. Single-sourced from summon_core
+# (the injector) so the detector and the injector can never disagree.
+from summon_core import BEGIN_SENTINEL, HEADING_SENTINEL
 
 NETWORK_PULL_NOTE = "skipped (human-gated; see RECOVERY.md step 2)"
 

@@ -447,7 +447,7 @@ def _worker_update_grimoire(key, log, cancel_event, proc_slot, **_kw):
         log.ok(f"{key} updated")
     else:
         log.err(f"{key} pull failed (local changes? diverged history?)")
-    return {"ok": ok}
+    return {"ok": ok, "manage_changed": True}
 
 
 def _worker_remove_grimoire(key, log, cancel_event, proc_slot, **_kw):
@@ -478,7 +478,7 @@ def _worker_remove_grimoire(key, log, cancel_event, proc_slot, **_kw):
                 log.ok(f"Removed {key} from {LOCAL_LIBRARY}")
         except (json.JSONDecodeError, OSError) as e:
             log.warn(f"Could not update library.json: {e}")
-    return {"ok": True}
+    return {"ok": True, "manage_changed": True}
 
 
 def _worker_register_skills(log, cancel_event, proc_slot, **_kw):
@@ -1587,6 +1587,14 @@ def _on_run_done(state, worker):
             populate_install_list(state)
         if summary.get("ok") and (summary.get("installed") is not None or "skills_ok" in summary):
             # An install completed - refresh installed list
+            try:
+                state.installed = scan_installed()
+                populate_installed_list(state)
+            except Exception:
+                pass
+        if summary.get("manage_changed"):
+            # A per-row Manage update/remove completed - refresh the installed list
+            # so the Manage view reflects the new on-disk state.
             try:
                 state.installed = scan_installed()
                 populate_installed_list(state)

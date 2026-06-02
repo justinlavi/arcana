@@ -82,13 +82,28 @@ def scan_grimoire_home(home):
     unmanaged = []
     warnings = []
 
-    if not home.is_dir():
+    try:
+        home_is_dir = home.is_dir()
+    except OSError as exc:
+        return {"grimoires": [], "unmanaged": [], "warnings": [f"{home}: could not access ({exc})"]}
+    if not home_is_dir:
         return {"grimoires": [], "unmanaged": [], "warnings": [f"{home} does not exist"]}
 
-    for child in sorted(home.iterdir()):
-        if not child.is_dir():
-            continue
-        if child.name == ARCANA_NAME and (child / ARCANA_MANIFEST).is_file():
+    try:
+        children = sorted(home.iterdir())
+    except OSError as exc:
+        return {"grimoires": [], "unmanaged": [], "warnings": [f"{home}: could not list ({exc})"]}
+
+    for child in children:
+        # An unstattable child (e.g. a restricted /tmp mount) must not crash the
+        # whole scan; skip it with a warning and keep discovering the rest.
+        try:
+            if not child.is_dir():
+                continue
+            if child.name == ARCANA_NAME and (child / ARCANA_MANIFEST).is_file():
+                continue
+        except OSError as exc:
+            warnings.append(f"{child.name}: could not access ({exc}); skipped")
             continue
 
         manifest, errors = load_manifest(child)

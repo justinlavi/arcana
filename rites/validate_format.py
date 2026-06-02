@@ -141,6 +141,7 @@ def main():
         "base_invocation.md",
         "grimoire_directory_guard.md",
         "subagent_lanes.md",
+        "skill_orphan_reconcile.md",
     }
 
     if invocations_dir.is_dir():

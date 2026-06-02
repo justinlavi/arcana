@@ -1,129 +1,6 @@
 # Changelog
 
-## [Unreleased]
-
-### Added
-
-- Mutating rites (`append_log`, `repair_links`, `sync_library`,
-  `adopt_grimoire`, `clean_artifacts`) accept `--format human|json|jsonl` and
-  emit a structured outcome envelope through the shared `ResultReporter` in
-  `rites/diagnostics.py`. The envelope carries `rite`, `status`, `mode`,
-  `root`, `summary`, `mutations`, and `messages`, giving an orchestrator the
-  same machine-readable signal for rite outcomes that `DiagnosticReporter`
-  already provides for validator findings. Human output and exit codes are
-  unchanged.
-- A `mutation` in the envelope means a change made on disk: plan and dry-run
-  modes record no mutations and report pending work through `messages` and the
-  `summary` counts, with `status` deriving to `noop` (the process exit code
-  still carries any actionable signal). Apply modes record their writes as
-  mutations with `status` `ok`.
-- Contract-coherence audit phase for `/arc-improve`
-  (`invocations/arcana/quality/audit_contract_coherence.md`, new Phase 5). It
-  audits whether the free-text fields in `rites/data/command_surface.json`
-  (`mutation_behavior`, `log_behavior`, `validation_profile`) and
-  `rites/data/rite_profiles.json` (`writes`, `idempotency`,
-  `plan_command`/`apply_command`, `validation_profile`) are true of the rite
-  code - the semantic layer the mechanical validators cannot reach. It
-  behaviorally probes the five `ResultReporter`-wired rites on disposable temp
-  targets via `--format json` (asserting idempotency, write scope, and mode from
-  the envelope plus an independent disk diff) and code-reads the rest, recording
-  the evidence tier on every verdict. It surfaces drift: prose-wrong claims are
-  corrected in the contract JSON, code-wrong findings defer to Phase 4 rite
-  quality. `/arc-improve` is renumbered to nine phases.
-- Shared subagent review-lane protocol
-  (`invocations/meta/subagent_lanes.md`): one home for the optional parallel-lane
-  machinery - the portability rule, the per-lane output contract, the dispatch
-  template, the synthesis rule, and the serial fallback. `/grm-improve` and
-  `/grm-lint` gain an optional "parallelize the judgment passes" subsection that
-  splits their independent read-only analysis phases into lanes when subagents
-  are available, falling back to the linear flow otherwise; the orchestrator
-  keeps apply, confirmation, and log phases. `/arc-improve`'s architecture review
-  references the same fragment, so the lane contract lives in exactly one place.
-- Autonomous-maintainer role in `docs/governance.md`: an explicit contract for
-  what an agent may do unattended versus what needs human sign-off. A four-part
-  gate (deterministic, verifiable, non-destructive, not on the sign-off list)
-  bounds the unattended tier; the machine-readable signals from the structured
-  rite envelopes, validator diagnostics, and the contract-coherence audit are
-  what let an agent verify its own work. Mechanical fixes, index regeneration,
-  unambiguous link repair, prose-wrong contract fixes, and changelog/log appends
-  are unattended; library/skill writes and >10-file changes are propose-then-
-  confirm; semver bumps, breaking changes, deprecations, deletions, and command-
-  surface changes require a human. Unowned content is never auto-deleted and the
-  tree is always left validator-green.
-- Generative negative-coverage gate for the validator suite
-  (`tests/test_negative_coverage.py` + `tests/fixtures/negative_specs.json`).
-  Every validator carries a minimal violating fixture (file contents
-  base64-encoded so the spec is inert to validators that scan `tests/`) that the
-  gate materializes in a temp dir and runs in `--format json`, asserting each
-  promised diagnostic code still fires - so a refactor that silently stops
-  detecting a violation is caught. A completeness check statically enumerates
-  every code each validator can emit and fails unless each is triggered by a
-  fixture or listed in a documented allowlist (I/O-only or mutually-exclusive
-  codes), so a new code cannot ship without coverage. Triggered fail-on-dirty
-  coverage rose from roughly a dozen hand-built codes to 60 across all 13
-  validators.
-- Agent-legible Summoning Rite surface (`rites/summon_state.py`, reached through
-  `python3 rites/summon.py --check | --reconcile [--apply] [--prune]`). `--check`
-  reports Arcana, library, agent-block, and skill drift read-only and exits 1
-  when drift is found; `--reconcile --apply` reconciles the local library
-  additively and re-registers skills. Both emit the shared `ResultReporter`
-  envelope under `--format json|jsonl`, and every install, check, and reconcile
-  writes a durable transcript to `~/.cache/grimoire/summon-last.json` (the
-  envelope as a superset plus `operation`, `run_id`, `started_at`/`ended_at`,
-  `steps`, and `final_state`) so an orchestrator can diff intent against outcome
-  without parsing prose. Remediation is structured and tier-tagged
-  (`summary.next_actions`), not free text. The `summon_state` import in
-  `rites/summon.py` is guarded: the piped bootstrap and release binary ship the
-  install-only script subset, so when `summon_state` (or its `sync_library` /
-  `diagnostics` dependencies) is absent the dispatcher degrades to the installer
-  path instead of failing the install. The full surface is available from a
-  cloned Arcana checkout, where `--check` / `--reconcile` run.
-- The reconcile engine backs the offline core of `RECOVERY.md` while keeping the
-  governance boundaries: it refuses to reconcile a base that fails
-  `validate.py`; it never deletes a library entry unless `--prune` (every removal
-  is recorded as a mutation); it reports rather than rewrites agent instruction
-  blocks (detecting both the heading and BEGIN/END sentinels, so a marker-form
-  block is not mislabeled as drift); and it leaves the network pull of Arcana
-  itself as the human step. The new mode is registered in
-  `rites/data/summon_contract.json` (`agent_reconcile`) and documented in
-  `docs/summoning_contract.md` and `RECOVERY.md`.
-- Invocation eval tier: model-in-the-loop behavioral coverage for the judgment
-  half of Arcana (the `invocations/**/*.md` playbooks). `tests/eval_harness.py`
-  materializes a seeded, validate-clean fixture grimoire, runs a playbook through
-  an injectable `model_fn(prompt, cwd)` seam, and judges the agent's structured
-  decision - deterministic assertions first (`list_any`, `field_equals`,
-  `field_in`, `file_exists`/`file_absent`, `file_from_decision_exists`), with a
-  one-binary-criterion-per-call LLM judge (evidence-quote required) as the tagged
-  fallback. Starter scenarios cover `/grm-ingest` layer classification,
-  `/grm-lint` seeded-contradiction detection, and `/grm-file-answer` placement +
-  faithfulness, in `tests/fixtures/invocation_eval_specs.json` (scenario file
-  contents base64-encoded so deliberately-shaped fixtures stay inert to the
-  validators that scan `tests/`).
-- The eval tier stays beneath the fast gate: it is not a rite and is never run by
-  `rites/validate.py`; the default seam shells to `claude` and refuses unless
-  `ARCANA_EVAL_MODEL` is set; and the model run carries a `pytest` `eval` marker
-  that `pyproject.toml` deselects by default (`-m "not eval"`). The fast gate runs
-  only the deterministic scaffolding (`tests/test_eval_scaffolding.py`: specs
-  valid, invocations exist, fixtures materialize validate-clean, prompt assembly,
-  assertion and judge wiring) with no model. Opt in with
-  `ARCANA_EVAL_MODEL=1 python -m pytest -m eval`. Documented in `docs/evals.md`;
-  the always-on model-in-CI job is deferred until a reliable gateway exists.
-
-### Changed
-
-- The Summoning Rite prefers the release binary on **every** platform - Linux,
-  macOS, and Windows alike - when run through the public curl pipe. The previous
-  Linux-GUI-source-first special case is removed (`should_prefer_source_for_linux_gui`
-  in `rites/summon.sh`); the existing source download remains the automatic
-  fallback when the binary download, checksum, extraction, or execution fails, so
-  a distro whose render stack rejects the frozen GUI libraries still completes via
-  source. `GRIMOIRE_SUMMON_BINARY=never` forces source mode. Reflected in
-  `rites/data/summon_contract.json` (parity check `binary_first_all_platforms`),
-  `docs/summoning_contract.md`, and `docs/release.md`.
-- `invocations/arcana/quality/review_architecture.md` references the shared
-  subagent-lane fragment for the generic lane contract, dispatch template, and
-  serial fallback, keeping only its Arcana-specific lane table, synthesis matrix,
-  and grading rubric inline.
+## [1.0.0] - 2026-06-01
 
 Arcana 1.0.0 defines Arcana as a framework for creating, installing, routing,
 validating, and maintaining grimoires: structured, AI-navigable knowledge
@@ -259,7 +136,8 @@ skills/<family>/<slug>/SKILL.md
 
 The same family split exists under `invocations/`: `arcana/`, `grimoire/`,
 `agent/`, `library/`, `workspace/`, `help/`, and `meta/`. The `meta/` folder
-is reserved for shared fragments such as the active-grimoire directory guard.
+holds shared fragments such as the active-grimoire directory guard, the
+optional subagent review-lane protocol, and the skill-orphan reconcile step.
 
 Skills are thin pointer files. Source `SKILL.md` files use placeholders such
 as `{{SKILL_PREFIX}}` and `{{ARCANA_PATH}}`; `rites/register_skills.py`
@@ -288,13 +166,14 @@ substitutes them when installing skills into agent directories.
 | `/arc-agent-update` | Refresh marked Grimoire instruction blocks in agent files while preserving user content. |
 | `/arc-library-adopt` | Adopt an unmanaged directory under `~/grimoires/` as a grimoire. |
 | `/arc-library-sync` | Reconcile `~/grimoires/library.json` against installed directories. |
-| `/arc-workspace-clean` | Remove temporary rite artifacts across Arcana and installed grimoires. |
+| `/arc-workspace-clean` | Remove temporary rite artifacts under Arcana's `rites/.artifacts`. |
 | `/arc-help` | Display the Arcana skill catalog and installed grimoire skill guide. |
 
 ### Universal grimoire skills
 
 | Skill | Purpose |
 |---|---|
+| `/grm-help` | Show the `/grm-*` command family and the active grimoire's own skills; the grimoire-author counterpart to `/arc-help`. |
 | `/grm-create` | Create a new grimoire with scaffold, manifest, library entry, and agent setup. |
 | `/grm-create-chapter` | Add a knowledge chapter with frontmatter and hub naming. |
 | `/grm-ingest` | Bring content into the active grimoire: single source, folder, or inbox sweep. |
@@ -345,6 +224,19 @@ domains and are cross-checked against the repository by rites and tests:
 matches its rite profile, keeping the command-surface and rite-profile contracts
 aligned.
 
+### Structured rite output
+
+Two reporters in `rites/diagnostics.py` give every rite a machine-readable
+interface alongside its human output. Validators emit findings through
+`DiagnosticReporter`. The mutating rites - `append_log`, `repair_links`,
+`sync_library`, `adopt_grimoire`, `clean_artifacts`, `register_skills`, and the
+summon state surface - emit an outcome envelope through `ResultReporter`
+(`rite`, `status`, `mode`, `summary`, `mutations`, `messages`) under
+`--format human|json|jsonl`. A `mutation` is a change made on disk: plan and
+dry-run modes record none and report pending work through `messages` and summary
+counts, so an orchestrator can run a rite and verify the outcome instead of
+parsing prose. Human output and exit codes are independent of the format flag.
+
 ### Validation suite
 
 Mechanical rites are independently invocable and orchestrated by
@@ -388,11 +280,30 @@ mechanical validator suite, then runs judgment-based quality passes for:
   portability, and auditability.
 - Documentation quality: duplication, clarity, canonical homes, generated
   views, and user-facing navigation.
+- Contract coherence
+  (`invocations/arcana/quality/audit_contract_coherence.md`): a subagent reads
+  each rite and asserts that the free-text contract fields in
+  `command_surface.json` and `rite_profiles.json` are true of the code -
+  behaviorally probing the `ResultReporter`-wired rites via `--format json` on
+  disposable temp targets - the semantic layer the mechanical validators cannot
+  reach. Prose-wrong claims are corrected in the contract JSON; code-wrong
+  findings defer to the rite-quality pass.
 
 The architecture pass lives in
 `invocations/arcana/quality/review_architecture.md`. It treats every Arcana
 surface as in scope: root files, docs, invocations, formulae, rites, skills,
 tests, release automation, Obsidian settings, and resources.
+
+The judgment-based analysis passes of `/arc-improve`, `/grm-improve`, and
+`/grm-lint` may optionally fan out into isolated read-only review lanes when
+subagents are available (the shared contract in
+`invocations/meta/subagent_lanes.md`), falling back to the linear flow
+otherwise; the orchestrator always keeps apply, confirmation, and log phases.
+`docs/governance.md` defines an autonomous-maintainer contract: a four-part gate
+(deterministic, verifiable, non-destructive, not on the sign-off list) bounds
+what an agent may do unattended, with library/skill writes and large changes
+propose-then-confirm and semver bumps, breaking changes, deprecations, and
+deletions reserved for a human.
 
 ### Shared library
 
@@ -425,6 +336,9 @@ check, and exit 0 or 1.
   unrelated instructions.
 - `rites/templates/grimoire_block.md` is the only source for the injected
   agent block. Source bootstrap downloads it and release binaries bundle it.
+- The injector treats the block as present when either the
+  `## Grimoire Knowledge Base` heading or the BEGIN/END markers are found, so a
+  re-run never double-injects; the same sentinels drive the summon drift detector.
 - `rites/sync_docs.py` regenerates `docs/skills.md` from skill frontmatter.
 
 Supported agents:
@@ -453,8 +367,9 @@ path:
 2. Download the matching `grimoire-summon-*` GitHub Release asset with
    checksum verification.
 3. Run the binary, or fall back to Python source bootstrap when needed.
-4. Use Python source mode by default for Linux GUI sessions to avoid frozen
-   GL/GLX library drift.
+4. Prefer the release binary on every platform (Linux, macOS, Windows); source
+   mode is the automatic fallback when any release step fails, and
+   `GRIMOIRE_SUMMON_BINARY=never` forces it.
 5. Probe Dear PyGui/OpenGL startup before opening the source GUI; fall back to
    CLI on failure.
 6. Read prompts from the controlling terminal when launched through
@@ -477,6 +392,19 @@ The implementation is split for auditability:
 - `rites/summon.py` - dispatcher and mode selection.
 - `rites/summon_core.py` - pure-stdlib install engine.
 - `rites/summon_gui.py` - Dear PyGui front end.
+- `rites/summon_state.py` - agent-legible state surface.
+
+`python3 rites/summon.py --check` reports Arcana, library, agent-block, and skill
+drift read-only (exit 1 on drift); `--reconcile [--apply] [--prune]` reconciles
+the local library and re-registers skills, refusing a base that fails
+`validate.py` and recording every library removal as a mutation. Both emit the
+`ResultReporter` envelope under `--format json|jsonl`, and every install, check,
+and reconcile writes a transcript to `~/.cache/grimoire/summon-last.json` (steps,
+`final_state`, and tier-tagged `next_actions`) so an orchestrator can diff intent
+against outcome. The mode is registered in `summon_contract.json`
+(`agent_reconcile`) and backs the offline core of `RECOVERY.md`; the agent block
+is reported, never rewritten, and detected by either the heading or the
+BEGIN/END markers.
 
 `rites/build_summon_binary.py` builds PyInstaller release artifacts, bundles
 `resources/`, and reports build failures clearly. The release workflow uses
@@ -555,7 +483,16 @@ settings Arcana validates.
 - `CONTRIBUTING.md` - contributor onramp.
 - `pyproject.toml` - pure-stdlib runtime (Python 3.10+) with optional `[dev]`,
   `[gui]`, and `[build]` extras.
-- `tests/` - pytest suite with fixture grimoires and validator coverage.
+- `tests/` - pytest suite with fixture grimoires and validator coverage,
+  including a generative negative-coverage gate: every validator carries a
+  minimal violating fixture (base64-encoded so the spec stays inert to validators
+  that scan `tests/`), and a completeness check fails unless every diagnostic
+  code a validator can emit is triggered by a fixture or a documented allowlist.
+- An invocation eval tier (`tests/eval_harness.py`, `docs/evals.md`) gives the
+  judgment-half playbooks model-in-the-loop behavioral coverage through an
+  injectable model seam: deterministic scaffolding runs in the fast gate with no
+  model, while the model run is opt-in behind a `pytest` `eval` marker (deselected
+  by default) and `ARCANA_EVAL_MODEL`, never reached by `rites/validate.py`.
 - `.github/workflows/ci.yml` - runs the test suite and validator orchestrator on
   pull requests and pushes to main.
 - `.github/workflows/summon-release.yml` - release binary build workflow.

@@ -251,7 +251,11 @@ def load_manifest(directory: Path) -> tuple[Optional[dict], list]:
     collisions across grimoires) compose on top.
     """
     manifest_file = directory / "grimoire.json"
-    if not manifest_file.is_file():
+    try:
+        has_manifest = manifest_file.is_file()
+    except OSError as exc:
+        return None, [f"could not access grimoire.json: {exc}"]
+    if not has_manifest:
         return None, ["missing grimoire.json"]
 
     try:

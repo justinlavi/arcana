@@ -144,3 +144,26 @@ def test_json_envelope_in_sync_is_noop(tmp_path):
     assert report["status"] == "noop"
     assert report["mutations"] == []
     assert report["summary"]["applied"] is False
+
+
+def test_scan_grimoire_home_skips_unstattable_child(tmp_path, monkeypatch):
+    # A restricted child (e.g. a /tmp mount that raises PermissionError on stat)
+    # must be skipped with a warning, not crash the whole scan.
+    home = tmp_path / "grimoires"
+    _make_grimoire(home, "goodgrim")
+    bad = home / "snap-private-tmp"
+    bad.mkdir()
+
+    real_is_dir = Path.is_dir
+
+    def fake_is_dir(self):
+        if self == bad:
+            raise PermissionError("[Errno 13] Permission denied")
+        return real_is_dir(self)
+
+    monkeypatch.setattr(Path, "is_dir", fake_is_dir)
+
+    scan = sync_library.scan_grimoire_home(home)  # must not raise
+
+    assert any(g["key"] == "goodgrim" for g in scan["grimoires"])
+    assert any("snap-private-tmp" in w for w in scan["warnings"])

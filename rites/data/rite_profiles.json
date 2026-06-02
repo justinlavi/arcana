@@ -42,7 +42,7 @@
       "default_mode": "apply",
       "plan_command": "python rites/clean_artifacts.py --dry-run",
       "apply_command": "python rites/clean_artifacts.py",
-      "writes": ["rites/.artifacts directories under Arcana and installed grimoires"],
+      "writes": ["rites/.artifacts directory under Arcana"],
       "idempotency": "After cleanup, rerun reports nothing to clean.",
       "validation_profile": "python rites/clean_artifacts.py --dry-run",
       "tests": ["tests/test_rite_profiles.py"]

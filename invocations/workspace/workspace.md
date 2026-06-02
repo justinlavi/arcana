@@ -13,7 +13,7 @@ Workspace operations that intentionally touch Arcana plus installed grimoires.
 
 | Invocation | Skill | What it does |
 |---|---|---|
-| [[invocations/workspace/clean|clean]] | `/arc-workspace-clean` | Remove temporary rite artifacts across Arcana and installed grimoires |
+| [[invocations/workspace/clean|clean]] | `/arc-workspace-clean` | Remove temporary rite artifacts under Arcana's `rites/.artifacts` |
 
 ## Related
 

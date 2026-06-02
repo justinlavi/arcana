@@ -280,3 +280,47 @@ def test_gui_install_arcana_cancellable_delegates_to_core(monkeypatch):
     assert recorded["url"] == "u"
     assert recorded["cancel_event"] is cancel_sentinel
     assert callable(recorded["git_fn"])  # proc-slot-bound cancellable git
+
+
+def test_inject_agent_file_is_idempotent_on_rerun(tmp_path):
+    target = tmp_path / "AGENTS.md"
+    summon_core.inject_agent_file(_FullLog(), target, "AGENTS")
+    once = target.read_text(encoding="utf-8")
+    assert once.count(summon_core.BEGIN_SENTINEL) == 1
+    assert once.count(summon_core.HEADING_SENTINEL) == 1
+    # Re-running must not append a second block.
+    summon_core.inject_agent_file(_FullLog(), target, "AGENTS")
+    twice = target.read_text(encoding="utf-8")
+    assert twice == once
+
+
+def test_inject_agent_file_skips_marker_only_block(tmp_path):
+    # A block with BEGIN/END markers but no heading - the case the old
+    # heading-only check would double-inject - is detected and left untouched.
+    target = tmp_path / "AGENTS.md"
+    target.write_text(
+        "# AGENTS\n\n"
+        f"{summon_core.BEGIN_SENTINEL}\ncustom block, no heading\n{summon_core.END_SENTINEL}\n",
+        encoding="utf-8", newline="\n",
+    )
+    before = target.read_text(encoding="utf-8")
+    summon_core.inject_agent_file(_FullLog(), target, "AGENTS")
+    after = target.read_text(encoding="utf-8")
+    assert after == before
+    assert after.count(summon_core.BEGIN_SENTINEL) == 1
+    assert summon_core.HEADING_SENTINEL not in after
+
+
+def test_inject_agent_file_skips_legacy_heading_only_block(tmp_path):
+    # A legacy block with the heading but no markers is still detected.
+    target = tmp_path / "AGENTS.md"
+    target.write_text(
+        "# AGENTS\n\n## Grimoire Knowledge Base\n\nlegacy block\n",
+        encoding="utf-8", newline="\n",
+    )
+    before = target.read_text(encoding="utf-8")
+    summon_core.inject_agent_file(_FullLog(), target, "AGENTS")
+    after = target.read_text(encoding="utf-8")
+    assert after == before
+    assert after.count(summon_core.HEADING_SENTINEL) == 1
+    assert summon_core.BEGIN_SENTINEL not in after

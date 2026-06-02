@@ -84,6 +84,16 @@ def _load_grimoire_block():
 
 GRIMOIRE_BLOCK = _load_grimoire_block()
 
+# Idempotency sentinels for the injected Grimoire block. The canonical template
+# wraps the block in BEGIN/END markers with the heading inside; older injections
+# carried only the heading. A block written by any path - this injector, the
+# template, /arc-agent-update, or RECOVERY.md - counts as present when EITHER
+# sentinel is found, so a re-run never double-injects regardless of which form is
+# on disk. summon_state imports these so the detector and injector cannot drift.
+BEGIN_SENTINEL = "<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->"
+END_SENTINEL = "<!-- END GRIMOIRE KNOWLEDGE BASE -->"
+HEADING_SENTINEL = "## Grimoire Knowledge Base"
+
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -684,7 +694,7 @@ def inject_agent_file(log, target_path, title):
 
     content = target_path.read_text(encoding="utf-8")
 
-    if "## Grimoire Knowledge Base" in content:
+    if BEGIN_SENTINEL in content or HEADING_SENTINEL in content:
         log.ok(f"Grimoire block already present in {target_path.name} (skipping)")
         return
 

@@ -13,6 +13,7 @@ Grimoire operations that create, update, validate, or improve a grimoire. Arcana
 
 | Invocation | Skill | What it does |
 |---|---|---|
+| [[invocations/grimoire/help|help]] | `/grm-help` | Show the grimoire command catalog and the active grimoire's own skills |
 | [[invocations/grimoire/create_grimoire|create grimoire]] | `/grm-create` | Create a new grimoire |
 | [[invocations/grimoire/create_chapter|create chapter]] | `/grm-create-chapter` | Add a knowledge chapter to the active grimoire |
 | [[invocations/grimoire/update_arcana|update arcana]] | `/grm-update-arcana` | Pull Arcana, refresh agent integration, register skills, and check active-grimoire health |
