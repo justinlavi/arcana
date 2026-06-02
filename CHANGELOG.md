@@ -366,6 +366,10 @@ Supported agents:
 
 - `rites/sync_library.py` (`/arc-library-sync`) reconciles the local library
   against disk, detecting missing, stale, mismatched, and unmanaged grimoires.
+  It writes the reconciled `library.json` under a compare-and-swap: reconciling
+  the library is a read-modify-write, so if the file changed since it was read
+  the rite re-reads, rebuilds, and retries, and a persistent conflict fails
+  loudly - a concurrent sync or adopt is never silently clobbered.
 - `rites/adopt_grimoire.py` (`/arc-library-adopt`) writes a `grimoire.json`
   manifest for an existing unmanaged directory.
 - `/arc-help` enumerates the Arcana catalog and installed grimoire skill guide.

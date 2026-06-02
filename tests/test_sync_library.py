@@ -146,6 +146,87 @@ def test_json_envelope_in_sync_is_noop(tmp_path):
     assert report["summary"]["applied"] is False
 
 
+def test_compare_and_swap_write_detects_conflict(tmp_path):
+    libpath = tmp_path / "library.json"
+    libpath.write_text("A\n", encoding="utf-8")
+    expected = b"A\n"
+
+    # On-disk bytes match what we read: the write goes through.
+    assert sync_library.compare_and_swap_write(libpath, expected, {"grimoires": {}}) is True
+    after_write = libpath.read_bytes()
+
+    # The file no longer matches the now-stale expected snapshot: CAS must refuse
+    # rather than clobber, and leave the file untouched.
+    assert sync_library.compare_and_swap_write(
+        libpath, expected, {"grimoires": {"x": {}}}
+    ) is False
+    assert libpath.read_bytes() == after_write
+
+
+def test_apply_preserves_concurrent_out_of_home_entry(tmp_path, monkeypatch):
+    home = tmp_path / "grimoires"
+    _make_grimoire(home, "local_a")
+    libpath = home / "library.json"
+    libpath.write_text(json.dumps({"grimoires": {}}), encoding="utf-8")
+
+    # An out-of-home grimoire that a concurrent writer registers mid-sync.
+    ext = tmp_path / "ext_grim"
+    ext.mkdir()
+    (ext / "grimoire.json").write_text(
+        json.dumps({"name": "ext_grim", "skill_prefix": "ex", "description": "x"}),
+        encoding="utf-8",
+    )
+
+    scan = sync_library.scan_grimoire_home(home)  # sees only local_a
+
+    real_cas = sync_library.compare_and_swap_write
+    calls = {"n": 0}
+
+    def racing_cas(library_path, expected_bytes, library):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            # Simulate a concurrent writer landing between our read and write:
+            # CAS must detect the change and refuse this attempt.
+            sync_library.write_library(
+                {"grimoires": {"ext_grim": {"local_path": str(ext), "online_path": None}}},
+                library_path,
+            )
+            return False
+        return real_cas(library_path, expected_bytes, library)
+
+    monkeypatch.setattr(sync_library, "compare_and_swap_write", racing_cas)
+
+    applied = sync_library.apply_synced_library(scan, libpath, home)
+
+    assert applied is True
+    assert calls["n"] >= 2  # retried after the injected conflict
+    written = json.loads(libpath.read_text(encoding="utf-8"))
+    # The concurrent out-of-home entry survived AND local_a was added: the
+    # lost-update is gone - the retry rebuilt from the updated file.
+    assert "local_a" in written["grimoires"]
+    assert "ext_grim" in written["grimoires"]
+
+
+def test_apply_raises_conflict_when_file_never_settles(tmp_path, monkeypatch):
+    home = tmp_path / "grimoires"
+    _make_grimoire(home, "local_a")
+    libpath = home / "library.json"
+    libpath.write_text(json.dumps({"grimoires": {}}), encoding="utf-8")
+
+    scan = sync_library.scan_grimoire_home(home)
+
+    # Every CAS attempt loses the race: apply must give up rather than loop or
+    # clobber.
+    monkeypatch.setattr(sync_library, "compare_and_swap_write", lambda *a, **k: False)
+
+    try:
+        sync_library.apply_synced_library(scan, libpath, home, retries=3)
+    except sync_library.LibraryWriteConflict:
+        pass
+    else:
+        raise AssertionError("expected LibraryWriteConflict")
+
+
 def test_scan_grimoire_home_skips_unstattable_child(tmp_path, monkeypatch):
     # A restricted child (e.g. a /tmp mount that raises PermissionError on stat)
     # must be skipped with a warning, not crash the whole scan.

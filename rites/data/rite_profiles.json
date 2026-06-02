@@ -131,7 +131,7 @@
       "plan_command": "python rites/sync_library.py",
       "apply_command": "python rites/sync_library.py --apply",
       "writes": ["~/grimoires/library.json"],
-      "idempotency": "After apply, rerun reports the library is in sync unless disk state changed.",
+      "idempotency": "Writes under compare-and-swap: re-reads and rebuilds if library.json changed since it was read, so a concurrent sync or adopt is never clobbered; a persistent conflict fails loudly. After apply, rerun reports the library is in sync unless disk state changed.",
       "validation_profile": "python rites/sync_library.py; python rites/register_skills.py --dry-run after approved library changes.",
       "tests": ["tests/test_rite_profiles.py"]
     },

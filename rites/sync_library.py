@@ -266,6 +266,70 @@ def write_library(library, library_path):
     tmp.replace(library_path)
 
 
+class LibraryWriteConflict(Exception):
+    """Raised when library.json keeps changing under a sync, so the reconciled
+    result can't be written without clobbering a concurrent writer."""
+
+
+def render_library_bytes(library):
+    """Serialize the library exactly as write_library persists it."""
+    return (json.dumps(library, indent=2) + "\n").encode("utf-8")
+
+
+def library_from_bytes(raw):
+    """Parse library bytes leniently, mirroring _lib.load_library's contract."""
+    if not raw:
+        return {"grimoires": {}}
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return {"grimoires": {}}
+    if not isinstance(data.get("grimoires"), dict):
+        data["grimoires"] = {}
+    return data
+
+
+def compare_and_swap_write(library_path, expected_bytes, library):
+    """Write `library` only if the on-disk file still matches `expected_bytes`.
+
+    Returns True on success, False when the file changed since it was read (a
+    concurrent writer won the race) so the caller can re-read and retry instead
+    of silently overwriting that writer's changes.
+    """
+    current = library_path.read_bytes() if library_path.is_file() else b""
+    if current != expected_bytes:
+        return False
+    write_library(library, library_path)
+    return True
+
+
+def apply_synced_library(scan, library_path, home, retries=5):
+    """Reconcile the library against disk and write it under compare-and-swap.
+
+    Reading and writing library.json is a read-modify-write: a concurrent
+    `/arc-library-sync` or `/arc-library-adopt` could otherwise be clobbered.
+    Each attempt re-reads the current file, rebuilds from it plus the disk scan,
+    and writes only if the file is unchanged; a conflict re-reads and retries so
+    the concurrent change is incorporated rather than lost.
+
+    Returns True when a write occurred, False when the library was already in
+    sync (possibly reconciled by a concurrent process). Raises
+    LibraryWriteConflict if the file keeps changing across `retries` attempts.
+    """
+    for _ in range(retries):
+        current = library_path.read_bytes() if library_path.is_file() else b""
+        library = library_from_bytes(current)
+        new_library = build_synced_library(scan, library, home)
+        if render_library_bytes(new_library) == current:
+            return False
+        if compare_and_swap_write(library_path, current, new_library):
+            return True
+    raise LibraryWriteConflict(
+        f"{library_path} kept changing during {retries} sync attempts; "
+        "re-run /arc-library-sync"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Reporting
 # ---------------------------------------------------------------------------
@@ -410,16 +474,26 @@ def main():
     )
 
     applied = False
+    conflict = None
     if args.apply and has_drift:
-        new_library = build_synced_library(scan, library, home)
-        write_library(new_library, library_path)
-        applied = True
-        reporter.mutation("write", path=library_path, detail="reconciled library")
-        if human:
-            ok(f"Library written: {library_path}")
-            print()
-            print("  Re-register skills to pick up any new grimoires:")
-            print("    /arc-agent-register-skills")
+        try:
+            applied = apply_synced_library(scan, library_path, home)
+        except LibraryWriteConflict as exc:
+            conflict = str(exc)
+            reporter.message("error", conflict)
+            if human:
+                print(f"  [ERROR] {conflict}", file=sys.stderr)
+                print()
+        if applied:
+            reporter.mutation("write", path=library_path, detail="reconciled library")
+            if human:
+                ok(f"Library written: {library_path}")
+                print()
+                print("  Re-register skills to pick up any new grimoires:")
+                print("    /arc-agent-register-skills")
+                print()
+        elif not conflict and human:
+            ok("Library already reconciled by a concurrent process; nothing to write.")
             print()
 
     if not human:
@@ -435,7 +509,7 @@ def main():
             },
         )
 
-    sys.exit(0)
+    sys.exit(1 if conflict else 0)
 
 
 if __name__ == "__main__":
