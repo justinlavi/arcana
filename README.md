@@ -176,6 +176,7 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 |---|---|
 | [Recovery](RECOVERY.md) | Stable bridge for stale installations and broken skill registrations |
 | [Installation](docs/installation.md) | One-command setup, manual setup, 5-minute smoke test, troubleshooting |
+| [Summoning Contract](docs/summoning_contract.md) | Summoning Rite installer contract: install/update modes, drift detection, fallbacks |
 | [Agent Targets](docs/agent_targets.md) | Supported agent target registry |
 | [Agent Configuration](docs/agent_configuration.md) | Claude Code, Codex, Copilot, Cursor |
 | [Skills](docs/skills.md) | Every `/arc-*` command with descriptions |
