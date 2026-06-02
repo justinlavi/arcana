@@ -201,6 +201,35 @@ last_verified: 2026-05-25
     assert "PROVENANCE_SOURCE_WRAPPER_SELF_REFERENCE" in codes
 
 
+def test_frontmatter_rejects_implausible_last_verified(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    (grimoire / "chapters/recipes/epoch_sentinel.md").write_text(
+        """---
+type: concept
+title: "Epoch Sentinel"
+tags: [chapter/recipes, type/concept]
+authority: grimoire
+last_verified: 1970-01-01
+---
+
+# Epoch Sentinel
+""",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_frontmatter.py", grimoire, "--format", "json")
+
+    # A well-formed but implausibly early date must be caught as a sentinel, not
+    # accepted as a valid ISO date.
+    assert result.returncode != 0
+    report = json.loads(result.stdout)
+    codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+    assert "FRONTMATTER_IMPLAUSIBLE_DATE" in codes
+    assert "FRONTMATTER_INVALID_DATE_FORMAT" not in codes
+
+
 def test_bad_links_is_caught():
     result = _run("validate_links.py", BAD_LINKS)
     assert result.returncode != 0, (

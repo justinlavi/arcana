@@ -13,7 +13,8 @@ checks:
   4. `authority:` (when present) is one of `external | grimoire | hybrid`.
   5. `type: source` is reserved for source wrappers under `sources/`.
   6. `sources:` paths under `sources/` resolve on disk; URLs are not network-checked.
-  7. `last_verified:` parses as YYYY-MM-DD.
+  7. `last_verified:` parses as YYYY-MM-DD and is not an implausibly early
+     sentinel (a date before a fixed static floor; never compared to "today").
   8. `tags:` and `aliases:` are YAML lists of plain strings.
 
 SKILL.md files are exempt - they use a different agent-defined schema.
@@ -60,6 +61,14 @@ FORMULA_TEMPLATE_DIRS = {"formulae"}
 
 VALID_TYPES = {"hub", "concept", "entity", "source", "playbook", "reference", "log-entry"}
 VALID_AUTHORITIES = {"external", "grimoire", "hybrid"}
+
+# Static floor for `last_verified`. A well-formed date earlier than this is an
+# implausible sentinel (e.g. the Unix epoch `1970-01-01`) that would otherwise
+# pass as a valid ISO date and report a page as verified when it never was. The
+# floor is a fixed constant, never the current date: comparing against "today"
+# would make validation depend on wall-clock time and break reproducibility.
+# No grimoire can predate Arcana, so 2020-01-01 clears every real date.
+EARLIEST_PLAUSIBLE_VERIFIED = datetime.date(2020, 1, 1)
 
 
 def required_fields_for(type_):
@@ -190,7 +199,7 @@ def check_file(path, grimoire_root, reporter):
                 )
             else:
                 try:
-                    datetime.date.fromisoformat(v)
+                    parsed = datetime.date.fromisoformat(v)
                 except ValueError:
                     reporter.error(
                         "FRONTMATTER_INVALID_DATE",
@@ -198,6 +207,17 @@ def check_file(path, grimoire_root, reporter):
                         path=rel,
                         docs_reference="docs/page_schema.md",
                     )
+                else:
+                    if parsed < EARLIEST_PLAUSIBLE_VERIFIED:
+                        reporter.error(
+                            "FRONTMATTER_IMPLAUSIBLE_DATE",
+                            f"last_verified '{v}' predates {EARLIEST_PLAUSIBLE_VERIFIED.isoformat()}"
+                            " and is an implausible sentinel",
+                            path=rel,
+                            hint="Set last_verified to the date the page was"
+                            " actually hand-verified or auto-checked.",
+                            docs_reference="docs/page_schema.md",
+                        )
 
     for field in ("tags", "aliases"):
         if field in fields and not isinstance(fields[field], list):

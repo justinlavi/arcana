@@ -102,7 +102,7 @@ last_verified: 2026-05-12
 | `tags` | every page | Use `/`-separated namespaces: `chapter/<name>`, `type/<type>`, `domain/<...>`. Drives Dataview and Obsidian tag panes. |
 | `sources` | required for `authority: external`, `authority: hybrid`, and `type: source` | Paths or URLs. At least one entry must resolve. Validator checks `sources/...` paths exist on disk. |
 | `authority` | every page except `hub` / `log-entry` | One of the three values above. |
-| `last_verified` | every page except `hub` / `log-entry` | ISO date the page was last hand-verified or auto-checked. `/grm-lint` flags pages older than the stale window (default: 90 days). |
+| `last_verified` | every page except `hub` / `log-entry` | ISO date (`YYYY-MM-DD`) the page was last hand-verified or auto-checked. Must be a real verification date, not an implausibly early sentinel: `validate_frontmatter` rejects any date before a fixed static floor (`2020-01-01`), which catches epoch-style placeholders like `1970-01-01`. `/grm-lint` flags pages older than the stale window (default: 90 days). |
 
 ### Required-fields matrix
 
@@ -212,7 +212,7 @@ cite it with `sources: ["sources/example_recipe_method.md"]`.
 4. `authority` (when present) is one of `external`, `grimoire`, `hybrid`.
 5. `type: source` pages are reserved for source wrappers under `sources/`.
 6. `sources` paths under `sources/` resolve on disk; URLs are not network-checked.
-7. `last_verified` is a parseable `YYYY-MM-DD` date.
+7. `last_verified` is a parseable `YYYY-MM-DD` date and is not an implausibly early sentinel (rejected below a fixed static floor of `2020-01-01`; the check never compares against the current date, so validation stays reproducible).
 8. `tags` and `aliases` are YAML lists of plain strings.
 
 `python3 rites/validate_provenance.py` enforces:
