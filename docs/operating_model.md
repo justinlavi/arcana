@@ -70,6 +70,13 @@ Internal page link style is layer-aware:
 - Vault and AI-routing surfaces (root hubs, chapter pages, invocation files, skill sources, and formula templates) use full-path wikilinks for internal Markdown-page pointers.
 - External URLs, same-page anchors, and local non-Markdown artifacts use standard Markdown links in every layer.
 
+## Naming And Depth Conventions
+
+Two structural choices are deliberate and mechanically enforced, not incidental:
+
+- **snake_case names.** Page and folder names are lowercase `snake_case`, enforced by `validate_naming` (with conventional uppercase exceptions such as `README.md`, `CHANGELOG.md`, and `VERSION`). snake_case is greppable as whole-word tokens, stable under full-path wikilinks, and unambiguous for lexical lookup; `kebab-case` is reserved for skill slugs. Do not rename pages to other casings.
+- **Open-ended depth, no global cap.** The hub tree is as deep as the topic warrants - bounded by topic structure, never by a fixed hop limit. A flat topic stays shallow (root -> leaf); a layered one nests as far as it needs. Per the minimal-read invariant, each hop must narrow the search, so collapse a hub only when it adds a hop without narrowing it (a single-leaf pass-through) - never to hit a uniform depth target.
+
 ## What Grimoire Is
 
 - A deterministic knowledge router for any knowledge-based work (code, documentation, policies, templates, processes, etc.).

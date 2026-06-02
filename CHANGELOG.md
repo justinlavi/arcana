@@ -51,6 +51,9 @@ question. Folder-named hubs keep Obsidian graph nodes meaningful and unique.
 Under `chapters/` the convention is an enforced if-and-only-if - a page is a hub
 exactly when its filename stem equals its folder name - so an agent tells hubs
 from leaves by path alone; `validate_grimoire_structure` checks both directions.
+Page and folder names are lowercase `snake_case` (enforced by `validate_naming`);
+depth is open-ended by design, bounded by topic structure rather than a fixed
+cap.
 
 **Page frontmatter.** Authored markdown pages in Arcana docs, invocations,
 formulae, and grimoire chapters carry YAML frontmatter:
