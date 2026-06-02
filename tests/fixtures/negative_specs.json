@@ -128,6 +128,8 @@
       "GRIMOIRE_STRUCTURE_STALE_MANAGED": "requires a managed scaffold file present but divergent from its Arcana formula source; this fixture exercises the missing-managed path"
     },
     "expected_codes": [
+      "GRIMOIRE_STRUCTURE_HUB_MISPLACED",
+      "GRIMOIRE_STRUCTURE_HUB_NOT_DECLARED",
       "GRIMOIRE_STRUCTURE_INVALID_MANIFEST",
       "GRIMOIRE_STRUCTURE_JSON_MISSING",
       "GRIMOIRE_STRUCTURE_MISSING_CHAPTER_HUB",
@@ -138,6 +140,8 @@
       "GRIMOIRE_STRUCTURE_SOURCES_CHAPTERS"
     ],
     "files": {
+      "chapters/bar/bar.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJCYXIiCi0tLQoKIyBCYXIK",
+      "chapters/bar/leaf.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkxlYWYiCi0tLQoKIyBMZWFmCg==",
       "chapters/foo/note.md": "IyBub3RlCg==",
       "grimoire.json": "ewogICJuYW1lIjogImciCn0K",
       "sources/chapters/x.md": "c3RyYXkK"

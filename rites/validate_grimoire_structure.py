@@ -12,6 +12,11 @@ Required at the grimoire root:
 For each chapter folder F, the hub file F/F.md must exist (folder-name
 convention). Sub-chapters follow the same rule recursively.
 
+The folder-name convention is enforced as an if-and-only-if under chapters/: a
+folder-named page (the root hub and each F/F.md) must declare `type: hub`, and a
+page that declares `type: hub` must be folder-named. This lets an agent tell hubs
+from leaves by path alone. Demonstrative asset folders are exempt.
+
 Usage:
     python3 rites/validate_grimoire_structure.py [--grimoire <path>]
 
@@ -24,7 +29,7 @@ import json
 import sys
 from pathlib import Path
 
-from _lib import default_arcana_root, load_manifest
+from _lib import default_arcana_root, load_manifest, parse_frontmatter
 from diagnostics import DiagnosticReporter, add_output_format_arg
 from scaffold_contract import (
     ScaffoldContractError,
@@ -35,6 +40,14 @@ from scaffold_contract import (
     required_directories,
     validate_contract_against_formula,
 )
+
+
+def page_type(path):
+    """Return a page's declared frontmatter `type`, or None if unreadable/absent."""
+    try:
+        return parse_frontmatter(path.read_text(encoding="utf-8", errors="replace")).get("type")
+    except OSError:
+        return None
 
 
 def main():
@@ -118,7 +131,17 @@ def main():
         if human:
             print(f"  MISSING  root hub: {grimoire_name}.md")
     else:
-        if human:
+        root_hub_type = page_type(root_hub)
+        if root_hub_type != "hub":
+            reporter.error(
+                "GRIMOIRE_STRUCTURE_HUB_NOT_DECLARED",
+                f"root hub {grimoire_name}.md must declare type: hub (found type: {root_hub_type or 'none'})",
+                path=f"{grimoire_name}.md",
+                docs_reference="docs/operating_model.md",
+            )
+            if human:
+                print(f"  WARN     root hub {grimoire_name}.md must declare type: hub (found {root_hub_type or 'none'})")
+        elif human:
             print(f"  OK       {grimoire_name}.md")
 
     # 4. Required scaffold directories.
@@ -166,8 +189,40 @@ def main():
                     if human:
                         print(f"  MISSING  hub: {rel}/{folder.name}.md")
             else:
-                if human:
+                hub_type = page_type(hub)
+                if hub_type != "hub":
+                    reporter.error(
+                        "GRIMOIRE_STRUCTURE_HUB_NOT_DECLARED",
+                        f"hub {rel}/{folder.name}.md must declare type: hub (found type: {hub_type or 'none'})",
+                        path=f"{rel}/{folder.name}.md",
+                        docs_reference="docs/operating_model.md",
+                    )
+                    if human:
+                        print(f"  WARN     hub {rel}/{folder.name}.md must declare type: hub (found {hub_type or 'none'})")
+                elif human:
                     print(f"  OK       {rel}/{folder.name}.md")
+
+    # 5b. Declared hubs must sit in a folder-named position (the reverse of the
+    # rule above). This closes the if-and-only-if: under chapters/, a page is a
+    # hub exactly when its filename stem equals its folder name, so an agent can
+    # tell hubs from leaves by path alone without reading frontmatter.
+    if chapters.is_dir():
+        for page in sorted(chapters.rglob("*.md")):
+            if page.stem == page.parent.name:
+                continue  # folder-named: the valid hub slot, checked above
+            if is_asset_folder(page.parent, root):
+                continue  # demonstrative/asset content is exempt
+            if page_type(page) == "hub":
+                rel = page.relative_to(root)
+                reporter.error(
+                    "GRIMOIRE_STRUCTURE_HUB_MISPLACED",
+                    f"{rel} declares type: hub but is not a folder-named hub "
+                    f"(a hub here must be named {page.parent.name}.md)",
+                    path=str(rel),
+                    docs_reference="docs/operating_model.md",
+                )
+                if human:
+                    print(f"  WARN     {rel} declares type: hub but is not a folder-named hub")
 
     # 6. sources/ must not contain any wiki content (sanity).
     sources_dir = root / "sources"

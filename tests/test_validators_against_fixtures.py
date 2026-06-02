@@ -337,6 +337,39 @@ def test_structure_validator_catches_stale_obsidian_graph(tmp_path):
     assert ".obsidian/graph.json" in result.stdout
 
 
+def test_grimoire_structure_flags_folder_named_non_hub(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    hub = grimoire / "chapters/recipes/recipes.md"
+    hub.write_text(
+        hub.read_text(encoding="utf-8").replace("type: hub", "type: concept", 1),
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_grimoire_structure.py", grimoire, "--format", "json")
+
+    assert result.returncode != 0
+    codes = {d["code"] for d in json.loads(result.stdout)["diagnostics"]}
+    assert "GRIMOIRE_STRUCTURE_HUB_NOT_DECLARED" in codes
+
+
+def test_grimoire_structure_flags_misplaced_hub(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    (grimoire / "chapters/recipes/misplaced.md").write_text(
+        '---\ntype: hub\ntitle: "Misplaced"\ntags: [type/hub]\n---\n\n# Misplaced\n',
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_grimoire_structure.py", grimoire, "--format", "json")
+
+    assert result.returncode != 0
+    codes = {d["code"] for d in json.loads(result.stdout)["diagnostics"]}
+    assert "GRIMOIRE_STRUCTURE_HUB_MISPLACED" in codes
+
+
 # ---------------------------------------------------------------------------
 # Arcana itself - meta-test that the suite still passes against the live tree
 # ---------------------------------------------------------------------------

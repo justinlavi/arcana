@@ -48,6 +48,9 @@ live in grimoire repositories and in the scaffold under `formulae/grimoire/`.
 open-ended depth. The grimoire root hub is `<grimoire>/<grimoire>.md`. Each
 hop narrows the search until the agent reaches the leaf that answers the
 question. Folder-named hubs keep Obsidian graph nodes meaningful and unique.
+Under `chapters/` the convention is an enforced if-and-only-if - a page is a hub
+exactly when its filename stem equals its folder name - so an agent tells hubs
+from leaves by path alone; `validate_grimoire_structure` checks both directions.
 
 **Page frontmatter.** Authored markdown pages in Arcana docs, invocations,
 formulae, and grimoire chapters carry YAML frontmatter:
@@ -251,8 +254,10 @@ Mechanical rites are independently invocable and orchestrated by
 `rites/data/validators.json`:
 
 - `validate_structure` - Arcana layout and required hub files.
-- `validate_grimoire_structure` - grimoire layout, manifest schema, Obsidian
-  app settings, and Arcana-managed scaffold compliance.
+- `validate_grimoire_structure` - grimoire layout, manifest schema, the
+  folder-named hub if-and-only-if (folder-named pages declare `type: hub` and
+  hubs are folder-named), Obsidian app settings, and Arcana-managed scaffold
+  compliance.
 - `validate_naming` - snake_case paths, kebab-case skill slugs, and
   command-family skill schema.
 - `validate_format` - Markdown formatting, invocation/formula shape, hub

@@ -62,6 +62,8 @@ Hub-level tags (`hub/root`, `hub/chapter`, `hub/sub`) distinguish levels for the
 
 Folder-named hubs make Obsidian's graph view legible (every node has a unique, meaningful label) and make full-path wikilinks intuitive, e.g. `[[chapters/build_system/build_system|build system]]`.
 
+Under `chapters/`, this naming is an if-and-only-if and is mechanically enforced: a page is a hub exactly when its filename stem equals its folder name. `validate_grimoire_structure` requires every folder-named page — the root hub and each `<folder>/<folder>.md` — to declare `type: hub`, and refuses any `type: hub` page that is not folder-named. An agent can therefore tell a hub from a leaf by path alone, without reading the page. (Demonstrative asset folders such as `templates/` are exempt.)
+
 Internal page link style is layer-aware:
 
 - Public documentation (`README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/**`, and README index files) uses standard Markdown links so repository browsing on Git hosts remains clickable.
