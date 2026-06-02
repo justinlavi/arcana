@@ -79,6 +79,7 @@
       "FRONTMATTER_READ_ERROR": "requires an unreadable file (I/O failure), not stageable as content"
     },
     "expected_codes": [
+      "FRONTMATTER_IMPLAUSIBLE_DATE",
       "FRONTMATTER_INVALID_AUTHORITY",
       "FRONTMATTER_INVALID_DATE",
       "FRONTMATTER_INVALID_DATE_FORMAT",
@@ -102,6 +103,7 @@
       "chapters/recipes/p_nosrc.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJOb1NyYyIKYWxpYXNlczogW10KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvY29uY2VwdF0KYXV0aG9yaXR5OiBleHRlcm5hbApzb3VyY2VzOiBbXQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo=",
       "chapters/recipes/p_notype.md": "LS0tCnRpdGxlOiAiTm9UeXBlIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQotLS0KCiMgUAoKVGV4dC4K",
       "chapters/recipes/p_reqmissing.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJSZXFNaXNzIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQotLS0KCiMgUAoKVGV4dC4K",
+      "chapters/recipes/p_sentinel.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJFcG9jaFNlbnRpbmVsIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGdyaW1vaXJlCmxhc3RfdmVyaWZpZWQ6IDE5NzAtMDEtMDEKLS0tCgojIFAKClRleHQuCg==",
       "chapters/recipes/p_srcmiss.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTcmNNaXNzIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsic291cmNlcy9ub3BlLm1kIl0KbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgUAoKVGV4dC4K",
       "chapters/recipes/p_srcoutside.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlNyYyIKYWxpYXNlczogW10KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvY29uY2VwdF0KLS0tCgojIFAKClRleHQuCg==",
       "chapters/recipes/recipes.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIlJlY2lwZXMiCmFsaWFzZXM6IFsicmVjaXBlcy1odWIiXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9odWIsIGh1Yi9jaGFwdGVyXQotLS0KCiMgUmVjaXBlcwoKLSBTb3VyZG91Z2ggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQo=",

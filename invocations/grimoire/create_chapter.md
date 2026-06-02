@@ -92,13 +92,20 @@ grep -nE '\[(Chapter Name|purpose|when to use)\]|\{\{' chapters/{{chapter_name}}
 
 ## Step 4: Seed Leaf Docs (Optional)
 
-For each sub-topic the user wants stubbed now:
+For each sub-topic the user wants stubbed now, stamp a leaf from `page.formula.md` with `new_page.py`. The rite fills the frontmatter (`type`, `title`, `tags`, `authority`, `sources`) and stamps today's `last_verified`, so a leaf never ships with the formula's placeholder date:
 
 ```bash
-cp ~/grimoires/arcana/formulae/page.formula.md chapters/{{chapter_name}}/{{sub_topic}}.md
+python3 ARCANA_HOME/rites/new_page.py \
+  --grimoire GRIMOIRE_ROOT \
+  --path chapters/{{chapter_name}}/{{sub_topic}}.md \
+  --type concept \
+  --title "{{sub_topic_title}}" \
+  --apply
 ```
 
-Edit each leaf to fill in frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`) and body sections (`Purpose`, `When to use`, content, `Gotchas`, `Related`).
+Run it without `--apply` first to preview. It derives a `chapter/{{chapter_name}}` tag from the path and refuses to overwrite an existing file. Add `--tags domain/<facet>,...` for extra facets, and `--authority external --sources <path-or-url>` (or `hybrid`) when the page synthesizes external material.
+
+Then edit each leaf to fill the body sections (`Purpose`, `When to Use`, content, `Gotchas`, `Related`).
 
 Content rules:
 
@@ -154,6 +161,7 @@ Or invoke `/grm-validate-all` for the full mechanical pass.
 
 - **Chapter hub formula**: `~/grimoires/arcana/formulae/chapter_hub.formula.md`
 - **Page formula**: `~/grimoires/arcana/formulae/page.formula.md`
+- **Page stamping rite**: `~/grimoires/arcana/rites/new_page.py`
 - **Page schema**: `~/grimoires/arcana/docs/page_schema.md`
 - **Grimoire creation**: [[invocations/grimoire/create_grimoire|create grimoire]]
 - **Structure validator**: `/grm-validate-structure`

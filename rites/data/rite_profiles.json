@@ -48,6 +48,17 @@
       "tests": ["tests/test_rite_profiles.py"]
     },
     {
+      "path": "rites/new_page.py",
+      "profile": "plan_apply",
+      "default_mode": "plan",
+      "plan_command": "python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title \"<title>\"",
+      "apply_command": "python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title \"<title>\" --apply",
+      "writes": ["<grimoire>/chapters/<chapter>/<slug>.md"],
+      "idempotency": "Refuses to overwrite an existing page; rerun returns a refusal without changing the file.",
+      "validation_profile": "python rites/validate_frontmatter.py --grimoire <path>; python rites/validate_links.py --grimoire <path>",
+      "tests": ["tests/test_new_page.py", "tests/test_rite_profiles.py"]
+    },
+    {
       "path": "rites/register_skills.py",
       "profile": "plan_apply",
       "default_mode": "apply",

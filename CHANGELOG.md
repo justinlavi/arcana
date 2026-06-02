@@ -69,7 +69,9 @@ The canonical schema lives in `docs/page_schema.md` and is enforced by
 date: the validator rejects implausibly early sentinels (any date before a fixed
 `2020-01-01` floor, such as the Unix epoch `1970-01-01`). The floor is a static
 constant rather than the current date, so frontmatter validation stays
-reproducible.
+reproducible. `rites/new_page.py` stamps a schema-valid leaf from
+`formulae/page.formula.md` with today's `last_verified`, so authored pages never
+ship the formula's placeholder date.
 
 **Storage layers.** Every grimoire is organized into:
 
@@ -232,9 +234,10 @@ aligned.
 
 Two reporters in `rites/diagnostics.py` give every rite a machine-readable
 interface alongside its human output. Validators emit findings through
-`DiagnosticReporter`. The mutating rites - `append_log`, `repair_links`,
-`sync_library`, `adopt_grimoire`, `clean_artifacts`, `register_skills`, and the
-summon state surface - emit an outcome envelope through `ResultReporter`
+`DiagnosticReporter`. The mutating rites - `append_log`, `new_page`,
+`repair_links`, `sync_library`, `adopt_grimoire`, `clean_artifacts`,
+`register_skills`, and the summon state surface - emit an outcome envelope
+through `ResultReporter`
 (`rite`, `status`, `mode`, `summary`, `mutations`, `messages`) under
 `--format human|json|jsonl`. A `mutation` is a change made on disk: plan and
 dry-run modes record none and report pending work through `messages` and summary
