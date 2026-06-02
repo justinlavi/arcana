@@ -146,6 +146,7 @@ Then re-run validators a final time.
 
 If the pass produced user-visible changes:
 
+- Decide the version bump with the Compatibility Rule in [[docs/governance|governance]] §Versioning, **not** by how large the pass felt: existing grimoires still valid with no migration ⇒ MINOR (or PATCH for fixes/wording only); prior grimoires broken or needing migration ⇒ MAJOR. Version bumps and tags are human-sign-off — propose the bump, don't apply it unattended.
 - Update `CHANGELOG.md` at the Arcana root.
 - Before the current version is tagged as final, update that version's entry
   in place as the current architecture. After a version is tagged final,
@@ -168,10 +169,10 @@ If the pass produced user-visible changes:
 ## Non-negotiable rules
 
 1. **Universal only** - no domain-specific content in Arcana.
-2. **Backward compatible** - don't break existing grimoires.
+2. **Backward compatible by default** - don't break existing grimoires; a deliberate break requires a MAJOR bump and a deprecation cycle (see [[docs/governance|governance]] §Versioning / Deprecation Policy).
 3. **Canonical examples only** - `cooking-grimoire` (personal), `hr-grimoire` (workplace); plus `Alice/Bob`, `Project Alpha`, `{your-grimoire}` for sub-examples. No real product/company names, no industry-narrowing assumptions.
 4. **Magical boundary** - invocations, formulae, rites live ONLY in Arcana.
-5. **Semantic versioning** - strict; reflected in `CHANGELOG.md`.
+5. **Semantic versioning** - the bump is decided by the Compatibility Rule (compatibility, not change size); see [[docs/governance|governance]] §Versioning. Reflected in `CHANGELOG.md`.
 6. **Path conventions** - cross-grimoire references use root placeholders (`ARCANA_HOME/`) and library-key paths such as `cooking-grimoire/...`, never `../`.
 7. **Single source of truth** - every repeated fact is either a short navigation summary, generated view, intentional release snapshot, or a bug.
 8. **AI efficiency** - preserve deterministic read paths; prefer one hub, one invocation, and only the needed canonical docs for common tasks.

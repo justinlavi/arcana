@@ -119,7 +119,7 @@ Skills are pointer files. The skill itself contains no logic - it dispatches to 
 
 - One concern per PR. Mixing a doc rewrite with a validator change makes review hard.
 - Update [CHANGELOG](CHANGELOG.md). Before the current version is tagged as final, edit that version's entry in place; after a final tag, collect new changes under `## [Unreleased]`.
-- Bump [VERSION](VERSION) only as part of an explicit release PR.
+- Bump [VERSION](VERSION) only as part of an explicit release PR, and choose PATCH/MINOR/MAJOR by the [Compatibility Rule](docs/governance.md#the-compatibility-rule) — compatibility decides the bump, not change size: existing grimoires still valid with no migration ⇒ at most MINOR; prior grimoires broken or needing migration ⇒ MAJOR.
 - If you touched user-facing behavior, mention what a downstream grimoire owner has to do to adopt the change.
 
 ---

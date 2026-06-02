@@ -27,7 +27,7 @@ This page is the human reading path for that contract.
 | `rites/summon.sh` | Shell bootstrap | Select release or source mode, download companion scripts, verify release checksums, fall back to source, and pass arguments to Python. |
 | `rites/summon.py` | Dispatcher | Choose GUI or CLI mode, respect `--cli` and `--gui`, and fall back to CLI when GUI startup fails. |
 | `rites/summon_core.py` | Install engine | Own git checks, discovery, Arcana install/update, grimoire install/update, library writes, agent block injection, skill registration, and CLI summary. |
-| `rites/summon_state.py` | Agent-legible state surface | Own `--check`/`--reconcile`, the install/check/reconcile transcript, and the offline reconciliation that backs [RECOVERY](../RECOVERY.md). |
+| `rites/summon_state.py` | Agent-legible state surface | Own `--check`/`--reconcile`, the install/check/reconcile transcript, and the offline reconciliation that backs [RESTORATION](../RESTORATION.md). |
 | `rites/summon_gui.py` | GUI frontend | Use core primitives from worker threads, honor settings, expose install/manage/settings/diagnostics views, and keep GUI-only concerns out of the install engine. |
 | `rites/build_summon_binary.py` | Release builder | Build PyInstaller artifacts, bundle required resources/templates, archive per platform, and write checksums. |
 | `.github/workflows/summon-release.yml` | Release workflow | Build each supported release platform and optionally create/update GitHub Release assets. |
@@ -43,7 +43,7 @@ Every source install path, CLI or GUI, must preserve this install order:
 5. Update `~/grimoires/library.json` for installed grimoires.
 6. Inject supported agent instruction blocks.
 7. Register Arcana and grimoire skills.
-8. Report completion or recovery instructions.
+8. Report completion or restoration instructions.
 
 The GUI may let the user skip selected agent targets or skill registration via
 settings, but the default GUI path should match the CLI post-install shape.
@@ -93,7 +93,7 @@ view of an installation. These run against the installed Arcana checkout
 | Command | Effect | Exit code |
 |---|---|---|
 | `--check` (alias `--plan`) | Read-only: report Arcana, library, agent-block, and skill drift. | `0` in sync, `1` drift |
-| `--reconcile` (alias `--recover`) | Propose the offline repair (no writes). | `0` in sync, `1` drift |
+| `--reconcile` (alias `--restore`) | Propose the offline repair (no writes). | `0` in sync, `1` drift |
 | `--reconcile --apply` | Reconcile the library additively and re-register skills. | `0` converged, `1` error/blocked/residual |
 | `--reconcile --apply --prune` | Also remove stale library entries (deletes them). | as above |
 
@@ -115,14 +115,14 @@ later session can diff intent against outcome.
 Boundaries the surface keeps:
 
 - **Refuses to reconcile a broken base** — `--apply` runs `validate.py` first and
-  reports `blocked` if Arcana is red (mirrors [RECOVERY](../RECOVERY.md) step 4).
+  reports `blocked` if Arcana is red (mirrors [RESTORATION](../RESTORATION.md) step 4).
 - **No silent deletion** — stale library entries are preserved unless `--prune`;
   each removal is recorded as a mutation.
 - **Agent blocks are reported, not rewritten** — the heading and BEGIN/END
   sentinels are both treated as "present," and a missing block points at
   `/arc-agent-update` rather than risking a double-injection.
 - **Network pull is out of scope** — updating Arcana itself stays the human step
-  from [RECOVERY](../RECOVERY.md).
+  from [RESTORATION](../RESTORATION.md).
 
 ## Review Checklist
 

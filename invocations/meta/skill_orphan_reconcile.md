@@ -77,5 +77,5 @@ this step.
 
 - Active-grimoire registration: [[invocations/grimoire/register_skills|register skills]]
 - Global registration: [[invocations/agent/register_skills|register skills]]
-- Recovery playbook: [[RECOVERY|recovery]]
+- Restoration playbook: [[RESTORATION|restoration]]
 - Autonomy tiers: [[docs/governance|governance]]

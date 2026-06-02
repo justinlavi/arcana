@@ -1,6 +1,6 @@
 # Activity Log - {{GRIMOIRE_NAME}}
 
-Append-only record of every operation that mutates this grimoire. Format documented in `ARCANA_HOME/formulae/log_entry.formula.md`.
+Append-only history of changes to this grimoire's **content** - pages and sources added, removed, or changed. It records *what* changed in the wiki, not version-control mechanics (branches, merges, commits). Format documented in `ARCANA_HOME/formulae/log_entry.formula.md`.
 
 Scan recent activity:
 

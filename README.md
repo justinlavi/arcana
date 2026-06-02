@@ -60,7 +60,7 @@ Arcana ships universal operations every grimoire inherits:
 - **`/grm-lint`** — health-check the wiki: orphans, stale claims (>90 days unverified), ghost references (entities mentioned often but lacking a page), contradictions, missing cross-references.
 - **`/grm-improve`** — comprehensive normalize-and-optimize pass.
 - **`/grm-validate-all`** — run the full deterministic validator profile for the active grimoire.
-- **`/grm-update-arcana`** — pull the latest Arcana and refresh the local agent/skill setup.
+- **`/grm-restore`** — bring this grimoire and its Arcana back to a current, validated, synchronized state.
 - **`/grm-register-skills`** — refresh Arcana skills plus the active grimoire's own skills.
 - **`/grm-create-chapter`**, **`/grm-analyze-semantics`** — and more.
 
@@ -115,9 +115,14 @@ Detailed installer mode rules live in [summoning contract](docs/summoning_contra
 
 Open a new agent session and run `/arc-help` to see every available command, or run `/grm-create` to start your first grimoire.
 
-If an old installation has stale or broken slash commands, pull Arcana with any
-Git client and open [Arcana Recovery](RECOVERY.md). It is the stable bridge for
-getting agent skills and grimoires back in sync after large Arcana changes.
+**Out of date, or something seems wrong?** Restoration brings Arcana (and any grimoire) back to a current, validated, synchronized state. Two ways to start it:
+
+1. **Run the skill:** `/arc-restore` (or `/grm-restore` from a grimoire).
+2. **Or tell your AI agent:**
+
+   > Pull the latest Arcana, then follow its restoration process.
+
+Both follow [RESTORATION.md](RESTORATION.md).
 
 -> [installation](docs/installation.md) - [5-minute smoke test](docs/installation.md#verify-your-install-5-minute-smoke-test)
 
@@ -129,7 +134,7 @@ getting agent skills and grimoires back in sync after large Arcana changes.
 ~/grimoires/
 |-- arcana/                       # The engine - install once, reference forever
 |   |-- arcana.md                 # Root hub
-|   |-- RECOVERY.md               # Stable stale-install recovery bridge
+|   |-- RESTORATION.md            # Restoration & skill-less self-update entry point
 |   |-- invocations/              # AI-guided workflows
 |   |-- formulae/                 # Templates for hubs, chapters, pages, sources
 |   |-- rites/                    # Python automation scripts
@@ -174,7 +179,7 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 
 | | |
 |---|---|
-| [Recovery](RECOVERY.md) | Stable bridge for stale installations and broken skill registrations |
+| [Restoration](RESTORATION.md) | Skill-less entry point to bring Arcana and any grimoire current |
 | [Installation](docs/installation.md) | One-command setup, manual setup, 5-minute smoke test, troubleshooting |
 | [Summoning Contract](docs/summoning_contract.md) | Summoning Rite installer contract: install/update modes, drift detection, fallbacks |
 | [Agent Targets](docs/agent_targets.md) | Supported agent target registry |

@@ -1,13 +1,16 @@
-# Arcana Recovery
+# Arcana Restoration & Self-Update
 
-This is the stable recovery entry point for stale Arcana installations.
+This is the stable, **skill-less** entry point for bringing **Arcana and any
+grimoire up to the current version**. It is the dependable path when the
+installed `/arc-*` / `/grm-*` slash commands are missing, old, renamed,
+incorrectly prefixed, or otherwise untrustworthy — and, more generally, the way
+to self-update from the source tree when you cannot trust the skill layer.
 
-Use it when slash commands are missing, old, renamed, incorrectly prefixed, or
-otherwise untrustworthy after Arcana has changed significantly. This file is
-root-level on purpose: after a user pulls Arcana by any Git client, both humans
-and AI agents can find it without relying on registered skills.
+It needs only the pulled Arcana source and `python3`, and lives at the
+repository root.
 
-Do not rename this file without leaving an equivalent root-level replacement.
+Start restoration by running `/grm-restore` (or `/arc-restore`), or by following
+the Human Quick Start below.
 
 ## Human Quick Start
 
@@ -17,13 +20,13 @@ Do not rename this file without leaving an equivalent root-level replacement.
 3. Tell the agent:
 
 ```text
-Read ~/grimoires/arcana/RECOVERY.md and follow the AI Recovery Playbook.
-Do not rely on installed slash commands until recovery re-registers skills.
+Read ~/grimoires/arcana/RESTORATION.md and follow the AI Restoration Playbook.
+Do not rely on installed slash commands until restoration re-registers skills.
 ```
 
 If Arcana lives somewhere else, give the agent the real path to this file.
 
-## AI Recovery Playbook
+## AI Restoration Playbook
 
 The installed slash-command layer may be stale. Treat the pulled Arcana source
 tree as the source of truth, not the agent's currently registered skill files.
@@ -144,18 +147,56 @@ For automatic instruction targets, replace only the marked Grimoire block:
 Preserve all non-Grimoire content exactly. If block boundaries are ambiguous,
 stop and ask the user.
 
-### 7. Check The Active Grimoire
+### 7. Bring The Active Grimoire Current (skill-less)
 
-Resolve the active grimoire from the current working directory or from
-`~/grimoires/library.json`, then run:
+Restoration is not finished until the grimoire itself is current, and this must work
+**without** `/grm-*` skills. Resolve the
+grimoire root (from the working directory or `~/grimoires/library.json`, whose
+`local_path` uses a `$HOME` token — expand it before passing it to `--grimoire`),
+then run the deterministic rites directly from the Arcana checkout:
 
-```bash
-python3 rites/validate.py --grimoire GRIMOIRE_ROOT --summary
-```
+1. See what drifted:
 
-If the grimoire fails because Arcana's scaffold/schema expectations changed,
-tell the user recovery succeeded but the grimoire needs `/grm-improve` or the
-current source workflow in `invocations/grimoire/improve_grimoire.md`.
+   ```bash
+   python3 rites/validate.py --grimoire GRIMOIRE_ROOT --summary
+   ```
+
+2. Re-sync managed scaffold. For every `GRIMOIRE_STRUCTURE_STALE_MANAGED` or
+   `GRIMOIRE_STRUCTURE_MISSING_MANAGED` finding, copy the current Arcana formula
+   over the grimoire's copy — these files are Arcana-owned and safe to overwrite:
+
+   ```bash
+   cp formulae/grimoire/<reported/path> GRIMOIRE_ROOT/<reported/path>
+   ```
+
+   Only the managed scaffold paths the validator names. The root `README.md`,
+   root hub, `grimoire.json`, and `log.md` are customized per grimoire and are
+   *not* managed-compared — never overwrite them this way.
+
+3. Repair wikilinks a structural change may have broken:
+
+   ```bash
+   python3 rites/repair_links.py --grimoire GRIMOIRE_ROOT            # preview
+   python3 rites/repair_links.py --grimoire GRIMOIRE_ROOT --apply    # write unambiguous repairs
+   ```
+
+   Ambiguous links are reported, never guessed — resolve those by hand.
+
+4. Apply the heal blocks under [Version Migrations](#version-migrations). Each is
+   idempotent, so apply them all — you do not need to know which version the
+   grimoire is on.
+
+5. Re-validate until clean:
+
+   ```bash
+   python3 rites/validate.py --grimoire GRIMOIRE_ROOT --summary
+   ```
+
+Only failures that need **content judgment** (not a mechanical fix) fall back to
+the grimoire-improvement workflow in
+[invocations/grimoire/improve_grimoire.md](invocations/grimoire/improve_grimoire.md) —
+read and follow that invocation's steps directly from source; the `/grm-improve`
+skill does **not** need to be registered for you to do so.
 
 ### 8. Finish With A Clear Summary
 
@@ -170,6 +211,29 @@ Report:
 
 Ask the user to open a fresh agent session after skill registration, because
 agents may cache skill listings.
+
+## Version Migrations
+
+When an Arcana change alters what a *current* grimoire must look like, its exact,
+skill-less heal steps are recorded here, keyed by the version that introduced the
+change. Apply **every** heal block below, oldest first, then re-run step 7's
+validation. Each block is idempotent and safe to re-run on an already-current
+grimoire.
+
+<!-- Add a "### vX.Y.Z - <what changed>" block whenever a release changes the
+     shape a current grimoire must have. A release that needs no grimoire-side
+     change needs no entry. -->
+
+### v1.1.0 - Restoration block in the grimoire README
+
+Every grimoire README carries a marker-delimited Restoration block (the two entry points: the `/grm-restore` skill, or telling an AI agent to pull Arcana and follow its restoration process). If this grimoire's `README.md` is missing it, inject it from the formula:
+
+1. Read the block between `<!-- BEGIN ARCANA RESTORATION -->` and `<!-- END ARCANA RESTORATION -->` in `formulae/grimoire/README.md`.
+2. In the grimoire's root `README.md`: if the markers are absent, insert the block (markers included) **immediately before the first second-level (`##`) heading** — in a standard grimoire README that is the `## Installation` line. If the markers are present, replace everything between them with the formula's current block. (If a `## Out of date? Restore.` heading exists *without* the markers — a degraded earlier injection — replace that heading's section with the marked block instead of adding a second copy.)
+
+Idempotent: re-running converges the grimoire's block to the formula's.
+
+Beyond the blocks above, step 7's mechanical pass (re-sync managed scaffold, repair links, re-validate) brings any grimoire current.
 
 ## Last-resort Notes
 
@@ -187,4 +251,4 @@ prefixes only.
 - [Skill schema](docs/skill_schema.md)
 - [Register agent skills](invocations/agent/register_skills.md)
 - [Reconcile skill orphans](invocations/meta/skill_orphan_reconcile.md)
-- [Update Arcana from a grimoire](invocations/grimoire/update_arcana.md)
+- [Restore from a grimoire](invocations/grimoire/restore.md)

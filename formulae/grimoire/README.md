@@ -4,6 +4,17 @@ This README is the canonical home for the long-form description. Other surfaces 
 
 {{GRIMOIRE_PURPOSE_DETAILED}}
 
+<!-- BEGIN ARCANA RESTORATION -->
+## Out of date? Restore.
+
+If anything here seems wrong, broken, or behind the current Arcana, bring this grimoire (and the Arcana it references) back to a current, validated, synchronized state with **Restoration**. Two ways to start it:
+
+1. **Run the skill:** `/grm-restore`.
+2. **Or tell your AI agent:**
+
+   > Pull the latest Arcana, then follow its restoration process.
+<!-- END ARCANA RESTORATION -->
+
 ## Installation
 
 This grimoire is part of the **Grimoire** ecosystem powered by **Arcana**, the framework that handles agent integration, the validator suite, the canonical `/arc-*` and `/grm-*` skill sets, and library registration. The recommended way to install both is the Arcana summoning rite - one command, end-to-end.
@@ -60,7 +71,7 @@ Add the canonical Grimoire instruction block to your agent file using `/arc-agen
 ├── {{GRIMOIRE_DIRECTORY}}.md     # Root hub (start here for routing)
 ├── README.md                     # This file (human-facing project README)
 ├── grimoire.json                 # Manifest: name, skill prefix, description
-├── log.md                        # Append-only activity log
+├── log.md                        # Append-only content-change history (not a VCS log)
 ├── sources/                      # Immutable source artifacts and wrappers
 ├── inbox/                        # Transient drop zone (mixed content awaiting classification)
 ├── chapters/                     # LLM-authored knowledge pages
@@ -98,7 +109,7 @@ Add the canonical Grimoire instruction block to your agent file using `/arc-agen
 - Routers are pointer lists - no prose narrative inside a hub.
 - Pages declare their authority (`external` / `grimoire` / `hybrid`) and cite sources.
 - Stale claims (older than the stale window, default 90 days) are flagged by `/grm-lint` and revisited.
-- The activity log is append-only; never delete entries.
+- The activity log is append-only and records content changes (pages/sources added, removed, changed), not version-control mechanics; never delete entries.
 - All paths are relative inside this grimoire; cross-grimoire references use `ARCANA_HOME/`-style placeholders.
 - Text files use UTF-8 without BOM and LF line endings. Unicode is allowed; mojibake and repair artifacts are not.
 

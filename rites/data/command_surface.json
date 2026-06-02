@@ -354,18 +354,32 @@
       "validation_profile": "python rites/repair_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_orphans.py --grimoire GRIMOIRE_ROOT"
     },
     {
-      "command": "/grm-update-arcana",
+      "command": "/grm-restore",
       "family": "grimoire",
-      "skill_source": "skills/grimoire/update-arcana/SKILL.md",
-      "invocation": "invocations/grimoire/update_arcana.md",
+      "skill_source": "skills/grimoire/restore/SKILL.md",
+      "invocation": "invocations/grimoire/restore.md",
       "guard": "invocations/meta/grimoire_directory_guard.md",
       "owner_type": "hybrid",
       "rite_owner": null,
       "preconditions": ["Registered active grimoire", "Arcana Git checkout", "Clean Arcana worktree before pull"],
       "mutation_profile": "judgment_gated",
-      "mutation_behavior": "May pull Arcana with git --ff-only, reconcile the library, register skills, and refresh marked agent blocks.",
+      "mutation_behavior": "Follows the RESTORATION.md procedure: may pull Arcana with git --ff-only, reconcile the library, reset and re-register skills, refresh marked agent blocks, and bring the active grimoire current.",
       "log_behavior": "Does not append grimoire logs.",
       "validation_profile": "python rites/validate.py --summary; python rites/validate.py --grimoire GRIMOIRE_ROOT --summary"
+    },
+    {
+      "command": "/arc-restore",
+      "family": "arcana",
+      "skill_source": "skills/arcana/restore/SKILL.md",
+      "invocation": "invocations/arcana/restore.md",
+      "guard": null,
+      "owner_type": "hybrid",
+      "rite_owner": null,
+      "preconditions": ["Arcana Git checkout", "Clean Arcana worktree before pull"],
+      "mutation_profile": "judgment_gated",
+      "mutation_behavior": "Follows the RESTORATION.md procedure: may pull Arcana with git --ff-only, reconcile the library, reset and re-register skills, refresh marked agent blocks, and bring any active grimoire current.",
+      "log_behavior": "Does not append grimoire logs.",
+      "validation_profile": "python rites/validate.py --summary"
     },
     {
       "command": "/grm-validate-all",

@@ -98,8 +98,9 @@ Reversible but judgment-bearing, or writing outside the repo:
 ### Human sign-off required
 
 - **Version bumps and release tags** — semver decisions across `VERSION`,
-  `CHANGELOG.md`, and git tags (see [Versioning](#versioning) and
-  [Change Workflow](#change-workflow)).
+  `CHANGELOG.md`, and git tags, decided by the [Compatibility Rule](#the-compatibility-rule)
+  (compatibility, not change size) — see [Versioning](#versioning) and
+  [Change Workflow](#change-workflow).
 - **Breaking changes** and **deprecations** (see
   [Deprecation Policy](#deprecation-policy)). Never break a grimoire without a
   deprecation cycle.
@@ -155,15 +156,70 @@ Do **not** include in Arcana:
 
 ## Versioning
 
-Arcana follows [Semantic Versioning 2.0.0](https://semver.org/) — `MAJOR.MINOR.PATCH`.
+Arcana follows [Semantic Versioning 2.0.0](https://semver.org/) — `MAJOR.MINOR.PATCH` — read through a framework-specific lens. Arcana is a **grimoire-generation framework**, so a change is judged by its effect on grimoires — both the ones already on disk and the future ones an AI agent will generate — not by how large, ambitious, or impactful the change feels.
 
-| Bump | Trigger | Examples |
+### The Compatibility Rule
+
+**Compatibility decides the bump — not the size or perceived importance of the change.** Answer two questions, in order:
+
+1. **Do existing grimoires stay valid?** Does any grimoire already on disk break, fail validation, or need a hand-migration self-healing cannot perform because of this change? (See [Self-healing and the compatibility line](#self-healing-and-the-compatibility-line) — an auto-healable transition does not count as a break.)
+2. **Does future generation behavior change?** Will Arcana now generate, validate, or guide grimoires differently going forward?
+
+The answers map straight to the bump:
+
+| Existing grimoires… | Future generation… | Bump |
 |---|---|---|
-| **PATCH** (`v1.0.0 → v1.0.1`) | Bug fixes, typo corrections, doc clarifications | Fix a typo, repair a broken link, fix a rite that errors on edge cases |
-| **MINOR** (`v1.0.0 → v1.1.0`) | New features, additions, improvements (backward compatible) | New formula, new validator, new optional skill |
-| **MAJOR** (`v1.0.0 → v2.0.0`) | Breaking changes — downstream grimoires must adapt | Renamed file, restructured router, removed skill, changed manifest schema |
+| stay valid (no migration) | unchanged | **PATCH** |
+| stay valid (no migration) | improves or changes | **MINOR** |
+| would break, but Arcana can **auto-heal** them (a rite, `/grm-restore`, or a documented [RESTORATION](../RESTORATION.md) step) | (either) | **MINOR** — ship the heal |
+| break and need **manual, judgment-bearing** migration that self-healing cannot perform | (either) | **MAJOR** |
 
-The current version lives in three places:
+"Existing grimoires" means **every grimoire the change could affect, not only the ones you can currently see** — compatibility is about the validation *outcome*, so a grimoire that validated yesterday and fails today is broken even if no file or schema changed. On a shared Arcana fork you often cannot enumerate downstream private grimoires; when that coverage is unknown, treat a newly-enforcing check as potentially breaking (ship it warn-only first, or lean MAJOR) rather than assuming MINOR.
+
+Two consequences of this rule are easy to get wrong:
+
+- **Many minors do not add up to a major.** A long run of backward-compatible releases — `v1.0.0 → v1.17.0` — can leave Arcana dramatically more capable than it started and it is still `1.x`, as long as every existing grimoire stayed valid the whole way. A major version is **not** "enough minors accumulated"; it is a specific event — a compatibility break. Signal a big leap in the `CHANGELOG` / release notes, never by inflating MAJOR.
+- **Smarter future grimoires are usually MINOR.** Better formulae, improved standards, smarter AI guidance, new or additively-stricter validators, refined generation behavior — these change what *future* grimoires look like while leaving *existing* ones valid. That is the textbook MINOR, not a MAJOR.
+
+### Self-healing and the compatibility line
+
+Arcana is built to be **self-healing**: a grimoire is brought current not by hand but by Arcana's own update path — the mechanical repair rites, `/grm-restore`, the scaffold re-sync inside `/grm-improve`, and, when the installed skills are themselves too old to run, the skill-less [RESTORATION](../RESTORATION.md) procedure. That sharpens where the MINOR/MAJOR line falls, and it is *why* "must migrate" in the table above means **must migrate by hand**:
+
+- A transition Arcana can perform **automatically and deterministically** — re-syncing managed scaffold, repairing wikilinks, or following an exact RESTORATION step — is **not** a manual migration. If every existing grimoire can be healed to current with no human judgment, the change is **MINOR**, even though grimoire files change in the heal.
+- **The obligation rides with the change author: ship the heal with the change.** A change that would otherwise break grimoires must land together with the rite or `/grm-restore` step that fixes them *and* an exact entry in [RESTORATION](../RESTORATION.md). An un-shipped heal is theoretical — without it, the change is a real break (MAJOR).
+- A change is **MAJOR** only when bringing grimoires current needs **human judgment** — content or semantics a rite cannot supply. If you can automate the heal, automate it and ship MINOR; if you genuinely cannot, it is MAJOR.
+
+**Whenever a change alters what a current grimoire must look like, update [RESTORATION](../RESTORATION.md) with the exact steps to reach the new state** — so any grimoire can be brought current from the source tree alone, even when its installed skills are too stale to run.
+
+### What each bump means for Arcana
+
+**PATCH** (`v1.0.0 → v1.0.1`) — no behavior change; neither existing nor future grimoires change in substance.
+- Typo and wording fixes, broken-link repairs, small documentation clarifications.
+- Validator or rite **bug** fixes that correct an implementation without changing intended behavior — but only if the fix does not flip the pass/fail verdict of any existing grimoire. A crash-fix that makes a previously-unevaluated grimoire newly fail is a break; treat it as MAJOR.
+
+**MINOR** (`v1.0.0 → v1.1.0`) — existing grimoires stay valid; future grimoires improve or change.
+- A new formula, a new optional skill, a new validator (or a stricter check that every grimoire already on disk still passes — if a stricter check makes existing grimoires fail, that is MAJOR).
+- Improved standards, better AI guidance, a sharpened convention that newly-generated grimoires follow.
+- *Worked example:* Arcana previously shipped a generic, append-only "activity log" concept. It was refined into a **content change log** so future grimoires record meaningful content changes instead of becoming a dumping ground for VCS or development activity. This changes future AI behavior and the shape of future generated grimoires, so it is more than a PATCH — but because existing grimoires remain valid and need no migration, it is a **MINOR**, not a MAJOR.
+
+**MAJOR** (`v1.0.0 → v2.0.0`) — a compatibility break: existing grimoires become invalid or must be migrated **by hand** because self-healing cannot bring them current (see [Self-healing and the compatibility line](#self-healing-and-the-compatibility-line)).
+- Removing a concept, renaming a required file, or changing a schema (page frontmatter, the manifest, a contract) such that prior grimoires no longer validate **and no rite can mechanically migrate them**.
+- Any change that forces downstream grimoires into a **manual, judgment-bearing** migration or hand-edit that self-healing cannot perform.
+- A new or stricter validator/check that makes any existing grimoire **fail validation** — even when no file, schema, or concept changed (the break is in the validation outcome). To tighten validation *without* a hard break, ship the check **warn-only in a MINOR first, then enforce it in the next MAJOR** — the deprecation cycle applied to validation.
+- Removing a previously-deprecated capability (deprecations land in a MINOR first — see [Deprecation Policy](#deprecation-policy)).
+
+### Before you change the version (humans and AI agents)
+
+A version bump is **human-sign-off territory** (see [Autonomous Maintainer](#autonomous-maintainer)). Before touching `VERSION`, `CHANGELOG.md`, or release notes — whether you are a human or an AI agent working in this repo — consult this section and reason the bump through explicitly:
+
+1. **Inspect the nature of the change**, not its size. What actually changed in framework behavior?
+2. **Ask: do existing grimoires stay valid?** If none break, you are in PATCH/MINOR territory.
+3. **If some would break, ask: can Arcana auto-heal them** with a rite, `/grm-restore`, or an exact [RESTORATION](../RESTORATION.md) step? If yes, **ship the heal** (and the RESTORATION entry) → **MINOR**. If healing needs human judgment → **MAJOR**.
+4. If **no migration** is required but **future generation behavior improves or changes** → **MINOR**.
+5. If only wording or fixes changed with **no behavior change** → **PATCH**.
+6. When torn between MINOR and MAJOR, the deciding test is **how the heal happens**: *no migration, or one Arcana can auto-heal (rite / `/grm-restore` / RESTORATION step), ⇒ MINOR; a migration needing human judgment ⇒ MAJOR*.
+
+The current version lives in three places that must agree:
 - `VERSION` (single source of truth)
 - `CHANGELOG.md` (entry per release)
 - Git tags (`v1.x.y`)
@@ -171,6 +227,8 @@ The current version lives in three places:
 ---
 
 ## Change Workflow
+
+Decide the bump with the [Compatibility Rule](#the-compatibility-rule) first, then follow the path below for that bump.
 
 ### Patch / Minor
 

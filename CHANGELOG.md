@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0] - 2026-06-02
+
+First release after the 1.0.0 architecture snapshot. Backward compatible: existing grimoires stay valid and need no migration (see `RESTORATION.md` → Version Migrations).
+
+### Changed
+
+- **Activity log → content change log.** `log.md` is now an append-only history of *content* changes (pages and sources added, removed, or changed), not a journal of version-control mechanics. The log-entry formula forbids branch-scoped or merge/rebase/push-framed entries (there is no `merge` op); `rites/append_log.py` and the grimoire scaffold (`formulae/grimoire/log.md`, `formulae/grimoire/README.md`, `formulae/log_entry.formula.md`) carry the rule. Existing logs remain valid.
+- **Versioning is compatibility-based and self-healing-aware.** `docs/governance.md` §Versioning now leads with a Compatibility Rule (compatibility, not change size, decides the bump), Arcana-specific PATCH/MINOR/MAJOR examples, and an explicit decision procedure for humans and AI agents. It records that Arcana's self-healing — repair rites, `/grm-restore`, and the skill-less `RESTORATION.md` procedure — absorbs most transitions: a break Arcana can auto-heal is a MINOR that ships its heal, and only a migration needing human judgment is MAJOR. `docs/release.md`, `CONTRIBUTING.md`, and the `/arc-improve` invocation now defer the bump decision to this policy.
+- **Recovery → Restoration.** The maintenance concept that brings Arcana, agent skills, the library, agent instructions, and grimoires back to a current, validated, synchronized state is now **Restoration**. `RECOVERY.md` is renamed to **`RESTORATION.md`**, and the concept is exposed through two mirrored, thin pointer skills over that one canonical doc: **`/arc-restore`** (new; maintainer / fork side) and **`/grm-restore`** (renamed from `/grm-update-arcana`; the grimoire-user side that restores the grimoire and, by extension, its Arcana). The summon engine's reconcile vocabulary follows suit (`--restore` flag, `arcana_restore` action). The granular maintenance skills (`/arc-agent-update`, `/arc-agent-register-skills`, `/grm-register-skills`, `/arc-library-sync`) stay independent.
+- **Restoration has two entry points.** Run the skill (`/grm-restore` / `/arc-restore`), or tell an AI agent *"pull the latest Arcana, then follow its restoration process"*. Both are codified as a block in the Arcana README and the grimoire formula README (`formulae/grimoire/README.md`) that every new grimoire ships; restoration injects that block into an existing grimoire's README when it is missing (see `RESTORATION.md` → Version Migrations).
+
+### Improved
+
+- **`RESTORATION.md` is the canonical restoration entry point.** It brings both Arcana and any grimoire current with a deterministic, rite-only grimoire-heal procedure (re-sync managed scaffold, repair links, re-validate) and a **Version Migrations** section recording any future version-specific heal steps. The `/arc-restore` and `/grm-restore` skills and the `arcana.md` / `README.md` routing surfaces point at it.
+
 ## [1.0.0] - 2026-06-01
 
 Arcana 1.0.0 defines Arcana as a framework for creating, installing, routing,

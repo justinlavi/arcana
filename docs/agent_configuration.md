@@ -55,7 +55,7 @@ Use `--reset-managed` after major Arcana command-family changes or when old
 registered skill directories block a refresh. Dry-run first to preview the
 directories that would be replaced.
 
-For the normal "bring this machine up to date" workflow, run `/grm-update-arcana`. It can run from a grimoire root or a broader workspace such as `~/grimoires/`; if more than one registered grimoire is available, the agent asks which one to treat as active. It pulls Arcana, validates it, refreshes the local library, updates agent integration when needed, re-registers skills, and checks the active grimoire against the current structure rules.
+For the normal "bring this machine up to date" workflow, run `/grm-restore`. It can run from a grimoire root or a broader workspace such as `~/grimoires/`; if more than one registered grimoire is available, the agent asks which one to treat as active. It pulls Arcana, validates it, refreshes the local library, updates agent integration when needed, re-registers skills, and checks the active grimoire against the current structure rules.
 
 For Codex/ChatGPT, the registered directory must contain only `SKILL.md` — never bundle scripts, references, or copies of invocation content. The skill remains a thin pointer to Arcana invocations or rites.
 
@@ -135,10 +135,10 @@ To register new or updated skills in the active grimoire, run `/grm-register-ski
 - Run `/grm-register-skills` from the active grimoire, or `/arc-agent-register-skills` for a global refresh. Then open a new agent session (Claude Code / Codex caches skill listings).
 
 **Agent skills are badly stale or have old prefixes**
-- Pull Arcana, then follow [Arcana Recovery](../RECOVERY.md). It is the stable path for cases where the installed slash-command layer cannot repair itself.
+- Pull Arcana, then follow [Arcana Restoration](../RESTORATION.md). It is the stable path for cases where the installed slash-command layer cannot repair itself.
 
 **Arcana may be stale**
-- Run `/grm-update-arcana`. If the current workspace is not inside a grimoire, the agent resolves or asks for the active grimoire from `~/grimoires/library.json`.
+- Run `/grm-restore`. If the current workspace is not inside a grimoire, the agent resolves or asks for the active grimoire from `~/grimoires/library.json`.
 
 **Agent has stale Grimoire routing instructions**
 - Run `/arc-agent-update`. It compares existing agent instruction files against the canonical block and updates only the Grimoire section.

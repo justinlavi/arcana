@@ -126,7 +126,7 @@ def test_inspect_counts_registered_skills(tmp_path):
 
 def test_inspect_network_pull_is_human_gated(tmp_path):
     state = _inspect(tmp_path)
-    assert "RECOVERY.md step 2" in state["network_pull"]
+    assert "RESTORATION.md step 2" in state["network_pull"]
 
 
 # ---------------------------------------------------------------------------

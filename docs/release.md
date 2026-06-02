@@ -17,6 +17,18 @@ The canonical installer behavior contract lives in
 
 ---
 
+## Choosing the Version
+
+Decide the new `vMAJOR.MINOR.PATCH` number with the [Compatibility Rule](governance.md#the-compatibility-rule) **before** tagging — the bump is determined by compatibility, not by how big the release feels:
+
+- **PATCH** — fixes and wording only; no behavior change.
+- **MINOR** — existing grimoires stay valid (no migration), but Arcana now generates, validates, or guides future grimoires differently.
+- **MAJOR** — a compatibility break: prior grimoires become invalid or must be migrated.
+
+Many backward-compatible releases (`v1.0.0 → v1.17.0`) do not become `v2.0.0`; only a compatibility break does. The full policy and the agent decision procedure live in [governance → Versioning](governance.md#versioning).
+
+---
+
 ## Release Assets
 
 Arcana does not commit built binaries to the repository. The release workflow builds platform-specific Summoning Rite binaries and uploads them as GitHub Release assets.

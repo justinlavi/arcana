@@ -5,7 +5,7 @@ Sister module to `summon_core.py` (the interactive install engine). Where
 `summon_core` talks to a human via tagged stdout, this module gives an
 orchestrator a machine-readable view of an installation: a read-only
 `--check` that reports drift, a `--reconcile` that repairs the offline,
-deterministic subset of `RECOVERY.md`, and a durable transcript
+deterministic subset of `RESTORATION.md`, and a durable transcript
 (`~/.cache/grimoire/summon-last.json`) so the outcome of any summon-family
 operation can be diffed against intent without parsing prose.
 
@@ -24,7 +24,7 @@ Design rules (mirrors the deferred-fragility and autonomy boundaries):
   rewrites agent instruction blocks (the BEGIN/END vs heading sentinel
   mismatch makes that non-deterministic - it is reported, not performed).
 * Network pull is out of scope: updating Arcana itself is the human/RED step
-  from `RECOVERY.md`.
+  from `RESTORATION.md`.
 """
 
 from __future__ import annotations
@@ -44,13 +44,13 @@ from diagnostics import ResultReporter, add_output_format_arg
 SCHEMA_VERSION = 1
 
 # Idempotency sentinels for the injected Grimoire block. A block written by any
-# path - the injector, the template, RECOVERY.md, or /arc-agent-update - counts
+# path - the injector, the template, RESTORATION.md, or /arc-agent-update - counts
 # as present when EITHER sentinel is found; reporting only one would mislabel the
 # other as drift and invite a double-injection. Single-sourced from summon_core
 # (the injector) so the detector and the injector can never disagree.
 from summon_core import BEGIN_SENTINEL, HEADING_SENTINEL
 
-NETWORK_PULL_NOTE = "skipped (human-gated; see RECOVERY.md step 2)"
+NETWORK_PULL_NOTE = "skipped (human-gated; see RESTORATION.md step 2)"
 
 
 # ---------------------------------------------------------------------------
@@ -261,11 +261,15 @@ def next_actions(state: dict[str, Any], arcana_root: Path) -> list[dict[str, Any
             "reason": "no Arcana-managed skills registered in any agent skill directory",
         })
     if not state["arcana"]["working_tree_populated"]:
+        # Restoration remedy: pull Arcana to current. Distinct from summon_core's
+        # working-tree recovery (git checkout HEAD -- .), which repairs an
+        # interrupted clone in place; this restores the engine to the current
+        # version.
         actions.append({
-            "kind": "arcana_recover",
+            "kind": "arcana_restore",
             "tier": "red",
             "command": f"git -C {arcana_root} pull --ff-only",
-            "reason": "Arcana working tree is missing or partial (network/human step)",
+            "reason": "Arcana working tree is missing or partial; pull to restore it to current (network/human step)",
         })
     return actions
 
@@ -493,7 +497,7 @@ def reconcile(
     if apply:
         ok, detail = validate_runner(arcana_root)
         if not ok:
-            text = "validate: Arcana fails validate.py - refusing to reconcile on a broken base (RECOVERY.md step 4)"
+            text = "validate: Arcana fails validate.py - refusing to reconcile on a broken base (RESTORATION.md step 4)"
             reporter.message("error", text)
             reporter.set_status("blocked")
             steps.append({"id": "validate", "label": "Validate Arcana base", "status": "blocked",
@@ -690,7 +694,7 @@ def add_state_args(parser: argparse.ArgumentParser) -> None:
     """Register the agent-legibility flags on the summon dispatcher's parser."""
     parser.add_argument("--check", "--plan", dest="check", action="store_true",
                         help="Report installation/registry drift (read-only) and write a transcript")
-    parser.add_argument("--reconcile", "--recover", dest="reconcile", action="store_true",
+    parser.add_argument("--reconcile", "--restore", dest="reconcile", action="store_true",
                         help="Repair the local library and re-register skills to match disk")
     parser.add_argument("--apply", dest="apply", action="store_true",
                         help="With --reconcile, perform changes (default: propose only)")

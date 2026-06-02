@@ -44,7 +44,7 @@ From a registered grimoire, or from a workspace where the active grimoire can be
 Before editing the grimoire:
 
 - Confirm the user has pulled the latest Arcana they intend to use. Do not run network commands unless the user asks.
-- If the user wants the standard update path, run `/grm-update-arcana` first; it pulls Arcana, validates it, refreshes agent integration, and registers skills for the active grimoire.
+- If the user wants the standard update path, run `/grm-restore` first; it brings the active grimoire and its Arcana to a current, validated, synchronized state.
 - If the user already updated Arcana manually, confirm Arcana skills have been registered after the update (`/grm-register-skills` or `/arc-agent-register-skills`) before relying on newly added skills.
 - If the user asks to upgrade all grimoires, list registered grimoires from `~/grimoires/library.json`, recommend doing one grimoire at a time, and start with the active grimoire unless the user chooses another.
 - Confirm the active grimoire root is not Arcana.

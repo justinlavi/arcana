@@ -8,6 +8,9 @@ Format documented in formulae/log_entry.formula.md:
    - <key>: <value>
     ...
 
+Scope: records grimoire *content* changes (pages/sources added, removed, or
+changed). Valid ops and entry rules are defined in formulae/log_entry.formula.md.
+
 Usage:
     python3 rites/append_log.py --grimoire <path> --op <op> --title "<title>" \
         [--skill /<skill_prefix>-<verb>] [--field key=value ...] \
@@ -32,6 +35,7 @@ from pathlib import Path
 
 from diagnostics import ResultReporter, add_output_format_arg
 
+# Grimoire-content operations. See formulae/log_entry.formula.md (Scope) for the entry rules.
 VALID_OPS = {"ingest", "query", "lint", "improve", "file-answer",
              "rebuild-index", "create", "manual"}
 

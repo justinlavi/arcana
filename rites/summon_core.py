@@ -87,7 +87,7 @@ GRIMOIRE_BLOCK = _load_grimoire_block()
 # Idempotency sentinels for the injected Grimoire block. The canonical template
 # wraps the block in BEGIN/END markers with the heading inside; older injections
 # carried only the heading. A block written by any path - this injector, the
-# template, /arc-agent-update, or RECOVERY.md - counts as present when EITHER
+# template, /arc-agent-update, or RESTORATION.md - counts as present when EITHER
 # sentinel is found, so a re-run never double-injects regardless of which form is
 # on disk. summon_state imports these so the detector and injector cannot drift.
 BEGIN_SENTINEL = "<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->"

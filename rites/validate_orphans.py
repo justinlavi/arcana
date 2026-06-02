@@ -35,7 +35,7 @@ from _lib import (
 )
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
-EXEMPT_FILENAMES = {"README.md", "RECOVERY.md", "CHANGELOG.md", "CONTRIBUTING.md", "log.md", "VERSION", "SKILL.md"}
+EXEMPT_FILENAMES = {"README.md", "RESTORATION.md", "CHANGELOG.md", "CONTRIBUTING.md", "log.md", "VERSION", "SKILL.md"}
 SKIP_DIRS = {"sources", "inbox", ".git", "skills", "tests"}
 
 

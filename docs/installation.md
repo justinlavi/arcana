@@ -171,7 +171,7 @@ If you can't run the summoning rite (no network, restricted environment, etc.):
 
 If an existing installation is far behind and its registered slash commands no
 longer match current Arcana, pull Arcana first, then follow
-[Arcana Recovery](../RECOVERY.md). Recovery does not depend on any installed
+[Arcana Restoration](../RESTORATION.md). Restoration does not depend on any installed
 skill being correct.
 
 ---

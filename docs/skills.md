@@ -73,7 +73,7 @@ invoke `/arc-help`.
 | [`/grm-lint`](../skills/grimoire/lint/SKILL.md) | Health-check the active grimoire - orphans, stale claims, ghost references, contradictions, missing cross-refs | [`lint.md`](../invocations/grimoire/lint.md) | `hybrid` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate.py --grimoire GRIMOIRE_ROOT` |
 | [`/grm-register-skills`](../skills/grimoire/register-skills/SKILL.md) | Register Arcana skills and the active grimoire's own skills into supported agent skill directories | [`register_skills.md`](../invocations/grimoire/register_skills.md) | `rite` | `plan_apply` | [`register_skills.py`](../rites/register_skills.py) | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/register_skills.py --grimoire GRIMOIRE_ROOT --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions.` |
 | [`/grm-repair-links`](../skills/grimoire/repair-links/SKILL.md) | Promote filename-only wikilinks to canonical full-path form across the active grimoire | [`repair_links.md`](../invocations/grimoire/repair_links.md) | `rite` | `plan_apply` | [`repair_links.py`](../rites/repair_links.py) | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/repair_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_orphans.py --grimoire GRIMOIRE_ROOT` |
-| [`/grm-update-arcana`](../skills/grimoire/update-arcana/SKILL.md) | Update Arcana, refresh agent integration, re-register skills, and check active-grimoire health | [`update_arcana.md`](../invocations/grimoire/update_arcana.md) | `hybrid` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate.py --summary; python rites/validate.py --grimoire GRIMOIRE_ROOT --summary` |
+| [`/grm-restore`](../skills/grimoire/restore/SKILL.md) | Restore the active grimoire and its Arcana to a current, validated, synchronized state | [`restore.md`](../invocations/grimoire/restore.md) | `hybrid` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate.py --summary; python rites/validate.py --grimoire GRIMOIRE_ROOT --summary` |
 
 ## Grimoire validation
 
@@ -116,6 +116,12 @@ invoke `/arc-help`.
 | Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
 |---|---|---|---|---|---|---|---|
 | [`/arc-help`](../skills/help/help/SKILL.md) | Display the Arcana skill catalog and installed grimoire skill guide | [`help.md`](../invocations/help/help.md) | `judgment` | `read_only` | `none` | `none` | `python rites/sync_docs.py --apply when Arcana skill frontmatter or command-surface metadata changes.` |
+
+## Restore
+
+| Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
+|---|---|---|---|---|---|---|---|
+| [`/arc-restore`](../skills/arcana/restore/SKILL.md) | Restore Arcana (and any grimoire) to a current, validated, synchronized state | [`restore.md`](../invocations/arcana/restore.md) | `hybrid` | `judgment_gated` | `none` | `none` | `python rites/validate.py --summary` |
 
 ---
 
