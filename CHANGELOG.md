@@ -65,7 +65,11 @@ last_verified: YYYY-MM-DD
 ```
 
 The canonical schema lives in `docs/page_schema.md` and is enforced by
-`rites/validate_frontmatter.py`.
+`rites/validate_frontmatter.py`. `last_verified` must be a real verification
+date: the validator rejects implausibly early sentinels (any date before a fixed
+`2020-01-01` floor, such as the Unix epoch `1970-01-01`). The floor is a static
+constant rather than the current date, so frontmatter validation stays
+reproducible.
 
 **Storage layers.** Every grimoire is organized into:
 
