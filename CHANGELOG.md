@@ -77,7 +77,10 @@ date: the validator rejects implausibly early sentinels (any date before a fixed
 constant rather than the current date, so frontmatter validation stays
 reproducible. `rites/new_page.py` stamps a schema-valid leaf from
 `formulae/page.formula.md` with today's `last_verified`, so authored pages never
-ship the formula's placeholder date.
+ship the formula's placeholder date. Tags are `/`-namespaced facets (`chapter/`,
+`type/`, `hub/`, and optional owner-defined `domain/<...>`): the hub tree is the
+primary navigation axis and a topical facet is an optional second lexical axis
+for cross-cutting subjects.
 
 **Storage layers.** Every grimoire is organized into:
 

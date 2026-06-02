@@ -84,6 +84,7 @@ Two structural choices are deliberate and mechanically enforced, not incidental:
 - **Minimal-read invariant:** every hop narrows the search; the path stops at the leaf that answers the question. Shallow when topics are flat (root hub -> leaf), deeper when topics warrant nesting (root -> chapter -> sub-chapter -> ... -> leaf). The invariant is "as few hops as the structure requires," not a fixed count.
 - Hubs are maps; leaf docs store invariants, stable patterns, and source pointers.
 - Keep canonical rules in one leaf and wikilink to it from related routing surfaces.
+- **Primary and secondary axes:** the hub tree is the primary navigation axis; an optional owner-defined topical facet (`domain/<...>`; see [page schema](page_schema.md#tag-conventions)) is a secondary lexical axis for cross-cutting subjects.
 
 ## How To Route
 

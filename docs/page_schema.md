@@ -126,11 +126,15 @@ Tags use `/`-separated namespaces. The recommended top-level tags:
 
 - `chapter/<chapter_name>` - locates the page in the chapter taxonomy. Hubs include their own chapter tag.
 - `type/<type>` - mirrors the `type:` field; useful for Dataview cross-tag queries.
-- `domain/<...>` - domain-specific facets the grimoire owner defines (e.g. `domain/cmake`, `domain/build`, `domain/onboarding`).
+- `domain/<...>` - **optional** owner-defined topical facets for cross-cutting subjects (e.g. `domain/cmake`, `domain/build`, `domain/onboarding`). The namespace is the owner's choice - a grimoire may use `topic/<...>` instead - but pick one and apply it consistently.
 - `status/<state>` - optional lifecycle (`status/draft`, `status/stable`, `status/deprecated`).
 - `hub/<level>` - hub level: `hub/root` (grimoire root, one per grimoire), `hub/chapter` (top-level chapter hub), `hub/sub` (any deeper hub). Used by Obsidian graph color groups to make hubs visually distinct.
 
 Tags are flat strings inside YAML (Dataview-compatible). Avoid spaces; use `_` or `-` if needed.
+
+### Topical facets as a second retrieval axis
+
+The hub tree is the primary navigation path: every page has one home, reached by routing from hub to hub. A topical facet (`domain/<...>`, or a grimoire's chosen equivalent such as `topic/<...>`) is an **optional second axis** - it groups cross-cutting pages that span chapters so an agent can find them by lexical tag search (for example, grep for `domain/cmake`) without walking every hub. It is recommended when a grimoire has subjects that recur across chapters, but it is not mechanically required: whether and how to use it is an editorial choice the owner curates. Arcana does not impose a domain vocabulary - keeping framework taxonomy out of grimoire content - so facet quality is reviewed by judgment (`/grm-analyze-semantics`), not a validator.
 
 ### Hub level tags (recap)
 
