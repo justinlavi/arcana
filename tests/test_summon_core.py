@@ -324,3 +324,107 @@ def test_inject_agent_file_skips_legacy_heading_only_block(tmp_path):
     assert after == before
     assert after.count(summon_core.HEADING_SENTINEL) == 1
     assert summon_core.BEGIN_SENTINEL not in after
+
+
+# ---------------------------------------------------------------------------
+# GUI OpenGL probe: must run in the interpreter that owns Dear PyGui
+# ---------------------------------------------------------------------------
+
+
+def _capture_probe_run(monkeypatch):
+    """Stub summon_gui.subprocess.run to capture (cmd, env) and report success."""
+    captured = {}
+
+    def fake_run(cmd, **kwargs):
+        captured["cmd"] = cmd
+        captured["env"] = kwargs.get("env")
+        return SimpleNamespace(returncode=0, stderr=b"")
+
+    monkeypatch.setattr(summon_gui.subprocess, "run", fake_run)
+    return captured
+
+
+def test_probe_gui_frozen_reinvokes_self(monkeypatch):
+    # A frozen binary must probe by re-invoking itself, not a system python
+    # that lacks the bundled Dear PyGui.
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    captured = _capture_probe_run(monkeypatch)
+
+    ok, _ = summon_gui._probe_gui(mode="import")
+
+    assert ok is True
+    assert captured["cmd"] == [sys.executable]
+    assert "-c" not in captured["cmd"]
+    assert captured["env"]["GRIMOIRE_SUMMON_GL_PROBE"] == "import"
+
+
+def test_probe_gui_source_uses_system_python(monkeypatch):
+    # A source run probes with system_python() against the dependency cache.
+    monkeypatch.delattr(sys, "frozen", raising=False)
+    monkeypatch.setattr(summon_gui, "system_python", lambda: "py-under-test")
+    captured = _capture_probe_run(monkeypatch)
+
+    ok, _ = summon_gui._probe_gui()
+
+    assert ok is True
+    assert captured["cmd"] == ["py-under-test", "-c", summon_gui._PROBE_BOOTSTRAP]
+    assert captured["env"]["GRIMOIRE_SUMMON_GL_PROBE"] == "viewport"
+    assert captured["env"]["GRIMOIRE_SUMMON_PROBE_DIR"]
+
+
+def test_select_gui_env_reports_missing_dpg_distinctly(monkeypatch):
+    # A missing-module failure must not be reported as a GL/Wayland problem.
+    monkeypatch.setattr(
+        summon_gui, "_probe_gui",
+        lambda *a, **k: (False, "ModuleNotFoundError: No module named 'dearpygui'"),
+    )
+    env, msg = summon_gui._select_gui_env()
+    assert env is None
+    assert "Dear PyGui is not available" in msg
+    assert "OpenGL/GLX" not in msg
+
+
+def test_select_gui_env_reports_gl_failure(monkeypatch):
+    # A real GL failure keeps the OpenGL/GLX guidance.
+    monkeypatch.setattr(
+        summon_gui, "_probe_gui",
+        lambda *a, **k: (False, "GLX: failed to create context"),
+    )
+    env, msg = summon_gui._select_gui_env()
+    assert env is None
+    assert "no usable OpenGL/GLX context" in msg
+    assert "Dear PyGui is not available" not in msg
+
+
+def _install_fake_dearpygui(monkeypatch):
+    """Put a recording fake dearpygui.dearpygui in sys.modules; return the call log."""
+    import types
+    calls = []
+
+    def rec(name):
+        return lambda *a, **k: calls.append(name)
+
+    fake = types.ModuleType("dearpygui.dearpygui")
+    for fn in ("create_context", "create_viewport", "setup_dearpygui",
+               "show_viewport", "render_dearpygui_frame", "destroy_context"):
+        setattr(fake, fn, rec(fn))
+    pkg = types.ModuleType("dearpygui")
+    pkg.dearpygui = fake
+    monkeypatch.setitem(sys.modules, "dearpygui", pkg)
+    monkeypatch.setitem(sys.modules, "dearpygui.dearpygui", fake)
+    return calls
+
+
+def test_run_gl_probe_import_mode_does_not_touch_gl(monkeypatch):
+    calls = _install_fake_dearpygui(monkeypatch)
+    assert summon_gui.run_gl_probe("import") == 0
+    assert calls == []
+
+
+def test_run_gl_probe_viewport_mode_renders_one_frame(monkeypatch):
+    calls = _install_fake_dearpygui(monkeypatch)
+    assert summon_gui.run_gl_probe("viewport") == 0
+    assert calls == [
+        "create_context", "create_viewport", "setup_dearpygui",
+        "show_viewport", "render_dearpygui_frame", "destroy_context",
+    ]

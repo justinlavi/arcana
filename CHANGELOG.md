@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.2.0] - 2026-06-02
+
+MINOR. Existing grimoires stay valid and are brought current by the update process itself (skill re-registration plus the mechanical heal), so no hand migration is required — per the compatibility-based, self-healing-aware policy in `docs/governance.md`.
+
+### Changed
+
+- **Restoration → Update.** The maintenance concept that brings Arcana, agent skills, the library, agent instructions, and grimoires back to a current, validated, synchronized state is now **Update** — the term names what it does. `RESTORATION.md` is renamed to **`UPDATE.md`**; the mirrored thin pointer skills become **`/grm-update`** and **`/arc-update`** (from `/grm-restore` / `/arc-restore`; `/grm-update` continues the `/grm-update-arcana` → `/grm-restore` lineage). The grimoire formula README block markers become `<!-- BEGIN/END ARCANA UPDATE -->` and the heading `## Out of date? Update.`. The summon engine surfaces the new `--update` flag and the `arcana_update` action; the former `--restore` alias of `--reconcile` is removed.
+
+### Added
+
+- **Library-wide, branch-aware grimoire pull (`summon.py --update`).** A new rite, `rites/update_grimoires.py`, brings **every** grimoire in `~/grimoires/library.json` current before any heal — not just the active one. Per grimoire it fetches, detects the tracking branch and ahead/behind, and fast-forwards a clean branch that is behind. The load-bearing invariant is **pull-before-heal**: a grimoire that is dirty, diverged, detached, without an upstream, or behind on a host it cannot reach is reported and left **untouched** (healing a stale tree would re-derive upstream work and diverge). `rites/summon_core.py` gains `git_capture()` (returns stderr) so a fetch failure is classified as `auth_failed` / `offline` / `fetch_error`.
+- **Private-host auth fallback.** Arcana is public and always pullable; grimoires may live on a private host needing a token. The update tries each grimoire with existing credentials (`GIT_TERMINAL_PROMPT=0`, the git credential store, `GITLAB_TOKEN`/`GITHUB_TOKEN`), and on failure collects it into a `needs_manual_pull` list and continues — so a teammate updates the grimoires they can reach and gets an exact, copy-pasteable manual-pull ask for the rest. A per-grimoire failure never aborts the run.
+
+### Improved
+
+- **The update is deterministic, not luck-dependent.** `summon.py --update --apply` orchestrates the whole update in one command — validate Arcana, reconcile the library, pull every grimoire, re-register skills, heal only the grimoires confirmed current — emitting one machine-readable envelope. Skill re-registration now always runs `register_skills.py --reset-managed` (the path that removes stale namespaces), and `UPDATE.md` instructs agents to report each rite's own `--format json` counts rather than self-counted claims. The grimoire heal — managed-scaffold re-sync, README update-block injection, wikilink repair — runs mechanically inside the rite.
+
+### Fixed
+
+- **Release-binary GUI now launches instead of falling back to CLI.** The OpenGL probe ran its `import dearpygui` check in a child process started by `system_python()`, which a frozen binary resolves to a *system* `python3` that has no Dear PyGui — so the probe failed with `ModuleNotFoundError` and the GUI dropped to CLI even though the binary's own bundled Dear PyGui was fine. The probe now runs in the interpreter that owns the GUI: a frozen binary re-invokes itself, while a source run still tests the `GRIMOIRE_SUMMON_PY_DEPS` cache. The probe body is shared through `run_gl_probe()` in `rites/summon_gui.py`, re-entered via the `GRIMOIRE_SUMMON_GL_PROBE` hook in `rites/summon.py`.
+- **Accurate message when Dear PyGui is missing.** A missing-module probe failure no longer reports "no usable OpenGL/GLX context" with XWayland/Mesa advice; it states that Dear PyGui is unavailable and how to install it.
+- **The build refuses to ship a GUI-less binary.** `rites/build_summon_binary.py` requires Dear PyGui to be importable in the build interpreter before running PyInstaller (`--collect-all` only warns on a missing module), and after building runs the artifact with `GRIMOIRE_SUMMON_GL_PROBE=import` to confirm the bundled Dear PyGui imports inside the binary. Both checks need no display and run in CI.
+
 ## [1.1.0] - 2026-06-02
 
 First release after the 1.0.0 architecture snapshot. Backward compatible: existing grimoires stay valid and need no migration (see `RESTORATION.md` → Version Migrations).

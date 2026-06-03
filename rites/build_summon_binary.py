@@ -150,6 +150,19 @@ def main():
 
     pyinstaller_args.append(str(ROOT / "rites" / "summon.py"))
 
+    # --collect-all only warns (it does not fail) when dearpygui is absent,
+    # which would silently produce a GUI-less binary. Require it up front.
+    preflight = subprocess.run(
+        [sys.executable, "-c", "import dearpygui.dearpygui"],
+        capture_output=True,
+        text=True,
+    )
+    if preflight.returncode != 0:
+        print("[ERROR] dearpygui is not importable in the build interpreter;")
+        print("        PyInstaller would silently produce a GUI-less binary.")
+        print("        Install build dependencies first: pip install '.[build]'")
+        return 1
+
     try:
         run(pyinstaller_args)
     except subprocess.CalledProcessError as exc:
@@ -164,6 +177,20 @@ def main():
         return 1
 
     os.chmod(binary, os.stat(binary).st_mode | 0o755)
+
+    # Prove the bundled Dear PyGui actually imports inside the artifact. The
+    # import-only probe needs no display, so this runs headless in CI.
+    selftest = subprocess.run(
+        [str(binary)],
+        capture_output=True,
+        text=True,
+        env={**os.environ, "GRIMOIRE_SUMMON_GL_PROBE": "import"},
+    )
+    if selftest.returncode != 0:
+        print("[ERROR] Built binary cannot import its bundled Dear PyGui:")
+        print((selftest.stderr or selftest.stdout).strip())
+        return 1
+    print("[OK]    Bundled Dear PyGui import verified in the built binary")
 
     asset_name = f"{binary_base}-{platform_id()}"
     archive = archive_file(binary, output_dir, asset_name)

@@ -358,7 +358,7 @@ def iter_pages(
 # ---------------------------------------------------------------------------
 
 PUBLIC_DOC_DIRS = {"docs"}
-PUBLIC_DOC_FILENAMES = {"README.md", "RESTORATION.md", "CONTRIBUTING.md", "CHANGELOG.md"}
+PUBLIC_DOC_FILENAMES = {"README.md", "UPDATE.md", "CONTRIBUTING.md", "CHANGELOG.md"}
 
 
 def is_skipped(rel, skip_dirs: Iterable[str]) -> bool:
@@ -384,7 +384,7 @@ def is_skipped(rel, skip_dirs: Iterable[str]) -> bool:
 def public_document(path: Path, root: Path) -> bool:
     """Return True when a Markdown file is meant to render portably on Git hosts.
 
-    Public docs - the top-level README/RESTORATION/CONTRIBUTING/CHANGELOG and the
+    Public docs - the top-level README/UPDATE/CONTRIBUTING/CHANGELOG and the
     ``docs/`` tree - use standard Markdown links; vault and AI-routing surfaces
     use full-path wikilinks.
     """

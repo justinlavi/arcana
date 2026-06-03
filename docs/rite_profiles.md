@@ -39,6 +39,7 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 | `rites/summon_gui.py` | `apply_only` | none | `python rites/summon.py --gui` | GUI settings, install tree, selected grimoires, library, agent files |
 | `rites/sync_docs.py` | `plan_apply` | `python rites/sync_docs.py` | `python rites/sync_docs.py --apply` | `docs/skills.md` |
 | `rites/sync_library.py` | `plan_apply` | `python rites/sync_library.py` | `python rites/sync_library.py --apply` | `~/grimoires/library.json` |
+| `rites/update_grimoires.py` | `plan_apply` | `python rites/summon.py --update` | `python rites/summon.py --update --apply` | grimoire working trees (fast-forward-only pulls) and Arcana-owned managed scaffold during heal |
 | `rites/validate.py` | `read_only` | none | `python rites/validate.py --parallel` | transient validator reports under `rites/.artifacts` |
 
 ## Rules

@@ -1196,31 +1196,64 @@ def _extract_probe_hint(stderr_bytes):
     return text.splitlines()[0].strip()[:200]
 
 
-def _probe_gui(extra_env=None):
-    """Test whether DearPyGui can open an OpenGL window with the given env."""
+def run_gl_probe(mode="viewport"):
+    """Probe body, run in a child process so a GLX/GLFW abort cannot take down
+    the installer. It imports Dear PyGui in *this* interpreter, so a frozen
+    binary tests its own bundled copy. Returns a process exit code.
+
+    mode="import"   - only confirm Dear PyGui imports (no display needed).
+    mode="viewport" - open a GL viewport and render one frame.
+    """
+    import dearpygui.dearpygui as dpg
+    if mode == "import":
+        return 0
+    dpg.create_context()
+    try:
+        dpg.create_viewport(title="_probe", width=300, height=200)
+        dpg.setup_dearpygui()
+        dpg.show_viewport()
+        dpg.render_dearpygui_frame()
+    finally:
+        dpg.destroy_context()
+    return 0
+
+
+# Non-frozen probe child: put the dependency cache and this rite's directory on
+# the path, then run the shared probe body. system_python() lacks Dear PyGui
+# unless it was installed into GRIMOIRE_SUMMON_PY_DEPS, which is what we test.
+_PROBE_BOOTSTRAP = (
+    "import sys, os\n"
+    "for _k in ('GRIMOIRE_SUMMON_PY_DEPS', 'GRIMOIRE_SUMMON_PROBE_DIR'):\n"
+    "    _d = os.environ.get(_k)\n"
+    "    if _d:\n"
+    "        sys.path.insert(0, _d)\n"
+    "from summon_gui import run_gl_probe\n"
+    "sys.exit(run_gl_probe(os.environ.get('GRIMOIRE_SUMMON_GL_PROBE', 'viewport')))\n"
+)
+
+
+def _probe_gui(extra_env=None, mode="viewport"):
+    """Test whether Dear PyGui can open an OpenGL window with the given env.
+
+    The probe runs in a child process so a GLX/GLFW abort cannot take down the
+    installer. The child imports Dear PyGui from the same place the real GUI
+    will: a frozen binary re-invokes itself (its bundled copy), while a source
+    run uses system_python() against the GRIMOIRE_SUMMON_PY_DEPS cache.
+    """
     env = dict(os.environ)
     env.pop("LD_LIBRARY_PATH", None)
     if extra_env:
         env.update(extra_env)
-    code = (
-        "import sys, os\n"
-        "d = os.environ.get('GRIMOIRE_SUMMON_PY_DEPS', '')\n"
-        "if d: sys.path.insert(0, d)\n"
-        "import dearpygui.dearpygui as dpg\n"
-        "dpg.create_context()\n"
-        "try:\n"
-        "    dpg.create_viewport(title='_probe', width=300, height=200)\n"
-        "    dpg.setup_dearpygui()\n"
-        "    dpg.show_viewport()\n"
-        "    dpg.render_dearpygui_frame()\n"
-        "finally:\n"
-        "    dpg.destroy_context()\n"
-    )
+    env["GRIMOIRE_SUMMON_GL_PROBE"] = mode
+
+    if getattr(sys, "frozen", False):
+        cmd = [sys.executable]
+    else:
+        env["GRIMOIRE_SUMMON_PROBE_DIR"] = os.path.dirname(os.path.abspath(__file__))
+        cmd = [system_python(), "-c", _PROBE_BOOTSTRAP]
+
     try:
-        result = subprocess.run(
-            [system_python(), "-c", code],
-            capture_output=True, timeout=8, env=env,
-        )
+        result = subprocess.run(cmd, capture_output=True, timeout=8, env=env)
     except Exception as e:
         return False, f"could not run probe: {e}"
     if result.returncode == 0:
@@ -1234,6 +1267,12 @@ _GUI_SW_RENDER_ENV = {
 }
 
 
+def _is_missing_dpg(hint):
+    """True when a probe hint is a missing-Dear-PyGui import, not a GL failure."""
+    h = (hint or "").lower()
+    return "no module named" in h and "dearpygui" in h
+
+
 def _select_gui_env():
     """Pick the first env that makes the GUI work on this machine."""
     ok, hw_err = _probe_gui()
@@ -1243,6 +1282,12 @@ def _select_gui_env():
     ok, sw_err = _probe_gui(extra_env=_GUI_SW_RENDER_ENV)
     if ok:
         return dict(_GUI_SW_RENDER_ENV), "software OpenGL (Mesa llvmpipe)"
+    if _is_missing_dpg(hw_err) and _is_missing_dpg(sw_err):
+        return None, (
+            f"Dear PyGui is not available to the probe interpreter ({hw_err}). "
+            f"Re-run and answer y when asked to install GUI dependencies, "
+            f"install it manually, or run with --cli."
+        )
     return None, (
         f"no usable OpenGL/GLX context "
         f"(hardware: {hw_err}; software: {sw_err}). "

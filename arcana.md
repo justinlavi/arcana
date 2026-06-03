@@ -21,7 +21,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 ## Documentation
 
 - Overview and architecture -> [[README|README]]
-- Restoration & skill-less self-update -> [[RESTORATION|RESTORATION]]
+- Update & skill-less self-update -> [[UPDATE|UPDATE]]
 - Contributing guide -> [[CONTRIBUTING|CONTRIBUTING]]
 - Installation and smoke test -> [[docs/installation|installation]]
 - Summoning behavior contract -> [[docs/summoning_contract|summoning contract]]
@@ -49,7 +49,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 
 - Create a grimoire -> [[invocations/grimoire/create_grimoire|create grimoire]]
 - Create a chapter -> [[invocations/grimoire/create_chapter|create chapter]]
-- Restore the grimoire and its Arcana -> [[invocations/grimoire/restore|restore]]
+- Update the grimoire and its Arcana -> [[invocations/grimoire/update|update]]
 - Register active-grimoire skills -> [[invocations/grimoire/register_skills|register skills]]
 - Ingest a source -> [[invocations/grimoire/ingest|ingest]]
 - File a chat answer -> [[invocations/grimoire/file_answer|file answer]]
@@ -64,7 +64,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 **Arcana maintenance** -> [[invocations/arcana/arcana|arcana]]
 
 - Improve Arcana -> [[invocations/arcana/improve_arcana|improve arcana]]
-- Restore Arcana and grimoires -> [[invocations/arcana/restore|restore]]
+- Update Arcana and grimoires -> [[invocations/arcana/update|update]]
 - Arcana validator hub -> [[invocations/arcana/validators/validators|validators]]
 - Arcana quality hub -> [[invocations/arcana/quality/quality|quality]]
 

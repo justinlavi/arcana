@@ -62,7 +62,7 @@
         "Update the local library for installed grimoires.",
         "Inject supported agent instruction blocks.",
         "Register Arcana and grimoire skills.",
-        "Report completion, warnings, and restoration instructions."
+        "Report completion, warnings, and update instructions."
       ]
     },
     {
@@ -140,7 +140,7 @@
         "Re-register skills under --reconcile --apply via register_skills.py.",
         "Refuse to reconcile when the Arcana base fails validate.py.",
         "Detect agent instruction blocks via both the heading and BEGIN/END sentinels, and report rather than rewrite them.",
-        "Exclude network pull of Arcana itself as a human-gated restoration step."
+        "Exclude network pull of Arcana itself as a human-gated update step."
       ]
     }
   ],

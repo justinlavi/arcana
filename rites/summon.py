@@ -53,6 +53,18 @@ def _detect_gui_mode(args):
 
 
 def main():
+    # GL-probe re-entry: the GUI probe re-invokes this interpreter (a frozen
+    # binary re-invokes itself) so the probe tests the Dear PyGui it will
+    # actually use. Handle it before argparse and exit with the probe's code.
+    probe_mode = os.environ.get("GRIMOIRE_SUMMON_GL_PROBE")
+    if probe_mode:
+        from summon_gui import run_gl_probe
+        try:
+            sys.exit(run_gl_probe(probe_mode))
+        except Exception as e:
+            print(repr(e), file=sys.stderr)
+            sys.exit(1)
+
     parser = argparse.ArgumentParser(
         description="Arcana Summoning Rite - install Arcana and optionally clone grimoires"
     )

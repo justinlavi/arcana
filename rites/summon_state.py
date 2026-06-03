@@ -5,9 +5,10 @@ Sister module to `summon_core.py` (the interactive install engine). Where
 `summon_core` talks to a human via tagged stdout, this module gives an
 orchestrator a machine-readable view of an installation: a read-only
 `--check` that reports drift, a `--reconcile` that repairs the offline,
-deterministic subset of `RESTORATION.md`, and a durable transcript
-(`~/.cache/grimoire/summon-last.json`) so the outcome of any summon-family
-operation can be diffed against intent without parsing prose.
+deterministic subset of `UPDATE.md`, a network-aware `--update` that pulls and
+heals every library grimoire (delegated to `update_grimoires.py`), and a durable
+transcript (`~/.cache/grimoire/summon-last.json`) so the outcome of any
+summon-family operation can be diffed against intent without parsing prose.
 
 Design rules (mirrors the deferred-fragility and autonomy boundaries):
 
@@ -23,8 +24,9 @@ Design rules (mirrors the deferred-fragility and autonomy boundaries):
   tree), never deletes a library entry unless `--prune` is given, and never
   rewrites agent instruction blocks (the BEGIN/END vs heading sentinel
   mismatch makes that non-deterministic - it is reported, not performed).
-* Network pull is out of scope: updating Arcana itself is the human/RED step
-  from `RESTORATION.md`.
+* `--check` and `--reconcile` stay offline; the network-aware `--update` (in
+  `update_grimoires.py`) pulls every library grimoire before healing. Pulling
+  Arcana itself stays the human/RED step from `UPDATE.md`.
 """
 
 from __future__ import annotations
@@ -38,19 +40,20 @@ from typing import Any, Callable
 
 import summon_core
 import sync_library
+import update_grimoires
 from agent_targets import automatic_instruction_targets, skill_registration_targets
 from diagnostics import ResultReporter, add_output_format_arg
 
 SCHEMA_VERSION = 1
 
 # Idempotency sentinels for the injected Grimoire block. A block written by any
-# path - the injector, the template, RESTORATION.md, or /arc-agent-update - counts
+# path - the injector, the template, UPDATE.md, or /arc-agent-update - counts
 # as present when EITHER sentinel is found; reporting only one would mislabel the
 # other as drift and invite a double-injection. Single-sourced from summon_core
 # (the injector) so the detector and the injector can never disagree.
 from summon_core import BEGIN_SENTINEL, HEADING_SENTINEL
 
-NETWORK_PULL_NOTE = "skipped (human-gated; see RESTORATION.md step 2)"
+NETWORK_PULL_NOTE = "skipped (human-gated; see UPDATE.md step 2)"
 
 
 # ---------------------------------------------------------------------------
@@ -224,6 +227,16 @@ def drift_detected(state: dict[str, Any]) -> bool:
     )
 
 
+def _grimoire_drift(grimoire_result: dict[str, Any] | None) -> bool:
+    """True when any library grimoire is not confirmed current with its upstream."""
+    if not grimoire_result:
+        return False
+    return any(
+        r["status"] not in ("up_to_date", "fast_forwarded", "ahead")
+        for r in grimoire_result["grimoires"]
+    )
+
+
 def next_actions(state: dict[str, Any], arcana_root: Path) -> list[dict[str, Any]]:
     """Structured, tier-tagged remediation - never free-text the orchestrator must parse."""
     actions: list[dict[str, Any]] = []
@@ -261,15 +274,15 @@ def next_actions(state: dict[str, Any], arcana_root: Path) -> list[dict[str, Any
             "reason": "no Arcana-managed skills registered in any agent skill directory",
         })
     if not state["arcana"]["working_tree_populated"]:
-        # Restoration remedy: pull Arcana to current. Distinct from summon_core's
+        # Update remedy: pull Arcana to current. Distinct from summon_core's
         # working-tree recovery (git checkout HEAD -- .), which repairs an
-        # interrupted clone in place; this restores the engine to the current
+        # interrupted clone in place; this brings the engine to the current
         # version.
         actions.append({
-            "kind": "arcana_restore",
+            "kind": "arcana_update",
             "tier": "red",
             "command": f"git -C {arcana_root} pull --ff-only",
-            "reason": "Arcana working tree is missing or partial; pull to restore it to current (network/human step)",
+            "reason": "Arcana working tree is missing or partial; pull to bring it current (network/human step)",
         })
     return actions
 
@@ -305,8 +318,12 @@ def residual(state: dict[str, Any], *, prune: bool) -> list[dict[str, Any]]:
 
 
 def _default_skill_runner(register_script: Path) -> tuple[int, str]:
+    # --reset-managed replaces the owned Arcana/grimoire skill namespaces, then
+    # writes fresh skills from current source. Plain registration leaves stale
+    # skills behind (renamed/removed sources keep their old registration), so the
+    # deterministic update path always resets - the reliable path is not optional.
     result = subprocess.run(
-        [summon_core.system_python(), str(register_script), "--agent", "all"],
+        [summon_core.system_python(), str(register_script), "--reset-managed", "--agent", "all"],
         capture_output=True,
         text=True,
         env=summon_core._subprocess_env(),
@@ -452,6 +469,33 @@ def _reconcile_skills(
     return step
 
 
+def _grimoire_step(grimoire_result: dict[str, Any], *, reporter: ResultReporter) -> dict[str, Any]:
+    """Build the steps[] entry for the pull-and-heal pass and surface manual pulls."""
+    step = {"id": "grimoires", "label": "Pull and heal library grimoires", "status": "noop",
+            "mutations": [], "messages": []}
+    s = grimoire_result["summary"]
+    for nm in grimoire_result["needs_manual_pull"]:
+        text = (f"grimoire {nm['key']}: {nm['status']} - could not bring current; "
+                f"pull manually with your tokens ({nm.get('suggested_command') or 'git pull --ff-only'})")
+        reporter.message("warning", text)
+        step["messages"].append({"severity": "warning", "message": text})
+    for r in grimoire_result["grimoires"]:
+        if r["pulled"]:
+            reporter.mutation("pull", path=r["local_path"], detail=f"{r['key']} fast-forwarded")
+        heal = r.get("heal") or {}
+        if heal.get("status") == "ok" and (heal.get("scaffold_synced") or heal.get("readme_block") == "updated"):
+            reporter.mutation("heal", path=r["local_path"], detail=f"{r['key']} scaffold/README healed")
+        if heal.get("status") == "error":
+            text = f"grimoire {r['key']}: heal reported an error"
+            reporter.message("error", text)
+            step["messages"].append({"severity": "error", "message": text})
+    if s["brought_current"] or s["healed"]:
+        step["status"] = "ok"
+    elif s["needs_manual_pull"] or s["heal_skipped"]:
+        step["status"] = "drift"
+    return step
+
+
 def _reconcile_agent_blocks(state: dict[str, Any], *, reporter: ResultReporter) -> dict[str, Any]:
     """Report-only: the BEGIN/END vs heading sentinel mismatch makes auto-write unsafe."""
     step = {"id": "agent_blocks", "label": "Agent instruction blocks", "status": "noop",
@@ -474,13 +518,23 @@ def reconcile(
     *,
     apply: bool = False,
     prune: bool = False,
+    pull_grimoires: bool = False,
+    grimoire_fetch: bool = True,
     instruction_targets: list | None = None,
     skill_targets: list | None = None,
     git_fn: Callable | None = None,
     skill_runner: Callable | None = None,
     validate_runner: Callable | None = None,
+    grimoire_processor: Callable | None = None,
 ) -> dict[str, Any]:
-    """Run the offline reconciliation and return reporter + steps + before/after state."""
+    """Run the reconciliation and return reporter + steps + before/after state.
+
+    With `pull_grimoires` (the `--update` path), a network-aware pull-and-heal
+    pass over every library grimoire runs between the library and skill steps -
+    so the skill reset picks up freshly pulled grimoire skills, and grimoires are
+    brought current before any heal. `grimoire_fetch=False` keeps it offline (the
+    `--check` currency snapshot: classify only, never pull or heal).
+    """
     home = Path(home)
     arcana_root = Path(arcana_root)
     skill_runner = skill_runner or _default_skill_runner
@@ -497,19 +551,30 @@ def reconcile(
     if apply:
         ok, detail = validate_runner(arcana_root)
         if not ok:
-            text = "validate: Arcana fails validate.py - refusing to reconcile on a broken base (RESTORATION.md step 4)"
+            text = "validate: Arcana fails validate.py - refusing to reconcile on a broken base (UPDATE.md step 4)"
             reporter.message("error", text)
             reporter.set_status("blocked")
             steps.append({"id": "validate", "label": "Validate Arcana base", "status": "blocked",
                           "mutations": [], "messages": [{"severity": "error", "message": text,
                                                           "detail": detail}]})
             state_after = state_before
-            return _reconcile_result(reporter, steps, state_before, state_after, prune, arcana_root)
+            return _reconcile_result(reporter, steps, state_before, state_after, prune,
+                                     arcana_root, grimoire_result=None)
         steps.append({"id": "validate", "label": "Validate Arcana base", "status": "ok",
                       "mutations": [], "messages": []})
 
     steps.append(_reconcile_library(home, _diff_from_state(state_before), apply=apply,
                                     prune=prune, reporter=reporter))
+
+    # Pull-and-heal pass (the --update path): bring every library grimoire current
+    # BEFORE re-registering skills (so the reset picks up pulled grimoire skills)
+    # and before any heal (so we never re-derive upstream work on a stale tree).
+    grimoire_result = None
+    if pull_grimoires:
+        processor = grimoire_processor or update_grimoires.process_all
+        grimoire_result = processor(home, arcana_root, apply=apply, fetch=grimoire_fetch)
+        steps.append(_grimoire_step(grimoire_result, reporter=reporter))
+
     steps.append(_reconcile_skills(arcana_root, state_before, apply=apply,
                                    reporter=reporter, skill_runner=skill_runner))
     steps.append(_reconcile_agent_blocks(state_before, reporter=reporter))
@@ -520,7 +585,8 @@ def reconcile(
         instruction_targets=instruction_targets, skill_targets=skill_targets, git_fn=git_fn,
     ) if apply else state_before
 
-    return _reconcile_result(reporter, steps, state_before, state_after, prune, arcana_root)
+    return _reconcile_result(reporter, steps, state_before, state_after, prune, arcana_root,
+                             grimoire_result=grimoire_result)
 
 
 def _diff_from_state(state: dict[str, Any]) -> dict[str, Any]:
@@ -532,7 +598,8 @@ def _diff_from_state(state: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _reconcile_result(reporter, steps, state_before, state_after, prune, arcana_root):
+def _reconcile_result(reporter, steps, state_before, state_after, prune, arcana_root,
+                      *, grimoire_result=None):
     return {
         "reporter": reporter,
         "steps": steps,
@@ -540,6 +607,7 @@ def _reconcile_result(reporter, steps, state_before, state_after, prune, arcana_
         "state_after": state_after,
         "residual": residual(state_after, prune=prune),
         "next_actions": next_actions(state_after, arcana_root),
+        "grimoires": grimoire_result,
     }
 
 
@@ -649,7 +717,8 @@ def record_install_transcript(
 # ---------------------------------------------------------------------------
 
 
-def _print_human(operation: str, state: dict[str, Any], result_steps, drift, transcript_path):
+def _print_human(operation: str, state: dict[str, Any], result_steps, drift, transcript_path,
+                 grimoires=None):
     log = summon_core.Logger()
     print()
     print("============================================")
@@ -674,6 +743,15 @@ def _print_human(operation: str, state: dict[str, Any], result_steps, drift, tra
             log.ok(f"Agent block present ({a['block_marker']}): {a['id']}")
     total_skills = sum(s["arcana_managed_count"] for s in state["skills"])
     (log.ok if total_skills else log.warn)(f"Registered skills: {total_skills}")
+    if grimoires is not None:
+        for r in grimoires["grimoires"]:
+            current = r["status"] in ("up_to_date", "fast_forwarded", "ahead")
+            detail = r["status"]
+            if r["behind"] or r["ahead"]:
+                detail += f" (behind {r['behind']}, ahead {r['ahead']})"
+            (log.ok if current else log.warn)(f"Grimoire {r['key']}: {detail}")
+        for nm in grimoires["needs_manual_pull"]:
+            log.warn(f"  -> {nm['key']}: pull manually with your tokens ({nm.get('suggested_command') or 'git pull --ff-only'})")
     if result_steps:
         print()
         print("  Steps:")
@@ -694,12 +772,14 @@ def add_state_args(parser: argparse.ArgumentParser) -> None:
     """Register the agent-legibility flags on the summon dispatcher's parser."""
     parser.add_argument("--check", "--plan", dest="check", action="store_true",
                         help="Report installation/registry drift (read-only) and write a transcript")
-    parser.add_argument("--reconcile", "--restore", dest="reconcile", action="store_true",
-                        help="Repair the local library and re-register skills to match disk")
+    parser.add_argument("--reconcile", dest="reconcile", action="store_true",
+                        help="Repair the local library and re-register skills to match disk (offline)")
+    parser.add_argument("--update", dest="update", action="store_true",
+                        help="Pull every library grimoire (branch-aware), reconcile, re-register skills, and heal current grimoires")
     parser.add_argument("--apply", dest="apply", action="store_true",
-                        help="With --reconcile, perform changes (default: propose only)")
+                        help="With --reconcile/--update, perform changes (default: propose only)")
     parser.add_argument("--prune", dest="prune", action="store_true",
-                        help="With --reconcile --apply, remove stale library entries (deletes them)")
+                        help="With --reconcile/--update --apply, remove stale library entries (deletes them)")
     parser.add_argument("--home", dest="home", default=None,
                         help="Override grimoires home (default: ~/grimoires)")
     parser.add_argument("--arcana-root", dest="arcana_root", default=None,
@@ -710,7 +790,8 @@ def add_state_args(parser: argparse.ArgumentParser) -> None:
 
 
 def is_state_invocation(args: argparse.Namespace) -> bool:
-    return bool(getattr(args, "check", False) or getattr(args, "reconcile", False))
+    return bool(getattr(args, "check", False) or getattr(args, "reconcile", False)
+                or getattr(args, "update", False))
 
 
 def run_state_command(
@@ -725,7 +806,7 @@ def run_state_command(
     now: Callable | None = None,
     run_id: str | None = None,
 ) -> int:
-    """Drive --check / --reconcile: emit the envelope, write the transcript, set the exit code."""
+    """Drive --check / --reconcile / --update: emit the envelope, write the transcript, set the exit code."""
     now = now or _real_now
     started_at = now()
     home = Path(args.home).expanduser().resolve() if getattr(args, "home", None) else summon_core.GRIMOIRES_HOME
@@ -734,23 +815,37 @@ def run_state_command(
         if getattr(args, "arcana_root", None) else summon_core.REPO_ROOT
     )
     fmt = getattr(args, "format", "human")
+    do_update = bool(getattr(args, "update", False))
     do_reconcile = bool(getattr(args, "reconcile", False))
-    apply = bool(getattr(args, "reconcile", False) and getattr(args, "apply", False))
+    apply = bool((do_reconcile or do_update) and getattr(args, "apply", False))
     prune = bool(getattr(args, "prune", False))
-    operation = "reconcile" if do_reconcile else "check"
+    operation = "update" if do_update else ("reconcile" if do_reconcile else "check")
+
+    # Only --update touches grimoires: it fetches every library grimoire (branch-
+    # aware) and, with --apply, fast-forwards and heals the ones confirmed current.
+    # --check and --reconcile keep their existing offline library+skills scope.
+    pull_grimoires = do_update
+    grimoire_fetch = do_update
 
     outcome = reconcile(
         home, arcana_root, apply=apply, prune=prune,
+        pull_grimoires=pull_grimoires, grimoire_fetch=grimoire_fetch,
         instruction_targets=instruction_targets, skill_targets=skill_targets,
         git_fn=git_fn, skill_runner=skill_runner, validate_runner=validate_runner,
     )
     reporter = outcome["reporter"]
     state = outcome["state_after"]
-    drift = drift_detected(state)
+    grimoires = outcome.get("grimoires")
+    drift = drift_detected(state) or _grimoire_drift(grimoires)
+    extra = {"applied": apply, "pruned": prune}
+    if grimoires is not None:
+        extra["grimoires"] = grimoires["grimoires"]
+        extra["grimoire_summary"] = grimoires["summary"]
+        extra["needs_manual_pull"] = grimoires["needs_manual_pull"]
     summary = build_summary(
         state, operation=operation, drift=drift,
         res=outcome["residual"], actions=outcome["next_actions"],
-        extra={"applied": apply, "pruned": prune},
+        extra=extra,
     )
     transcript = build_transcript(
         reporter, operation=operation, state=state, steps=outcome["steps"], summary=summary,
@@ -768,15 +863,16 @@ def run_state_command(
         path = "<unwritten>"
 
     if fmt == "human":
-        _print_human(operation, state, outcome["steps"], drift, path)
+        _print_human(operation, state, outcome["steps"], drift, path, grimoires=grimoires)
     else:
         reporter.emit(fmt, summary=summary)
 
     if not apply:
-        # Plan/propose - both --check and --reconcile without --apply - signal
+        # Plan/propose - --check, --reconcile, or --update without --apply - signal
         # actionable drift through the exit code, matching the documented table.
         return 1 if drift else 0
     status = reporter.status()
     if status in ("blocked", "error"):
         return 1
-    return 1 if outcome["residual"] else 0
+    manual = bool(grimoires and grimoires["needs_manual_pull"])
+    return 1 if (outcome["residual"] or manual) else 0

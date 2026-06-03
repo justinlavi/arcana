@@ -4,16 +4,16 @@ This README is the canonical home for the long-form description. Other surfaces 
 
 {{GRIMOIRE_PURPOSE_DETAILED}}
 
-<!-- BEGIN ARCANA RESTORATION -->
-## Out of date? Restore.
+<!-- BEGIN ARCANA UPDATE -->
+## Out of date? Update.
 
-If anything here seems wrong, broken, or behind the current Arcana, bring this grimoire (and the Arcana it references) back to a current, validated, synchronized state with **Restoration**. Two ways to start it:
+If anything here seems wrong, broken, or behind the current Arcana, bring this grimoire (and the Arcana it references) back to a current, validated, synchronized state with **Update**. Two ways to start it:
 
-1. **Run the skill:** `/grm-restore`.
+1. **Run the skill:** `/grm-update`.
 2. **Or tell your AI agent:**
 
-   > Pull the latest Arcana, then follow its restoration process.
-<!-- END ARCANA RESTORATION -->
+   > Pull the latest Arcana, then follow its update process.
+<!-- END ARCANA UPDATE -->
 
 ## Installation
 

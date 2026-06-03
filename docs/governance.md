@@ -171,7 +171,7 @@ The answers map straight to the bump:
 |---|---|---|
 | stay valid (no migration) | unchanged | **PATCH** |
 | stay valid (no migration) | improves or changes | **MINOR** |
-| would break, but Arcana can **auto-heal** them (a rite, `/grm-restore`, or a documented [RESTORATION](../RESTORATION.md) step) | (either) | **MINOR** — ship the heal |
+| would break, but Arcana can **auto-heal** them (a rite, `/grm-update`, or a documented [Update](../UPDATE.md) step) | (either) | **MINOR** — ship the heal |
 | break and need **manual, judgment-bearing** migration that self-healing cannot perform | (either) | **MAJOR** |
 
 "Existing grimoires" means **every grimoire the change could affect, not only the ones you can currently see** — compatibility is about the validation *outcome*, so a grimoire that validated yesterday and fails today is broken even if no file or schema changed. On a shared Arcana fork you often cannot enumerate downstream private grimoires; when that coverage is unknown, treat a newly-enforcing check as potentially breaking (ship it warn-only first, or lean MAJOR) rather than assuming MINOR.
@@ -183,13 +183,13 @@ Two consequences of this rule are easy to get wrong:
 
 ### Self-healing and the compatibility line
 
-Arcana is built to be **self-healing**: a grimoire is brought current not by hand but by Arcana's own update path — the mechanical repair rites, `/grm-restore`, the scaffold re-sync inside `/grm-improve`, and, when the installed skills are themselves too old to run, the skill-less [RESTORATION](../RESTORATION.md) procedure. That sharpens where the MINOR/MAJOR line falls, and it is *why* "must migrate" in the table above means **must migrate by hand**:
+Arcana is built to be **self-healing**: a grimoire is brought current not by hand but by Arcana's own update path — the mechanical repair rites, `/grm-update`, the scaffold re-sync inside `/grm-improve`, and, when the installed skills are themselves too old to run, the skill-less [Update](../UPDATE.md) procedure. The update first **pulls every grimoire in the library** and heals only the ones it confirmed current, so a grimoire whose fix already exists upstream is fast-forwarded rather than re-derived locally. That sharpens where the MINOR/MAJOR line falls, and it is *why* "must migrate" in the table above means **must migrate by hand**:
 
-- A transition Arcana can perform **automatically and deterministically** — re-syncing managed scaffold, repairing wikilinks, or following an exact RESTORATION step — is **not** a manual migration. If every existing grimoire can be healed to current with no human judgment, the change is **MINOR**, even though grimoire files change in the heal.
-- **The obligation rides with the change author: ship the heal with the change.** A change that would otherwise break grimoires must land together with the rite or `/grm-restore` step that fixes them *and* an exact entry in [RESTORATION](../RESTORATION.md). An un-shipped heal is theoretical — without it, the change is a real break (MAJOR).
+- A transition Arcana can perform **automatically and deterministically** — re-syncing managed scaffold, refreshing the README update block, or repairing wikilinks — is **not** a manual migration. If every existing grimoire can be healed to current with no human judgment, the change is **MINOR**, even though grimoire files change in the heal.
+- **The obligation rides with the change author: ship the heal with the change.** A change that would otherwise break grimoires must land together with the heal that fixes them — the update rite's mechanical pass and/or the grimoire formula, so the update converges any grimoire to current. An un-shipped heal is theoretical — without it, the change is a real break (MAJOR).
 - A change is **MAJOR** only when bringing grimoires current needs **human judgment** — content or semantics a rite cannot supply. If you can automate the heal, automate it and ship MINOR; if you genuinely cannot, it is MAJOR.
 
-**Whenever a change alters what a current grimoire must look like, update [RESTORATION](../RESTORATION.md) with the exact steps to reach the new state** — so any grimoire can be brought current from the source tree alone, even when its installed skills are too stale to run.
+**Whenever a change alters what a current grimoire must look like, make the update rite bring it there** — extend the mechanical heal and the formula so any grimoire converges to current from the source tree alone, even when its installed skills are too stale to run. Record *what* changed in [the changelog](../CHANGELOG.md), not as steps in the update procedure.
 
 ### What each bump means for Arcana
 
@@ -214,10 +214,10 @@ A version bump is **human-sign-off territory** (see [Autonomous Maintainer](#aut
 
 1. **Inspect the nature of the change**, not its size. What actually changed in framework behavior?
 2. **Ask: do existing grimoires stay valid?** If none break, you are in PATCH/MINOR territory.
-3. **If some would break, ask: can Arcana auto-heal them** with a rite, `/grm-restore`, or an exact [RESTORATION](../RESTORATION.md) step? If yes, **ship the heal** (and the RESTORATION entry) → **MINOR**. If healing needs human judgment → **MAJOR**.
+3. **If some would break, ask: can Arcana auto-heal them** through the update rite's mechanical pass (scaffold re-sync, README block, link repair) or the formula? If yes, **ship the heal** → **MINOR**. If healing needs human judgment → **MAJOR**.
 4. If **no migration** is required but **future generation behavior improves or changes** → **MINOR**.
 5. If only wording or fixes changed with **no behavior change** → **PATCH**.
-6. When torn between MINOR and MAJOR, the deciding test is **how the heal happens**: *no migration, or one Arcana can auto-heal (rite / `/grm-restore` / RESTORATION step), ⇒ MINOR; a migration needing human judgment ⇒ MAJOR*.
+6. When torn between MINOR and MAJOR, the deciding test is **how the heal happens**: *no migration, or one Arcana can auto-heal (the update rite / formula), ⇒ MINOR; a migration needing human judgment ⇒ MAJOR*.
 
 The current version lives in three places that must agree:
 - `VERSION` (single source of truth)

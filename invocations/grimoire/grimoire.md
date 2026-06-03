@@ -16,7 +16,7 @@ Grimoire operations that create, update, validate, or improve a grimoire. Arcana
 | [[invocations/grimoire/help|help]] | `/grm-help` | Show the grimoire command catalog and the active grimoire's own skills |
 | [[invocations/grimoire/create_grimoire|create grimoire]] | `/grm-create` | Create a new grimoire |
 | [[invocations/grimoire/create_chapter|create chapter]] | `/grm-create-chapter` | Add a knowledge chapter to the active grimoire |
-| [[invocations/grimoire/restore|restore]] | `/grm-restore` | Restore the grimoire and bring its Arcana to a current, validated, synchronized state |
+| [[invocations/grimoire/update|update]] | `/grm-update` | Update Arcana and every grimoire in the library to a current, validated, synchronized state |
 | [[invocations/grimoire/register_skills|register skills]] | `/grm-register-skills` | Register Arcana skills and the active grimoire's own skills |
 | [[invocations/grimoire/ingest|ingest]] | `/grm-ingest` | File source artifacts and update affected wiki pages |
 | [[invocations/grimoire/file_answer|file answer]] | `/grm-file-answer` | Promote a chat answer into a properly-frontmattered wiki page |
@@ -36,7 +36,7 @@ Grimoire operations that create, update, validate, or improve a grimoire. Arcana
 3. File: `/grm-file-answer` to promote substantive chat answers.
 4. Lint: `/grm-lint` periodically.
 5. Improve: `/grm-improve` for a comprehensive normalize-and-optimize pass.
-6. Restore: `/grm-restore` when Arcana or the grimoire may be stale.
+6. Update: `/grm-update` when Arcana or a grimoire may be stale.
 7. Refresh skills: `/grm-register-skills` after editing grimoire `skills/`.
 8. Audit: run `/grm-validate-all`, then invoke analysis skills as needed.
 

@@ -19,9 +19,9 @@ For grimoire operations, route to [[invocations/grimoire/grimoire|grimoire]]. Fo
 
 Boundary enforcement lives in the grimoire layer: [[invocations/grimoire/validate_boundaries|validate boundaries]]. It can scan Arcana itself with the `--arcana` flag.
 
-### Restoration
+### Update
 
-- Restore Arcana and grimoires to a current, validated, synchronized state -> [[invocations/arcana/restore|restore]]. Mirror of `/grm-restore`; the canonical, skill-less procedure is [[RESTORATION|RESTORATION]].
+- Update Arcana and grimoires to a current, validated, synchronized state -> [[invocations/arcana/update|update]]. Mirror of `/grm-update`; the canonical, skill-less procedure is [[UPDATE|UPDATE]].
 
 ### Validators
 

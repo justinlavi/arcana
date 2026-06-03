@@ -136,6 +136,17 @@
       "tests": ["tests/test_rite_profiles.py"]
     },
     {
+      "path": "rites/update_grimoires.py",
+      "profile": "plan_apply",
+      "default_mode": "plan",
+      "plan_command": "python rites/summon.py --update",
+      "apply_command": "python rites/summon.py --update --apply",
+      "writes": ["grimoire working trees (fast-forward-only pulls) and Arcana-owned managed scaffold during heal"],
+      "idempotency": "Pulls are fast-forward-only and heals are idempotent: a second run on a current, clean library pulls nothing and heals nothing new. Grimoires that are dirty, diverged, or unreachable are reported and left untouched.",
+      "validation_profile": "python rites/summon.py --update; python rites/validate.py --grimoire <path> --summary after apply.",
+      "tests": ["tests/test_update_grimoires.py", "tests/test_rite_profiles.py"]
+    },
+    {
       "path": "rites/validate.py",
       "profile": "read_only",
       "default_mode": "read",

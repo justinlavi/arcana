@@ -55,7 +55,7 @@ REQUIRED_DIRS = [
 REQUIRED_FILES = [
     "arcana.md",
     "README.md",
-    "RESTORATION.md",
+    "UPDATE.md",
     "CHANGELOG.md",
     "VERSION",
     "arcana.json",

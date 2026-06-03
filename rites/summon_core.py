@@ -87,7 +87,7 @@ GRIMOIRE_BLOCK = _load_grimoire_block()
 # Idempotency sentinels for the injected Grimoire block. The canonical template
 # wraps the block in BEGIN/END markers with the heading inside; older injections
 # carried only the heading. A block written by any path - this injector, the
-# template, /arc-agent-update, or RESTORATION.md - counts as present when EITHER
+# template, /arc-agent-update, or UPDATE.md - counts as present when EITHER
 # sentinel is found, so a re-run never double-injects regardless of which form is
 # on disk. summon_state imports these so the detector and injector cannot drift.
 BEGIN_SENTINEL = "<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->"
@@ -198,6 +198,36 @@ def git(*args, cwd=None, log=None):
         if log is not None:
             log.line("git executable not found on PATH")
         return False, ""
+
+
+def git_capture(*args, cwd=None):
+    """Run a git command, returning (returncode, stdout, stderr).
+
+    Sister to `git()`, which collapses everything to (ok, stdout) and discards
+    stderr. The branch-aware update path needs the stderr to tell apart an auth
+    failure (HTTP 403 / insufficient_scope) from offline (could not resolve
+    host) from a non-fast-forward refusal. Same env, timeout, and
+    GIT_TERMINAL_PROMPT=0 fail-fast as `git()`. Timeout -> 124, missing git ->
+    127, each with an explanatory stderr the caller can classify.
+    """
+    env = _subprocess_env()
+    if env is None:
+        env = dict(os.environ)
+    env.setdefault("GIT_TERMINAL_PROMPT", "0")
+    try:
+        result = subprocess.run(
+            ["git"] + list(args),
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            env=env,
+            timeout=GIT_TIMEOUT,
+        )
+        return result.returncode, (result.stdout or "").strip(), (result.stderr or "").strip()
+    except subprocess.TimeoutExpired:
+        return 124, "", f"git timed out after {GIT_TIMEOUT}s"
+    except FileNotFoundError:
+        return 127, "", "git executable not found on PATH"
 
 
 def detect_arcana_url():
