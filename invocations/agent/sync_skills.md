@@ -1,7 +1,7 @@
 ---
 type: playbook
 title: "Sync Agent Skills"
-aliases: ["register-agent-skills", "refresh-agent-skills"]
+aliases: ["sync-agent-skills", "refresh-agent-skills"]
 tags: [arcana/invocations, type/playbook, scope/agent]
 authority: grimoire
 last_verified: 2026-05-25

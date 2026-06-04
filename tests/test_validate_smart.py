@@ -1,5 +1,7 @@
 """Tests for git-aware smart validator selection (deletion awareness)."""
 
+import subprocess
+import sys
 from types import SimpleNamespace
 
 import validate
@@ -97,3 +99,44 @@ def test_positional_selectors_split_modes_from_validators():
 
     assert modes == ["smart"]
     assert selectors == ["links", "frontmatter"]
+
+
+# --- End-to-end exit-code contract (0 = pass, 1 = failed, 2 = invalid usage) ---
+
+
+def _run_validate(*args):
+    return subprocess.run(
+        [sys.executable, validate.__file__, *args],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+
+
+def test_cli_valid_selector_exits_zero():
+    result = _run_validate("links", "frontmatter", "--format", "json")
+    assert result.returncode == 0
+
+
+def test_cli_unknown_selector_exits_two():
+    result = _run_validate("not-a-validator")
+    assert result.returncode == 2
+    assert "unknown validator selector" in result.stderr
+
+
+def test_cli_conflicting_positional_modes_exit_two():
+    result = _run_validate("parallel", "summary")
+    assert result.returncode == 2
+    assert "Conflicting validation modes" in result.stderr
+
+
+def test_cli_flag_mode_conflicts_with_positional_mode_exits_two():
+    result = _run_validate("summary", "--parallel")
+    assert result.returncode == 2
+    assert "Conflicting validation modes" in result.stderr
+
+
+def test_cli_selection_resolving_to_zero_exits_two():
+    result = _run_validate("--only", "links", "--exclude", "links")
+    assert result.returncode == 2
+    assert "selection resolved to zero validators" in result.stderr

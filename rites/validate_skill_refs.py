@@ -22,9 +22,15 @@ Exit codes: 0 = all references resolve, 1 = at least one dangling reference
 import json
 import re
 import sys
-from pathlib import Path
 
-from _lib import default_arcana_root, is_skipped, ok, read_frontmatter_name, warn
+from _lib import (
+    SKILL_PREFIX_PLACEHOLDER,
+    default_arcana_root,
+    is_skipped,
+    ok,
+    read_frontmatter_name,
+    warn,
+)
 import command_surface as command_surface_contract
 import rite_profiles as rite_profiles_contract
 from diagnostics import DiagnosticReporter, add_output_format_arg
@@ -32,7 +38,6 @@ from diagnostics import DiagnosticReporter, add_output_format_arg
 ARCANA_ROOT = default_arcana_root()
 SKILLS_DIR = ARCANA_ROOT / "skills"
 ARCANA_MANIFEST = ARCANA_ROOT / "arcana.json"
-SKILL_PREFIX_PLACEHOLDER = "{{SKILL_PREFIX}}"
 
 # Match slash-command references for Arcana-shipped command-family prefixes.
 SKILL_REF_RE = re.compile(r"(?<![A-Za-z0-9_/-])/([a-z][a-z0-9]*)-([a-z][a-z0-9-]*)\b")

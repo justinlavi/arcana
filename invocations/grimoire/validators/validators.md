@@ -17,6 +17,7 @@ selector to run the full suite. Each selector wraps a shared Arcana rite with
 | Invocation | Skill | Checks |
 |---|---|---|
 | [[invocations/grimoire/validators/validate|validate]] | `/grm-validate` | Full deterministic grimoire validator profile, or targeted selectors |
+| [[invocations/grimoire/validate_structure|validate structure]] | `/grm-validate structure` | Required files and directories, folder-named hubs, scaffold parity, Obsidian config |
 | [[invocations/grimoire/validators/validate_encoding|validate encoding]] | `/grm-validate encoding` | UTF-8, LF line endings, BOMs, mojibake markers, repair artifacts |
 | [[invocations/grimoire/validators/validate_format|validate format]] | `/grm-validate format` | Markdown tables, code fences, tree examples |
 | [[invocations/grimoire/validators/validate_frontmatter|validate frontmatter]] | `/grm-validate frontmatter` | Page frontmatter schema |
@@ -28,5 +29,4 @@ selector to run the full suite. Each selector wraps a shared Arcana rite with
 
 ## Related
 
-- Structure validator -> [[invocations/grimoire/validate_structure|validate structure]]
 - Boundary audit -> [[invocations/grimoire/audit_boundaries|audit boundaries]]

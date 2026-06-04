@@ -19,7 +19,6 @@ Usage:
 
 import argparse
 import difflib
-import json
 import re
 import sys
 from pathlib import Path
@@ -31,8 +30,6 @@ ARCANA_PATH = Path(__file__).resolve().parent.parent
 SKILLS_DIR = ARCANA_PATH / "skills"
 DOCS_DIR = ARCANA_PATH / "docs"
 SKILLS_DOC = DOCS_DIR / "skills.md"
-
-ARCANA_MANIFEST = ARCANA_PATH / "arcana.json"
 
 
 def read_frontmatter(skill_file):

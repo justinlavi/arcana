@@ -1,7 +1,7 @@
 ---
 type: playbook
 title: "Sync Agent Grimoire Instructions"
-aliases: ["update-agent-block", "refresh-agent-block", "sync-agent-instructions"]
+aliases: ["sync-agent-instructions", "refresh-agent-block"]
 tags: [arcana/invocations, type/playbook, scope/agent]
 authority: grimoire
 last_verified: 2026-05-25

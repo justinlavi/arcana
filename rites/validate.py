@@ -12,7 +12,8 @@ Usage:
     python3 rites/validate.py --auto       # smart + auto-execute
     python3 rites/validate.py --summary    # sequential, summary-only output
 
-Exit codes: 0 = all passed, 1 = one or more failed
+Exit codes: 0 = all passed, 1 = one or more validators failed,
+2 = invalid usage (unknown selector, conflicting modes, or empty selection)
 """
 
 import argparse
@@ -456,6 +457,24 @@ def run_parallel(rites, output_format="human", profile="arcana", target_root=Non
     return failed
 
 
+def _resolve_selection(rite_list, *, profile, only, exclude, explicit):
+    """Apply a selector filter to a validator list.
+
+    Returns ``(rites, error)``. ``error`` is a stderr-ready message (and ``rites``
+    is None) when a selector is unknown or an explicit selection resolves to no
+    validators; otherwise ``error`` is None.
+    """
+    try:
+        selected = apply_validator_selection(
+            rite_list, profile=profile, only=only, exclude=exclude
+        )
+    except ValueError as exc:
+        return None, str(exc)
+    if explicit and not selected:
+        return None, "selection resolved to zero validators"
+    return selected, None
+
+
 def main():
     parser = argparse.ArgumentParser(description="Unified Arcana and grimoire validation orchestrator")
     parser.add_argument(
@@ -518,35 +537,22 @@ def main():
         args.summary = selected_mode == "summary"
 
     explicit_selection = bool(args.only or args.exclude or selector_tokens)
+    only = [*args.only, *selector_tokens]
     if not (args.smart or args.auto):
-        try:
-            rites = apply_validator_selection(
-                rites,
-                profile=profile,
-                only=[*args.only, *selector_tokens],
-                exclude=args.exclude,
-            )
-        except ValueError as exc:
-            print(str(exc), file=sys.stderr)
-            return 2
-        if explicit_selection and not rites:
-            print("selection resolved to zero validators", file=sys.stderr)
+        rites, error = _resolve_selection(
+            rites, profile=profile, only=only, exclude=args.exclude, explicit=explicit_selection
+        )
+        if error:
+            print(error, file=sys.stderr)
             return 2
 
     if args.smart:
         smart = determine_smart_rites(profile, target_root)
-        try:
-            smart = apply_validator_selection(
-                smart,
-                profile=profile,
-                only=[*args.only, *selector_tokens],
-                exclude=args.exclude,
-            )
-        except ValueError as exc:
-            print(str(exc), file=sys.stderr)
-            return 2
-        if explicit_selection and not smart:
-            print("selection resolved to zero validators", file=sys.stderr)
+        smart, error = _resolve_selection(
+            smart, profile=profile, only=only, exclude=args.exclude, explicit=explicit_selection
+        )
+        if error:
+            print(error, file=sys.stderr)
             return 2
         if args.format == "human":
             print("Smart Validation - Recommended:")
@@ -575,18 +581,11 @@ def main():
 
     if args.auto:
         smart = determine_smart_rites(profile, target_root)
-        try:
-            smart = apply_validator_selection(
-                smart,
-                profile=profile,
-                only=[*args.only, *selector_tokens],
-                exclude=args.exclude,
-            )
-        except ValueError as exc:
-            print(str(exc), file=sys.stderr)
-            return 2
-        if explicit_selection and not smart:
-            print("selection resolved to zero validators", file=sys.stderr)
+        smart, error = _resolve_selection(
+            smart, profile=profile, only=only, exclude=args.exclude, explicit=explicit_selection
+        )
+        if error:
+            print(error, file=sys.stderr)
             return 2
         if args.format == "human":
             print(f"Smart Validation - Running {len(smart)} relevant validator(s)")

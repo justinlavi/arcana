@@ -35,6 +35,7 @@ from typing import Any
 from diagnostics import ResultReporter, add_output_format_arg
 from agent_targets import skill_registration_targets
 from _lib import (
+    SKILL_PREFIX_PLACEHOLDER,
     SKILL_PREFIX_RE,
     SKILL_SLUG_RE,
     info,
@@ -51,7 +52,6 @@ ARCANA_PATH = Path(__file__).resolve().parent.parent
 ARCANA_MANIFEST = ARCANA_PATH / "arcana.json"
 GRIMOIRES_HOME = Path.home() / "grimoires"
 LOCAL_LIBRARY = GRIMOIRES_HOME / "library.json"
-SKILL_PREFIX_PLACEHOLDER = "{{SKILL_PREFIX}}"
 
 OWNERSHIP_MARKER = "ARCANA_SKILL_OWNERSHIP"
 OWNERSHIP_SCHEMA_VERSION = 1
