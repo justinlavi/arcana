@@ -25,57 +25,24 @@ import sys
 from pathlib import Path
 
 from command_surface import command_entries, validate_command_surface
+from _lib import SKILL_PREFIX_PLACEHOLDER, load_skill_families, parse_frontmatter
 
 ARCANA_PATH = Path(__file__).resolve().parent.parent
 SKILLS_DIR = ARCANA_PATH / "skills"
 DOCS_DIR = ARCANA_PATH / "docs"
 SKILLS_DOC = DOCS_DIR / "skills.md"
 
-SKILL_PREFIX_PLACEHOLDER = "{{SKILL_PREFIX}}"
-ARCANA_SKILL_PREFIX = "arc"
 ARCANA_MANIFEST = ARCANA_PATH / "arcana.json"
 
 
 def read_frontmatter(skill_file):
     """Return a dict of frontmatter fields from a SKILL.md, or {} on failure."""
-    content = skill_file.read_text(encoding="utf-8")
-    if not content.startswith("---\n"):
-        return {}
-    end = content.find("\n---", 4)
-    if end == -1:
-        return {}
-    fields = {}
-    for line in content[4:end].splitlines():
-        if ":" not in line:
-            continue
-        key, _, value = line.partition(":")
-        fields[key.strip()] = value.strip().strip("'\"")
-    return fields
+    return parse_frontmatter(skill_file.read_text(encoding="utf-8", errors="replace"))
 
 
 def load_arcana_skill_families():
     """Return normalized command-family definitions from arcana.json."""
-    metadata = json.loads(ARCANA_MANIFEST.read_text(encoding="utf-8"))
-    default_prefix = metadata.get("skill_prefix", ARCANA_SKILL_PREFIX)
-    raw_families = metadata.get("skill_families", {})
-    if not isinstance(raw_families, dict) or not raw_families:
-        raw_families = {
-            "arcana": {
-                "skill_prefix": default_prefix,
-                "path": "skills",
-                "slug_prefix": "",
-            }
-        }
-
-    families = []
-    for name, config in raw_families.items():
-        families.append({
-            "name": name,
-            "skill_prefix": config.get("skill_prefix", default_prefix),
-            "path": ARCANA_PATH / config.get("path", ""),
-            "slug_prefix": config.get("slug_prefix", ""),
-        })
-    return families
+    return load_skill_families(ARCANA_PATH, with_fallback=True)
 
 
 def collect_skills():

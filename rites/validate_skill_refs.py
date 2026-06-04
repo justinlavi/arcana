@@ -24,7 +24,7 @@ import re
 import sys
 from pathlib import Path
 
-from _lib import default_arcana_root, is_skipped, ok, warn
+from _lib import default_arcana_root, is_skipped, ok, read_frontmatter_name, warn
 import command_surface as command_surface_contract
 import rite_profiles as rite_profiles_contract
 from diagnostics import DiagnosticReporter, add_output_format_arg
@@ -55,12 +55,6 @@ SKIP_DIRS = {
     "formulae",  # template placeholders
     "sources",  # imported source artifacts
 }
-
-
-def read_frontmatter_name(skill_file):
-    content = skill_file.read_text(encoding="utf-8", errors="replace")
-    match = re.search(r"(?m)^name:\s*(.+)$", content)
-    return match.group(1).strip() if match else ""
 
 
 def load_skill_families(reporter, human):

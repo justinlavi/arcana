@@ -41,10 +41,18 @@ commands.
   with a clear message instead of silently passing; the unknown-selector hint
   lists one canonical token per validator.
 - **Redundancy reduction.** `summon_core.git()` is now a thin adapter over
-  `git_capture()` (one env/timeout body); the duplicated rite-profile table in
+  `git_capture()` (one env/timeout body); the SKILL.md frontmatter reader, the
+  arcana.json skill-family loader, the command discovery, and the `$HOME`-token
+  path resolver — previously re-implemented across five rites — now share one
+  core in `rites/_lib.py`; the duplicated rite-profile table in
   `docs/script_vs_ai.md` and the hand-listed validators/quality entries in the
   Arcana invocations hub now point at their single canonical homes
   (`docs/rite_profiles.md`, the validator and quality sub-hubs).
+- **Fork-aware update language.** The update process and `UPDATE.md` now say
+  "Arcana" is whatever is installed — the upstream project or a fork you or your
+  team maintain — pulled from whatever remote it tracks, rather than implying a
+  single always-public source. A pull that fails (e.g. a private fork the
+  current credentials can't reach) is a clean STOP-and-report.
 - **Contract accuracy.** `rites/data/summon_contract.json` now documents the
   `--update` pull-and-heal surface; `append_log` drops the legacy `ingest` /
   `lint` / `file-answer` ops it had retained, matching its own documented set.

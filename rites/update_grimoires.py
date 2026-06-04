@@ -13,9 +13,9 @@ that failed on a private host's auth) is never validated-and-modified - healing 
 stale tree would re-derive work that already exists upstream and cause divergence,
 which is the field bug this rite repairs.
 
-Auth/host nuance: Arcana is public and essentially always pullable; other
-grimoires may live on a private host (e.g. a self-hosted GitLab) that needs a
-token. A per-grimoire fetch/pull failure never aborts the run - it is classified
+Auth/host nuance: each grimoire is pulled from whatever remote it tracks, public
+or private; grimoires often live on a private host (e.g. a self-hosted GitLab)
+that needs a token. A per-grimoire fetch/pull failure never aborts the run - it is classified
 (auth_failed / offline / fetch_error), collected into `needs_manual_pull`, and the
 run continues so a team of many can update the grimoires they can reach.
 """

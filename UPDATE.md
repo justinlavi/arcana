@@ -42,7 +42,11 @@ neither exists, ask the user for the Arcana checkout path. Pin it:
 ARCANA="$(git -C ~/grimoires/arcana rev-parse --show-toplevel)"
 ```
 
-### 1. Pull Arcana (public; almost always fast-forwards)
+### 1. Pull the installed Arcana
+
+"Arcana" is whatever is installed at `$ARCANA` — the upstream project or a fork
+you or your team maintain. The AI pulls it from whatever remote it tracks; this
+is usually a clean fast-forward.
 
 ```bash
 git -C "$ARCANA" status --short          # if dirty: STOP, report, do not pull or force
@@ -50,8 +54,10 @@ GIT_TERMINAL_PROMPT=0 git -C "$ARCANA" pull --ff-only
 git -C "$ARCANA" rev-parse HEAD && cat "$ARCANA/VERSION"
 ```
 
-A non-fast-forward (local commits) or a dirty tree is a STOP: report it and let
-the user resolve it. Never force. Run the rest from the now-current source.
+A dirty tree, a non-fast-forward (local commits), or a pull that fails (for
+example a private fork the current credentials can't reach) is a STOP: report it
+and let the user resolve it. Never force. Run the rest from the now-current
+source.
 
 ### 2. Validate the Arcana source (gate)
 

@@ -27,6 +27,7 @@ LINK_RE = re.compile(r"\]\(([^)]+)\)")
 WIKILINK_RE = re.compile(r"\[\[([^\]\n]+)\]\]")
 CODE_FENCE_RE = re.compile(r"^```")
 SKILL_PREFIX_RE = re.compile(r"^[a-z][a-z0-9]*$")
+SKILL_PREFIX_PLACEHOLDER = "{{SKILL_PREFIX}}"
 SKILL_SLUG_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
@@ -299,11 +300,83 @@ def load_library(library_path: Path) -> dict:
     return data
 
 
-def resolve_local_path(raw: str) -> Path:
-    """Expand the `$HOME` token used in library `local_path` entries."""
+def resolve_local_path(raw: str, *, resolve: bool = False) -> Path:
+    """Expand the `$HOME` token used in library `local_path` entries.
+
+    `resolve=True` also expanduser()s and resolve()s to an absolute path - the
+    form skill registration and filesystem ops need. The default leaves the path
+    as written so library reconciliation can compare against the stored form.
+    """
     if not raw:
-        return Path()
-    return Path(raw.replace("$HOME", str(Path.home())))
+        return Path().resolve() if resolve else Path()
+    path = Path(str(raw).replace("$HOME", str(Path.home())))
+    return path.expanduser().resolve() if resolve else path
+
+
+def read_frontmatter_name(skill_file: Path) -> str:
+    """Return the frontmatter `name:` declared in a SKILL.md (empty if absent)."""
+    try:
+        text = Path(skill_file).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return ""
+    value = parse_frontmatter(text).get("name", "")
+    return value if isinstance(value, str) else ""
+
+
+def load_skill_families(root: Path, *, with_fallback: bool = False) -> list[dict]:
+    """Return Arcana command-family definitions from arcana.json (no validation).
+
+    Each entry is `{name, skill_prefix, path, slug_prefix}`. `with_fallback`
+    injects a single default `arcana` family when none are declared. Returns `[]`
+    when arcana.json is unreadable or `skill_families` is malformed. Callers that
+    need strict validation or reporter diagnostics wrap this (e.g. register_skills,
+    the skill validators).
+    """
+    try:
+        metadata = json.loads((Path(root) / "arcana.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    default_prefix = metadata.get("skill_prefix", "arc")
+    raw = metadata.get("skill_families", {})
+    if not isinstance(raw, dict):
+        raw = {}
+    if with_fallback and not raw:
+        raw = {"arcana": {"skill_prefix": default_prefix, "path": "skills", "slug_prefix": ""}}
+    families: list[dict] = []
+    for name, config in raw.items():
+        if not isinstance(config, dict):
+            continue
+        families.append({
+            "name": name,
+            "skill_prefix": config.get("skill_prefix", default_prefix),
+            "path": Path(root) / config.get("path", ""),
+            "slug_prefix": config.get("slug_prefix", ""),
+        })
+    return families
+
+
+def discover_skill_commands(root: Path) -> dict:
+    """Return every Arcana-shipped public command keyed by slash command.
+
+    Value: `{family, skill_prefix, skill_source}`. Used to verify the command
+    surface and to enumerate shipped commands.
+    """
+    commands: dict = {}
+    for family in load_skill_families(root):
+        family_dir = family["path"]
+        if not family_dir.is_dir():
+            continue
+        for skill_file in sorted(family_dir.glob("*/SKILL.md")):
+            templated_name = read_frontmatter_name(skill_file)
+            if not templated_name:
+                continue
+            command = "/" + templated_name.replace(SKILL_PREFIX_PLACEHOLDER, family["skill_prefix"])
+            commands[command] = {
+                "family": family["name"],
+                "skill_prefix": family["skill_prefix"],
+                "skill_source": skill_file.relative_to(root).as_posix(),
+            }
+    return commands
 
 
 # ---------------------------------------------------------------------------

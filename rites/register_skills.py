@@ -41,6 +41,8 @@ from _lib import (
     load_library,
     load_manifest,
     ok,
+    read_frontmatter_name,
+    resolve_local_path,
     warn,
 )
 
@@ -102,22 +104,6 @@ def is_valid_skill_prefix(skill_prefix: str) -> bool:
 def is_valid_skill_slug(slug: str) -> bool:
     """Return True when a skill slug uses lowercase hyphenated command syntax."""
     return bool(SKILL_SLUG_RE.fullmatch(slug))
-
-
-def read_frontmatter_name(skill_file: Path) -> str:
-    """Extract the simple YAML frontmatter name without requiring PyYAML."""
-    content = skill_file.read_text(encoding="utf-8")
-    if not content.startswith("---\n"):
-        return ""
-
-    end = content.find("\n---", 4)
-    if end == -1:
-        return ""
-
-    for line in content[4:end].splitlines():
-        if line.startswith("name:"):
-            return line.split(":", 1)[1].strip().strip("'\"")
-    return ""
 
 
 def load_grimoire_metadata(grimoire_root: Path, label: str) -> tuple[dict[str, Any] | None, str | None]:
@@ -205,8 +191,7 @@ def load_arcana_skill_families() -> list[dict[str, Any]]:
 
 def resolve_grimoire_path(raw_path: str | Path) -> Path:
     """Resolve a user/library grimoire path, including $HOME placeholders."""
-    expanded = str(raw_path).replace("$HOME", str(Path.home()))
-    return Path(expanded).expanduser().resolve()
+    return resolve_local_path(str(raw_path), resolve=True)
 
 
 def build_skill_spec(
