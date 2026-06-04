@@ -38,7 +38,6 @@ from diagnostics import ResultReporter, add_output_format_arg
 # Grimoire-content operations. See formulae/log_entry.formula.md (Scope) for the entry rules.
 VALID_OPS = {
     "import", "query", "health-check", "improve", "capture-answer",
-    "ingest", "lint", "file-answer",
     "rebuild-index", "create", "manual",
 }
 

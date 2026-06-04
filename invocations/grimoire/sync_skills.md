@@ -1,7 +1,7 @@
 ---
 type: playbook
 title: "Sync Active Grimoire Agent Skills"
-aliases: ["register-grimoire-skills", "refresh-active-grimoire-skills"]
+aliases: ["sync-grimoire-skills", "refresh-active-grimoire-skills"]
 tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-25
@@ -18,7 +18,7 @@ Use this day-to-day when the user is working inside one grimoire and has added, 
 ## Invocation
 
 ```
-/grm-agent-sync-skills
+/grm-sync-skills
 ```
 
 ## Preconditions

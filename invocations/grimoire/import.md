@@ -1,7 +1,7 @@
 ---
 type: playbook
 title: "Import Source"
-aliases: ["ingest", "domain-ingest"]
+aliases: ["import", "domain-import"]
 tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-13

@@ -75,7 +75,7 @@ this step.
 
 ## Related
 
-- Active-grimoire skill sync: [[invocations/grimoire/agent_sync_skills|agent sync skills]]
+- Active-grimoire skill sync: [[invocations/grimoire/sync_skills|sync skills]]
 - Global skill sync: [[invocations/agent/sync_skills|sync skills]]
 - Update playbook: [[UPDATE|update]]
 - Autonomy tiers: [[docs/governance|governance]]

@@ -19,5 +19,6 @@ def test_no_individual_validator_skills_remain():
 
 
 def test_judgment_audits_do_not_auto_invoke():
-    text = (SKILLS / "grimoire" / "audit-boundaries" / "SKILL.md").read_text(encoding="utf-8")
-    assert FLAG in text
+    for audit in ("audit-boundaries", "audit-semantics"):
+        text = (SKILLS / "grimoire" / audit / "SKILL.md").read_text(encoding="utf-8")
+        assert FLAG in text, f"judgment audit {audit} should not auto-invoke"

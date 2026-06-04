@@ -49,7 +49,7 @@ python3 ~/grimoires/arcana/rites/register_skills.py --reset-managed
 The valid `--agent` values come from
 [`rites/data/agent_targets.json`](../rites/data/agent_targets.json).
 
-Invoke `/arc-agent-sync-skills` for a global refresh of Arcana plus every installed grimoire. Invoke `/grm-agent-sync-skills` from inside one grimoire to refresh Arcana plus that active grimoire only. The summoning rite runs the global registration for you on install.
+Invoke `/arc-agent-sync-skills` for a global refresh of Arcana plus every installed grimoire. Invoke `/grm-sync-skills` from inside one grimoire to refresh Arcana plus that active grimoire only. The summoning rite runs the global registration for you on install.
 
 Use `--reset-managed` after major Arcana command-family changes or when old
 registered skill directories block a refresh. Dry-run first to preview the
@@ -125,14 +125,14 @@ Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` in their 
 
 Grimoires contribute skills via their own `skills/` directory. Place each skill at `<grimoire>/skills/<area>-<verb>-<object>/SKILL.md`. The folder name is the subcommand after the skill prefix. Use `{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` as path placeholders — the registration rite resolves both to absolute paths at install time.
 
-To register new or updated skills in the active grimoire, run `/grm-agent-sync-skills`. To refresh all installed grimoires, run `/arc-agent-sync-skills`.
+To register new or updated skills in the active grimoire, run `/grm-sync-skills`. To refresh all installed grimoires, run `/arc-agent-sync-skills`.
 
 ---
 
 ## Troubleshooting
 
 **Agent doesn't see new skills**
-- Run `/grm-agent-sync-skills` from the active grimoire, or `/arc-agent-sync-skills` for a global refresh. Then open a new agent session (Claude Code / Codex caches skill listings).
+- Run `/grm-sync-skills` from the active grimoire, or `/arc-agent-sync-skills` for a global refresh. Then open a new agent session (Claude Code / Codex caches skill listings).
 
 **Agent skills are badly stale or have old prefixes**
 - Pull Arcana, then follow [Arcana Update](../UPDATE.md). It is the stable path for cases where the installed slash-command layer cannot repair itself.

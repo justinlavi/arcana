@@ -1,7 +1,7 @@
 ---
 type: playbook
 title: "Health Check Grimoire"
-aliases: ["lint", "domain-lint", "health-check"]
+aliases: ["health-check", "domain-health-check"]
 tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-12
@@ -146,4 +146,4 @@ Surface in chat:
 - Semantic / naming: `/grm-audit-semantics`
 - Page schema: `ARCANA_HOME/docs/page_schema.md`
 - Optional parallel analysis: [[invocations/meta/subagent_lanes|subagent lanes]]
-- Comprehensive grimoire pass: `/grm-improve` (health-check runs as one phase of improve)
+- Comprehensive grimoire pass: `/grm-improve` — broader structural and scaffold upgrade; this health-check adds the knowledge-quality passes (stale claims, ghost references, contradictions, missing cross-refs) that improve does not run

@@ -1,7 +1,7 @@
 ---
 type: playbook
 title: "Audit Semantics"
-aliases: ["audit-semantics", "analyze-semantics", "naming-audit"]
+aliases: ["audit-semantics", "naming-audit"]
 tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-12
@@ -13,7 +13,7 @@ last_verified: 2026-05-12
 
 Judgment-based analysis of naming and organization in a grimoire. Evaluates whether chapter and file names are clear, discoverable, terminologically consistent, and token-efficient — and proposes prioritized renames.
 
-This is the AI counterpart to `/arc-validate semantics`, which only mechanically scans Arcana for hyphenated path examples in prose. This invocation reads meaning; the validator matches patterns.
+Grimoires have no mechanical semantics validator: `/arc-validate semantics` runs only against Arcana itself (it scans for hyphenated path examples in prose). For a grimoire, this judgment audit is the semantic check — it reads meaning rather than matching patterns.
 
 ## Invocation
 

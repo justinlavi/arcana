@@ -35,7 +35,7 @@ Use this four-phase template when:
 ## When NOT to follow this pattern
 
 - The user has a single source artifact to absorb — use [[invocations/grimoire/import|import]].
-- The user wants a chat answer promoted to a page — use [[invocations/grimoire/capture_answer|file answer]].
+- The user wants a chat answer promoted to a page — use [[invocations/grimoire/capture_answer|capture answer]].
 - The user wants to scaffold a new chapter or grimoire — use the `create_*` invocations.
 - The user is auditing or reorganizing — use [[invocations/grimoire/improve_grimoire|improve grimoire]] or [[invocations/grimoire/health_check|health check]].
 

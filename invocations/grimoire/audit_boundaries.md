@@ -1,7 +1,7 @@
 ---
 type: playbook
 title: "Audit Boundaries"
-aliases: ["audit-boundaries", "validate-boundaries", "magical-boundary"]
+aliases: ["audit-boundaries", "magical-boundary"]
 tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-15

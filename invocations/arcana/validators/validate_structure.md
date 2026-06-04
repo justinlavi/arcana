@@ -7,7 +7,7 @@ authority: grimoire
 last_verified: 2026-05-12
 ---
 
-# 🔮 Invocation: Validate Arcana Structure
+# Invocation: Validate Arcana Structure
 
 ## Purpose
 

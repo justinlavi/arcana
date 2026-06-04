@@ -7,7 +7,7 @@ authority: grimoire
 last_verified: 2026-05-12
 ---
 
-# 🔮 Invocation: Validate Arcana Format
+# Invocation: Validate Arcana Format
 
 ## Purpose
 
@@ -149,7 +149,7 @@ For each format violation:
 ### Invocation File Template
 
 ```markdown
-# 🔮 Invocation: [Invocation Name]
+# Invocation: [Invocation Name]
 
 ## ⚡ The Magical Boundary ⚡
 [Optional: Magical boundary guidance if needed]

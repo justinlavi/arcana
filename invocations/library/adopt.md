@@ -51,7 +51,7 @@ The rite refuses to overwrite an existing `grimoire.json` and refuses skill pref
 python3 ARCANA_HOME/rites/sync_library.py --apply
 ```
 
-If the grimoire ships skills, also run `/grm-agent-sync-skills` from inside that grimoire or `/arc-agent-sync-skills` globally.
+If the grimoire ships skills, also run `/grm-sync-skills` from inside that grimoire or `/arc-agent-sync-skills` globally.
 
 ## Notes
 

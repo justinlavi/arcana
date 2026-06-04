@@ -20,5 +20,5 @@ Agent operations that update local agent configuration or agent skill directorie
 
 - Help -> [[invocations/help/help|help]]
 - Library operations -> [[invocations/library/library|library]]
-- Grimoire active-scope skill sync -> [[invocations/grimoire/agent_sync_skills|agent sync skills]]
+- Grimoire active-scope skill sync -> [[invocations/grimoire/sync_skills|sync skills]]
 - Agent configuration -> [[docs/agent_configuration|agent configuration]]

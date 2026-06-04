@@ -1,7 +1,7 @@
 ---
 type: playbook
 title: "Capture Answer"
-aliases: ["file-answer", "domain-file-answer", "promote-answer"]
+aliases: ["capture-answer", "domain-capture-answer", "promote-answer"]
 tags: [arcana/invocations, type/playbook, scope/grimoire]
 authority: grimoire
 last_verified: 2026-05-12

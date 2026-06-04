@@ -12,8 +12,6 @@ Most knowledge lives in scattered files that AI has to search through, interpola
 
 **Arcana** is the engine you install once to build and maintain grimoires for any subject.
 
-Temporary 1.3.0 handoff: [docs/temp_1_3_0_handoff.md](docs/temp_1_3_0_handoff.md).
-
 ---
 
 ## What's a Grimoire?
@@ -63,7 +61,7 @@ Arcana ships universal operations every grimoire inherits:
 - **`/grm-improve`** — comprehensive normalize-and-optimize pass.
 - **`/grm-validate [selector]`** — run the full deterministic validator profile for the active grimoire, or a targeted mechanical check.
 - **`/grm-update`** — bring Arcana and every grimoire in the library back to a current, validated, synchronized state.
-- **`/grm-agent-sync-skills`** — refresh Arcana skills plus the active grimoire's own skills.
+- **`/grm-sync-skills`** — refresh Arcana skills plus the active grimoire's own skills.
 - **`/grm-create-chapter`**, **`/grm-audit-semantics`** — and more.
 
 Arcana command families are prefix-explicit: `/arc-*` acts on Arcana/platform surfaces, `/grm-*` acts on an active grimoire, `/arc-library-*` acts on `~/grimoires/library.json`, `/arc-agent-*` acts on agent configuration, and `/arc-workspace-*` intentionally spans the local workspace. Full rules live in [skill schema](docs/skill_schema.md).

@@ -41,8 +41,6 @@ def _load_validator_lists():
 
 ARCANA_RITES, GRIMOIRE_RITES = _load_validator_lists()
 
-RITES = ARCANA_RITES
-
 MODE_SELECTORS = {"all", "parallel", "smart", "auto", "summary"}
 
 
@@ -104,6 +102,15 @@ def _selector_forms(value):
     return {form.lower() for form in forms if form}
 
 
+def _short_selector(value):
+    """Return the one canonical short selector token for a validator (e.g. 'links')."""
+    stem = Path(value).stem
+    for prefix in ("validate_grimoire_", "validate_"):
+        if stem.startswith(prefix):
+            return stem[len(prefix):].replace("_", "-")
+    return stem.replace("_", "-")
+
+
 def validator_selector_map(profile="arcana"):
     """Map human selector names to validator rite filenames."""
     rites = GRIMOIRE_RITES if profile == "grimoire" else ARCANA_RITES
@@ -144,7 +151,7 @@ def apply_validator_selection(rites, profile="arcana", only=None, exclude=None):
             else:
                 selected.add(rite)
         if unknown:
-            known = ", ".join(sorted(k for k in selector_map if not k.endswith(".py")))
+            known = ", ".join(sorted({_short_selector(r) for r in rites}))
             raise ValueError(
                 f"unknown {label} selector(s): {', '.join(unknown)}. "
                 f"Known selectors: all, {known}"
@@ -234,7 +241,7 @@ def determine_smart_rites(profile="arcana", target_root=None):
         if not path.exists():
             continue
 
-        if re.match(r"^(docs|invocations|formulae|rites|formulae/grimoire)/", f):
+        if re.match(r"^(docs|invocations|formulae|rites)/", f):
             needed.add("validate_structure.py")
 
         if f.endswith((".md", ".py")):
@@ -510,16 +517,21 @@ def main():
         args.auto = selected_mode == "auto"
         args.summary = selected_mode == "summary"
 
-    try:
-        rites = apply_validator_selection(
-            rites,
-            profile=profile,
-            only=[*args.only, *selector_tokens],
-            exclude=args.exclude,
-        )
-    except ValueError as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
+    explicit_selection = bool(args.only or args.exclude or selector_tokens)
+    if not (args.smart or args.auto):
+        try:
+            rites = apply_validator_selection(
+                rites,
+                profile=profile,
+                only=[*args.only, *selector_tokens],
+                exclude=args.exclude,
+            )
+        except ValueError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+        if explicit_selection and not rites:
+            print("selection resolved to zero validators", file=sys.stderr)
+            return 2
 
     if args.smart:
         smart = determine_smart_rites(profile, target_root)
@@ -532,6 +544,9 @@ def main():
             )
         except ValueError as exc:
             print(str(exc), file=sys.stderr)
+            return 2
+        if explicit_selection and not smart:
+            print("selection resolved to zero validators", file=sys.stderr)
             return 2
         if args.format == "human":
             print("Smart Validation - Recommended:")
@@ -569,6 +584,9 @@ def main():
             )
         except ValueError as exc:
             print(str(exc), file=sys.stderr)
+            return 2
+        if explicit_selection and not smart:
+            print("selection resolved to zero validators", file=sys.stderr)
             return 2
         if args.format == "human":
             print(f"Smart Validation - Running {len(smart)} relevant validator(s)")

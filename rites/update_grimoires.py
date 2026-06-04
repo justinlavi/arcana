@@ -424,7 +424,7 @@ def process_all(
 
 
 # ---------------------------------------------------------------------------
-# CLI (also reachable as `summon.py --update`; see summon_state.run_update)
+# CLI (also reachable as `summon.py --update`; see summon_state.run_state_command)
 # ---------------------------------------------------------------------------
 
 

@@ -93,7 +93,7 @@ Reversible but judgment-bearing, or writing outside the repo:
 - Any change touching more than ten files.
 - Reconciling the grimoire library or registering skills into agent directories
   under the user's home (`/arc-library-sync`, `/arc-agent-sync-skills`,
-  `/grm-agent-sync-skills`).
+  `/grm-sync-skills`).
 
 ### Human sign-off required
 

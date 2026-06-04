@@ -42,7 +42,6 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Governance and versioning -> [[docs/governance|governance]]
 - Release workflow -> [[docs/release|release]]
 - Version history -> [[CHANGELOG|CHANGELOG]]
-- Temporary 1.3.0 handoff -> [[docs/temp_1_3_0_handoff|temp 1 3 0 handoff]]
 
 ## Invocations
 
@@ -51,7 +50,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Create a grimoire -> [[invocations/grimoire/create_grimoire|create grimoire]]
 - Create a chapter -> [[invocations/grimoire/create_chapter|create chapter]]
 - Update the grimoire and its Arcana -> [[invocations/grimoire/update|update]]
-- Sync active-grimoire agent skills -> [[invocations/grimoire/agent_sync_skills|agent sync skills]]
+- Sync active-grimoire agent skills -> [[invocations/grimoire/sync_skills|sync skills]]
 - Import a source -> [[invocations/grimoire/import|import]]
 - Capture a chat answer -> [[invocations/grimoire/capture_answer|capture answer]]
 - Health-check a grimoire -> [[invocations/grimoire/health_check|health check]]
@@ -72,7 +71,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 **Agent operations** -> [[invocations/agent/agent|agent]]
 
 - Sync agent skills -> [[invocations/agent/sync_skills|sync skills]]
-- Update agent instructions -> [[invocations/agent/sync_instructions|update agent block]]
+- Update agent instructions -> [[invocations/agent/sync_instructions|sync instructions]]
 
 **Library operations** -> [[invocations/library/library|library]]
 

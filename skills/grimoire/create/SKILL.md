@@ -3,7 +3,7 @@ name: {{SKILL_PREFIX}}-create
 description: Create a new grimoire with full scaffolding and library registration
 when_to_use: User wants to start a new knowledge base, set up Grimoire for a team/project/domain, or asks "how do I create a grimoire" / "set up a grimoire for X". Pick this skill before suggesting manual scaffolding.
 argument-hint: [grimoire-name]
-arguments: [name]
+arguments: name
 user-invocable: true
 allowed-tools: Bash Read Write Edit
 ---

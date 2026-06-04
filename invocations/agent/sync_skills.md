@@ -13,7 +13,7 @@ last_verified: 2026-05-25
 
 Sync Arcana-shipped skills and every installed grimoire's own skills into supported agent skill directories.
 
-Use this global command after Arcana skill changes, after installing or removing grimoires, or when slash-command pickers are stale across the whole workspace. For active-grimoire-only registration, use `/grm-agent-sync-skills`.
+Use this global command after Arcana skill changes, after installing or removing grimoires, or when slash-command pickers are stale across the whole workspace. For active-grimoire-only registration, use `/grm-sync-skills`.
 
 ## Invocation
 
@@ -98,8 +98,8 @@ of parsing prose.
 
 ## Related
 
-- Active-grimoire skill sync: [[invocations/grimoire/agent_sync_skills|agent sync skills]]
+- Active-grimoire skill sync: [[invocations/grimoire/sync_skills|sync skills]]
 - Reconcile stale/renamed skill orphans: [[invocations/meta/skill_orphan_reconcile|skill orphan reconcile]]
-- Agent block update: [[invocations/agent/sync_instructions|update agent block]]
+- Agent block update: [[invocations/agent/sync_instructions|sync instructions]]
 - Agent targets: [[docs/agent_targets|agent targets]]
 - Agent configuration: [[docs/agent_configuration|agent configuration]]

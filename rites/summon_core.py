@@ -167,37 +167,23 @@ GIT_TIMEOUT = 600  # seconds; backstop so a stalled fetch cannot hang the instal
 
 
 def git(*args, cwd=None, log=None):
-    """Run a git command. Returns (success: bool, stdout: str)."""
-    env = _subprocess_env()
-    if env is None:
-        env = dict(os.environ)
-    env.setdefault("GIT_TERMINAL_PROMPT", "0")  # fail instead of blocking on an auth prompt
-    try:
-        result = subprocess.run(
-            ["git"] + list(args),
-            cwd=cwd,
-            capture_output=True,
-            text=True,
-            env=env,
-            timeout=GIT_TIMEOUT,
-        )
-        if result.returncode != 0 and log is not None:
-            stderr = (result.stderr or "").rstrip()
-            if stderr:
-                for line in stderr.splitlines():
-                    log.line(line)
-        return result.returncode == 0, result.stdout.strip()
-    except subprocess.TimeoutExpired:
-        if log is not None:
+    """Run a git command. Returns (success: bool, stdout: str).
+
+    Thin adapter over git_capture() so the env / timeout / GIT_TERMINAL_PROMPT
+    fail-fast body lives in one place. Logs the captured stderr line-by-line on
+    failure (or a network hint on the 124 timeout sentinel) when a log is given.
+    """
+    rc, out, err = git_capture(*args, cwd=cwd)
+    if rc != 0 and log is not None:
+        if rc == 124:
             log.line(
                 f"git timed out after {GIT_TIMEOUT}s - check network access "
                 "and that authentication is configured"
             )
-        return False, ""
-    except FileNotFoundError:
-        if log is not None:
-            log.line("git executable not found on PATH")
-        return False, ""
+        else:
+            for line in (err or "").splitlines():
+                log.line(line)
+    return rc == 0, out
 
 
 def git_capture(*args, cwd=None):

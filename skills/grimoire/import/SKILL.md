@@ -3,7 +3,7 @@ name: {{SKILL_PREFIX}}-import
 description: Import files, folders, or inbox content into the active grimoire
 when_to_use: User wants to bring material into a grimoire. Triggers include "import this", "process the inbox", "sort the dump", "absorb this folder", "add this article", or dropping content into the grimoire's `inbox/` folder for processing. Polymorphic - works on a single file, a folder of mixed content, or (no argument) the grimoire's inbox/.
 argument-hint: [path-or-folder-or-empty]
-arguments: [source]
+arguments: source
 user-invocable: true
 allowed-tools: Bash Read Write Edit
 ---

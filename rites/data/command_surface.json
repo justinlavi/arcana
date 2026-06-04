@@ -178,10 +178,10 @@
       "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT"
     },
     {
-      "command": "/grm-agent-sync-skills",
+      "command": "/grm-sync-skills",
       "family": "grimoire",
-      "skill_source": "skills/grimoire/agent-sync-skills/SKILL.md",
-      "invocation": "invocations/grimoire/agent_sync_skills.md",
+      "skill_source": "skills/grimoire/sync-skills/SKILL.md",
+      "invocation": "invocations/grimoire/sync_skills.md",
       "guard": "invocations/meta/grimoire_directory_guard.md",
       "owner_type": "rite",
       "rite_owner": "rites/register_skills.py",

@@ -206,16 +206,10 @@ find invocations/ -name "*.md" ! -name "$(basename "$(pwd)").md" | wc -l   # lea
 
 ## Mutating Rite Profiles
 
-Write-capable rites use one of four profiles. The contract lives in
-[`rites/data/rite_profiles.json`](../rites/data/rite_profiles.json), with a
-human-readable view in [rite profiles](rite_profiles.md).
-
-| Profile | Use when | Required behavior |
-|---|---|---|
-| `read_only` | The rite only reports facts; any writes are named transient artifacts. | Do not change durable source, grimoire, agent, library, or install state. |
-| `plan_apply` | The rite can preview and then write the same scoped change. | Provide a plan command and an apply command; the plan must be specific enough to summarize. |
-| `apply_only` | A separate plan is not useful for the operation. | Make the write scope explicit and refuse unsafe overwrites. |
-| `append_only` | The rite appends a record to an append-only target. | Invocation workflows decide when one append is warranted. |
+Write-capable rites declare one of four profiles (`read_only`, `plan_apply`,
+`apply_only`, `append_only`). The profiles, their rules, and the per-rite table
+live in [rite profiles](rite_profiles.md), the human-readable view of
+[`rites/data/rite_profiles.json`](../rites/data/rite_profiles.json).
 
 Every mutating invocation must name whether it may run the apply command
 directly or must ask the user after showing the plan. Every mutating rite

@@ -24,11 +24,30 @@ commands.
   skills now read left to right by scope and intent: `/grm-file-answer` became
   `/grm-capture-answer`, `/grm-ingest` became `/grm-import`, `/grm-lint`
   became `/grm-health-check`, `/grm-register-skills` became
-  `/grm-agent-sync-skills`, `/arc-agent-register-skills` became
+  `/grm-sync-skills`, `/arc-agent-register-skills` became
   `/arc-agent-sync-skills`, and `/arc-agent-update` became
   `/arc-agent-sync-instructions`. `/grm-update` remains the primary
   grimoire-user entry point for updating Arcana, following `UPDATE.md`, and
   re-syncing skills.
+- **Both judgment audits are human-gated.** `/grm-audit-semantics` and
+  `/grm-audit-boundaries` both set `disable-model-invocation` so a read-only
+  judgment audit is run deliberately, not auto-fired; `/grm-validate` stays
+  model-invocable.
+
+### Improved
+
+- **Validator selection is hardened.** Unknown selectors and a selection that
+  resolves to zero validators (e.g. `--only x --exclude x`) now exit non-zero
+  with a clear message instead of silently passing; the unknown-selector hint
+  lists one canonical token per validator.
+- **Redundancy reduction.** `summon_core.git()` is now a thin adapter over
+  `git_capture()` (one env/timeout body); the duplicated rite-profile table in
+  `docs/script_vs_ai.md` and the hand-listed validators/quality entries in the
+  Arcana invocations hub now point at their single canonical homes
+  (`docs/rite_profiles.md`, the validator and quality sub-hubs).
+- **Contract accuracy.** `rites/data/summon_contract.json` now documents the
+  `--update` pull-and-heal surface; `append_log` drops the legacy `ingest` /
+  `lint` / `file-answer` ops it had retained, matching its own documented set.
 
 ## [1.2.0] - 2026-06-02
 
