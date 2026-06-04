@@ -28,7 +28,9 @@ commands.
   `/arc-agent-sync-skills`, and `/arc-agent-update` became
   `/arc-agent-sync-instructions`. `/grm-update` remains the primary
   grimoire-user entry point for updating Arcana, following `UPDATE.md`, and
-  re-syncing skills.
+  re-syncing skills. The backing rite is renamed `rites/register_skills.py` →
+  `rites/sync_skills.py` so the implementation name matches the `*-sync-skills`
+  commands it serves; no skill ↔ rite name drift remains.
 - **Both judgment audits are human-gated.** `/grm-audit-semantics` and
   `/grm-audit-boundaries` both set `disable-model-invocation` so a read-only
   judgment audit is run deliberately, not auto-fired; `/grm-validate` stays

@@ -107,7 +107,7 @@ Add `--format json` (or `jsonl`) for the shared
 `--home` scopes only the library scan and inspection. The transcript still lands
 at `~/.cache/grimoire/summon-last.json` unless `--transcript-path` redirects it,
 and `--reconcile --apply` re-registers skills into the agent directories under
-your real home (`register_skills.py` is home-global). Point `--home` at a sandbox
+your real home (`sync_skills.py` is home-global). Point `--home` at a sandbox
 for read-only `--check`; use `--transcript-path` to keep its transcript local.
 
 Every install, `--check`, and `--reconcile` writes a durable transcript to

@@ -59,15 +59,15 @@
       "tests": ["tests/test_new_page.py", "tests/test_rite_profiles.py"]
     },
     {
-      "path": "rites/register_skills.py",
+      "path": "rites/sync_skills.py",
       "profile": "plan_apply",
       "default_mode": "apply",
-      "plan_command": "python rites/register_skills.py --dry-run",
-      "apply_command": "python rites/register_skills.py",
+      "plan_command": "python rites/sync_skills.py --dry-run",
+      "apply_command": "python rites/sync_skills.py",
       "writes": ["supported agent skill directories under the user's home directory"],
       "idempotency": "Rerunning with the same inputs produces the same rendered skill files; stale cleanup removes only skill directories with Arcana ownership metadata or generated provenance. With --reset-managed, current managed namespace directories are replaced before re-registration.",
-      "validation_profile": "python rites/register_skills.py --dry-run; temp-target pytest coverage for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions.",
-      "tests": ["tests/test_register_skills.py", "tests/test_rite_profiles.py"]
+      "validation_profile": "python rites/sync_skills.py --dry-run; temp-target pytest coverage for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions.",
+      "tests": ["tests/test_sync_skills.py", "tests/test_rite_profiles.py"]
     },
     {
       "path": "rites/repair_links.py",
@@ -132,7 +132,7 @@
       "apply_command": "python rites/sync_library.py --apply",
       "writes": ["~/grimoires/library.json"],
       "idempotency": "Writes under compare-and-swap: re-reads and rebuilds if library.json changed since it was read, so a concurrent sync or adopt is never clobbered; a persistent conflict fails loudly. After apply, rerun reports the library is in sync unless disk state changed.",
-      "validation_profile": "python rites/sync_library.py; python rites/register_skills.py --dry-run after approved library changes.",
+      "validation_profile": "python rites/sync_library.py; python rites/sync_skills.py --dry-run after approved library changes.",
       "tests": ["tests/test_rite_profiles.py"]
     },
     {

@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 import agent_targets
-import register_skills as sync_skills
+import sync_skills as sync_skills
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 

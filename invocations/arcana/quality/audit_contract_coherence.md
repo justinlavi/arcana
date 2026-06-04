@@ -187,7 +187,7 @@ undeclared write. If a flag is absent or a temp target cannot be built, emit
 For non-enveloped rites and all judgment/hybrid-owned command prose, trace each
 claim to source: read the rite (or the invocation leaf) and confirm
 `mutation_behavior` / `log_behavior` / `writes` / `idempotency` match the actual
-write and log call chain. Cite `tests/test_register_skills.py` as corroboration
+write and log call chain. Cite `tests/test_sync_skills.py` as corroboration
 for `sync_skills`, but label it `code_read`, not a behavioral proof. The
 `summon_core.py` path with `apply_command` `python rites/summon.py` is intended
 (`summon.py` is the dispatcher that imports `summon_core`); record it as a

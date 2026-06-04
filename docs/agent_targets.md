@@ -46,5 +46,5 @@ configuration, and known limits.
 
 - [agent configuration](agent_configuration.md)
 - [installation](installation.md)
-- [`rites/register_skills.py`](../rites/register_skills.py)
+- [`rites/sync_skills.py`](../rites/sync_skills.py)
 - [`rites/agent_targets.py`](../rites/agent_targets.py)

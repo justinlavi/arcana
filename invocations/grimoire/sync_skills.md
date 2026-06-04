@@ -27,7 +27,7 @@ Use this day-to-day when the user is working inside one grimoire and has added, 
 
 ## Workflow
 
-Mutation profile: `plan_apply` via `rites/register_skills.py`. This
+Mutation profile: `plan_apply` via `rites/sync_skills.py`. This
 invocation may apply directly when the user asks to sync active-grimoire
 skills; use `--dry-run` when the user asks for a preview or when reviewing
 target changes.
@@ -44,7 +44,7 @@ manually deleting old registered skill directories before re-registering.
 ### 1. Run the sync rite for the active grimoire
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT
+python3 ARCANA_HOME/rites/sync_skills.py --grimoire GRIMOIRE_ROOT
 ```
 
 On Windows, use `python` instead of `python3`.
@@ -71,26 +71,26 @@ reported no preserved or collided managed-prefix directories.
 Preview without writing:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --dry-run
+python3 ARCANA_HOME/rites/sync_skills.py --grimoire GRIMOIRE_ROOT --dry-run
 ```
 
 Preview a managed-namespace reset:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --reset-managed --dry-run
+python3 ARCANA_HOME/rites/sync_skills.py --grimoire GRIMOIRE_ROOT --reset-managed --dry-run
 ```
 
 Replace managed namespaces and register fresh copies:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --reset-managed
+python3 ARCANA_HOME/rites/sync_skills.py --grimoire GRIMOIRE_ROOT --reset-managed
 ```
 
 Target one supported agent:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --agent codex
-python3 ARCANA_HOME/rites/register_skills.py --grimoire GRIMOIRE_ROOT --agent claude
+python3 ARCANA_HOME/rites/sync_skills.py --grimoire GRIMOIRE_ROOT --agent codex
+python3 ARCANA_HOME/rites/sync_skills.py --grimoire GRIMOIRE_ROOT --agent claude
 ```
 
 Supported `--agent` values come from

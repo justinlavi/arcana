@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-import register_skills as sync_skills
+import sync_skills as sync_skills
 
 
 def _snapshot(root: Path) -> dict[str, str]:

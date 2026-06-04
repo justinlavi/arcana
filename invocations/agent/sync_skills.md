@@ -23,7 +23,7 @@ Use this global command after Arcana skill changes, after installing or removing
 
 ## Workflow
 
-Mutation profile: `plan_apply` via `rites/register_skills.py`. This
+Mutation profile: `plan_apply` via `rites/sync_skills.py`. This
 invocation may apply directly when the user asks to sync skills; use
 `--dry-run` when the user asks for a preview or when reviewing target changes.
 The plan reports creates, updates, owned stale cleanups, unowned preserves,
@@ -39,7 +39,7 @@ domain-prefixed skill directories before re-registering.
 ### 1. Run the sync rite
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py
+python3 ARCANA_HOME/rites/sync_skills.py
 ```
 
 On Windows, use `python` instead of `python3`.
@@ -65,26 +65,26 @@ the rite reported no preserved or collided managed-prefix directories.
 Preview without writing:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --dry-run
+python3 ARCANA_HOME/rites/sync_skills.py --dry-run
 ```
 
 Preview a managed-namespace reset:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --reset-managed --dry-run
+python3 ARCANA_HOME/rites/sync_skills.py --reset-managed --dry-run
 ```
 
 Replace managed namespaces and register fresh copies:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --reset-managed
+python3 ARCANA_HOME/rites/sync_skills.py --reset-managed
 ```
 
 Target one supported agent:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --agent codex
-python3 ARCANA_HOME/rites/register_skills.py --agent claude
+python3 ARCANA_HOME/rites/sync_skills.py --agent codex
+python3 ARCANA_HOME/rites/sync_skills.py --agent claude
 ```
 
 Supported `--agent` values come from

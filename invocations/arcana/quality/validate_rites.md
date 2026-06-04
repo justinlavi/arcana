@@ -35,7 +35,7 @@ Runs as a phase of `/arc-improve`. No standalone slash command.
 ls rites/*.py
 ```
 
-Skip `__pycache__/`, `data/`, `templates/`. Treat `validate_*.py`, `sync_*.py`, and orchestrators (`validate.py`, `summon.py`, `register_skills.py`) as in scope.
+Skip `__pycache__/`, `data/`, `templates/`. Treat `validate_*.py`, `sync_*.py`, and orchestrators (`validate.py`, `summon.py`, `sync_skills.py`) as in scope.
 Load `rites/data/rite_profiles.json` before reviewing write-capable rites and
 use [[docs/rite_profiles|rite profiles]] as the human
 reference.

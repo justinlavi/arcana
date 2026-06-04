@@ -38,12 +38,12 @@ whether a target receives full skill folders or pointer-only `SKILL.md` files.
 All registration targets are written by the same rite:
 
 ```bash
-python3 ~/grimoires/arcana/rites/register_skills.py            # all targets
-python3 ~/grimoires/arcana/rites/register_skills.py --agent claude
-python3 ~/grimoires/arcana/rites/register_skills.py --agent codex
-python3 ~/grimoires/arcana/rites/register_skills.py --grimoire . # Arcana + active grimoire
-python3 ~/grimoires/arcana/rites/register_skills.py --reset-managed --dry-run
-python3 ~/grimoires/arcana/rites/register_skills.py --reset-managed
+python3 ~/grimoires/arcana/rites/sync_skills.py            # all targets
+python3 ~/grimoires/arcana/rites/sync_skills.py --agent claude
+python3 ~/grimoires/arcana/rites/sync_skills.py --agent codex
+python3 ~/grimoires/arcana/rites/sync_skills.py --grimoire . # Arcana + active grimoire
+python3 ~/grimoires/arcana/rites/sync_skills.py --reset-managed --dry-run
+python3 ~/grimoires/arcana/rites/sync_skills.py --reset-managed
 ```
 
 The valid `--agent` values come from

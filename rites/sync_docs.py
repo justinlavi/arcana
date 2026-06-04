@@ -263,7 +263,7 @@ def render_skills_doc(skills, command_metadata):
         "4. Run `python3 rites/validate_skill_refs.py` to validate public",
         "   command metadata.",
         "5. Run `python3 rites/sync_docs.py --apply` to refresh this library.",
-        "6. Run `python3 rites/register_skills.py` to install the skill into",
+        "6. Run `python3 rites/sync_skills.py` to install the skill into",
         "   agent skill directories.",
         "",
     ])

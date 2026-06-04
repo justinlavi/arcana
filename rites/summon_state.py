@@ -19,7 +19,7 @@ Design rules (mirrors the deferred-fragility and autonomy boundaries):
   `agent_targets`, which reads `Path.home()` at call time, so they are passed
   in as a seam too.
 * `--check` is read-only apart from the owned cache transcript it writes.
-* `--reconcile --apply` repairs the library (additively) and re-registers
+* `--reconcile --apply` repairs the library (additively) and re-syncs
   skills. It refuses on a base that fails `validate.py` (no repair on a broken
   tree), never deletes a library entry unless `--prune` is given, and never
   rewrites agent instruction blocks (the BEGIN/END vs heading sentinel
@@ -268,9 +268,9 @@ def next_actions(state: dict[str, Any], arcana_root: Path) -> list[dict[str, Any
         })
     if _skills_absent(state):
         actions.append({
-            "kind": "skill_register",
+            "kind": "skill_sync",
             "tier": "amber",
-            "command": "python3 rites/register_skills.py --agent all",
+            "command": "python3 rites/sync_skills.py --agent all",
             "reason": "no Arcana-managed skills registered in any agent skill directory",
         })
     if not state["arcana"]["working_tree_populated"]:
@@ -430,9 +430,9 @@ def _reconcile_skills(
     reporter: ResultReporter,
     skill_runner: Callable,
 ) -> dict[str, Any]:
-    step = {"id": "skills", "label": "Re-register agent skills", "status": "noop",
+    step = {"id": "skills", "label": "Sync agent skills", "status": "noop",
             "mutations": [], "messages": []}
-    register_script = Path(arcana_root) / "rites" / "register_skills.py"
+    register_script = Path(arcana_root) / "rites" / "sync_skills.py"
 
     if not state["arcana"]["working_tree_populated"]:
         text = "skills: skipped - Arcana working tree not populated (run summon install / git pull first)"
@@ -450,7 +450,7 @@ def _reconcile_skills(
         return step
 
     if not register_script.is_file():
-        text = f"skills: register_skills.py not found at {register_script}"
+        text = f"skills: sync_skills.py not found at {register_script}"
         reporter.message("error", text)
         step["messages"].append({"severity": "error", "message": text})
         step["status"] = "blocked"
@@ -458,11 +458,11 @@ def _reconcile_skills(
 
     rc, _out = skill_runner(register_script)
     if rc == 0:
-        reporter.mutation("register", detail="re-registered Arcana and grimoire skills")
-        step["mutations"] = [{"action": "register", "path": None, "detail": "re-registered skills"}]
+        reporter.mutation("register", detail="synced Arcana and grimoire skills")
+        step["mutations"] = [{"action": "register", "path": None, "detail": "synced skills"}]
         step["status"] = "ok"
     else:
-        text = f"skills: register_skills.py exited {rc}"
+        text = f"skills: sync_skills.py exited {rc}"
         reporter.message("error", text)
         step["messages"].append({"severity": "error", "message": text})
         step["status"] = "error"
@@ -567,7 +567,7 @@ def reconcile(
                                     prune=prune, reporter=reporter))
 
     # Pull-and-heal pass (the --update path): bring every library grimoire current
-    # BEFORE re-registering skills (so the reset picks up pulled grimoire skills)
+    # BEFORE re-syncing skills (so the reset picks up pulled grimoire skills)
     # and before any heal (so we never re-derive upstream work on a stale tree).
     grimoire_result = None
     if pull_grimoires:

@@ -44,7 +44,7 @@ python3 ARCANA_HOME/rites/sync_library.py --apply
 ### 4. Sync skills after successful changes
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py
+python3 ARCANA_HOME/rites/sync_skills.py
 ```
 
 Or invoke `/arc-agent-sync-skills`.

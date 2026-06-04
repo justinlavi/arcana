@@ -104,13 +104,13 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 
 - Canonical skill catalog -> [[docs/skills|skills]]
 - Public command matrix -> [[docs/command_surface|command surface]]
-- Skill source directory: `skills/`; registered via `rites/register_skills.py`
+- Skill source directory: `skills/`; registered via `rites/sync_skills.py`
 
 ## Rites
 
 - One-command summoning: `rites/summon.sh`
 - Agent target registry loader and validator: `rites/agent_targets.py`
-- Skill registration: `rites/register_skills.py`
+- Skill registration: `rites/sync_skills.py`
 - Library reconciliation: `rites/sync_library.py`
 - Generated docs sync: `rites/sync_docs.py`
 - Manifest writer for unmanaged dirs: `rites/adopt_grimoire.py`

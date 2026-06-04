@@ -32,7 +32,7 @@ from urllib.parse import urlparse
 import summon_core
 import sync_library
 from diagnostics import ResultReporter, add_output_format_arg
-from register_skills import resolve_grimoire_path
+from sync_skills import resolve_grimoire_path
 from scaffold_contract import load_scaffold_contract, managed_scaffold_files
 
 # A grimoire is eligible for healing only when it is confirmed current with its

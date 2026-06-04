@@ -750,15 +750,15 @@ def _registered_skill_count(skills_dir):
 
 def sync_skills(log):
     """Run the skill registration script."""
-    log.info("Registering Grimoire skills...")
-    register_script = ARCANA_DIR / "rites" / "register_skills.py"
+    log.info("Syncing Grimoire skills...")
+    register_script = ARCANA_DIR / "rites" / "sync_skills.py"
     if not register_script.is_file():
-        register_script = RITE_DIR / "register_skills.py"
+        register_script = RITE_DIR / "sync_skills.py"
 
     if not register_script.is_file():
-        log.err(f"register_skills.py not found at {ARCANA_DIR / 'rites'} or {RITE_DIR}")
-        log.err("Skills NOT registered. Re-run manually after Arcana lands:")
-        log.err(f"  python3 {ARCANA_DIR / 'rites' / 'register_skills.py'}")
+        log.err(f"sync_skills.py not found at {ARCANA_DIR / 'rites'} or {RITE_DIR}")
+        log.err("Skills NOT synced. Re-run manually after Arcana lands:")
+        log.err(f"  python3 {ARCANA_DIR / 'rites' / 'sync_skills.py'}")
         return False
 
     result = subprocess.run(
@@ -774,7 +774,7 @@ def sync_skills(log):
             log.line(line)
 
     if result.returncode != 0:
-        log.err(f"Skill registration FAILED (exit {result.returncode}). See output above.")
+        log.err(f"Skill sync FAILED (exit {result.returncode}). See output above.")
         log.err("Re-run manually with:")
         log.err(f"  python3 {register_script}")
         return False
@@ -920,7 +920,7 @@ def _print_cli_summary(mode, installed_keys, skills_ok):
     print()
     if not skills_ok:
         print("  *** Skill registration failed - see errors above. Re-run: ***")
-        print(f"      python3 {ARCANA_DIR / 'rites' / 'register_skills.py'}")
+        print(f"      python3 {ARCANA_DIR / 'rites' / 'sync_skills.py'}")
         print()
     print("  Next steps:")
     agent_labels = ", ".join(target["label"] for target in automatic_instruction_targets(REPO_ROOT))

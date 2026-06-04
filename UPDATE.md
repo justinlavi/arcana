@@ -146,7 +146,7 @@ same work runs as individual rites: `sync_library.py --apply`, then per grimoire
 grimoire's copy (managed scaffold only — never the customized README, root hub,
 `grimoire.json`, or `log.md`), ensure the README's update block matches
 `formulae/grimoire/README.md`, `repair_links.py --grimoire <root> --apply`,
-re-validate, then `register_skills.py --reset-managed`. Pull each grimoire first
+re-validate, then `sync_skills.py --reset-managed`. Pull each grimoire first
 (`git -C <root> pull --ff-only`); never heal a grimoire you could not bring
 current.
 

@@ -12,7 +12,7 @@ owned cleanups, preserved unowned directories, and collisions without writing.
 The default mode applies the same plan to the selected agent skill targets.
 
 Usage:
-    python3 register_skills.py [--agent all|TARGET] [--grimoire PATH] [--dry-run] [--reset-managed]
+    python3 sync_skills.py [--agent all|TARGET] [--grimoire PATH] [--dry-run] [--reset-managed]
 
 Exit codes: 0 = plan completed or apply completed, 1 = apply blocked by
 collision, 2 = argparse invalid arguments.

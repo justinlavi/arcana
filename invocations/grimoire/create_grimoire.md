@@ -192,7 +192,7 @@ If the new grimoire declares a `skill_prefix` in `grimoire.json`, register its
 skills so its `/<prefix>-*` commands become available:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --grimoire .
+python3 ARCANA_HOME/rites/sync_skills.py --grimoire .
 ```
 
 Then tell the user to reopen their agent session - Claude Code and Codex cache

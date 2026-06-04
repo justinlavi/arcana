@@ -569,7 +569,7 @@ def _worker_adopt(directory, skill_prefix, name, description, log, cancel_event,
     }
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     log.ok(f"Wrote {manifest_path}")
-    log.info("Run Library Sync next, then Re-register Skills if this grimoire ships skills")
+    log.info("Run Library Sync next, then Sync Skills if this grimoire ships skills")
     return {"ok": True, "manifest_path": str(manifest_path)}
 
 

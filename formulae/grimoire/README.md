@@ -59,7 +59,7 @@ git clone {{GRIMOIRE_REPO_URL}} ~/grimoires/{{GRIMOIRE_DIRECTORY}}
 
 # 3. Register the library entry and skills
 python3 ~/grimoires/arcana/rites/sync_library.py --apply
-python3 ~/grimoires/arcana/rites/register_skills.py
+python3 ~/grimoires/arcana/rites/sync_skills.py
 ```
 
 Add the canonical Grimoire instruction block to your agent file using `/arc-agent-sync-instructions` once skills are registered, or paste it manually from [`rites/templates/grimoire_block.md`](https://github.com/justinlavi/arcana/blob/main/rites/templates/grimoire_block.md).

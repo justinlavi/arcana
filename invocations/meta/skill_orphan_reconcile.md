@@ -10,7 +10,7 @@ last_verified: 2026-06-01
 # Skill Orphan Reconcile
 
 An optional judgment step for the skill-registration workflows. The registration
-rite (`rites/register_skills.py`) is deterministic: it removes a registered skill
+rite (`rites/sync_skills.py`) is deterministic: it removes a registered skill
 directory only when it can **prove** Arcana ownership (an `ARCANA_SKILL_OWNERSHIP`
 marker, or a generated-source provenance line pointing under a current Arcana or
 grimoire `skills/` root). Anything it cannot prove it owns, it never deletes - it
@@ -60,7 +60,7 @@ this step.
    and remove them only after one explicit confirmation. Scope every deletion to
    the agent skill directory and the known managed prefixes; never delete a
    directory that lacks Arcana provenance.
-4. **Re-register and report.** Re-run `rites/register_skills.py` so the renamed
+4. **Re-register and report.** Re-run `rites/sync_skills.py` so the renamed
    or new skills register cleanly, then report what was removed, what was
    re-registered, and anything left for the user to judge.
 

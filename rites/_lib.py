@@ -329,7 +329,7 @@ def load_skill_families(root: Path, *, with_fallback: bool = False) -> list[dict
     Each entry is `{name, skill_prefix, path, slug_prefix}`. `with_fallback`
     injects a single default `arcana` family when none are declared. Returns `[]`
     when arcana.json is unreadable or `skill_families` is malformed. Callers that
-    need strict validation or reporter diagnostics wrap this (e.g. register_skills,
+    need strict validation or reporter diagnostics wrap this (e.g. sync_skills,
     the skill validators).
     """
     try:
