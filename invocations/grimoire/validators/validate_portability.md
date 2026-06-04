@@ -16,7 +16,7 @@ Validate that every active-grimoire path is safe to clone on Windows, Linux, and
 ## Invocation
 
 ```
-/grm-validate-portability
+/grm-validate portability
 ```
 
 ## Workflow

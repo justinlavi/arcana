@@ -231,19 +231,19 @@ def test_claude_seam_refuses_without_env(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def _ingest_spec():
-    return next(s for s in SPECS if s.eval_id == "ingest_layer_classification")
+def _import_spec():
+    return next(s for s in SPECS if s.eval_id == "import_layer_classification")
 
 
 def test_run_one_eval_passes_on_correct_fake(tmp_path):
-    spec = _ingest_spec()
+    spec = _import_spec()
     decision = {"classifications": [
         {"file": "interview_chef.txt", "layer": "source"},
         {"file": "braising_notes.md", "layer": "chapter"},
         {"file": "scratch.tmp", "layer": "junk"}]}
 
     def correct_agent(prompt, cwd):
-        # Simulate a correct ingest: promote the draft (move it out of inbox into
+        # Simulate a correct import: promote the draft (move it out of inbox into
         # a new chapter page) and leave the junk in place.
         root = Path(cwd)
         (root / "inbox" / "braising_notes.md").unlink()
@@ -260,7 +260,7 @@ def test_run_one_eval_passes_on_correct_fake(tmp_path):
 
 def test_run_one_eval_fails_when_agent_deletes_junk(tmp_path):
     """The junk-not-deleted disk invariant must fail an agent that removes junk."""
-    spec = _ingest_spec()
+    spec = _import_spec()
     decision = {"classifications": [
         {"file": "interview_chef.txt", "layer": "source"},
         {"file": "braising_notes.md", "layer": "chapter"},
@@ -277,7 +277,7 @@ def test_run_one_eval_fails_when_agent_deletes_junk(tmp_path):
 
 
 def test_run_one_eval_fails_on_wrong_fake(tmp_path):
-    spec = _ingest_spec()
+    spec = _import_spec()
     decision = {"classifications": [
         {"file": "interview_chef.txt", "layer": "junk"},  # wrong
         {"file": "braising_notes.md", "layer": "chapter"},
@@ -289,7 +289,7 @@ def test_run_one_eval_fails_on_wrong_fake(tmp_path):
 def test_run_one_eval_errors_on_seam_failure(tmp_path):
     def boom(prompt, cwd):
         raise RuntimeError("no model available")
-    assert H.run_one_eval(_ingest_spec(), tmp_path, boom).outcome == "error"
+    assert H.run_one_eval(_import_spec(), tmp_path, boom).outcome == "error"
 
 
 def test_suite_report_shape():

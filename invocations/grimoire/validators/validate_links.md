@@ -16,7 +16,7 @@ Validate that internal references resolve inside the active grimoire and that in
 ## Invocation
 
 ```
-/grm-validate-links
+/grm-validate links
 ```
 
 ## Workflow

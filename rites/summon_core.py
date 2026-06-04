@@ -87,7 +87,7 @@ GRIMOIRE_BLOCK = _load_grimoire_block()
 # Idempotency sentinels for the injected Grimoire block. The canonical template
 # wraps the block in BEGIN/END markers with the heading inside; older injections
 # carried only the heading. A block written by any path - this injector, the
-# template, /arc-agent-update, or UPDATE.md - counts as present when EITHER
+# template, /arc-agent-sync-instructions, or UPDATE.md - counts as present when EITHER
 # sentinel is found, so a re-run never double-injects regardless of which form is
 # on disk. summon_state imports these so the detector and injector cannot drift.
 BEGIN_SENTINEL = "<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->"
@@ -762,7 +762,7 @@ def _registered_skill_count(skills_dir):
     return count
 
 
-def register_skills(log):
+def sync_skills(log):
     """Run the skill registration script."""
     log.info("Registering Grimoire skills...")
     register_script = ARCANA_DIR / "rites" / "register_skills.py"
@@ -821,7 +821,7 @@ def finalize_install(installed_keys, library, log):
     if installed_keys:
         update_local_library(installed_keys, library, log)
     inject_agent_configs(log)
-    return register_skills(log)
+    return sync_skills(log)
 
 
 # ---------------------------------------------------------------------------

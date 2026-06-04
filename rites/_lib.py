@@ -284,7 +284,7 @@ def load_library(library_path: Path) -> dict:
 
     Missing file or unreadable JSON returns `{"grimoires": {}}` (with a warning
     logged for the unreadable case). This matches the contract every consumer
-    (`sync_library`, `register_skills`, `clean_artifacts`) expects.
+    (`sync_library`, `sync_skills`, `clean_artifacts`) expects.
     """
     if not library_path.is_file():
         return {"grimoires": {}}

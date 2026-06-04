@@ -18,7 +18,7 @@ Mechanically check every authored page's YAML frontmatter against the canonical 
 ## Invocation
 
 ```
-/arc-validate-frontmatter
+/arc-validate frontmatter
 ```
 
 Or directly:
@@ -27,7 +27,7 @@ Or directly:
 python3 ARCANA_HOME/rites/validate_frontmatter.py
 ```
 
-For an active grimoire, use `/grm-validate-frontmatter`.
+For an active grimoire, use `/grm-validate frontmatter`.
 
 ## What gets checked
 

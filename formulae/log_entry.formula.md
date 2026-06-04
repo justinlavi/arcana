@@ -20,7 +20,7 @@ Describe *what changed in the wiki*, never *how the change was delivered*. An en
 An entry must NOT:
 
 - Scope itself by, or name, a git branch (e.g. "catch <branch> up to main", "merge main into <branch>").
-- Treat a merge, rebase, cherry-pick, push, or conflict resolution as the operation. The `<op>` tags name grimoire operations (`ingest`, `create`, `improve`, ...), not git operations - there is no `merge` op.
+- Treat a merge, rebase, cherry-pick, push, or conflict resolution as the operation. The `<op>` tags name grimoire operations (`import`, `create`, `improve`, ...), not git operations - there is no `merge` op.
 
 If a content change happens to land while you are merging or rebasing, log the content (the page added or changed), not the merge:
 
@@ -44,7 +44,7 @@ Every entry begins with a level-2 heading in this exact shape:
 ## [YYYY-MM-DD HH:MM] <op> | <title>
 ```
 
-- `<op>` is one of: `ingest`, `query`, `lint`, `improve`, `file-answer`, `rebuild-index`, `create`, `manual`. These name grimoire-content operations, not git operations - there is no `merge`, `rebase`, or `push` op (see Scope above).
+- `<op>` is one of: `import`, `query`, `health-check`, `improve`, `capture-answer`, `rebuild-index`, `create`, `manual`. These name grimoire-content operations, not git operations - there is no `merge`, `rebase`, or `push` op (see Scope above).
 - `<title>` is a short human-readable label (source name, query summary, etc.).
 
 This shape lets you scan recent activity with `grep '^## \[' log.md | tail -20`.
@@ -55,24 +55,24 @@ Free-form bullet list, but include at minimum:
 
 - `- skill: /<skill prefix>-<verb>` (or `manual` if hand-edited)
 - `- pages: ` comma-separated relative paths touched
-- For `ingest` / `file-answer`: `- source: sources/<filename>` or `- source: chat`
+- For `import` / `capture-answer`: `- source: sources/<filename>` or `- source: chat`
 
 ## Example entries
 
 ```markdown
-## [2026-05-12 14:32] ingest | Tartine bread method article
-- skill: /cook-domain-ingest
+## [2026-05-12 14:32] import | Tartine bread method article
+- skill: /grm-import
 - source: sources/article-tartine-method.md
 - pages: chapters/techniques/lamination.md, chapters/recipes/sourdough.md, chapters/techniques/techniques.md
 
-## [2026-05-12 15:01] lint | quarterly health check
-- skill: /grm-lint
+## [2026-05-12 15:01] health-check | quarterly health check
+- skill: /grm-health-check
 - orphans: 0
 - stale (>90d): 3
 - missing-xref candidates: 2 ("autolyse", "windowpane test")
 
-## [2026-05-13 09:14] file-answer | sourdough vs ciabatta comparison
-- skill: /grm-file-answer
+## [2026-05-13 09:14] capture-answer | sourdough vs ciabatta comparison
+- skill: /grm-capture-answer
 - source: chat
 - pages: chapters/comparisons/sourdough_vs_ciabatta.md (new), chapters/comparisons/comparisons.md
 ```

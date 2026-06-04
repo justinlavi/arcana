@@ -44,7 +44,7 @@ python3 rites/validate.py
 pytest
 ```
 
-Both must pass. The validators are the same ones the `/arc-validate-all` skill runs.
+Both must pass. The validators are the same ones the `/arc-validate` skill runs.
 
 For faster feedback during iteration, run a single validator directly:
 
@@ -64,8 +64,8 @@ Every validator should:
 2. Accept `--grimoire <path>` via `add_grimoire_arg(parser)`. Default to Arcana itself; allow grimoires too.
 3. Exit `0` on clean, `1` on violations. Use `info` / `ok` / `warn` / `err` from `_lib` for output.
 4. Ship as a `validate_<aspect>.py` file under `rites/`.
-5. Get a corresponding command-family skill folder such as `skills/arcana/validate-<aspect>/SKILL.md` or `skills/grimoire/validate-<aspect>/SKILL.md` (see [skill schema](docs/skill_schema.md)).
-6. Be added to the orchestrator [rites/validate.py](rites/validate.py) if it is part of the Arcana validator suite so `/arc-validate-all` picks it up.
+5. Be added to the validator selector registry in [rites/validate.py](rites/validate.py) / [validators.json](rites/data/validators.json) if it is part of a mechanical validation suite.
+6. Use the existing `/arc-validate` or `/grm-validate` public skill; create a new skill only when the workflow is not mechanical validation (see [skill schema](docs/skill_schema.md)).
 7. Get a covering test under `tests/test_validate_<aspect>.py` using the fixture grimoires under `tests/fixtures/`.
 
 The minimal skeleton:
@@ -134,4 +134,4 @@ Skills are pointer files. The skill itself contains no logic - it dispatches to 
 
 ## Maintainer notes
 
-The `/arc-improve` and `/arc-validate-all` skills are the canonical maintenance entry points. Run them before tagging a release. Release workflow lives in [release](docs/release.md).
+The `/arc-improve` and `/arc-validate` skills are the canonical maintenance entry points. Run them before tagging a release. Release workflow lives in [release](docs/release.md).

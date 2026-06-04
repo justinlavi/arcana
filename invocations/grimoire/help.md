@@ -61,4 +61,4 @@ End with one line: `For every Arcana command and all installed grimoires, run /a
 
 - **Full Arcana + grimoire catalog**: [[invocations/help/help|help]]
 - **Canonical skill catalog**: [[docs/skills|skills]]
-- **Active-grimoire skill registration**: [[invocations/grimoire/register_skills|register skills]]
+- **Active-grimoire skill sync**: [[invocations/grimoire/agent_sync_skills|agent sync skills]]

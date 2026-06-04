@@ -19,7 +19,7 @@ guard/preconditions -> mutation/log behavior -> validation profile ->
 generated docs impact
 ```
 
-`/arc-validate-skill-refs` validates the matrix. It checks that every
+`/arc-validate skill-refs` validates the matrix. It checks that every
 Arcana-shipped public skill appears exactly once, that each listed skill,
 invocation, guard, and rite path exists, and that every contract entry uses a
 known owner and mutation profile. It also cross-checks that each rite-owned
@@ -34,7 +34,7 @@ be `read_only`.
 
 | Field | Meaning |
 |---|---|
-| `command` | Public slash command, such as `/grm-ingest`. |
+| `command` | Public slash command, such as `/grm-import`. |
 | `family` | Command family from `arcana.json`. |
 | `skill_source` | Source `SKILL.md` that registers the command. |
 | `invocation` | Primary workflow home. |

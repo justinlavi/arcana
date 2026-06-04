@@ -21,10 +21,10 @@ The families are declared in `arcana.json`.
 
 | Family | Prefix | Use For | Example |
 |---|---|---|---|
-| `arcana` | `arc` | Arcana platform and maintainer operations | `/arc-validate-links` |
-| `grimoire` | `grm` | Universal operations from the active grimoire context | `/grm-validate-links` |
+| `arcana` | `arc` | Arcana platform and maintainer operations | `/arc-validate links` |
+| `grimoire` | `grm` | Universal operations from the active grimoire context | `/grm-validate links` |
 | `library` | `arc` | Operations that affect `~/grimoires/library.json` | `/arc-library-sync` |
-| `agent` | `arc` | Operations that affect agent files or agent skill directories | `/arc-agent-update` |
+| `agent` | `arc` | Operations that affect agent files or agent skill directories | `/arc-agent-sync-instructions` |
 | `workspace` | `arc` | Operations that intentionally affect Arcana plus installed grimoires | `/arc-workspace-clean` |
 | `help` | `arc` | Skill discovery and help | `/arc-help` |
 
@@ -38,7 +38,7 @@ Source skill files use the placeholder form:
 name: {{SKILL_PREFIX}}-<registered-slug>
 ```
 
-The registration rite substitutes `{{SKILL_PREFIX}}` with the command family's prefix. For example, `skills/grimoire/validate-links/SKILL.md` declares `{{SKILL_PREFIX}}-validate-links` and registers as `/grm-validate-links`.
+The registration rite substitutes `{{SKILL_PREFIX}}` with the command family's prefix. For example, `skills/grimoire/validate/SKILL.md` declares `{{SKILL_PREFIX}}-validate` and registers as `/grm-validate`.
 
 Some `/grm-*` commands intentionally maintain Arcana from the active grimoire context. For example, `/grm-update` brings the active grimoire and its Arcana back to a current, validated, synchronized state. Keep these rare and name the external target explicitly. These commands may resolve the active grimoire from `~/grimoires/library.json`; they should not require terminal cwd when an unambiguous grimoire can be selected.
 
@@ -52,7 +52,7 @@ Every source skill is a `SKILL.md` with YAML frontmatter and a Markdown body.
 | `description` | yes | One line shown in the agent's slash-command picker. |
 | `when_to_use` | optional | Natural-language triggers that let an agent surface the skill for a matching problem. |
 | `user-invocable` | optional | `true` exposes the command for explicit user invocation. |
-| `disable-model-invocation` | optional | `true` stops an agent from auto-invoking the skill; only user-typed commands trigger it. Set it on destructive or maintainer-only skills and on individual validators, so the `validate-all` orchestrators stay the auto-invoke entry points. |
+| `disable-model-invocation` | optional | `true` stops an agent from auto-invoking the skill; only user-typed commands trigger it. Set it on destructive or maintainer-only skills and judgment audits that should not auto-trigger. |
 | `allowed-tools` | optional | Space-separated tools the skill may use, e.g. `Bash Read`. |
 
 The auto-invocation policy and per-agent support matrix live in
@@ -77,14 +77,14 @@ A rite may support more than one target through flags such as `--grimoire`, but 
 Good:
 
 ```text
-/arc-validate-frontmatter
-/grm-validate-frontmatter
+/arc-validate frontmatter
+/grm-validate frontmatter
 ```
 
 Avoid when the operation can target both Arcana and a grimoire:
 
 ```text
-/arc-validate-frontmatter
+/arc-validate frontmatter
 ```
 
 That name is correct for Arcana only. If users also need to validate a grimoire, provide the grimoire-targeted skill as a separate command.
@@ -94,9 +94,10 @@ That name is correct for Arcana only. If users also need to validate a grimoire,
 Arcana skill source folders are grouped by command family, then flattened during registration:
 
 ```text
-skills/arcana/validate-links/SKILL.md      -> /arc-validate-links
-skills/grimoire/validate-links/SKILL.md    -> /grm-validate-links
-skills/agent/register-skills/SKILL.md      -> /arc-agent-register-skills
+skills/arcana/validate/SKILL.md            -> /arc-validate
+skills/grimoire/validate/SKILL.md          -> /grm-validate
+skills/grimoire/audit-semantics/SKILL.md   -> /grm-audit-semantics
+skills/agent/sync-skills/SKILL.md          -> /arc-agent-sync-skills
 ```
 
 The naming validator enforces folder/frontmatter agreement and rejects skill files outside the declared command families.
@@ -104,7 +105,7 @@ The naming validator enforces folder/frontmatter agreement and rejects skill fil
 Every public Arcana-shipped command also has an entry in
 [command surface](command_surface.md). That contract links the command to
 its source skill, invocation leaf, workflow owner, guard, mutation behavior,
-logging behavior, and validation profile. `/arc-validate-skill-refs` checks
+logging behavior, and validation profile. `/arc-validate skill-refs` checks
 the contract whenever command references are validated.
 
 ## Invocation Layout

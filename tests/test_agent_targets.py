@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 import agent_targets
-import register_skills
+import register_skills as sync_skills
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -26,7 +26,7 @@ def test_agent_target_registry_is_valid():
 def test_agent_target_registry_drives_registration_targets():
     expected = agent_targets.skill_registration_targets(REPO_ROOT)
 
-    assert register_skills.SKILL_TARGETS == expected
+    assert sync_skills.SKILL_TARGETS == expected
     assert expected["claude"]["pointer_only"] is False
     assert expected["codex"]["pointer_only"] is True
 

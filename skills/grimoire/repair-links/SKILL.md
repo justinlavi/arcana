@@ -1,7 +1,7 @@
 ---
 name: {{SKILL_PREFIX}}-repair-links
 description: Promote filename-only wikilinks to canonical full-path form across the active grimoire
-when_to_use: After a structural migration or when /grm-lint reports a wave of broken wikilinks of the form "must resolve as a repository path". User mentions "fix wikilinks", "repair links", "promote wikilinks", or "broken wikilinks".
+when_to_use: After a structural migration or when /grm-health-check reports a wave of broken wikilinks of the form "must resolve as a repository path". User mentions "fix wikilinks", "repair links", "promote wikilinks", or "broken wikilinks".
 user-invocable: true
 allowed-tools: Bash Read Edit
 ---

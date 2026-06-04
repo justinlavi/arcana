@@ -70,15 +70,15 @@ An agent may act **unattended** only when all four conditions hold:
 4. **Not on the human-sign-off list** below.
 
 If any condition fails, the change is **proposed**, not applied: surface it for
-one confirmation (the `/grm-lint` / `/grm-improve` model) or escalate to the
+one confirmation (the `/grm-health-check` / `/grm-improve` model) or escalate to the
 human maintainer.
 
 ### Unattended
 
 | Action | Rite / command | Verification |
 |---|---|---|
-| Run the validator suite | `/arc-validate-all` (`python3 rites/validate.py`) | exit 0 |
-| Apply mechanical fixes (broken links the rite located, format, frontmatter, encoding, snake_case) | an `/arc-validate-all` finding plus a direct edit | re-run the validator to exit 0 |
+| Run the validator suite | `/arc-validate` (`python3 rites/validate.py`) | exit 0 |
+| Apply mechanical fixes (broken links the rite located, format, frontmatter, encoding, snake_case) | an `/arc-validate` finding plus a direct edit | re-run the validator to exit 0 |
 | Repair unambiguous wikilinks | `/grm-repair-links --apply` | envelope `status` `ok`; ambiguous links are surfaced, never guessed |
 | Regenerate generated indexes | `python3 rites/sync_docs.py --apply` | drift gate clean afterward |
 | Correct prose-wrong contract drift | the contract-coherence audit | the originating probe plus a validator pass |
@@ -92,8 +92,8 @@ Reversible but judgment-bearing, or writing outside the repo:
 - Orphan wiring, terminology standardization, page promotion, merging duplicates.
 - Any change touching more than ten files.
 - Reconciling the grimoire library or registering skills into agent directories
-  under the user's home (`/arc-library-sync`, `/arc-agent-register-skills`,
-  `/grm-register-skills`).
+  under the user's home (`/arc-library-sync`, `/arc-agent-sync-skills`,
+  `/grm-agent-sync-skills`).
 
 ### Human sign-off required
 
@@ -232,7 +232,7 @@ Decide the bump with the [Compatibility Rule](#the-compatibility-rule) first, th
 
 ### Patch / Minor
 
-1. Make changes; run `/arc-validate-all` (or `python3 rites/validate.py`).
+1. Make changes; run `/arc-validate` (or `python3 rites/validate.py`).
 2. Update `CHANGELOG.md`. Before the first tag for a version, edit that version's entry as the current state. After a version is tagged, collect future changes under `[Unreleased]` until the next release entry is cut.
 3. Commit (`fix:` for patch, `feat:` for minor).
 4. Tag and push when cutting the release.
@@ -268,7 +268,7 @@ Arcana files must:
 - ✅ Use generic example names (`cooking-grimoire`, `hr-grimoire`, `Domain A`, `Project Alpha`, `Alice/Bob`). Real product/company/person names appear only when documenting an actual integration.
 - ✅ Use relative paths inside the repo. Use `{{ARCANA_PATH}}` / `{{GRIMOIRE_PATH}}` placeholders in skill files; the registration rite resolves them.
 - ✅ Preserve the text file standard: UTF-8 without BOM, LF line endings, and no mojibake or repair artifacts. Unicode is allowed when it improves readability.
-- ✅ Pass the full validator suite (`/arc-validate-all`) before commit.
+- ✅ Pass the full validator suite (`/arc-validate`) before commit.
 
 Arcana files must **not**:
 
@@ -284,7 +284,7 @@ Arcana files must **not**:
 Each grimoire is responsible for:
 
 1. **Its own content**: chapters, skills, manifest. Use Arcana's `/grm-create-chapter` and the page formula for new pages.
-2. **Staying in step with Arcana**: pull updates periodically; run `/grm-validate-all` after pulling.
+2. **Staying in step with Arcana**: pull updates periodically; run `/grm-validate` after pulling.
 3. **Reporting issues** in Arcana itself (broken invocations, formula bugs, validator false positives).
 
 Grimoires must **not**:
@@ -292,7 +292,7 @@ Grimoires must **not**:
 - ❌ Copy Arcana files into their own repo (reference instead).
 - ❌ Modify Arcana files directly. Propose changes to the maintainer of the Arcana fork they use.
 - ❌ Create chapters / formulae / rites in Arcana folder names (`invocations/`, `formulae/`, `rites/`) inside their own grimoire — those folder names are reserved for Arcana.
-- ❌ Ignore breaking-change announcements. Re-run `/grm-validate-all` after a major Arcana version bump.
+- ❌ Ignore breaking-change announcements. Re-run `/grm-validate` after a major Arcana version bump.
 
 ---
 

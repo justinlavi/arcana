@@ -5,6 +5,9 @@ Usage:
     python3 rites/validate.py              # sequential (default)
     python3 rites/validate.py --parallel   # parallel execution
     python3 rites/validate.py --grimoire <path>
+    python3 rites/validate.py links frontmatter
+    python3 rites/validate.py --only links,frontmatter
+    python3 rites/validate.py --exclude orphans
     python3 rites/validate.py --smart      # git-aware: only run validators relevant to changed files
     python3 rites/validate.py --auto       # smart + auto-execute
     python3 rites/validate.py --summary    # sequential, summary-only output
@@ -39,6 +42,8 @@ def _load_validator_lists():
 ARCANA_RITES, GRIMOIRE_RITES = _load_validator_lists()
 
 RITES = ARCANA_RITES
+
+MODE_SELECTORS = {"all", "parallel", "smart", "auto", "summary"}
 
 
 def run_rite(name, profile="arcana", target_root=None):
@@ -78,6 +83,89 @@ def run_rite(name, profile="arcana", target_root=None):
         }
     report["returncode"] = result.returncode
     return name, result.returncode == 0, report
+
+
+def _selector_forms(value):
+    """Return normalized selector forms for a validator or user token."""
+    stem = Path(value).stem
+    if stem.startswith("validate_grimoire_"):
+        base = stem.removeprefix("validate_grimoire_")
+    elif stem.startswith("validate_"):
+        base = stem.removeprefix("validate_")
+    else:
+        base = stem
+
+    forms = {
+        base,
+        base.replace("_", "-"),
+        stem,
+        stem.replace("_", "-"),
+    }
+    return {form.lower() for form in forms if form}
+
+
+def validator_selector_map(profile="arcana"):
+    """Map human selector names to validator rite filenames."""
+    rites = GRIMOIRE_RITES if profile == "grimoire" else ARCANA_RITES
+    selectors = {}
+    for rite in rites:
+        for form in _selector_forms(rite):
+            selectors[form] = rite
+    return selectors
+
+
+def split_selector_tokens(values):
+    """Split comma/space separated selector arguments into normalized tokens."""
+    tokens = []
+    for value in values or []:
+        for part in str(value).split(","):
+            token = part.strip().lower().replace("_", "-")
+            if token:
+                tokens.append(token)
+    return tokens
+
+
+def apply_validator_selection(rites, profile="arcana", only=None, exclude=None):
+    """Return rites filtered by selector tokens, preserving canonical order."""
+    selector_map = validator_selector_map(profile)
+    only_tokens = split_selector_tokens(only)
+    exclude_tokens = split_selector_tokens(exclude)
+
+    def resolve(tokens, label):
+        selected = set()
+        unknown = []
+        for token in tokens:
+            if token in {"all", "*"}:
+                selected.update(rites)
+                continue
+            rite = selector_map.get(token)
+            if rite is None:
+                unknown.append(token)
+            else:
+                selected.add(rite)
+        if unknown:
+            known = ", ".join(sorted(k for k in selector_map if not k.endswith(".py")))
+            raise ValueError(
+                f"unknown {label} selector(s): {', '.join(unknown)}. "
+                f"Known selectors: all, {known}"
+            )
+        return selected
+
+    selected = resolve(only_tokens, "validator") if only_tokens else set(rites)
+    excluded = resolve(exclude_tokens, "excluded validator") if exclude_tokens else set()
+    return [rite for rite in rites if rite in selected and rite not in excluded]
+
+
+def parse_positional_selectors(selectors):
+    """Separate mode words from validator selectors."""
+    mode_tokens = []
+    validator_tokens = []
+    for token in split_selector_tokens(selectors):
+        if token in MODE_SELECTORS:
+            mode_tokens.append(token)
+        else:
+            validator_tokens.append(token)
+    return mode_tokens, validator_tokens
 
 
 def git_changed_files(root):
@@ -364,9 +452,29 @@ def run_parallel(rites, output_format="human", profile="arcana", target_root=Non
 def main():
     parser = argparse.ArgumentParser(description="Unified Arcana and grimoire validation orchestrator")
     parser.add_argument(
+        "selectors",
+        nargs="*",
+        help=(
+            "Optional validator or mode selectors, e.g. links frontmatter, "
+            "smart, auto, summary, parallel, or all"
+        ),
+    )
+    parser.add_argument(
         "--grimoire",
         type=Path,
         help="Validate a grimoire root with the grimoire validator profile",
+    )
+    parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        help="Comma-separated validator selectors to run, e.g. links,frontmatter",
+    )
+    parser.add_argument(
+        "--exclude",
+        action="append",
+        default=[],
+        help="Comma-separated validator selectors to skip, e.g. orphans",
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--parallel", action="store_true", help="Run validators in parallel")
@@ -378,9 +486,53 @@ def main():
     profile = "grimoire" if args.grimoire else "arcana"
     target_root = args.grimoire.expanduser().resolve() if args.grimoire else ARCANA_ROOT
     rites = GRIMOIRE_RITES if profile == "grimoire" else ARCANA_RITES
+    mode_tokens, selector_tokens = parse_positional_selectors(args.selectors)
+
+    explicit_modes = [
+        name
+        for name, enabled in {
+            "parallel": args.parallel,
+            "smart": args.smart,
+            "auto": args.auto,
+            "summary": args.summary,
+        }.items()
+        if enabled
+    ]
+    requested_modes = [mode for mode in mode_tokens if mode != "all"]
+    all_modes = explicit_modes + requested_modes
+    if len(set(all_modes)) > 1:
+        print(f"Conflicting validation modes: {', '.join(all_modes)}", file=sys.stderr)
+        return 2
+    if requested_modes:
+        selected_mode = requested_modes[0]
+        args.parallel = selected_mode == "parallel"
+        args.smart = selected_mode == "smart"
+        args.auto = selected_mode == "auto"
+        args.summary = selected_mode == "summary"
+
+    try:
+        rites = apply_validator_selection(
+            rites,
+            profile=profile,
+            only=[*args.only, *selector_tokens],
+            exclude=args.exclude,
+        )
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
 
     if args.smart:
         smart = determine_smart_rites(profile, target_root)
+        try:
+            smart = apply_validator_selection(
+                smart,
+                profile=profile,
+                only=[*args.only, *selector_tokens],
+                exclude=args.exclude,
+            )
+        except ValueError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
         if args.format == "human":
             print("Smart Validation - Recommended:")
             for r in smart:
@@ -408,6 +560,16 @@ def main():
 
     if args.auto:
         smart = determine_smart_rites(profile, target_root)
+        try:
+            smart = apply_validator_selection(
+                smart,
+                profile=profile,
+                only=[*args.only, *selector_tokens],
+                exclude=args.exclude,
+            )
+        except ValueError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
         if args.format == "human":
             print(f"Smart Validation - Running {len(smart)} relevant validator(s)")
             print()

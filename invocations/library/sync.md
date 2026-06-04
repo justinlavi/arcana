@@ -41,13 +41,13 @@ Call out:
 python3 ARCANA_HOME/rites/sync_library.py --apply
 ```
 
-### 4. Re-register skills after successful changes
+### 4. Sync skills after successful changes
 
 ```bash
 python3 ARCANA_HOME/rites/register_skills.py
 ```
 
-Or invoke `/arc-agent-register-skills`.
+Or invoke `/arc-agent-sync-skills`.
 
 ## Notes
 
@@ -60,4 +60,4 @@ Or invoke `/arc-agent-register-skills`.
 ## Related
 
 - Adopt unmanaged directory: [[invocations/library/adopt|adopt]]
-- Global skill registration: [[invocations/agent/register_skills|register skills]]
+- Global skill sync: [[invocations/agent/sync_skills|sync skills]]

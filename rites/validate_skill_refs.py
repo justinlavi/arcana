@@ -39,9 +39,9 @@ SKILL_REF_RE = re.compile(r"(?<![A-Za-z0-9_/-])/([a-z][a-z0-9]*)-([a-z][a-z0-9-]
 
 # Tokens that, when they immediately follow the matched slug, indicate a
 # wildcard/placeholder rather than a concrete skill reference. Examples:
-#   /arc-validate-*       (wildcard summary)
-#   /arc-validate-<name>         (placeholder for prose)
-#   /grm-validate-{slug}         (variable substitution)
+#   /arc-example-*       (wildcard summary)
+#   /arc-example-<name>  (placeholder for prose)
+#   /grm-example-{slug}  (variable substitution)
 PLACEHOLDER_SUFFIXES = ("-*", "-<", "-{")
 
 # Files that intentionally mention not-yet-existing or hypothetical skill
@@ -53,7 +53,6 @@ SKIP_FILES = {
 
 SKIP_DIRS = {
     "formulae",  # template placeholders
-    "skills/arcana/validate-skill-refs",  # the validator's own examples
     "sources",  # imported source artifacts
 }
 

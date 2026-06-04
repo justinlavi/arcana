@@ -23,7 +23,7 @@ capture record, not an authored wiki page. Derived wiki pages live under
 [The unmodified body of the source goes here, or a pointer to a sibling raw
 artifact if the source is binary or too large for inline text.
 
-For text sources (web articles, transcripts, paper text): paste the cleaned plain text below. The agent reads this directly during ingest.
+For text sources (web articles, transcripts, paper text): paste the cleaned plain text below. The agent reads this directly during import.
 
 For binary or large sources (PDFs, audio, video): keep the binary in
 `sources/<slug>/` and reference that path here and in frontmatter `sources:`.

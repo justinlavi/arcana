@@ -147,7 +147,7 @@ done
 sed -n '/^## Core Concepts/,/^---$/p' docs/reference.md > /tmp/terminology.txt
 
 # ✅ GOOD: AI analyzes using that data
-/grm-analyze-semantics
+/grm-audit-semantics
 # AI reads reference, understands context, suggests improvements intelligently
 ```
 
@@ -284,7 +284,7 @@ done
 # Just report raw facts about what terminology exists
 grep -rh -o '\b[A-Z][a-z]* [A-Z][a-z]*\b' . | sort -u > /tmp/found_terms.txt
 
-# AFTER: analyze_semantics.md (AI analyzes intelligently)
+# AFTER: audit_semantics.md (AI analyzes intelligently)
 # AI reads found_terms.txt AND reference.md
 # AI understands context and suggests appropriate changes
 ```
@@ -339,9 +339,9 @@ Pick by the same rule that applies to rites vs invocations themselves:
 
 | If the skill's job is | Pick this backing | Examples |
 |---|---|---|
-| Mechanical, deterministic, no judgment required | Rite-backed | `/arc-agent-register-skills`, `/arc-library-sync`, `/arc-workspace-clean`, every `/arc-validate-*` |
+| Mechanical, deterministic, no judgment required | Rite-backed | `/arc-agent-sync-skills`, `/arc-library-sync`, `/arc-workspace-clean`, `/arc-validate` selectors |
 | Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/grm-create`, `/grm-improve`, `/arc-improve`, `/arc-help` |
-| Both — the rite gathers data, the AI interprets | **Both, in that order**: skill body runs the rite first, then loads an invocation that reads the rite's output | `/arc-validate-semantics` could evolve into this if/when the analysis judgment grows beyond the rite's pattern check |
+| Both — the rite gathers data, the AI interprets | **Both, in that order**: skill body runs the rite first, then loads an invocation that reads the rite's output | `/arc-validate semantics` could evolve into this if/when the analysis judgment grows beyond the rite's pattern check |
 
 Two anti-patterns to avoid:
 

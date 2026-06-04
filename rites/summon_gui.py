@@ -43,7 +43,7 @@ from summon_core import (
     inject_agent_file,
     install_arcana,
     install_grimoire,
-    register_skills,
+    sync_skills,
     resolve_arcana_url,
     system_python,
     update_local_library,
@@ -340,7 +340,7 @@ def finalize_install_with_settings(installed_keys, library, log, settings):
     if settings.get("skip_skill_registration"):
         log.info("Skipping skill registration (per Settings)")
         return True
-    return register_skills(log)
+    return sync_skills(log)
 
 
 # ---------------------------------------------------------------------------
@@ -481,12 +481,12 @@ def _worker_remove_grimoire(key, log, cancel_event, proc_slot, **_kw):
     return {"ok": True, "manage_changed": True}
 
 
-def _worker_register_skills(log, cancel_event, proc_slot, **_kw):
+def _worker_sync_skills(log, cancel_event, proc_slot, **_kw):
     """Re-run skill registration for all grimoires."""
     settings = load_settings()
     if settings.get("skip_skill_registration"):
         log.warn("Skill registration is disabled in Settings  running anyway as explicit action")
-    ok = register_skills(log)
+    ok = sync_skills(log)
     return {"ok": ok}
 
 
@@ -1938,9 +1938,9 @@ def _build_manage_tab(dpg, state):
             u = dpg.add_button(label="Update all",
                                width=btn_w(dpg, "Update all", scale),
                                callback=lambda *_: _bulk_update(state))
-            rr = dpg.add_button(label="Re-register all skills",
-                                width=btn_w(dpg, "Re-register all skills", scale),
-                                callback=lambda *_: spawn_worker(state, "Register skills", _worker_register_skills, {}))
+            rr = dpg.add_button(label="Sync all skills",
+                                width=btn_w(dpg, "Sync all skills", scale),
+                                callback=lambda *_: spawn_worker(state, "Sync skills", _worker_sync_skills, {}))
             for b in (r, u, rr):
                 _bind_btn(state, b, "secondary")
         dpg.add_spacer(height=px(M.GAP_S, scale))
@@ -2072,9 +2072,9 @@ def populate_installed_list(state):
                                          width=btn_w(state.dpg, "Remove", state.scale),
                                          callback=lambda s, a, u, k=key, n=g.get("name", key): _confirm_remove(state, k, n))
                     _bind_btn(state, rem, "danger")
-                rrs = dpg.add_button(label="Re-register skills",
-                                     width=btn_w(state.dpg, "Re-register skills", state.scale),
-                                     callback=lambda s, a, u: spawn_worker(state, "Register skills", _worker_register_skills, {}))
+                rrs = dpg.add_button(label="Sync skills",
+                                     width=btn_w(state.dpg, "Sync skills", state.scale),
+                                     callback=lambda s, a, u: spawn_worker(state, "Sync skills", _worker_sync_skills, {}))
                 _bind_btn(state, rrs, "secondary")
             dpg.add_spacer(height=px(M.GAP_XS, state.scale))
             dpg.add_separator()

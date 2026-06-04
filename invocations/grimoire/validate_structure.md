@@ -39,7 +39,7 @@ Before executing, resolve `GRIMOIRE_ROOT` with the shared grimoire directory gua
 From the active grimoire context, cast:
 
 ```
-/grm-validate-structure
+/grm-validate structure
 ```
 
 Mechanical equivalent:
@@ -108,6 +108,6 @@ This prevents Ctrl-clicking unresolved full-path wikilinks from creating recursi
 ## Related Docs
 
 - `docs/operating_model.md`
-- `invocations/grimoire/validators/validate_all.md`
+- `invocations/grimoire/validators/validate.md`
 - `formulae/grimoire/`
 - `rites/validate_grimoire_structure.py`

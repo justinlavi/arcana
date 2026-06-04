@@ -17,7 +17,7 @@ and the actual filesystem of the Arcana repository.
 ## Invocation
 
 ```
-/arc-validate-doc-trees
+/arc-validate doc-trees
 ```
 
 ## Workflow
@@ -42,4 +42,4 @@ the same script with no `--grimoire` flag (defaults to the Arcana root).
 
 - Validators hub: [[invocations/arcana/validators/validators|validators]]
 - Improvement playbook: [[invocations/arcana/improve_arcana|improve arcana]]
-- Grimoire counterpart: [[invocations/grimoire/validators/validate_doc_trees|grm-validate-doc-trees]]
+- Grimoire counterpart: [[invocations/grimoire/validators/validate_doc_trees|validate doc trees]]

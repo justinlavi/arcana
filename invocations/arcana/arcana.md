@@ -17,7 +17,7 @@ For grimoire operations, route to [[invocations/grimoire/grimoire|grimoire]]. Fo
 
 - Arcana improvement -> [[invocations/arcana/improve_arcana|improve arcana]]
 
-Boundary enforcement lives in the grimoire layer: [[invocations/grimoire/validate_boundaries|validate boundaries]]. It can scan Arcana itself with the `--arcana` flag.
+Boundary enforcement lives in the grimoire layer: [[invocations/grimoire/audit_boundaries|audit boundaries]]. It can scan Arcana itself with the `--arcana` flag.
 
 ### Update
 

@@ -37,7 +37,7 @@ Run from the Arcana directory. Safe to rerun at any time.
 
 ### Phase 1: Run the validator suite
 
-Use the orchestrator rite - do **not** invoke each `/arc-validate-*` skill one at a time:
+Use the orchestrator rite through `/arc-validate` or directly through `rites/validate.py`:
 
 ```bash
 python3 rites/validate.py              # sequential
@@ -45,7 +45,7 @@ python3 rites/validate.py --parallel   # faster
 python3 rites/validate.py --summary    # summary-only output
 ```
 
-Equivalent skill: `/arc-validate-all`.
+Equivalent skill: `/arc-validate`.
 
 This runs every mechanical validator and aggregates results. Individual skills
 exist for targeted reruns; the orchestrator is the default entry point.
@@ -232,8 +232,8 @@ After:
 
 ## Related
 
-- All validators (orchestrated): `/arc-validate-all` - `python3 rites/validate.py`
-- Individual validators: see `invocations/arcana/validators/validators.md`
+- All validators: `/arc-validate` - `python3 rites/validate.py`
+- Individual validator selectors: see `invocations/arcana/validators/validators.md`
 - Architecture quality: [[invocations/arcana/quality/review_architecture|review architecture]]
 - Rite quality: [[invocations/arcana/quality/validate_rites|validate rites]]
 - Contract coherence: [[invocations/arcana/quality/audit_contract_coherence|audit contract coherence]]

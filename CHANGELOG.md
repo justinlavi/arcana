@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.3.0] - 2026-06-04
+
+MINOR. Existing grimoire content stays valid. This release changes Arcana's
+public command surface and requires skill re-registration so agents see the new
+commands.
+
+### Changed
+
+- **Validation is now one command per target.** The many individual validation
+  skills collapse into `/arc-validate [selector]` and
+  `/grm-validate [selector]`. Omitting the selector runs the full mechanical
+  suite; selectors such as `links`, `frontmatter`, `structure`, `smart`,
+  `auto`, `summary`, and `parallel` route through `rites/validate.py`.
+- **Audit is now the word for judgment work.** `/grm-analyze-semantics` is now
+  `/grm-audit-semantics`, and `/grm-validate-boundaries` is now
+  `/grm-audit-boundaries`. Mechanical validation remains script-backed and
+  exit-code based; audit workflows remain AI/judgment based.
+- **Validator selection moved into the rite.** `rites/validate.py` now accepts
+  positional selectors, comma-separated selectors, `--only`, and `--exclude`,
+  for both Arcana and grimoire profiles.
+- **Skill semantics were tightened across Arcana and Grimoire.** User-facing
+  skills now read left to right by scope and intent: `/grm-file-answer` became
+  `/grm-capture-answer`, `/grm-ingest` became `/grm-import`, `/grm-lint`
+  became `/grm-health-check`, `/grm-register-skills` became
+  `/grm-agent-sync-skills`, `/arc-agent-register-skills` became
+  `/arc-agent-sync-skills`, and `/arc-agent-update` became
+  `/arc-agent-sync-instructions`. `/grm-update` remains the primary
+  grimoire-user entry point for updating Arcana, following `UPDATE.md`, and
+  re-syncing skills.
+
 ## [1.2.0] - 2026-06-02
 
 MINOR. Existing grimoires stay valid and are brought current by the update process itself (skill re-registration plus the mechanical heal), so no hand migration is required — per the compatibility-based, self-healing-aware policy in `docs/governance.md`.

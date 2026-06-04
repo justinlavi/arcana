@@ -30,7 +30,7 @@ The installed slash-command layer may be stale. Treat the pulled Arcana source
 tree as the source of truth, not the agent's currently registered skill files.
 Run every command exactly as written and **report each rite's own machine output
 (`--format json`) — never a number you counted yourself.** "Skills
-re-registered" is asserted only by quoting `register_skills`' counts; "a grimoire
+re-registered" is asserted only by quoting `sync_skills`' counts; "a grimoire
 is current" only by its pull classification plus a clean validate.
 
 ### 0. Resolve Arcana
@@ -80,7 +80,7 @@ This is the deterministic core. In one pass it:
   wikilinks, re-validates).
 
 **Quote the envelope** in your report: the `grimoire_summary` counts, each
-grimoire's `status`, and the `register_skills` `registered`/`reset`/`cleaned`
+grimoire's `status`, and the `sync_skills` `registered`/`reset`/`cleaned`
 counts. If a grimoire appears under `needs_manual_pull`, it could **not** be
 brought current (a private host's auth, offline, a dirty or diverged tree). The
 update **did not touch it** — healing a stale tree would re-derive upstream work
@@ -98,7 +98,7 @@ per-grimoire classification before writing.
 The marked Grimoire block is the one step the rite leaves to judgment, because
 the BEGIN/END-vs-heading sentinels make injection non-deterministic. Read
 `rites/templates/grimoire_block.md`, `rites/data/agent_targets.json`, and
-`invocations/agent/update_agent_block.md`, then replace only the marked block in
+`invocations/agent/sync_instructions.md`, then replace only the marked block in
 each automatic instruction target:
 
 ```text
@@ -108,7 +108,7 @@ each automatic instruction target:
 ```
 
 Preserve all non-Grimoire content exactly. If block boundaries are ambiguous,
-stop and ask the user. (`/arc-agent-update` does this once skills are
+stop and ask the user. (`/arc-agent-sync-instructions` does this once skills are
 registered.)
 
 ### 5. Final gate
@@ -150,6 +150,6 @@ current.
 - [Installation](docs/installation.md)
 - [Agent configuration](docs/agent_configuration.md)
 - [Summoning contract](docs/summoning_contract.md)
-- [Register agent skills](invocations/agent/register_skills.md)
+- [Register agent skills](invocations/agent/sync_skills.md)
 - [Reconcile skill orphans](invocations/meta/skill_orphan_reconcile.md)
 - [Update from a grimoire](invocations/grimoire/update.md)

@@ -153,7 +153,7 @@ python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROO
 python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT
 ```
 
-Or invoke `/grm-validate-all` for the full mechanical pass.
+Or invoke `/grm-validate` for the full mechanical pass.
 
 ---
 
@@ -164,4 +164,4 @@ Or invoke `/grm-validate-all` for the full mechanical pass.
 - **Page stamping rite**: `~/grimoires/arcana/rites/new_page.py`
 - **Page schema**: `~/grimoires/arcana/docs/page_schema.md`
 - **Grimoire creation**: [[invocations/grimoire/create_grimoire|create grimoire]]
-- **Structure validator**: `/grm-validate-structure`
+- **Structure validator**: `/grm-validate structure`

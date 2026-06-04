@@ -95,10 +95,10 @@ bootstrap.
 |---|---|---|
 | `--check` (alias `--plan`) | Read-only: report Arcana, library, agent-block, and skill drift. | `0` in sync, `1` drift |
 | `--reconcile` | Propose the offline repair (no writes). | `0` in sync, `1` drift |
-| `--reconcile --apply` | Reconcile the library additively and re-register skills. | `0` converged, `1` error/blocked/residual |
+| `--reconcile --apply` | Reconcile the library additively and sync skills. | `0` converged, `1` error/blocked/residual |
 | `--reconcile --apply --prune` | Also remove stale library entries (deletes them). | as above |
 | `--update` | Fetch every library grimoire (branch-aware) and report currency; no writes. | `0` all current, `1` any behind/diverged/dirty/unreachable |
-| `--update --apply` | Reconcile the library, fast-forward every clean grimoire that is behind, re-register skills (reset), and heal only the grimoires confirmed current. Grimoires it could not bring current (private-host auth, offline, dirty, diverged) are reported for manual pull and never modified. | `0` converged, `1` error/residual/needs-manual-pull |
+| `--update --apply` | Reconcile the library, fast-forward every clean grimoire that is behind, sync skills (reset), and heal only the grimoires confirmed current. Grimoires it could not bring current (private-host auth, offline, dirty, diverged) are reported for manual pull and never modified. | `0` converged, `1` error/residual/needs-manual-pull |
 
 Add `--format json` (or `jsonl`) for the shared
 [`ResultReporter`](../rites/diagnostics.py) envelope; `--home` and
@@ -123,7 +123,7 @@ Boundaries the surface keeps:
   each removal is recorded as a mutation.
 - **Agent blocks are reported, not rewritten** — the heading and BEGIN/END
   sentinels are both treated as "present," and a missing block points at
-  `/arc-agent-update` rather than risking a double-injection.
+  `/arc-agent-sync-instructions` rather than risking a double-injection.
 - **Network pull is out of scope** — updating Arcana itself stays the human step
   from [Update](../UPDATE.md).
 

@@ -4,7 +4,7 @@ Locks the invariant that a new docs/ page is added to both the arcana.md routing
 hub and the README documentation table, instead of silently drifting out of one.
 
 The check itself lives in `validate_structure.doc_index_violations` so the
-runtime validator (`/arc-validate-structure`, `/arc-validate-all`) and these
+runtime validator (`/arc-validate structure`, `/arc-validate`) and these
 tests share one implementation; these tests assert it stays clean on the live
 Arcana tree.
 """

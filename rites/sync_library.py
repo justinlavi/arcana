@@ -489,8 +489,8 @@ def main():
             if human:
                 ok(f"Library written: {library_path}")
                 print()
-                print("  Re-register skills to pick up any new grimoires:")
-                print("    /arc-agent-register-skills")
+                print("  Sync skills to pick up any new grimoires:")
+                print("    /arc-agent-sync-skills")
                 print()
         elif not conflict and human:
             ok("Library already reconciled by a concurrent process; nothing to write.")

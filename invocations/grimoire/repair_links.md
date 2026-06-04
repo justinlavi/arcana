@@ -13,7 +13,7 @@ last_verified: 2026-05-19
 
 Promote filename-only wikilinks (`[[foo]]`, `[[parent_sibling|sibling]]`) to canonical full-path form (`[[chapters/path/to/foo|foo]]`). Arcana wikilinks must resolve as repository-root relative paths; this rite mechanizes the bulk rewrite.
 
-Use this after a structural migration, after `/grm-ingest` finds drift, or any time `/grm-lint` reports a wave of broken wikilinks of the form "must resolve as a repository path".
+Use this after a structural migration, after `/grm-import` finds drift, or any time `/grm-health-check` reports a wave of broken wikilinks of the form "must resolve as a repository path".
 
 ## Invocation
 
@@ -120,4 +120,4 @@ If none of these yield a unique target, the link is reported and skipped - never
 
 - Validator that detects the broken links: `ARCANA_HOME/rites/validate_links.py`
 - Wikilink rules: `ARCANA_HOME/docs/obsidian.md` (Full-path wikilinks section)
-- Health-check umbrella: `/grm-lint`
+- Health-check umbrella: `/grm-health-check`

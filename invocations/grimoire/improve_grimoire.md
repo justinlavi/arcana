@@ -45,21 +45,21 @@ Before editing the grimoire:
 
 - Confirm the user has pulled the latest Arcana they intend to use. Do not run network commands unless the user asks.
 - If the user wants the standard update path, run `/grm-update` first; it brings Arcana and every grimoire in the library to a current, validated, synchronized state.
-- If the user already updated Arcana manually, confirm Arcana skills have been registered after the update (`/grm-register-skills` or `/arc-agent-register-skills`) before relying on newly added skills.
+- If the user already updated Arcana manually, confirm Arcana skills have been registered after the update (`/grm-agent-sync-skills` or `/arc-agent-sync-skills`) before relying on newly added skills.
 - If the user asks to upgrade all grimoires, list registered grimoires from `~/grimoires/library.json`, recommend doing one grimoire at a time, and start with the active grimoire unless the user chooses another.
 - Confirm the active grimoire root is not Arcana.
 
 ### Phase 1: Mechanical validation and scaffold drift
 
-Invoke `/grm-validate-all` and collect the deterministic validator report. It
+Invoke `/grm-validate` and collect the deterministic validator report. It
 covers structure, encoding, portability, format, frontmatter, links, orphans,
-provenance, and documented file-tree drift (`/grm-validate-doc-trees`, which
+provenance, and documented file-tree drift (`/grm-validate doc-trees`, which
 catches stale ASCII directory diagrams in READMEs / hubs / how-tos when
 chapters or skills are renamed, added, or removed).
 
 Stop and report if any validator returns hard errors that would invalidate later phases (e.g. missing root hub).
 
-If `/grm-validate-structure` reports missing or stale managed scaffold files,
+If `/grm-validate structure` reports missing or stale managed scaffold files,
 load `ARCANA_HOME/formulae/grimoire/scaffold_contract.json`. For every
 `files[]` entry with `managed: true`, copy `source` from
 `ARCANA_HOME/formulae/grimoire/` to the grimoire `target` before continuing.
@@ -75,7 +75,7 @@ Do not mechanically replace grimoire-authored files such as the root README, roo
 
 ### Phase 3: Semantic analysis
 
-Run `/grm-analyze-semantics` and incorporate its output:
+Run `/grm-audit-semantics` and incorporate its output:
 
 - Naming clarity scores per chapter
 - Terminology drift (`config` vs `configuration`, etc.)
@@ -86,7 +86,7 @@ Run `/grm-analyze-semantics` and incorporate its output:
 
 Apply the following heuristics to the inventory and semantic output. Each is human-judgment work - explain the reason for every change in the final report.
 
-Also run `/grm-validate-boundaries` as a judgment-based boundary pass. It uses
+Also run `/grm-audit-boundaries` as a judgment-based boundary pass. It uses
 deterministic search aids, but final classification depends on the grimoire's
 subject and context.
 
@@ -114,12 +114,12 @@ subject and context.
 **Arcana upgrade review**
 - Compare current grimoire practices against `ARCANA_HOME/docs/operating_model.md`, `ARCANA_HOME/docs/page_schema.md`, and `ARCANA_HOME/rites/templates/grimoire_block.md`.
 - Update stale command names, manifest field names, and operational vocabulary to current Arcana.
-- Sweep for legacy placeholder tokens and rename them to current Arcana equivalents. `/grm-validate-links` flags these mechanically as `LINK_DEPRECATED_PLACEHOLDER`; the deprecated-token map lives in `ARCANA_HOME/rites/validate_links.py` (`DEPRECATED_TOKENS`). When a future Arcana rename happens, add the legacy/current pair to that map so `/grm-improve` catches lingering references automatically. `log.md` and `CHANGELOG.md` are skipped so historical entries can keep their original wording.
+- Sweep for legacy placeholder tokens and rename them to current Arcana equivalents. `/grm-validate links` flags these mechanically as `LINK_DEPRECATED_PLACEHOLDER`; the deprecated-token map lives in `ARCANA_HOME/rites/validate_links.py` (`DEPRECATED_TOKENS`). When a future Arcana rename happens, add the legacy/current pair to that map so `/grm-improve` catches lingering references automatically. `log.md` and `CHANGELOG.md` are skipped so historical entries can keep their original wording.
 - Preserve historical log entries unless the entry is actively misleading for current operations; add a new log entry for the scaffold update.
 
 ### Optional: parallelize the judgment passes
 
-The analysis phases above (Phase 2 inventory, Phase 3 semantic, Phase 4 judgment passes) are independent read-only scans. If, and only if, this agent can spawn subagents, you MAY run them as parallel read-only lanes for depth; otherwise run the phases exactly as written above, in order. Either way the orchestrator owns Phase 5 apply and Phase 6 re-validate, and `/grm-validate-boundaries` classification stays a judgment call in the main context. Lane mechanics, the per-lane output contract, and the serial fallback live in [[invocations/meta/subagent_lanes|subagent lanes]]. The lanes for this workflow:
+The analysis phases above (Phase 2 inventory, Phase 3 semantic, Phase 4 judgment passes) are independent read-only scans. If, and only if, this agent can spawn subagents, you MAY run them as parallel read-only lanes for depth; otherwise run the phases exactly as written above, in order. Either way the orchestrator owns Phase 5 apply and Phase 6 re-validate, and `/grm-audit-boundaries` classification stays a judgment call in the main context. Lane mechanics, the per-lane output contract, and the serial fallback live in [[invocations/meta/subagent_lanes|subagent lanes]]. The lanes for this workflow:
 
 | Lane | Covers | Primary question |
 |---|---|---|
@@ -143,7 +143,7 @@ Defer anything that touches >10 files or rewrites stable chapter names - surface
 
 ### Phase 6: Re-validate
 
-Re-run the Phase 1 validators. All must pass. Re-run `/grm-analyze-semantics` if Phase 5 made significant renames; confirm scores improved.
+Re-run the Phase 1 validators. All must pass. Re-run `/grm-audit-semantics` if Phase 5 made significant renames; confirm scores improved.
 
 ## Non-negotiable rules
 
@@ -191,9 +191,9 @@ Surface in chat (do not write report files):
 
 ## Related
 
-- Mechanical: `/grm-validate-all`
-- Judgment boundary pass: `/grm-validate-boundaries`
-- Semantic: `/grm-analyze-semantics`
+- Mechanical: `/grm-validate`
+- Judgment boundary pass: `/grm-audit-boundaries`
+- Semantic: `/grm-audit-semantics`
 - Authoring: `/grm-create-chapter`
 - Optional parallel analysis: [[invocations/meta/subagent_lanes|subagent lanes]]
 - Arcana counterpart (maintainer only): `/arc-improve`

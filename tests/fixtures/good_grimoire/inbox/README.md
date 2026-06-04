@@ -16,7 +16,7 @@ This directory is the place to drop **mixed content that needs to be sorted**: z
 
 ## How content leaves here
 
-Run `/grm-ingest` (no argument sweeps `inbox/`). The skill walks the folder and, for each file, proposes a classification - confirmed in chat - then moves the file:
+Run `/grm-import` (no argument sweeps `inbox/`). The skill walks the folder and, for each file, proposes a classification - confirmed in chat - then moves the file:
 
 | Classification | Destination | Notes |
 |---|---|---|
@@ -24,7 +24,7 @@ Run `/grm-ingest` (no argument sweeps `inbox/`). The skill walks the folder and,
 | **Wiki content / draft** | `chapters/<chapter>/<page>.md` with proper frontmatter | Promoted; original removed (its value is now in the wiki). Authority defaults to `grimoire` unless the draft synthesized a `sources/` source. |
 | **Junk / superseded / unclear** | Stays in `inbox/`, flagged in chat | User decides whether to delete or revisit. |
 
-After absorption the `ingest` skill appends a single log entry to `log.md` summarizing what was filed where.
+After absorption the `import` skill appends a single log entry to `log.md` summarizing what was filed where.
 
 ## What does NOT belong here
 

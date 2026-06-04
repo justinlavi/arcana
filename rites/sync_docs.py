@@ -134,11 +134,13 @@ def group_skills(skills):
     for skill in skills:
         name = skill["name"]
         without_ns = re.sub(r"^[a-z]+-", "", name, count=1)
-        if name.startswith("grm-validate-"):
+        if name == "grm-validate" or name.startswith("grm-validate-"):
             group = "grimoire_validate"
+        elif name.startswith("grm-audit-"):
+            group = "grimoire_audit"
         elif name.startswith("grm-"):
             group = "grimoire"
-        elif without_ns.startswith("validate-"):
+        elif without_ns == "validate" or without_ns.startswith("validate-"):
             group = "arcana_validate"
         elif without_ns == "improve":
             group = "arcana"
@@ -160,10 +162,11 @@ def group_skills(skills):
         "arcana_validate": 1,
         "grimoire": 2,
         "grimoire_validate": 3,
-        "library": 4,
-        "agent": 5,
-        "workspace": 6,
-        "help": 7,
+        "grimoire_audit": 4,
+        "library": 5,
+        "agent": 6,
+        "workspace": 7,
+        "help": 8,
     }
     return sorted(groups.items(), key=lambda kv: (priority.get(kv[0], 99), kv[0]))
 
@@ -174,6 +177,7 @@ GROUP_HEADERS = {
     "library": "Library management",
     "grimoire": "Grimoire operations",
     "grimoire_validate": "Grimoire validation",
+    "grimoire_audit": "Grimoire audits",
     "help": "Help",
     "agent": "Agent configuration",
     "workspace": "Workspace maintenance",

@@ -16,7 +16,7 @@ Detect filesystem-portability violations in Arcana paths — specifically the ch
 ## Invocation
 
 ```
-/arc-validate-portability
+/arc-validate portability
 ```
 
 Or directly:
@@ -25,7 +25,7 @@ Or directly:
 python3 ARCANA_HOME/rites/validate_portability.py
 ```
 
-For an active grimoire, use `/grm-validate-portability`.
+For an active grimoire, use `/grm-validate portability`.
 
 ## What it rejects
 
@@ -51,7 +51,7 @@ The cheap fix is to catch the bad path before it ever lands in the repository.
 
 ## When to run
 
-- As part of the full validator suite (`/arc-validate-all`).
+- As part of the full validator suite (`/arc-validate`).
 - Before pushing Arcana changes that introduce placeholder-driven template files.
 - After bulk renames or template scaffolding.
 

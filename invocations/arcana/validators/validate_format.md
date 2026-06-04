@@ -16,7 +16,7 @@ Validate Markdown, invocation, formula, and hub format compliance. The rite chec
 ## Invocation
 
 ```
-/arc-validate-format
+/arc-validate format
 ```
 
 ## When to Cast
@@ -36,7 +36,7 @@ Execute the validation rite:
 python3 rites/validate_format.py
 ```
 
-For an active grimoire, use `/grm-validate-format`.
+For an active grimoire, use `/grm-validate format`.
 
 ### Step 2: Review Invocation Format
 

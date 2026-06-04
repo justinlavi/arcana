@@ -166,7 +166,7 @@ If you can't run the summoning rite (no network, restricted environment, etc.):
 1. Clone Arcana to `~/grimoires/arcana/`.
 2. Clone each grimoire to `~/grimoires/<grimoire-name>/`.
 3. Create `~/grimoires/library.json` with one entry per grimoire (see [reference](reference.md#local-library)).
-4. Add the Grimoire instruction block to the instruction targets listed in [agent targets](agent_targets.md) — the canonical block lives at [grimoire block](../rites/templates/grimoire_block.md). To refresh automatic targets after Arcana changes, use `/arc-agent-update`.
+4. Add the Grimoire instruction block to the instruction targets listed in [agent targets](agent_targets.md) — the canonical block lives at [grimoire block](../rites/templates/grimoire_block.md). To refresh automatic targets after Arcana changes, use `/arc-agent-sync-instructions`.
 5. Run `python3 ~/grimoires/arcana/rites/register_skills.py` to install skills into registered agent skill directories.
 
 If an existing installation is far behind and its registered slash commands no
@@ -238,11 +238,11 @@ The agent should follow hubs depth-first (root hub -> chapter hub -> ... -> leaf
 - On Arch-based systems, install Mesa and XWayland if needed: `sudo pacman -S --needed mesa xorg-xwayland`
 
 **Skills not appearing after install**
-- Run `/arc-agent-register-skills` to re-register all skills
+- Run `/arc-agent-sync-skills` to re-register all skills
 - Open a new agent session (Claude Code / Codex caches skill listings)
 
 **Skill names appear as `{{SKILL_PREFIX}}-...`**
 - The grimoire is missing its `grimoire.json` manifest. Add one per [reference](reference.md#grimoire-manifest), then re-register.
 
 **Agent guesses instead of reading files**
-- The Grimoire instruction block is missing from the relevant target in [agent targets](agent_targets.md), or it is stale. See [agent configuration](agent_configuration.md#agent-instruction-files), then run `/arc-agent-update`.
+- The Grimoire instruction block is missing from the relevant target in [agent targets](agent_targets.md), or it is stale. See [agent configuration](agent_configuration.md#agent-instruction-files), then run `/arc-agent-sync-instructions`.

@@ -73,7 +73,7 @@ def resolve_user_path(path_text: str | None) -> Path | None:
 
 
 def skill_registration_targets(root: Path) -> dict[str, dict[str, Any]]:
-    """Return register_skills target configs keyed by agent id."""
+    """Return sync_skills target configs keyed by agent id."""
     contract = load_agent_targets(root)
     targets: dict[str, dict[str, Any]] = {}
     for entry in target_entries(contract):

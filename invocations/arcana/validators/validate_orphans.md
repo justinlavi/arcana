@@ -16,7 +16,7 @@ Detect pages no other page reaches through valid layer-specific links. Orphans a
 ## Invocation
 
 ```
-/arc-validate-orphans
+/arc-validate orphans
 ```
 
 Or directly:
@@ -25,7 +25,7 @@ Or directly:
 python3 ARCANA_HOME/rites/validate_orphans.py
 ```
 
-For an active grimoire, use `/grm-validate-orphans`.
+For an active grimoire, use `/grm-validate orphans`.
 
 ## Exempt
 
