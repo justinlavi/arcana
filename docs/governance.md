@@ -195,18 +195,18 @@ Arcana is built to be **self-healing**: a grimoire is brought current not by han
 
 **PATCH** (`v1.0.0 → v1.0.1`) — no behavior change; neither existing nor future grimoires change in substance.
 - Typo and wording fixes, broken-link repairs, small documentation clarifications.
-- Validator or rite **bug** fixes that correct an implementation without changing intended behavior — but only if the fix does not flip the pass/fail verdict of any existing grimoire. A crash-fix that makes a previously-unevaluated grimoire newly fail is a break; treat it as MAJOR.
+- Validator or rite **bug** fixes that correct an implementation without changing intended behavior — but only if the fix does not flip the pass/fail verdict of any existing grimoire. A crash-fix that makes a grimoire the validator never actually evaluated start failing is a break; treat it as MAJOR.
 
 **MINOR** (`v1.0.0 → v1.1.0`) — existing grimoires stay valid; future grimoires improve or change.
 - A new formula, a new optional skill, a new validator (or a stricter check that every grimoire already on disk still passes — if a stricter check makes existing grimoires fail, that is MAJOR).
 - Improved standards, better AI guidance, a sharpened convention that newly-generated grimoires follow.
-- *Worked example:* Arcana previously shipped a generic, append-only "activity log" concept. It was refined into a **content change log** so future grimoires record meaningful content changes instead of becoming a dumping ground for VCS or development activity. This changes future AI behavior and the shape of future generated grimoires, so it is more than a PATCH — but because existing grimoires remain valid and need no migration, it is a **MINOR**, not a MAJOR.
+- *Worked example:* refining a grimoire's free-form activity log into a structured **content change log** — so future grimoires record meaningful content changes instead of VCS or development noise — changes future AI behavior and the shape of future generated grimoires, so it is more than a PATCH; but because existing grimoires remain valid and need no migration, it is a **MINOR**, not a MAJOR.
 
 **MAJOR** (`v1.0.0 → v2.0.0`) — a compatibility break: existing grimoires become invalid or must be migrated **by hand** because self-healing cannot bring them current (see [Self-healing and the compatibility line](#self-healing-and-the-compatibility-line)).
 - Removing a concept, renaming a required file, or changing a schema (page frontmatter, the manifest, a contract) such that prior grimoires no longer validate **and no rite can mechanically migrate them**.
 - Any change that forces downstream grimoires into a **manual, judgment-bearing** migration or hand-edit that self-healing cannot perform.
 - A new or stricter validator/check that makes any existing grimoire **fail validation** — even when no file, schema, or concept changed (the break is in the validation outcome). To tighten validation *without* a hard break, ship the check **warn-only in a MINOR first, then enforce it in the next MAJOR** — the deprecation cycle applied to validation.
-- Removing a previously-deprecated capability (deprecations land in a MINOR first — see [Deprecation Policy](#deprecation-policy)).
+- Removing a deprecated capability (deprecations land in a MINOR first — see [Deprecation Policy](#deprecation-policy)).
 
 ### Before you change the version (humans and AI agents)
 

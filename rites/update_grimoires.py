@@ -199,9 +199,7 @@ def _replace_readme_block(text: str, block: str) -> str:
     """Return README text with the update block present exactly once.
 
     Replaces the marked block in place when present; otherwise inserts it before
-    the first second-level heading (or appends). Idempotent. The injector knows
-    only the current update markers - new grimoires are born with the block from
-    the formula, so there is no legacy form to convert.
+    the first second-level heading (or appends). Idempotent.
     """
     s = text.find(UPDATE_BEGIN)
     e = text.find(UPDATE_END)

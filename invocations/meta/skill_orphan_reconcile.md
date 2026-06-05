@@ -35,11 +35,11 @@ After the registration rite reports one or more `Preserve unowned` entries or
 (`arc-`, `grm-`, or a grimoire's `skill_prefix`). If the rite reported none, skip
 this step.
 
-> Note: the rite recognizes legacy generated provenance (including the older
-> em-dash `GENERATED — source:` form), so legacy and renamed orphans are usually
-> cleaned mechanically. This step covers the remainder the rite still cannot
-> prove - e.g. provenance pointing outside a current `skills/` root, or a marker
-> that was hand-edited.
+> Note: the rite recognizes generated provenance in any separator form (hyphen,
+> en-dash, or em-dash `GENERATED — source:`), so provably-generated and renamed
+> orphans are usually cleaned mechanically. This step covers the remainder the
+> rite still cannot prove - e.g. provenance pointing outside a current `skills/`
+> root, or a marker that was hand-edited.
 
 ## Procedure
 

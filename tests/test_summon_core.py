@@ -312,7 +312,7 @@ def test_inject_agent_file_skips_marker_only_block(tmp_path):
 
 
 def test_inject_agent_file_skips_legacy_heading_only_block(tmp_path):
-    # A legacy block with the heading but no markers is still detected.
+    # A block with the heading but no markers is still detected.
     target = tmp_path / "AGENTS.md"
     target.write_text(
         "# AGENTS\n\n## Grimoire Knowledge Base\n\nlegacy block\n",
