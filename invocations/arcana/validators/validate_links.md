@@ -16,7 +16,7 @@ Detect broken internal references in Arcana documentation and enforce layer-awar
 ## Invocation
 
 ```
-/arc-validate-links
+/arc-validate links
 ```
 
 ## When to Cast

@@ -22,7 +22,7 @@ public commands missing from `rites/data/command_surface.json`.
 ## Invocation
 
 ```
-/arc-validate-skill-refs
+/arc-validate skill-refs
 ```
 
 Mechanical equivalent:
@@ -37,8 +37,8 @@ On Windows, use `python` instead of `python3`.
 
 1. Run after renaming, deleting, or adding any `/arc-*` or `/grm-*` skill.
 2. Run after editing docs that mention concrete Arcana-shipped slash commands.
-3. Ignore wildcard and placeholder prose such as `/arc-validate-*`,
-   `/grm-validate-*`, and `/arc-validate-<name>`; the rite skips these.
+3. Ignore wildcard and placeholder prose such as `/arc-example-*`,
+   `/grm-example-*`, and `/arc-example-<name>`; the rite skips these.
 4. For each dangling reference, choose one fix:
    - Update the doc reference to an existing skill.
    - Create the missing `skills/<family>/<slug>/SKILL.md`.

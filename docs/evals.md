@@ -95,8 +95,8 @@ model run is in [`tests/test_eval_live.py`](../tests/test_eval_live.py).
 ## Scope
 
 The first cut ships the harness, the opt-in runner, the deterministic
-scaffolding, and starter scenarios for `/grm-ingest` (layer classification),
-`/grm-lint` (seeded contradiction), and `/grm-file-answer` (placement +
+scaffolding, and starter scenarios for `/grm-import` (layer classification),
+`/grm-health-check` (seeded contradiction), and `/grm-capture-answer` (placement +
 faithfulness). An always-on GitHub Actions job that runs the model evals is
 deferred: it needs a reliable model gateway and a secret, and a flaky required
 check would erode the "leave the tree green" discipline. When that exists, it is

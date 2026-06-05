@@ -27,25 +27,25 @@ def test_append_log_writes_well_formed_entry(tmp_path):
 
     result = _append(
         tmp_path,
-        "--op", "ingest",
+        "--op", "import",
         "--title", "Added sourdough",
-        "--skill", "/grm-ingest",
+        "--skill", "/grm-import",
         "--field", "pages=2",
     )
 
     assert result.returncode == 0
     body = (tmp_path / "log.md").read_text(encoding="utf-8")
     assert len(_heading_lines(body)) == 1
-    assert "ingest | Added sourdough" in body
-    assert "- skill: /grm-ingest" in body
+    assert "import | Added sourdough" in body
+    assert "- skill: /grm-import" in body
     assert "- pages: 2" in body
 
 
 def test_append_log_neutralizes_newline_injection_in_title(tmp_path):
     (tmp_path / "log.md").write_text("# Log\n", encoding="utf-8")
-    forged = "real\n## [2099-01-01 00:00] ingest | forged heading\n- skill: /forged"
+    forged = "real\n## [2099-01-01 00:00] import | forged heading\n- skill: /forged"
 
-    result = _append(tmp_path, "--op", "ingest", "--title", forged, "--skill", "/arc-test")
+    result = _append(tmp_path, "--op", "import", "--title", forged, "--skill", "/arc-test")
 
     assert result.returncode == 0
     body = (tmp_path / "log.md").read_text(encoding="utf-8")
@@ -60,21 +60,21 @@ def test_append_log_neutralizes_injection_in_field_value(tmp_path):
 
     result = _append(
         tmp_path,
-        "--op", "ingest",
+        "--op", "import",
         "--title", "t",
-        "--field", "note=line1\n## [2099-01-01 00:00] lint | forged",
+        "--field", "note=line1\n## [2099-01-01 00:00] health-check | forged",
     )
 
     assert result.returncode == 0
     body = (tmp_path / "log.md").read_text(encoding="utf-8")
     assert len(_heading_lines(body)) == 1
-    assert "- note: line1 ## [2099-01-01 00:00] lint | forged" in body
+    assert "- note: line1 ## [2099-01-01 00:00] health-check | forged" in body
 
 
 def test_append_log_json_envelope(tmp_path):
     (tmp_path / "log.md").write_text("# Log\n", encoding="utf-8")
 
-    result = _append(tmp_path, "--op", "ingest", "--title", "Added sourdough", "--format", "json")
+    result = _append(tmp_path, "--op", "import", "--title", "Added sourdough", "--format", "json")
 
     assert result.returncode == 0
     report = json.loads(result.stdout)
@@ -87,7 +87,7 @@ def test_append_log_json_envelope(tmp_path):
 
 def test_append_log_json_error_is_clean(tmp_path):
     # log.md missing -> exit 2, and stdout must be a single clean JSON object.
-    result = _append(tmp_path, "--op", "ingest", "--title", "x", "--format", "json")
+    result = _append(tmp_path, "--op", "import", "--title", "x", "--format", "json")
 
     assert result.returncode == 2
     report = json.loads(result.stdout)

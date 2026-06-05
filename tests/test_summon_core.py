@@ -91,7 +91,7 @@ def test_finalize_install_preserves_core_post_install_order(monkeypatch):
     )
     monkeypatch.setattr(
         summon_core,
-        "register_skills",
+        "sync_skills",
         lambda log: calls.append(("skills",)) or True,
     )
 
@@ -120,7 +120,7 @@ def test_gui_default_post_install_matches_core_shape(monkeypatch):
     )
     monkeypatch.setattr(
         summon_gui,
-        "register_skills",
+        "sync_skills",
         lambda log: calls.append(("skills",)) or True,
     )
 
@@ -140,7 +140,7 @@ def test_gui_settings_can_skip_skill_registration(monkeypatch):
 
     monkeypatch.setattr(summon_gui, "update_local_library", lambda *_args: calls.append("library"))
     monkeypatch.setattr(summon_gui, "inject_agent_file", lambda *_args: calls.append("agent"))
-    monkeypatch.setattr(summon_gui, "register_skills", lambda *_args: calls.append("skills") or True)
+    monkeypatch.setattr(summon_gui, "sync_skills", lambda *_args: calls.append("skills") or True)
 
     result = summon_gui.finalize_install_with_settings(
         [],
@@ -312,7 +312,7 @@ def test_inject_agent_file_skips_marker_only_block(tmp_path):
 
 
 def test_inject_agent_file_skips_legacy_heading_only_block(tmp_path):
-    # A legacy block with the heading but no markers is still detected.
+    # A block with the heading but no markers is still detected.
     target = tmp_path / "AGENTS.md"
     target.write_text(
         "# AGENTS\n\n## Grimoire Knowledge Base\n\nlegacy block\n",

@@ -76,7 +76,7 @@
         "summon_gui.finalize_install_with_settings",
         "summon_gui._worker_install_arcana",
         "summon_gui._worker_install_full",
-        "summon_gui._worker_register_skills"
+        "summon_gui._worker_sync_skills"
       ],
       "required_behaviors": [
         "Use summon_core discovery, install, library, agent, and skill primitives.",
@@ -123,24 +123,28 @@
       "id": "agent_reconcile",
       "label": "Agent-legible state surface",
       "surface": "rites/summon_state.py",
-      "entrypoint": "python rites/summon.py --check | --reconcile [--apply] [--prune] [--format json]",
+      "entrypoint": "python rites/summon.py --check | --reconcile [--apply] [--prune] | --update [--apply] [--format json]",
       "owner": "agent_legibility",
       "code_symbols": [
         "summon_state.inspect_install",
         "summon_state.reconcile",
         "summon_state.run_state_command",
         "summon_state.record_install_transcript",
-        "summon_state.write_transcript"
+        "summon_state.write_transcript",
+        "update_grimoires.process_all",
+        "update_grimoires.classify_grimoire",
+        "update_grimoires.bring_current"
       ],
       "required_behaviors": [
         "Report installation and registry drift read-only via --check, exiting 1 when drift is found.",
         "Emit the shared ResultReporter envelope under --format json or jsonl.",
         "Write a durable transcript to ~/.cache/grimoire/summon-last.json for install, check, and reconcile operations.",
         "Reconcile the local library additively under --reconcile --apply, preserving stale entries unless --prune is given.",
-        "Re-register skills under --reconcile --apply via register_skills.py.",
+        "Sync skills under --reconcile/--update --apply via sync_skills.py --reset-managed.",
         "Refuse to reconcile when the Arcana base fails validate.py.",
         "Detect agent instruction blocks via both the heading and BEGIN/END sentinels, and report rather than rewrite them.",
-        "Exclude network pull of Arcana itself as a human-gated update step."
+        "Exclude network pull of Arcana itself as a human-gated update step.",
+        "Under --update, pull every library grimoire branch-aware (fetch, then fast-forward only a clean branch that is behind), heal only the grimoires confirmed current, collect unreachable/dirty/diverged grimoires into needs_manual_pull, and never abort the run on a per-grimoire auth or offline failure."
       ]
     }
   ],
@@ -182,9 +186,9 @@
       "required_for": ["python_cli", "python_gui"]
     },
     {
-      "id": "register_skills",
+      "id": "sync_skills",
       "label": "Register Arcana and grimoire skills",
-      "owner": "summon_core.register_skills",
+      "owner": "summon_core.sync_skills",
       "required_for": ["python_cli", "python_gui"]
     }
   ],

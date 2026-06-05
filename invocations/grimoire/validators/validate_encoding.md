@@ -16,7 +16,7 @@ Validate that the active grimoire uses UTF-8 without BOM, LF line endings, and n
 ## Invocation
 
 ```
-/grm-validate-encoding
+/grm-validate encoding
 ```
 
 ## Workflow

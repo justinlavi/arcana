@@ -82,7 +82,7 @@ Today that is five rites: `append_log`, `repair_links`, `sync_library`,
 accepts `--format`, but it emits `DiagnosticReporter` (a findings envelope), not
 the mutation envelope - so `--format` alone does **not** make a rite probeable
 for `writes` / `idempotency` / `mode`. Treat everything else, including
-`register_skills` (`plan_apply` but not enveloped), as **code-read only**, and
+`sync_skills` (`plan_apply` but not enveloped), as **code-read only**, and
 never claim a behavioral proof for a reading.
 
 ## Workflow
@@ -119,7 +119,7 @@ may run probes on their **own** disposable temp target but edit no Arcana file:
 | cs-judgment | `command_surface` commands with judgment/hybrid owners | Do `mutation_behavior` + `log_behavior` match the owning invocation? |
 | cs-rite-join | `command_surface` rite-owned commands | Does the declared `mutation_profile` match the observed envelope `mode`? (the static `mutation_profile` <-> `profile` agreement is already owned by `validate_skill_refs.py`; do not re-do it) |
 | rp-envelope | the enveloped set from step 1 | Probe lane: `writes`, `idempotency`, plan/apply/default mode via `--format json`. |
-| rp-codeonly | the profiled rites NOT in the step-1 probe set (subtract the `ResultReporter` set from `rite_profiles.json` profiles, e.g. `register_skills`, `sync_docs`, `summon*`, `build_summon_binary`, `validate`) | Do `writes` / `idempotency` / commands match the code? (code-read) |
+| rp-codeonly | the profiled rites NOT in the step-1 probe set (subtract the `ResultReporter` set from `rite_profiles.json` profiles, e.g. `sync_skills`, `sync_docs`, `summon*`, `build_summon_binary`, `validate`) | Do `writes` / `idempotency` / commands match the code? (code-read) |
 | vp-crosscut | `validation_profile` across both contracts | Do named validators exist, accept named flags, and fit the effect? |
 
 Dispatch template:
@@ -180,15 +180,15 @@ fail the probe if any path outside the declared `writes` scope changed - the
 envelope is self-reported, so the disk diff is the oracle that catches an
 undeclared write. If a flag is absent or a temp target cannot be built, emit
 `UNVERIFIABLE` - a setup failure is not a contract lie. Never execute
-`summon*` / `register_skills` / `sync_docs` / `build_summon_binary`.
+`summon*` / `sync_skills` / `sync_docs` / `build_summon_binary`.
 
 ### 5. Code-read the rest and run the validation-profile helper
 
 For non-enveloped rites and all judgment/hybrid-owned command prose, trace each
 claim to source: read the rite (or the invocation leaf) and confirm
 `mutation_behavior` / `log_behavior` / `writes` / `idempotency` match the actual
-write and log call chain. Cite `tests/test_register_skills.py` as corroboration
-for `register_skills`, but label it `code_read`, not a behavioral proof. The
+write and log call chain. Cite `tests/test_sync_skills.py` as corroboration
+for `sync_skills`, but label it `code_read`, not a behavioral proof. The
 `summon_core.py` path with `apply_command` `python rites/summon.py` is intended
 (`summon.py` is the dispatcher that imports `summon_core`); record it as a
 judgment note, not a failure.

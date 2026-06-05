@@ -19,7 +19,7 @@ The page schema, magical boundary, and hub convention are documented elsewhere; 
 
 - **Parallelize or not** — the script-vs-AI split governs when fan-out earns its cost. See [[docs/script_vs_ai|script vs ai]].
 - **Page schema** — lane findings cite pages by the frontmatter contract. See [[docs/page_schema|page schema]].
-- **Magical boundary** — system terminology stays in Arcana; finding *content* for a grimoire stays domain-natural. See [[invocations/grimoire/validate_boundaries|validate boundaries]].
+- **Magical boundary** — system terminology stays in Arcana; finding *content* for a grimoire stays domain-natural. See [[invocations/grimoire/audit_boundaries|audit boundaries]].
 
 ## Portability: the linear workflow is primary
 
@@ -33,7 +33,7 @@ The numbered phases of the host workflow are self-sufficient and come first. Lan
 Delegate only **read-only judgment analysis**. The orchestrator/maintainer stays on the critical path and never delegates:
 
 - mechanical validation (the host workflow's validator phase);
-- applying or confirming edits (`/grm-lint` confirm-then-apply, `/grm-improve` and `/arc-improve` defer changes over ten files);
+- applying or confirming edits (`/grm-health-check` confirm-then-apply, `/grm-improve` and `/arc-improve` defer changes over ten files);
 - log appends;
 - synthesis of lane reports.
 
@@ -90,5 +90,5 @@ If subagents are unavailable, run the same lanes serially, keep their notes sepa
 ## Related
 
 - Proven in: [[invocations/arcana/quality/review_architecture|review architecture]]
-- Consumers: [[invocations/grimoire/improve_grimoire|improve grimoire]], [[invocations/grimoire/lint|lint]]
+- Consumers: [[invocations/grimoire/improve_grimoire|improve grimoire]], [[invocations/grimoire/health_check|health check]]
 - Parallelize-or-not: [[docs/script_vs_ai|script vs ai]]

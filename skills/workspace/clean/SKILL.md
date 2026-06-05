@@ -1,6 +1,7 @@
 ---
 name: {{SKILL_PREFIX}}-workspace-clean
 description: Remove temporary rite artifacts under Arcana's rites/.artifacts
+when_to_use: rites/.artifacts has accumulated transient validator output; before committing Arcana changes; user asks to clean up workspace artifacts.
 disable-model-invocation: true
 user-invocable: true
 allowed-tools: Bash

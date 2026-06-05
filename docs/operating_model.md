@@ -19,14 +19,14 @@ A grimoire's content is organized into layers that work together:
 
 | Layer | Directory | Owner | Purpose |
 |---|---|---|---|
-| Sources | `sources/` | LLM files during ingest, then reads | Immutable artifacts and source wrappers: articles, transcripts, papers, screenshots, datasets. Citation-stable. |
-| Inbox | `inbox/` | LLM and user both write | Transient drop zone for mixed content awaiting classification. Cleared on `/grm-ingest`. |
+| Sources | `sources/` | LLM files during import, then reads | Immutable artifacts and source wrappers: articles, transcripts, papers, screenshots, datasets. Citation-stable. |
+| Inbox | `inbox/` | LLM and user both write | Transient drop zone for mixed content awaiting classification. Cleared on `/grm-import`. |
 | Wiki | `chapters/`, root hub | LLM authors and maintains | Synthesized knowledge with frontmatter (`type`, `authority`, `sources`, `last_verified`) |
 | Schema | `grimoire.json` + injected agent block | User co-evolves | Tells the agent how to operate this grimoire |
 
 Plus the per-grimoire `log.md` (append-only activity record).
 
-`sources/` and `inbox/` are distinct on purpose: `sources/` is permanent and citation-worthy (pages with `authority: external` cite it), while `inbox/` is transient (drop a zip extract, AI-generated draft, or coworker hand-off here and the next ingest sweep classifies each item — sources go to `sources/`, authored content goes to `chapters/`, and ambiguous items stay in `inbox/` for human review). Pages must never cite `inbox/` paths in `sources:` because inbox content disappears once processed.
+`sources/` and `inbox/` are distinct on purpose: `sources/` is permanent and citation-worthy (pages with `authority: external` cite it), while `inbox/` is transient (drop a zip extract, AI-generated draft, or coworker hand-off here and the next import sweep classifies each item - sources go to `sources/`, authored content goes to `chapters/`, and ambiguous items stay in `inbox/` for human review). Pages must never cite `inbox/` paths in `sources:` because inbox content disappears once processed.
 
 ### Source wrappers
 

@@ -59,10 +59,10 @@ git clone {{GRIMOIRE_REPO_URL}} ~/grimoires/{{GRIMOIRE_DIRECTORY}}
 
 # 3. Register the library entry and skills
 python3 ~/grimoires/arcana/rites/sync_library.py --apply
-python3 ~/grimoires/arcana/rites/register_skills.py
+python3 ~/grimoires/arcana/rites/sync_skills.py
 ```
 
-Add the canonical Grimoire instruction block to your agent file using `/arc-agent-update` once skills are registered, or paste it manually from [`rites/templates/grimoire_block.md`](https://github.com/justinlavi/arcana/blob/main/rites/templates/grimoire_block.md).
+Add the canonical Grimoire instruction block to your agent file using `/arc-agent-sync-instructions` once skills are registered, or paste it manually from [`rites/templates/grimoire_block.md`](https://github.com/justinlavi/arcana/blob/main/rites/templates/grimoire_block.md).
 
 ## Layout
 
@@ -91,16 +91,16 @@ Add the canonical Grimoire instruction block to your agent file using `/arc-agen
 | Goal | Skill |
 |---|---|
 | Add a new chapter | `/grm-create-chapter` |
-| Ingest a new source into `sources/` and update affected pages | `/grm-ingest` |
-| Promote a chat answer into a page | `/grm-file-answer` |
-| Health-check the grimoire (orphans, stale, ghost refs) | `/grm-lint` |
+| Import a new source into `sources/` and update affected pages | `/grm-import` |
+| Promote a chat answer into a page | `/grm-capture-answer` |
+| Health-check the grimoire (orphans, stale, ghost refs) | `/grm-health-check` |
 | Audit naming and structure | `/grm-improve` |
 
 ## Layers (the LLM-wiki model)
 
 - **Sources** (`sources/`) - Immutable source artifacts and source wrappers.
   Articles, transcripts, papers, screenshots, and datasets land here during
-  ingest; wiki pages cite these stable paths.
+  import; wiki pages cite these stable paths.
 - **Wiki** (`chapters/`) - LLM-authored markdown synthesis. Hubs, concept pages, entity pages, playbooks, references. Updated incrementally as new sources arrive.
 - **Schema** - `grimoire.json` plus the Arcana-injected block in `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`. Tells agents how to operate this grimoire.
 
@@ -108,7 +108,7 @@ Add the canonical Grimoire instruction block to your agent file using `/arc-agen
 
 - Routers are pointer lists - no prose narrative inside a hub.
 - Pages declare their authority (`external` / `grimoire` / `hybrid`) and cite sources.
-- Stale claims (older than the stale window, default 90 days) are flagged by `/grm-lint` and revisited.
+- Stale claims (older than the stale window, default 90 days) are flagged by `/grm-health-check` and revisited.
 - The activity log is append-only and records content changes (pages/sources added, removed, changed), not version-control mechanics; never delete entries.
 - All paths are relative inside this grimoire; cross-grimoire references use `ARCANA_HOME/`-style placeholders.
 - Text files use UTF-8 without BOM and LF line endings. Unicode is allowed; mojibake and repair artifacts are not.

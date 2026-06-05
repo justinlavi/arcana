@@ -43,7 +43,7 @@ def test_summon_contract_names_required_pipeline():
         "install_grimoires",
         "update_library",
         "inject_agent_blocks",
-        "register_skills",
+        "sync_skills",
     ]
     for step in steps.values():
         assert {"python_cli", "python_gui"} <= set(step["required_for"])

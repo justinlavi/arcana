@@ -16,7 +16,7 @@ Detect authored grimoire pages that no other page links to.
 ## Invocation
 
 ```
-/grm-validate-orphans
+/grm-validate orphans
 ```
 
 ## Workflow

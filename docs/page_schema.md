@@ -102,7 +102,7 @@ last_verified: 2026-05-12
 | `tags` | every page | Use `/`-separated namespaces: `chapter/<name>`, `type/<type>`, `domain/<...>`. Drives Dataview and Obsidian tag panes. |
 | `sources` | required for `authority: external`, `authority: hybrid`, and `type: source` | Paths or URLs. At least one entry must resolve. Validator checks `sources/...` paths exist on disk. |
 | `authority` | every page except `hub` / `log-entry` | One of the three values above. |
-| `last_verified` | every page except `hub` / `log-entry` | ISO date (`YYYY-MM-DD`) the page was last hand-verified or auto-checked. Must be a real verification date, not an implausibly early sentinel: `validate_frontmatter` rejects any date before a fixed static floor (`2020-01-01`), which catches epoch-style placeholders like `1970-01-01`. `/grm-lint` flags pages older than the stale window (default: 90 days). |
+| `last_verified` | every page except `hub` / `log-entry` | ISO date (`YYYY-MM-DD`) the page was last hand-verified or auto-checked. Must be a real verification date, not an implausibly early sentinel: `validate_frontmatter` rejects any date before a fixed static floor (`2020-01-01`), which catches epoch-style placeholders like `1970-01-01`. `/grm-health-check` flags pages older than the stale window (default: 90 days). |
 
 ### Required-fields matrix
 
@@ -134,7 +134,7 @@ Tags are flat strings inside YAML (Dataview-compatible). Avoid spaces; use `_` o
 
 ### Topical facets as a second retrieval axis
 
-The hub tree is the primary navigation path: every page has one home, reached by routing from hub to hub. A topical facet (`domain/<...>`, or a grimoire's chosen equivalent such as `topic/<...>`) is an **optional second axis** - it groups cross-cutting pages that span chapters so an agent can find them by lexical tag search (for example, grep for `domain/cmake`) without walking every hub. It is recommended when a grimoire has subjects that recur across chapters, but it is not mechanically required: whether and how to use it is an editorial choice the owner curates. Arcana does not impose a domain vocabulary - keeping framework taxonomy out of grimoire content - so facet quality is reviewed by judgment (`/grm-analyze-semantics`), not a validator.
+The hub tree is the primary navigation path: every page has one home, reached by routing from hub to hub. A topical facet (`domain/<...>`, or a grimoire's chosen equivalent such as `topic/<...>`) is an **optional second axis** - it groups cross-cutting pages that span chapters so an agent can find them by lexical tag search (for example, grep for `domain/cmake`) without walking every hub. It is recommended when a grimoire has subjects that recur across chapters, but it is not mechanically required: whether and how to use it is an editorial choice the owner curates. Arcana does not impose a domain vocabulary - keeping framework taxonomy out of grimoire content - so facet quality is reviewed by judgment (`/grm-audit-semantics`), not a validator.
 
 ### Hub level tags (recap)
 
@@ -228,7 +228,7 @@ cite it with `sources: ["sources/example_recipe_method.md"]`.
    `authority: external`, and non-empty `sources:`.
 4. Source wrappers do not cite themselves.
 
-The `/arc-validate-frontmatter` skill validates Arcana itself; `/grm-validate-frontmatter` validates an active grimoire.
+The `/arc-validate frontmatter` skill validates Arcana itself; `/grm-validate frontmatter` validates an active grimoire.
 
 ---
 

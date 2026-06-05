@@ -22,9 +22,15 @@ Exit codes: 0 = all references resolve, 1 = at least one dangling reference
 import json
 import re
 import sys
-from pathlib import Path
 
-from _lib import default_arcana_root, is_skipped, ok, warn
+from _lib import (
+    SKILL_PREFIX_PLACEHOLDER,
+    default_arcana_root,
+    is_skipped,
+    ok,
+    read_frontmatter_name,
+    warn,
+)
 import command_surface as command_surface_contract
 import rite_profiles as rite_profiles_contract
 from diagnostics import DiagnosticReporter, add_output_format_arg
@@ -32,16 +38,15 @@ from diagnostics import DiagnosticReporter, add_output_format_arg
 ARCANA_ROOT = default_arcana_root()
 SKILLS_DIR = ARCANA_ROOT / "skills"
 ARCANA_MANIFEST = ARCANA_ROOT / "arcana.json"
-SKILL_PREFIX_PLACEHOLDER = "{{SKILL_PREFIX}}"
 
 # Match slash-command references for Arcana-shipped command-family prefixes.
 SKILL_REF_RE = re.compile(r"(?<![A-Za-z0-9_/-])/([a-z][a-z0-9]*)-([a-z][a-z0-9-]*)\b")
 
 # Tokens that, when they immediately follow the matched slug, indicate a
 # wildcard/placeholder rather than a concrete skill reference. Examples:
-#   /arc-validate-*       (wildcard summary)
-#   /arc-validate-<name>         (placeholder for prose)
-#   /grm-validate-{slug}         (variable substitution)
+#   /arc-example-*       (wildcard summary)
+#   /arc-example-<name>  (placeholder for prose)
+#   /grm-example-{slug}  (variable substitution)
 PLACEHOLDER_SUFFIXES = ("-*", "-<", "-{")
 
 # Files that intentionally mention not-yet-existing or hypothetical skill
@@ -53,15 +58,8 @@ SKIP_FILES = {
 
 SKIP_DIRS = {
     "formulae",  # template placeholders
-    "skills/arcana/validate-skill-refs",  # the validator's own examples
     "sources",  # imported source artifacts
 }
-
-
-def read_frontmatter_name(skill_file):
-    content = skill_file.read_text(encoding="utf-8", errors="replace")
-    match = re.search(r"(?m)^name:\s*(.+)$", content)
-    return match.group(1).strip() if match else ""
 
 
 def load_skill_families(reporter, human):

@@ -19,7 +19,7 @@ Design rules (mirrors the deferred-fragility and autonomy boundaries):
   `agent_targets`, which reads `Path.home()` at call time, so they are passed
   in as a seam too.
 * `--check` is read-only apart from the owned cache transcript it writes.
-* `--reconcile --apply` repairs the library (additively) and re-registers
+* `--reconcile --apply` repairs the library (additively) and re-syncs
   skills. It refuses on a base that fails `validate.py` (no repair on a broken
   tree), never deletes a library entry unless `--prune` is given, and never
   rewrites agent instruction blocks (the BEGIN/END vs heading sentinel
@@ -47,7 +47,7 @@ from diagnostics import ResultReporter, add_output_format_arg
 SCHEMA_VERSION = 1
 
 # Idempotency sentinels for the injected Grimoire block. A block written by any
-# path - the injector, the template, UPDATE.md, or /arc-agent-update - counts
+# path - the injector, the template, UPDATE.md, or /arc-agent-sync-instructions - counts
 # as present when EITHER sentinel is found; reporting only one would mislabel the
 # other as drift and invite a double-injection. Single-sourced from summon_core
 # (the injector) so the detector and the injector can never disagree.
@@ -263,14 +263,14 @@ def next_actions(state: dict[str, Any], arcana_root: Path) -> list[dict[str, Any
         actions.append({
             "kind": "agent_block_update",
             "tier": "amber",
-            "command": "/arc-agent-update",
+            "command": "/arc-agent-sync-instructions",
             "reason": f"agent instruction block absent for: {', '.join(missing_blocks)}",
         })
     if _skills_absent(state):
         actions.append({
-            "kind": "skill_register",
+            "kind": "skill_sync",
             "tier": "amber",
-            "command": "python3 rites/register_skills.py --agent all",
+            "command": "python3 rites/sync_skills.py --agent all",
             "reason": "no Arcana-managed skills registered in any agent skill directory",
         })
     if not state["arcana"]["working_tree_populated"]:
@@ -301,7 +301,7 @@ def residual(state: dict[str, Any], *, prune: bool) -> list[dict[str, Any]]:
         items.append({
             "kind": "agent_block",
             "tier": "amber",
-            "reason": f"agent instruction block must be refreshed via /arc-agent-update for: {', '.join(missing_blocks)}",
+            "reason": f"agent instruction block must be refreshed via /arc-agent-sync-instructions for: {', '.join(missing_blocks)}",
         })
     if not state["arcana"]["working_tree_populated"]:
         items.append({
@@ -430,9 +430,9 @@ def _reconcile_skills(
     reporter: ResultReporter,
     skill_runner: Callable,
 ) -> dict[str, Any]:
-    step = {"id": "skills", "label": "Re-register agent skills", "status": "noop",
+    step = {"id": "skills", "label": "Sync agent skills", "status": "noop",
             "mutations": [], "messages": []}
-    register_script = Path(arcana_root) / "rites" / "register_skills.py"
+    register_script = Path(arcana_root) / "rites" / "sync_skills.py"
 
     if not state["arcana"]["working_tree_populated"]:
         text = "skills: skipped - Arcana working tree not populated (run summon install / git pull first)"
@@ -443,14 +443,14 @@ def _reconcile_skills(
 
     if not apply:
         if _skills_absent(state):
-            text = "skills: no Arcana-managed skills registered (run register_skills --agent all)"
+            text = "skills: no Arcana-managed skills registered (run sync_skills --agent all)"
             reporter.message("warning", text)
             step["messages"].append({"severity": "warning", "message": text})
             step["status"] = "drift"
         return step
 
     if not register_script.is_file():
-        text = f"skills: register_skills.py not found at {register_script}"
+        text = f"skills: sync_skills.py not found at {register_script}"
         reporter.message("error", text)
         step["messages"].append({"severity": "error", "message": text})
         step["status"] = "blocked"
@@ -458,11 +458,11 @@ def _reconcile_skills(
 
     rc, _out = skill_runner(register_script)
     if rc == 0:
-        reporter.mutation("register", detail="re-registered Arcana and grimoire skills")
-        step["mutations"] = [{"action": "register", "path": None, "detail": "re-registered skills"}]
+        reporter.mutation("register", detail="synced Arcana and grimoire skills")
+        step["mutations"] = [{"action": "register", "path": None, "detail": "synced skills"}]
         step["status"] = "ok"
     else:
-        text = f"skills: register_skills.py exited {rc}"
+        text = f"skills: sync_skills.py exited {rc}"
         reporter.message("error", text)
         step["messages"].append({"severity": "error", "message": text})
         step["status"] = "error"
@@ -503,7 +503,7 @@ def _reconcile_agent_blocks(state: dict[str, Any], *, reporter: ResultReporter) 
     missing = _missing_block_ids(state)
     if missing:
         text = (
-            f"agent_blocks: absent for {', '.join(missing)} - refresh with /arc-agent-update "
+            f"agent_blocks: absent for {', '.join(missing)} - refresh with /arc-agent-sync-instructions "
             "(not auto-written: BEGIN/END vs heading sentinels make injection non-deterministic)"
         )
         reporter.message("warning", text)
@@ -567,7 +567,7 @@ def reconcile(
                                     prune=prune, reporter=reporter))
 
     # Pull-and-heal pass (the --update path): bring every library grimoire current
-    # BEFORE re-registering skills (so the reset picks up pulled grimoire skills)
+    # BEFORE re-syncing skills (so the reset picks up pulled grimoire skills)
     # and before any heal (so we never re-derive upstream work on a stale tree).
     grimoire_result = None
     if pull_grimoires:
@@ -696,7 +696,7 @@ def record_install_transcript(
          "status": "ok" if installed_keys else "noop",
          "mutations": [{"action": "clone", "path": k, "detail": None} for k in installed_keys],
          "messages": []},
-        {"id": "skills", "label": "Register skills",
+        {"id": "skills", "label": "Sync skills",
          "status": "ok" if skills_ok else "error", "mutations": [], "messages": []},
     ]
     summary = build_summary(
@@ -742,7 +742,7 @@ def _print_human(operation: str, state: dict[str, Any], result_steps, drift, tra
         else:
             log.ok(f"Agent block present ({a['block_marker']}): {a['id']}")
     total_skills = sum(s["arcana_managed_count"] for s in state["skills"])
-    (log.ok if total_skills else log.warn)(f"Registered skills: {total_skills}")
+    (log.ok if total_skills else log.warn)(f"Synced skills: {total_skills}")
     if grimoires is not None:
         for r in grimoires["grimoires"]:
             current = r["status"] in ("up_to_date", "fast_forwarded", "ahead")
@@ -773,9 +773,9 @@ def add_state_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--check", "--plan", dest="check", action="store_true",
                         help="Report installation/registry drift (read-only) and write a transcript")
     parser.add_argument("--reconcile", dest="reconcile", action="store_true",
-                        help="Repair the local library and re-register skills to match disk (offline)")
+                        help="Repair the local library and sync skills to match disk (offline)")
     parser.add_argument("--update", dest="update", action="store_true",
-                        help="Pull every library grimoire (branch-aware), reconcile, re-register skills, and heal current grimoires")
+                        help="Pull every library grimoire (branch-aware), reconcile, sync skills, and heal current grimoires")
     parser.add_argument("--apply", dest="apply", action="store_true",
                         help="With --reconcile/--update, perform changes (default: propose only)")
     parser.add_argument("--prune", dest="prune", action="store_true",

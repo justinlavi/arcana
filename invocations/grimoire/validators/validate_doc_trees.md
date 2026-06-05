@@ -19,7 +19,7 @@ been renamed, added, or removed without updating the doc.
 ## Invocation
 
 ```
-/grm-validate-doc-trees
+/grm-validate doc-trees
 ```
 
 ## Workflow
@@ -73,7 +73,7 @@ When the validator reports drift:
 3. Update the diagram (preferred for routine drift) OR update the filesystem
    (when the diagram describes the intended layout and the filesystem has
    drifted from it).
-4. Re-run `/grm-validate-doc-trees` to confirm.
+4. Re-run `/grm-validate doc-trees` to confirm.
 
 ## Related
 

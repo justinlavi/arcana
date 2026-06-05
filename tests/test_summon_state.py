@@ -140,7 +140,7 @@ def test_next_actions_are_tier_tagged(tmp_path):
     kinds = {a["kind"]: a["tier"] for a in actions}
     assert kinds["library_reconcile"] == "amber"
     assert kinds["agent_block_update"] == "amber"
-    assert kinds["skill_register"] == "amber"
+    assert kinds["skill_sync"] == "amber"
     for a in actions:
         assert a["command"] and a["reason"]
 

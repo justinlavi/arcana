@@ -87,7 +87,7 @@ GRIMOIRE_BLOCK = _load_grimoire_block()
 # Idempotency sentinels for the injected Grimoire block. The canonical template
 # wraps the block in BEGIN/END markers with the heading inside; older injections
 # carried only the heading. A block written by any path - this injector, the
-# template, /arc-agent-update, or UPDATE.md - counts as present when EITHER
+# template, /arc-agent-sync-instructions, or UPDATE.md - counts as present when EITHER
 # sentinel is found, so a re-run never double-injects regardless of which form is
 # on disk. summon_state imports these so the detector and injector cannot drift.
 BEGIN_SENTINEL = "<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->"
@@ -167,37 +167,23 @@ GIT_TIMEOUT = 600  # seconds; backstop so a stalled fetch cannot hang the instal
 
 
 def git(*args, cwd=None, log=None):
-    """Run a git command. Returns (success: bool, stdout: str)."""
-    env = _subprocess_env()
-    if env is None:
-        env = dict(os.environ)
-    env.setdefault("GIT_TERMINAL_PROMPT", "0")  # fail instead of blocking on an auth prompt
-    try:
-        result = subprocess.run(
-            ["git"] + list(args),
-            cwd=cwd,
-            capture_output=True,
-            text=True,
-            env=env,
-            timeout=GIT_TIMEOUT,
-        )
-        if result.returncode != 0 and log is not None:
-            stderr = (result.stderr or "").rstrip()
-            if stderr:
-                for line in stderr.splitlines():
-                    log.line(line)
-        return result.returncode == 0, result.stdout.strip()
-    except subprocess.TimeoutExpired:
-        if log is not None:
+    """Run a git command. Returns (success: bool, stdout: str).
+
+    Thin adapter over git_capture() so the env / timeout / GIT_TERMINAL_PROMPT
+    fail-fast body lives in one place. Logs the captured stderr line-by-line on
+    failure (or a network hint on the 124 timeout sentinel) when a log is given.
+    """
+    rc, out, err = git_capture(*args, cwd=cwd)
+    if rc != 0 and log is not None:
+        if rc == 124:
             log.line(
                 f"git timed out after {GIT_TIMEOUT}s - check network access "
                 "and that authentication is configured"
             )
-        return False, ""
-    except FileNotFoundError:
-        if log is not None:
-            log.line("git executable not found on PATH")
-        return False, ""
+        else:
+            for line in (err or "").splitlines():
+                log.line(line)
+    return rc == 0, out
 
 
 def git_capture(*args, cwd=None):
@@ -762,17 +748,17 @@ def _registered_skill_count(skills_dir):
     return count
 
 
-def register_skills(log):
+def sync_skills(log):
     """Run the skill registration script."""
-    log.info("Registering Grimoire skills...")
-    register_script = ARCANA_DIR / "rites" / "register_skills.py"
+    log.info("Syncing Grimoire skills...")
+    register_script = ARCANA_DIR / "rites" / "sync_skills.py"
     if not register_script.is_file():
-        register_script = RITE_DIR / "register_skills.py"
+        register_script = RITE_DIR / "sync_skills.py"
 
     if not register_script.is_file():
-        log.err(f"register_skills.py not found at {ARCANA_DIR / 'rites'} or {RITE_DIR}")
-        log.err("Skills NOT registered. Re-run manually after Arcana lands:")
-        log.err(f"  python3 {ARCANA_DIR / 'rites' / 'register_skills.py'}")
+        log.err(f"sync_skills.py not found at {ARCANA_DIR / 'rites'} or {RITE_DIR}")
+        log.err("Skills NOT synced. Re-run manually after Arcana lands:")
+        log.err(f"  python3 {ARCANA_DIR / 'rites' / 'sync_skills.py'}")
         return False
 
     result = subprocess.run(
@@ -788,7 +774,7 @@ def register_skills(log):
             log.line(line)
 
     if result.returncode != 0:
-        log.err(f"Skill registration FAILED (exit {result.returncode}). See output above.")
+        log.err(f"Skill sync FAILED (exit {result.returncode}). See output above.")
         log.err("Re-run manually with:")
         log.err(f"  python3 {register_script}")
         return False
@@ -821,7 +807,7 @@ def finalize_install(installed_keys, library, log):
     if installed_keys:
         update_local_library(installed_keys, library, log)
     inject_agent_configs(log)
-    return register_skills(log)
+    return sync_skills(log)
 
 
 # ---------------------------------------------------------------------------
@@ -934,7 +920,7 @@ def _print_cli_summary(mode, installed_keys, skills_ok):
     print()
     if not skills_ok:
         print("  *** Skill registration failed - see errors above. Re-run: ***")
-        print(f"      python3 {ARCANA_DIR / 'rites' / 'register_skills.py'}")
+        print(f"      python3 {ARCANA_DIR / 'rites' / 'sync_skills.py'}")
         print()
     print("  Next steps:")
     agent_labels = ", ".join(target["label"] for target in automatic_instruction_targets(REPO_ROOT))

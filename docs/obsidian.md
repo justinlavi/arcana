@@ -38,7 +38,7 @@ Every grimoire ships an `.obsidian/app.json` with:
 These two settings are **mandatory**, not preferences:
 
 - **`newLinkFormat: "absolute"`** - Obsidian's default is `"shortest"`, which interprets `[[chapters/foo/bar]]` as a path *relative to the current note*. From `chapters/foo/bar.md` that resolves to `chapters/foo/bar/chapters/foo/bar.md` - and if it doesn't exist, Ctrl-click **silently creates a recursive directory tree** matching the link path. Setting `"absolute"` makes Obsidian treat full-path wikilinks as vault-root relative, matching the convention `validate_links` enforces.
-- **`useMarkdownLinks: false`** - Keep wikilinks as `[[...]]` instead of having Obsidian rewrite them to `[label](path)` on save. The rest of Arcana (validators, repair rite, ingest skills) assumes wikilink syntax.
+- **`useMarkdownLinks: false`** - Keep wikilinks as `[[...]]` instead of having Obsidian rewrite them to `[label](path)` on save. The rest of Arcana (validators, repair rite, import skills) assumes wikilink syntax.
 
 If you find a stray nested folder like `chapters/build_system/ci/chapters/build_system/ci/`, `newLinkFormat` was not set when someone Ctrl-clicked a wikilink. Delete the bogus tree, set the config, and reload the vault.
 

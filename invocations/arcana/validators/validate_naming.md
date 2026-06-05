@@ -16,7 +16,7 @@ Enforce Arcana naming conventions for files, directories, and skill command slug
 ## Invocation
 
 ```
-/arc-validate-naming
+/arc-validate naming
 ```
 
 ## When to Cast
@@ -49,7 +49,7 @@ The rite checks:
 - ❌ Invalid: `validate-structure.py`, `validateStructure.py`
 
 **Skill folders** (must live under a declared command family and use kebab-case):
-- ✅ Valid: `skills/arcana/validate-links`, `skills/grimoire/validate-links`, `skills/agent/register-skills`
+- ✅ Valid: `skills/arcana/validate`, `skills/grimoire/audit-semantics`, `skills/agent/sync-skills`
 - ❌ Invalid: `skills/validate-links`, `skills/arcana_validate_links`, `skills/grimoire/validate_links`
 
 **Allowed exceptions**:

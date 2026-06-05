@@ -7,7 +7,7 @@ authority: grimoire
 last_verified: 2026-05-12
 ---
 
-# 🔮 Invocation: Validate Arcana Security
+# Invocation: Validate Arcana Security
 
 ## Purpose
 
@@ -16,7 +16,7 @@ Security scanning for credentials, unsafe patterns, and shell script quality.
 ## Invocation
 
 ```
-/arc-validate-security
+/arc-validate security
 ```
 
 ## When to Cast

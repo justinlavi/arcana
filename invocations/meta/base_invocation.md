@@ -11,7 +11,7 @@ last_verified: 2026-05-13
 
 A reusable, opinionated workflow for the most common Grimoire operation: "the user gave me a goal, I need to read sources, distill what's stable, write it as a wiki page, and wire it into the routing tree."
 
-This is **not** a slash command. It's a starting template for new invocations whose work fits the four-phase pattern. If a grimoire operation needs different phases (e.g. ingestion is handled by `/grm-ingest`, lint by `/grm-lint`), use the relevant dedicated invocation instead. For the structural skeleton of a brand-new invocation file, copy `formulae/invocation.formula.md`.
+This is **not** a slash command. It's a starting template for new invocations whose work fits the four-phase pattern. If a grimoire operation needs different phases (e.g. ingestion is handled by `/grm-import`, lint by `/grm-health-check`), use the relevant dedicated invocation instead. For the structural skeleton of a brand-new invocation file, copy `formulae/invocation.formula.md`.
 
 The magical/practical boundary, page schema, hub convention, and storage layers are documented elsewhere; this file references them rather than restating.
 
@@ -20,7 +20,7 @@ The magical/practical boundary, page schema, hub convention, and storage layers 
 Anything you author following this template must conform to:
 
 - **Page schema** — every authored page carries YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`). Required-fields matrix in [[docs/page_schema|page schema]].
-- **Magical boundary** — system terminology (invocation, formula, rite, hub) lives in Arcana only; chapter content uses domain-natural names (`templates/`, `scripts/`, `policies/`, `recipes/`). Full rules in [[invocations/grimoire/validate_boundaries|validate boundaries]].
+- **Magical boundary** — system terminology (invocation, formula, rite, hub) lives in Arcana only; chapter content uses domain-natural names (`templates/`, `scripts/`, `policies/`, `recipes/`). Full rules in [[invocations/grimoire/audit_boundaries|audit boundaries]].
 - **Hub convention** — every folder F has a hub at `F/<basename(F)>.md`. Depth is open-ended. See [[docs/operating_model|operating model]].
 
 ---
@@ -30,14 +30,14 @@ Anything you author following this template must conform to:
 Use this four-phase template when:
 
 - The user has a goal that requires reading external material and producing a single canonical wiki page.
-- No more specific invocation applies (`/grm-ingest` for filing a source, `/grm-file-answer` for promoting a chat answer, `/grm-create-chapter` for scaffolding a new chapter).
+- No more specific invocation applies (`/grm-import` for filing a source, `/grm-capture-answer` for promoting a chat answer, `/grm-create-chapter` for scaffolding a new chapter).
 
 ## When NOT to follow this pattern
 
-- The user has a single source artifact to absorb — use [[invocations/grimoire/ingest|ingest]].
-- The user wants a chat answer promoted to a page — use [[invocations/grimoire/file_answer|file answer]].
+- The user has a single source artifact to absorb — use [[invocations/grimoire/import|import]].
+- The user wants a chat answer promoted to a page — use [[invocations/grimoire/capture_answer|capture answer]].
 - The user wants to scaffold a new chapter or grimoire — use the `create_*` invocations.
-- The user is auditing or reorganizing — use [[invocations/grimoire/improve_grimoire|improve grimoire]] or [[invocations/grimoire/lint|lint]].
+- The user is auditing or reorganizing — use [[invocations/grimoire/improve_grimoire|improve grimoire]] or [[invocations/grimoire/health_check|health check]].
 
 ---
 

@@ -147,7 +147,7 @@ done
 sed -n '/^## Core Concepts/,/^---$/p' docs/reference.md > /tmp/terminology.txt
 
 # ✅ GOOD: AI analyzes using that data
-/grm-analyze-semantics
+/grm-audit-semantics
 # AI reads reference, understands context, suggests improvements intelligently
 ```
 
@@ -206,16 +206,10 @@ find invocations/ -name "*.md" ! -name "$(basename "$(pwd)").md" | wc -l   # lea
 
 ## Mutating Rite Profiles
 
-Write-capable rites use one of four profiles. The contract lives in
-[`rites/data/rite_profiles.json`](../rites/data/rite_profiles.json), with a
-human-readable view in [rite profiles](rite_profiles.md).
-
-| Profile | Use when | Required behavior |
-|---|---|---|
-| `read_only` | The rite only reports facts; any writes are named transient artifacts. | Do not change durable source, grimoire, agent, library, or install state. |
-| `plan_apply` | The rite can preview and then write the same scoped change. | Provide a plan command and an apply command; the plan must be specific enough to summarize. |
-| `apply_only` | A separate plan is not useful for the operation. | Make the write scope explicit and refuse unsafe overwrites. |
-| `append_only` | The rite appends a record to an append-only target. | Invocation workflows decide when one append is warranted. |
+Write-capable rites declare one of four profiles (`read_only`, `plan_apply`,
+`apply_only`, `append_only`). The profiles, their rules, and the per-rite table
+live in [rite profiles](rite_profiles.md), the human-readable view of
+[`rites/data/rite_profiles.json`](../rites/data/rite_profiles.json).
 
 Every mutating invocation must name whether it may run the apply command
 directly or must ask the user after showing the plan. Every mutating rite
@@ -284,7 +278,7 @@ done
 # Just report raw facts about what terminology exists
 grep -rh -o '\b[A-Z][a-z]* [A-Z][a-z]*\b' . | sort -u > /tmp/found_terms.txt
 
-# AFTER: analyze_semantics.md (AI analyzes intelligently)
+# AFTER: audit_semantics.md (AI analyzes intelligently)
 # AI reads found_terms.txt AND reference.md
 # AI understands context and suggests appropriate changes
 ```
@@ -339,9 +333,9 @@ Pick by the same rule that applies to rites vs invocations themselves:
 
 | If the skill's job is | Pick this backing | Examples |
 |---|---|---|
-| Mechanical, deterministic, no judgment required | Rite-backed | `/arc-agent-register-skills`, `/arc-library-sync`, `/arc-workspace-clean`, every `/arc-validate-*` |
+| Mechanical, deterministic, no judgment required | Rite-backed | `/arc-agent-sync-skills`, `/arc-library-sync`, `/arc-workspace-clean`, `/arc-validate` selectors |
 | Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/grm-create`, `/grm-improve`, `/arc-improve`, `/arc-help` |
-| Both — the rite gathers data, the AI interprets | **Both, in that order**: skill body runs the rite first, then loads an invocation that reads the rite's output | `/arc-validate-semantics` could evolve into this if/when the analysis judgment grows beyond the rite's pattern check |
+| Both — the rite gathers data, the AI interprets | **Both, in that order**: skill body runs the rite first, then loads an invocation that reads the rite's output | `/arc-validate semantics` could evolve into this if/when the analysis judgment grows beyond the rite's pattern check |
 
 Two anti-patterns to avoid:
 

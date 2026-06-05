@@ -249,7 +249,7 @@ def test_process_all_summary_and_needs_manual_pull(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# README update-block injector (deterministic v1.2.0 migration)
+# README update-block injector
 # ---------------------------------------------------------------------------
 
 

@@ -36,7 +36,7 @@ configuration, and known limits.
 
 ## Instruction Modes
 
-- `auto`: the Summoning Rite and `/arc-agent-update` can write the canonical
+- `auto`: the Summoning Rite and `/arc-agent-sync-instructions` can write the canonical
   Grimoire block to the target instruction file.
 - `manual`: copy the canonical block from
   [grimoire block](../rites/templates/grimoire_block.md)
@@ -46,5 +46,5 @@ configuration, and known limits.
 
 - [agent configuration](agent_configuration.md)
 - [installation](installation.md)
-- [`rites/register_skills.py`](../rites/register_skills.py)
+- [`rites/sync_skills.py`](../rites/sync_skills.py)
 - [`rites/agent_targets.py`](../rites/agent_targets.py)

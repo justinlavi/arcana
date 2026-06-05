@@ -60,7 +60,7 @@ REQUIRED_FILES = [
     "VERSION",
     "arcana.json",
     "rites/summon.sh",
-    "rites/register_skills.py",
+    "rites/sync_skills.py",
     "docs/installation.md",
     "docs/agent_targets.md",
     "docs/summoning_contract.md",

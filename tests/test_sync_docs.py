@@ -16,9 +16,9 @@ def test_skill_catalog_renders_command_surface_metadata():
         "| Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |"
         in content
     )
-    assert "[`/grm-validate-all`](../skills/grimoire/validate-all/SKILL.md)" in content
+    assert "[`/grm-validate`](../skills/grimoire/validate/SKILL.md)" in content
     assert (
-        "[`validate_all.md`](../invocations/grimoire/validators/validate_all.md)"
+        "[`validate.md`](../invocations/grimoire/validators/validate.md)"
         in content
     )
     assert "[`validate.py`](../rites/validate.py)" in content
@@ -26,7 +26,10 @@ def test_skill_catalog_renders_command_surface_metadata():
         "[`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md)"
         in content
     )
-    assert "`python rites/validate.py --grimoire GRIMOIRE_ROOT --parallel`" in content
+    assert (
+        "`python rites/validate.py --grimoire GRIMOIRE_ROOT [all"
+        in content
+    )
 
 
 def test_skill_catalog_file_is_synced():

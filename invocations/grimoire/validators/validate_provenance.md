@@ -20,7 +20,7 @@ artifact, and avoid self-citation.
 ## Invocation
 
 ```
-/grm-validate-provenance
+/grm-validate provenance
 ```
 
 ## Workflow

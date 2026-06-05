@@ -18,6 +18,6 @@ Library operations that read or update `~/grimoires/library.json`, the local reg
 
 ## Related
 
-- Agent skill registration -> [[invocations/agent/register_skills|register skills]]
+- Agent skill sync -> [[invocations/agent/sync_skills|sync skills]]
 - Grimoire creation -> [[invocations/grimoire/create_grimoire|create grimoire]]
 - Library schema -> [[docs/reference|reference]]

@@ -10,7 +10,7 @@ import sys
 import json
 from pathlib import Path
 
-from _lib import default_arcana_root, is_skipped, ok, warn
+from _lib import default_arcana_root, is_skipped, ok, read_frontmatter_name, warn
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ARCANA_ROOT = default_arcana_root()
@@ -62,12 +62,6 @@ def check_naming(glob_pattern, label, ext, reporter, human):
     if human:
         print()
     return violations
-
-
-def parse_skill_name(skill_file):
-    content = skill_file.read_text(encoding="utf-8", errors="replace")
-    match = re.search(r"(?m)^name:\s*(.+)$", content)
-    return match.group(1).strip() if match else ""
 
 
 def load_skill_families(reporter, human):
@@ -171,7 +165,7 @@ def check_skill_schema(reporter, human):
                 else folder.name
             )
             expected_name = f"{{{{SKILL_PREFIX}}}}-{command_slug}"
-            actual_name = parse_skill_name(skill_file)
+            actual_name = read_frontmatter_name(skill_file)
             if actual_name != expected_name:
                 reporter.error(
                     "SKILL_SCHEMA_NAME_MISMATCH",

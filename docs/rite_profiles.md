@@ -32,7 +32,7 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 | `rites/build_summon_binary.py` | `apply_only` | none | `python rites/build_summon_binary.py` | build artifacts, release archives, checksum files |
 | `rites/clean_artifacts.py` | `plan_apply` | `python rites/clean_artifacts.py --dry-run` | `python rites/clean_artifacts.py` | `rites/.artifacts` directories |
 | `rites/new_page.py` | `plan_apply` | `python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title "<title>"` | `python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title "<title>" --apply` | a new `<grimoire>/chapters/<chapter>/<slug>.md` page |
-| `rites/register_skills.py` | `plan_apply` | `python rites/register_skills.py --dry-run` | `python rites/register_skills.py` | supported agent skill directories |
+| `rites/sync_skills.py` | `plan_apply` | `python rites/sync_skills.py --dry-run` | `python rites/sync_skills.py` | supported agent skill directories |
 | `rites/repair_links.py` | `plan_apply` | `python rites/repair_links.py --grimoire <path>` | `python rites/repair_links.py --grimoire <path> --apply` | active-grimoire Markdown files |
 | `rites/summon.sh` | `apply_only` | none | `bash rites/summon.sh` | install tree, selected grimoires, library, agent files |
 | `rites/summon_core.py` | `apply_only` | none | `python rites/summon.py` | install tree, selected grimoires, library, agent files |
@@ -55,7 +55,7 @@ artifacts, the mode it uses, what it writes, and how to validate it.
   calls it must ensure there is one append per completed operation.
 - A `read_only` rite may refresh named transient artifacts, but it must not
   change durable source, grimoire, agent, library, or install state.
-- `rites/register_skills.py` stamps generated `SKILL.md` files with
+- `rites/sync_skills.py` stamps generated `SKILL.md` files with
   `ARCANA_SKILL_OWNERSHIP`; cleanup and overwrites are allowed only when that
   marker or generated provenance proves Arcana ownership.
 

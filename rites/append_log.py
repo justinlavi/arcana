@@ -18,7 +18,7 @@ Usage:
 
 Args:
     --grimoire   Path to the grimoire root (default: cwd)
-    --op         One of: ingest, query, lint, improve, file-answer,
+    --op         One of: import, query, health-check, improve, capture-answer,
                  rebuild-index, create, manual
     --title      Short human-readable title for the entry
     --skill      The skill that performed the operation (or 'manual')
@@ -36,8 +36,10 @@ from pathlib import Path
 from diagnostics import ResultReporter, add_output_format_arg
 
 # Grimoire-content operations. See formulae/log_entry.formula.md (Scope) for the entry rules.
-VALID_OPS = {"ingest", "query", "lint", "improve", "file-answer",
-             "rebuild-index", "create", "manual"}
+VALID_OPS = {
+    "import", "query", "health-check", "improve", "capture-answer",
+    "rebuild-index", "create", "manual",
+}
 
 
 def sanitize(value: str) -> str:

@@ -210,6 +210,6 @@ Arcana and every grimoire use the same repository text standard:
 - Unicode is allowed when useful for readability, including emoji, em dashes, arrows, and box-drawing characters.
 - Mojibake and repair artifacts are not allowed.
 
-This is enforced by `.gitattributes`, `.editorconfig`, `/arc-validate-encoding`, and `/grm-validate-encoding`.
+This is enforced by `.gitattributes`, `.editorconfig`, `/arc-validate encoding`, and `/grm-validate encoding`.
 
 ---

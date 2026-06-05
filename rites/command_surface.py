@@ -8,7 +8,8 @@ import re
 from pathlib import Path
 from typing import Any
 
-SKILL_PREFIX_PLACEHOLDER = "{{SKILL_PREFIX}}"
+from _lib import discover_skill_commands
+
 CONTRACT_PATH = Path("rites/data/command_surface.json")
 
 REQUIRED_STRING_FIELDS = {
@@ -33,55 +34,6 @@ ALLOWED_MUTATION_PROFILES = {
     "judgment_gated",
 }
 COMMAND_RE = re.compile(r"^/[a-z][a-z0-9]*-[a-z][a-z0-9-]*$")
-
-
-def read_frontmatter_name(skill_file: Path) -> str:
-    """Return the frontmatter `name` from a skill file."""
-    content = skill_file.read_text(encoding="utf-8", errors="replace")
-    match = re.search(r"(?m)^name:\s*(.+)$", content)
-    return match.group(1).strip() if match else ""
-
-
-def load_skill_families(root: Path) -> list[dict[str, Any]]:
-    """Return normalized command-family definitions from arcana.json."""
-    metadata = json.loads((root / "arcana.json").read_text(encoding="utf-8"))
-    default_prefix = metadata.get("skill_prefix", "arc")
-    raw_families = metadata.get("skill_families", {})
-    if not isinstance(raw_families, dict):
-        return []
-
-    families = []
-    for name, config in raw_families.items():
-        if not isinstance(config, dict):
-            continue
-        families.append({
-            "name": name,
-            "skill_prefix": config.get("skill_prefix", default_prefix),
-            "path": root / config.get("path", ""),
-        })
-    return families
-
-
-def discover_skill_commands(root: Path) -> dict[str, dict[str, str]]:
-    """Return every Arcana-shipped public command keyed by slash command."""
-    commands: dict[str, dict[str, str]] = {}
-    for family in load_skill_families(root):
-        family_dir = family["path"]
-        if not family_dir.is_dir():
-            continue
-        for skill_file in sorted(family_dir.glob("*/SKILL.md")):
-            templated_name = read_frontmatter_name(skill_file)
-            if not templated_name:
-                continue
-            command = "/" + templated_name.replace(
-                SKILL_PREFIX_PLACEHOLDER,
-                family["skill_prefix"],
-            )
-            commands[command] = {
-                "family": family["name"],
-                "skill_source": skill_file.relative_to(root).as_posix(),
-            }
-    return commands
 
 
 def load_command_surface(root: Path) -> dict[str, Any]:

@@ -192,7 +192,7 @@ If the new grimoire declares a `skill_prefix` in `grimoire.json`, register its
 skills so its `/<prefix>-*` commands become available:
 
 ```bash
-python3 ARCANA_HOME/rites/register_skills.py --grimoire .
+python3 ARCANA_HOME/rites/sync_skills.py --grimoire .
 ```
 
 Then tell the user to reopen their agent session - Claude Code and Codex cache
@@ -209,7 +209,7 @@ python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
 python3 ARCANA_HOME/rites/validate_links.py --grimoire .
 ```
 
-Or invoke `/grm-validate-all` for the full mechanical pass.
+Or invoke `/grm-validate` for the full mechanical pass.
 
 If the relevant agent instruction file already includes the Grimoire block, also test routing by asking the agent: `"What chapters exist in {{grimoire_name}}?"`
 
@@ -220,6 +220,6 @@ If the relevant agent instruction file already includes the Grimoire block, also
 - **Chapter creation**: [[invocations/grimoire/create_chapter|create chapter]]
 - **Template formula**: `ARCANA_HOME/formulae/grimoire/`
 - **Page schema**: `ARCANA_HOME/docs/page_schema.md`
-- **Skill registration**: `/arc-agent-register-skills` (reads each grimoire's `grimoire.json`)
-- **Structure validator**: `/grm-validate-structure`
+- **Skill registration**: `/arc-agent-sync-skills` (reads each grimoire's `grimoire.json`)
+- **Structure validator**: `/grm-validate structure`
 - **Agent block**: `ARCANA_HOME/rites/templates/grimoire_block.md`

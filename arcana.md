@@ -50,15 +50,15 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Create a grimoire -> [[invocations/grimoire/create_grimoire|create grimoire]]
 - Create a chapter -> [[invocations/grimoire/create_chapter|create chapter]]
 - Update the grimoire and its Arcana -> [[invocations/grimoire/update|update]]
-- Register active-grimoire skills -> [[invocations/grimoire/register_skills|register skills]]
-- Ingest a source -> [[invocations/grimoire/ingest|ingest]]
-- File a chat answer -> [[invocations/grimoire/file_answer|file answer]]
-- Lint a grimoire -> [[invocations/grimoire/lint|lint]]
+- Sync active-grimoire agent skills -> [[invocations/grimoire/sync_skills|sync skills]]
+- Import a source -> [[invocations/grimoire/import|import]]
+- Capture a chat answer -> [[invocations/grimoire/capture_answer|capture answer]]
+- Health-check a grimoire -> [[invocations/grimoire/health_check|health check]]
 - Improve a grimoire -> [[invocations/grimoire/improve_grimoire|improve grimoire]]
-- Analyze grimoire semantics -> [[invocations/grimoire/analyze_semantics|analyze semantics]]
-- Validate a grimoire -> [[invocations/grimoire/validators/validate_all|validate all]]
+- Audit grimoire semantics -> [[invocations/grimoire/audit_semantics|audit semantics]]
+- Validate a grimoire -> [[invocations/grimoire/validators/validate|validate]]
 - Validate grimoire structure -> [[invocations/grimoire/validate_structure|validate structure]]
-- Validate grimoire boundaries -> [[invocations/grimoire/validate_boundaries|validate boundaries]]
+- Audit grimoire boundaries -> [[invocations/grimoire/audit_boundaries|audit boundaries]]
 - Grimoire validator hub -> [[invocations/grimoire/validators/validators|validators]]
 
 **Arcana maintenance** -> [[invocations/arcana/arcana|arcana]]
@@ -70,8 +70,8 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 
 **Agent operations** -> [[invocations/agent/agent|agent]]
 
-- Register agent skills -> [[invocations/agent/register_skills|register skills]]
-- Update agent instructions -> [[invocations/agent/update_agent_block|update agent block]]
+- Sync agent skills -> [[invocations/agent/sync_skills|sync skills]]
+- Update agent instructions -> [[invocations/agent/sync_instructions|sync instructions]]
 
 **Library operations** -> [[invocations/library/library|library]]
 
@@ -104,13 +104,13 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 
 - Canonical skill catalog -> [[docs/skills|skills]]
 - Public command matrix -> [[docs/command_surface|command surface]]
-- Skill source directory: `skills/`; registered via `rites/register_skills.py`
+- Skill source directory: `skills/`; registered via `rites/sync_skills.py`
 
 ## Rites
 
 - One-command summoning: `rites/summon.sh`
 - Agent target registry loader and validator: `rites/agent_targets.py`
-- Skill registration: `rites/register_skills.py`
+- Skill registration: `rites/sync_skills.py`
 - Library reconciliation: `rites/sync_library.py`
 - Generated docs sync: `rites/sync_docs.py`
 - Manifest writer for unmanaged dirs: `rites/adopt_grimoire.py`

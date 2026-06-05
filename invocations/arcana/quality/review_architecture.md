@@ -172,13 +172,13 @@ For each common task, ask how many files an agent must read before it can act:
 - Install Arcana.
 - Create a grimoire.
 - Add a chapter.
-- Ingest a source.
+- Import a source.
 - Validate Arcana.
 - Improve Arcana.
 - Improve a grimoire.
 - Update Arcana from a grimoire.
-- Register skills.
-- Update an agent instruction block.
+- Sync skills.
+- Sync an agent instruction block.
 - Diagnose a validator failure.
 
 Prefer workflows where the agent reads one hub, one invocation, and only the

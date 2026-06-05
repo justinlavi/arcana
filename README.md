@@ -8,7 +8,7 @@
 
 Give your AI agent a map, not a maze.
 
-Most knowledge lives in scattered files that AI has to search through, interpolate between, and ultimately guess at. **Grimoires** give AI agents an explicit routing map: a layered hub structure that leads from any question to the exact document that answers it — deterministically, every time. And the LLM owns the maintenance: it ingests new sources, updates cross-references, flags stale claims, and keeps the wiki compounding.
+Most knowledge lives in scattered files that AI has to search through, interpolate between, and ultimately guess at. **Grimoires** give AI agents an explicit routing map: a layered hub structure that leads from any question to the exact document that answers it — deterministically, every time. And the LLM owns the maintenance: it imports new sources, updates cross-references, flags stale claims, and keeps the wiki compounding.
 
 **Arcana** is the engine you install once to build and maintain grimoires for any subject.
 
@@ -55,14 +55,14 @@ Knowledge and skills compound: the better your documentation, the smarter your s
 
 Arcana ships universal operations every grimoire inherits:
 
-- **`/grm-ingest <source>`** — file a source under `sources/`, scan existing chapters, propose page updates, apply them, append to `log.md`.
-- **`/grm-file-answer`** — promote a chat answer (analysis, comparison, derived insight) into a properly-frontmattered wiki page so it doesn't evaporate into chat history.
-- **`/grm-lint`** — health-check the wiki: orphans, stale claims (>90 days unverified), ghost references (entities mentioned often but lacking a page), contradictions, missing cross-references.
+- **`/grm-import <source>`** — file a source under `sources/`, scan existing chapters, propose page updates, apply them, append to `log.md`.
+- **`/grm-capture-answer`** — promote a chat answer (analysis, comparison, derived insight) into a properly-frontmattered wiki page so it doesn't evaporate into chat history.
+- **`/grm-health-check`** — health-check the wiki: orphans, stale claims (>90 days unverified), ghost references (entities mentioned often but lacking a page), contradictions, missing cross-references.
 - **`/grm-improve`** — comprehensive normalize-and-optimize pass.
-- **`/grm-validate-all`** — run the full deterministic validator profile for the active grimoire.
+- **`/grm-validate [selector]`** — run the full deterministic validator profile for the active grimoire, or a targeted mechanical check.
 - **`/grm-update`** — bring Arcana and every grimoire in the library back to a current, validated, synchronized state.
-- **`/grm-register-skills`** — refresh Arcana skills plus the active grimoire's own skills.
-- **`/grm-create-chapter`**, **`/grm-analyze-semantics`** — and more.
+- **`/grm-sync-skills`** — refresh Arcana skills plus the active grimoire's own skills.
+- **`/grm-create-chapter`**, **`/grm-audit-semantics`** — and more.
 
 Arcana command families are prefix-explicit: `/arc-*` acts on Arcana/platform surfaces, `/grm-*` acts on an active grimoire, `/arc-library-*` acts on `~/grimoires/library.json`, `/arc-agent-*` acts on agent configuration, and `/arc-workspace-*` intentionally spans the local workspace. Full rules live in [skill schema](docs/skill_schema.md).
 
@@ -78,7 +78,7 @@ Arcana is the engine that powers all your grimoires. You install it once; your g
 - `/arc-*` platform skills and `/grm-*` universal grimoire skills
 - The page schema (`type`, `authority`, `sources`, `last_verified` frontmatter) that makes wikis machine-checkable
 - Formula templates for scaffolding new grimoires, chapters, and pages
-- Validation rites: structure, naming, format, links, frontmatter, orphans, provenance, security, semantics, skill-refs, boundaries
+- Validation rites: structure, naming, format, links, frontmatter, orphans, provenance, security, semantics, and skill-refs; audit playbooks for judgment checks such as boundaries
 - Library management automation
 - Framework documentation and governance
 
@@ -117,7 +117,7 @@ Open a new agent session and run `/arc-help` to see every available command, or 
 
 **Out of date, or something seems wrong?** Update brings Arcana and every grimoire in the library back to a current, validated, synchronized state. Two ways to start it:
 
-1. **Run the skill:** `/arc-update` (or `/grm-update` from a grimoire).
+1. **Run the skill:** `/grm-update` (or `/arc-update` when maintaining Arcana directly).
 2. **Or tell your AI agent:**
 
    > Pull the latest Arcana, then follow its update process.

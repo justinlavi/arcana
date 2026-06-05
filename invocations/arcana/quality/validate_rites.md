@@ -15,7 +15,7 @@ Judgment-based quality review of rite scripts (Python files under `rites/`).
 Covers error handling, exit codes, idempotency, portability, docstrings, size
 limits, and mutation-profile compliance.
 
-Pairs with `/arc-validate-security` (mechanical credential/unsafe-construct scan). This invocation is the human-judgment counterpart - no rite automates it. See [[docs/script_vs_ai|script vs ai]] for the split.
+Pairs with `/arc-validate security` (mechanical credential/unsafe-construct scan). This invocation is the human-judgment counterpart - no rite automates it. See [[docs/script_vs_ai|script vs ai]] for the split.
 
 ## Invocation
 
@@ -35,7 +35,7 @@ Runs as a phase of `/arc-improve`. No standalone slash command.
 ls rites/*.py
 ```
 
-Skip `__pycache__/`, `data/`, `templates/`. Treat `validate_*.py`, `sync_*.py`, and orchestrators (`validate.py`, `summon.py`, `register_skills.py`) as in scope.
+Skip `__pycache__/`, `data/`, `templates/`. Treat `validate_*.py`, `sync_*.py`, and orchestrators (`validate.py`, `summon.py`, `sync_skills.py`) as in scope.
 Load `rites/data/rite_profiles.json` before reviewing write-capable rites and
 use [[docs/rite_profiles|rite profiles]] as the human
 reference.
@@ -113,18 +113,18 @@ if not path.exists():
 
 ### 5. Apply fixes
 
-For each issue, edit the rite, re-run it on a clean tree to confirm exit 0, then re-run on a known-bad fixture (or temporary violation) to confirm exit 1. Run `/arc-validate-all` afterward to make sure nothing else regressed.
+For each issue, edit the rite, re-run it on a clean tree to confirm exit 0, then re-run on a known-bad fixture (or temporary violation) to confirm exit 1. Run `/arc-validate` afterward to make sure nothing else regressed.
 
 ## What this invocation is NOT
 
-- Not a security scan - that's `/arc-validate-security`
-- Not a structural / naming / link / format check - those are separate `/arc-validate-*` rites
+- Not a security scan - that's `/arc-validate security`
+- Not a structural / naming / link / format check - those are separate `/arc-validate` selectors
 - Not a benchmark suite. If a rite feels slow, profile it; otherwise leave performance alone
 
 ## Related
 
 - **Security scan**: [[invocations/arcana/validators/validate_security|validate security]]
-- **Validator suite**: `/arc-validate-all`
+- **Validator suite**: `/arc-validate`
 - **Script vs AI split**: [[docs/script_vs_ai|script vs ai]]
 - **Rites directory**: [`rites/`](../../../rites/)
 - **Orchestrator**: [[invocations/arcana/improve_arcana|improve arcana]]

@@ -7,7 +7,7 @@ authority: grimoire
 last_verified: 2026-05-12
 ---
 
-# 🔮 Invocation: Validate Arcana Format
+# Invocation: Validate Arcana Format
 
 ## Purpose
 
@@ -16,7 +16,7 @@ Validate Markdown, invocation, formula, and hub format compliance. The rite chec
 ## Invocation
 
 ```
-/arc-validate-format
+/arc-validate format
 ```
 
 ## When to Cast
@@ -36,7 +36,7 @@ Execute the validation rite:
 python3 rites/validate_format.py
 ```
 
-For an active grimoire, use `/grm-validate-format`.
+For an active grimoire, use `/grm-validate format`.
 
 ### Step 2: Review Invocation Format
 
@@ -149,7 +149,7 @@ For each format violation:
 ### Invocation File Template
 
 ```markdown
-# 🔮 Invocation: [Invocation Name]
+# Invocation: [Invocation Name]
 
 ## ⚡ The Magical Boundary ⚡
 [Optional: Magical boundary guidance if needed]

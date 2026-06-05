@@ -10,7 +10,7 @@ last_verified: 2026-06-01
 # Skill Orphan Reconcile
 
 An optional judgment step for the skill-registration workflows. The registration
-rite (`rites/register_skills.py`) is deterministic: it removes a registered skill
+rite (`rites/sync_skills.py`) is deterministic: it removes a registered skill
 directory only when it can **prove** Arcana ownership (an `ARCANA_SKILL_OWNERSHIP`
 marker, or a generated-source provenance line pointing under a current Arcana or
 grimoire `skills/` root). Anything it cannot prove it owns, it never deletes - it
@@ -35,11 +35,11 @@ After the registration rite reports one or more `Preserve unowned` entries or
 (`arc-`, `grm-`, or a grimoire's `skill_prefix`). If the rite reported none, skip
 this step.
 
-> Note: the rite recognizes legacy generated provenance (including the older
-> em-dash `GENERATED — source:` form), so legacy and renamed orphans are usually
-> cleaned mechanically. This step covers the remainder the rite still cannot
-> prove - e.g. provenance pointing outside a current `skills/` root, or a marker
-> that was hand-edited.
+> Note: the rite recognizes generated provenance in any separator form (hyphen,
+> en-dash, or em-dash `GENERATED — source:`), so provably-generated and renamed
+> orphans are usually cleaned mechanically. This step covers the remainder the
+> rite still cannot prove - e.g. provenance pointing outside a current `skills/`
+> root, or a marker that was hand-edited.
 
 ## Procedure
 
@@ -60,7 +60,7 @@ this step.
    and remove them only after one explicit confirmation. Scope every deletion to
    the agent skill directory and the known managed prefixes; never delete a
    directory that lacks Arcana provenance.
-4. **Re-register and report.** Re-run `rites/register_skills.py` so the renamed
+4. **Re-register and report.** Re-run `rites/sync_skills.py` so the renamed
    or new skills register cleanly, then report what was removed, what was
    re-registered, and anything left for the user to judge.
 
@@ -75,7 +75,7 @@ this step.
 
 ## Related
 
-- Active-grimoire registration: [[invocations/grimoire/register_skills|register skills]]
-- Global registration: [[invocations/agent/register_skills|register skills]]
+- Active-grimoire skill sync: [[invocations/grimoire/sync_skills|sync skills]]
+- Global skill sync: [[invocations/agent/sync_skills|sync skills]]
 - Update playbook: [[UPDATE|update]]
 - Autonomy tiers: [[docs/governance|governance]]
