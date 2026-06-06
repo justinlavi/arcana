@@ -62,7 +62,7 @@ python3 ~/grimoires/arcana/rites/sync_library.py --apply
 python3 ~/grimoires/arcana/rites/sync_skills.py
 ```
 
-Add the canonical Grimoire instruction block to your agent file by asking your agent to run `/grm-sync agentfile` (it creates a missing instruction file and refreshes a stale block), or run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`.
+Add the canonical Grimoire routing block to your agent file by asking your agent to run `/grm-sync agentfile` (it creates a missing instruction file and refreshes a stale block), or run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`.
 
 ## Layout
 

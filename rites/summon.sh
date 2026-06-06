@@ -416,7 +416,7 @@ else
     mkdir -p "$SCRIPT_DIR/templates" "$SCRIPT_DIR/data"
     echo "  [INFO]  Downloading summoning companion scripts..."
     # summon.py is the dispatcher and summon_core.py is the install engine.
-    # Agent-target and Grimoire block contracts must travel with source
+    # Agent-target and Grimoire routing block contracts must travel with source
     # bootstrap installs. summon_gui.py is only needed when the GUI runs, so
     # skip it for --cli/-h/--help to keep the source bootstrap minimal.
     download_file "$ARCANA_RAW_BASE/rites/summon.py" "$SCRIPT_DIR/summon.py"

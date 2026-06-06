@@ -20,6 +20,8 @@ Grimoire operations that create, update, validate, or audit a grimoire. Arcana m
 | [[invocations/grm/update|update]] | `/grm-update` | Update Arcana and every grimoire in the library to a current, validated, synchronized state |
 | [[invocations/grm/sync|sync]] | `/grm-sync` | Reconcile your local setup: register skills, fix the library after a folder move, repair the agent routing block |
 | [[invocations/grm/import|import]] | `/grm-import` | Bring an existing file or folder in as a cited source and update affected pages |
+| [[invocations/grm/move|move]] | `/grm-move` | Rename or move a page or chapter; fixes every link and hub |
+| [[invocations/grm/remove|remove]] | `/grm-remove` | Delete a page or chapter; flags inbound links that would break |
 | [[invocations/grm/health_check|health check]] | `/grm-health-check` | Full checkup - start here (broken links, orphans, stale or contradictory pages, structure) |
 | [[invocations/grm/repair_links|repair links]] | `/grm-repair-links` | Promote filename-only wikilinks to canonical full-path form |
 | [[invocations/grm/audit_semantics|audit semantics]] | `/grm-audit-semantics` | Advanced, opt-in naming and discoverability review |

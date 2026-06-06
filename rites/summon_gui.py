@@ -1782,7 +1782,7 @@ def _render_preview(state):
         if target["id"] in targets:
             items.append((
                 target["id"],
-                f"Inject Grimoire block into {_display_home_path(target['path'])}",
+                f"Inject Grimoire routing block into {_display_home_path(target['path'])}",
             ))
     if not skip:
         items.append(("skills", "Register /arc-*, /grm-*, and grimoire-prefix skills to agent skills/ dirs"))

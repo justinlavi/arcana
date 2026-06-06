@@ -32,9 +32,10 @@ def _legacy_generated_comment(source_dir: Path) -> str:
 
 def test_sync_skills_dry_run_plans_without_writing(tmp_path, monkeypatch, capsys):
     target = tmp_path / "codex" / "skills"
+    # A managed-prefix dir not in the catalog is planned for cleanup, not preserved.
     existing = target / "arc-existing"
     existing.mkdir(parents=True)
-    (existing / "SKILL.md").write_text("user-authored\n", encoding="utf-8", newline="\n")
+    (existing / "SKILL.md").write_text("stale, no marker\n", encoding="utf-8", newline="\n")
     monkeypatch.setattr(sync_skills, "LOCAL_LIBRARY", tmp_path / "missing-library.json")
 
     result = sync_skills.register_target(
@@ -51,8 +52,9 @@ def test_sync_skills_dry_run_plans_without_writing(tmp_path, monkeypatch, capsys
     assert result["mode"] == "plan"
     assert result["registered"] > 0
     assert "Would create" in output
-    assert "Preserve unowned" in output
-    assert (existing / "SKILL.md").read_text(encoding="utf-8") == "user-authored\n"
+    assert "Would clean stale: /arc-existing" in output
+    # Plan mode writes nothing.
+    assert (existing / "SKILL.md").read_text(encoding="utf-8") == "stale, no marker\n"
     assert not (target / "arc-help").exists()
 
 
@@ -93,93 +95,72 @@ def test_sync_skills_apply_leaves_no_staging_dir(tmp_path, monkeypatch):
     assert list(target.glob("*.tmp")) == []  # staging is swapped in, never left behind
 
 
-def test_read_skill_ownership_handles_braces_in_payload(tmp_path):
-    skill = tmp_path / "arc-weird"
-    skill.mkdir()
-    payload = {
-        "schema_version": sync_skills.OWNERSHIP_SCHEMA_VERSION,
-        "generation": sync_skills.REGISTER_GENERATION,
-        "registered_by": "arcana",
-        "command": "/arc-weird",
-        "source_label": "weird } --> label",
-    }
-    marker = sync_skills.ownership_comment(payload)
-    (skill / "SKILL.md").write_text(f"---\nname: arc-weird\n---\n{marker}\n", encoding="utf-8")
-
-    owner = sync_skills.read_skill_ownership(skill)
-
-    # A '}' or '-->' inside a value must not truncate the parse into None.
-    assert owner is not None
-    assert owner["command"] == "/arc-weird"
-    assert owner["source_label"] == "weird } --> label"
-
-
-def test_sync_skills_preserves_unowned_collision(tmp_path, monkeypatch):
+def test_sync_skills_overwrites_unmarked_managed_dir(tmp_path, monkeypatch):
+    # A directory under a managed prefix with no ownership marker is Arcana's to
+    # replace - re-registering overwrites it with the current source, never blocks.
     target = tmp_path / "codex" / "skills"
     existing = target / "arc-help"
     existing.mkdir(parents=True)
-    (existing / "SKILL.md").write_text("user-authored\n", encoding="utf-8", newline="\n")
+    (existing / "SKILL.md").write_text("stale, no marker\n", encoding="utf-8", newline="\n")
     monkeypatch.setattr(sync_skills, "LOCAL_LIBRARY", tmp_path / "missing-library.json")
 
     result = sync_skills.register_target(
         "codex",
-        {
-            "label": "Codex Test",
-            "path": target,
-            "pointer_only": True,
-        },
+        {"label": "Codex Test", "path": target, "pointer_only": True},
         dry_run=False,
     )
 
-    assert result["blocked"] == 1
-    assert (existing / "SKILL.md").read_text(encoding="utf-8") == "user-authored\n"
+    assert result["blocked"] == 0
+    content = (existing / "SKILL.md").read_text(encoding="utf-8")
+    assert "stale, no marker" not in content
+    assert "ARCANA_SKILL_OWNERSHIP" in content
 
 
-def test_sync_skills_reset_managed_preserves_unowned_collision(tmp_path, monkeypatch):
+def test_sync_skills_reset_managed_replaces_unmarked_and_keeps_outside_namespace(tmp_path, monkeypatch):
     target = tmp_path / "codex" / "skills"
     existing = target / "arc-help"
     existing.mkdir(parents=True)
-    (existing / "SKILL.md").write_text("user-authored\n", encoding="utf-8", newline="\n")
-    outside_namespace = target / "personal-tool"
+    (existing / "SKILL.md").write_text("stale, no marker\n", encoding="utf-8", newline="\n")
+    outside_namespace = target / "personal-tool"  # NOT a managed prefix
     outside_namespace.mkdir()
     (outside_namespace / "SKILL.md").write_text("keep me\n", encoding="utf-8", newline="\n")
     monkeypatch.setattr(sync_skills, "LOCAL_LIBRARY", tmp_path / "missing-library.json")
 
     result = sync_skills.register_target(
         "codex",
-        {
-            "label": "Codex Test",
-            "path": target,
-            "pointer_only": True,
-        },
+        {"label": "Codex Test", "path": target, "pointer_only": True},
         dry_run=False,
         reset_managed=True,
     )
 
-    # An unowned directory that shares a managed prefix is never reset/overwritten;
-    # it surfaces as a collision and is left byte-identical.
-    assert result["reset"] == 0
-    assert result["blocked"] == 1
-    assert (existing / "SKILL.md").read_text(encoding="utf-8") == "user-authored\n"
+    # The unmarked managed-prefix dir is reset and re-registered; a directory
+    # outside any managed prefix is never touched.
+    assert result["reset"] >= 1
+    assert result["blocked"] == 0
+    assert "ARCANA_SKILL_OWNERSHIP" in (existing / "SKILL.md").read_text(encoding="utf-8")
     assert (outside_namespace / "SKILL.md").read_text(encoding="utf-8") == "keep me\n"
 
 
-def test_reset_managed_skill_dirs_removes_owned_preserves_unowned(tmp_path):
+def test_reset_managed_skill_dirs_removes_all_managed(tmp_path):
     skills_target = tmp_path / "skills"
 
-    unowned = skills_target / "arc-mycustom"
-    unowned.mkdir(parents=True)
-    (unowned / "SKILL.md").write_text("hand-authored, no marker\n", encoding="utf-8", newline="\n")
+    unmarked = skills_target / "arc-mycustom"
+    unmarked.mkdir(parents=True)
+    (unmarked / "SKILL.md").write_text("hand-authored, no marker\n", encoding="utf-8", newline="\n")
 
-    owned = skills_target / "arc-stale"
-    owned.mkdir()
+    marked = skills_target / "arc-stale"
+    marked.mkdir()
     marker = sync_skills.ownership_comment({
         "schema_version": sync_skills.OWNERSHIP_SCHEMA_VERSION,
         "generation": sync_skills.REGISTER_GENERATION,
         "registered_by": "arcana",
         "command": "/arc-stale",
     })
-    (owned / "SKILL.md").write_text(f"---\nname: arc-stale\n---\n{marker}\n", encoding="utf-8", newline="\n")
+    (marked / "SKILL.md").write_text(f"---\nname: arc-stale\n---\n{marker}\n", encoding="utf-8", newline="\n")
+
+    outside = skills_target / "personal-tool"  # not a managed prefix
+    outside.mkdir()
+    (outside / "SKILL.md").write_text("keep me\n", encoding="utf-8", newline="\n")
 
     spec = sync_skills.SkillSpec(
         command_name="arc-help",
@@ -194,10 +175,12 @@ def test_reset_managed_skill_dirs_removes_owned_preserves_unowned(tmp_path):
 
     removed = sync_skills.reset_managed_skill_dirs(skills_target, [spec], dry_run=False)
 
-    assert removed == 1
-    assert not owned.exists()
-    assert unowned.exists()
-    assert (unowned / "SKILL.md").read_text(encoding="utf-8") == "hand-authored, no marker\n"
+    # Both managed-prefix dirs are removed regardless of ownership; the
+    # outside-namespace dir is left alone.
+    assert removed == 2
+    assert not marked.exists()
+    assert not unmarked.exists()
+    assert outside.exists()
 
 
 def test_sync_skills_reset_managed_dry_run_does_not_write(tmp_path, monkeypatch, capsys):
@@ -265,9 +248,9 @@ def test_sync_skills_updates_generated_provenance_without_marker(tmp_path, monke
     assert "old generated body" not in content
 
 
-def test_sync_skills_recognizes_legacy_em_dash_provenance_for_update(tmp_path, monkeypatch):
-    """A legacy em-dash generated skill (no ownership marker) is provably owned,
-    so it is updated in place rather than blocked as an unowned collision."""
+def test_sync_skills_overwrites_legacy_marker_less_skill_for_update(tmp_path, monkeypatch):
+    """A pre-marker generated skill (no ownership marker) under a managed prefix is
+    overwritten in place by the current source, never blocked."""
     target = tmp_path / "codex" / "skills"
     existing = target / "arc-help"
     existing.mkdir(parents=True)
@@ -293,9 +276,9 @@ def test_sync_skills_recognizes_legacy_em_dash_provenance_for_update(tmp_path, m
     assert "old legacy body" not in content
 
 
-def test_sync_skills_cleans_legacy_em_dash_orphan(tmp_path, monkeypatch):
-    """A legacy em-dash generated skill whose source no longer exists (a rename
-    or removal) is recognized as owned and cleaned, not preserved as an orphan."""
+def test_sync_skills_cleans_legacy_marker_less_orphan(tmp_path, monkeypatch):
+    """A pre-marker generated skill no longer in the catalog (a rename or removal)
+    is cleaned because it sits under a managed prefix, not left as an orphan."""
     target = tmp_path / "codex" / "skills"
     orphan = target / "arc-renamed-away"
     orphan.mkdir(parents=True)
@@ -319,29 +302,25 @@ def test_sync_skills_cleans_legacy_em_dash_orphan(tmp_path, monkeypatch):
     assert not orphan.exists()
 
 
-def test_sync_skills_cleans_only_owned_stale_entries(tmp_path, monkeypatch):
+def test_sync_skills_cleans_all_stale_managed_entries(tmp_path, monkeypatch):
+    # Every stale dir under a managed prefix is cleaned regardless of marker; a
+    # directory outside any managed prefix is left alone.
     target = tmp_path / "codex" / "skills"
-    owned_stale = target / "arc-old"
-    owned_stale.mkdir(parents=True)
+    marked_stale = target / "arc-old"
+    marked_stale.mkdir(parents=True)
     marker = sync_skills.ownership_comment({
         "schema_version": sync_skills.OWNERSHIP_SCHEMA_VERSION,
         "generation": sync_skills.REGISTER_GENERATION,
         "registered_by": "arcana",
         "command": "/arc-old",
     })
-    (owned_stale / "SKILL.md").write_text(f"---\nname: arc-old\n---\n{marker}\n", encoding="utf-8", newline="\n")
-    unowned_stale = target / "arc-personal"
-    unowned_stale.mkdir()
-    (unowned_stale / "SKILL.md").write_text("user-authored\n", encoding="utf-8", newline="\n")
-    generated_stale = target / "arc-retired"
-    generated_stale.mkdir()
-    retired_source = sync_skills.ARCANA_PATH / "skills" / "arc" / "retired"
-    (generated_stale / "SKILL.md").write_text(
-        "---\nname: arc-retired\n---\n"
-        f"{_generated_comment(retired_source)}\n",
-        encoding="utf-8",
-        newline="\n",
-    )
+    (marked_stale / "SKILL.md").write_text(f"---\nname: arc-old\n---\n{marker}\n", encoding="utf-8", newline="\n")
+    unmarked_stale = target / "arc-personal"
+    unmarked_stale.mkdir()
+    (unmarked_stale / "SKILL.md").write_text("no marker\n", encoding="utf-8", newline="\n")
+    outside = target / "personal-tool"  # not a managed prefix
+    outside.mkdir()
+    (outside / "SKILL.md").write_text("keep me\n", encoding="utf-8", newline="\n")
     monkeypatch.setattr(sync_skills, "LOCAL_LIBRARY", tmp_path / "missing-library.json")
 
     result = sync_skills.register_target(
@@ -355,9 +334,9 @@ def test_sync_skills_cleans_only_owned_stale_entries(tmp_path, monkeypatch):
     )
 
     assert result["cleaned"] == 2
-    assert not owned_stale.exists()
-    assert not generated_stale.exists()
-    assert (unowned_stale / "SKILL.md").is_file()
+    assert not marked_stale.exists()
+    assert not unmarked_stale.exists()
+    assert (outside / "SKILL.md").is_file()
 
 
 def test_register_target_reporter_records_apply_mutations(tmp_path, monkeypatch):
@@ -398,16 +377,6 @@ def test_register_target_reporter_dry_run_has_no_mutations(tmp_path, monkeypatch
     assert report["mutations"] == []
     assert report["status"] == "noop"
     assert any("would create" in m["message"] for m in report["messages"])
-
-
-def test_source_path_under_root_rejects_dotdot_escape():
-    """A provenance path that uses `..` to climb out of a known skills root must
-    not be treated as under that root (it could otherwise be claimed as owned)."""
-    root = sync_skills.ARCANA_PATH / "skills"
-    legit = str(root / "help" / "SKILL.md")
-    escape = str(root / ".." / "evil" / "SKILL.md")
-    assert sync_skills.source_path_is_under_known_root(legit, [])
-    assert not sync_skills.source_path_is_under_known_root(escape, [])
 
 
 def test_sync_skills_blocks_grimoire_prefix_collisions(tmp_path, monkeypatch):

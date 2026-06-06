@@ -12,7 +12,7 @@
       "skill_mode": "full",
       "auto_configured": true,
       "supports_model_invocation": true,
-      "summary": "Arcana injects the Grimoire block and registers full skill folders.",
+      "summary": "Arcana injects the Grimoire routing block and registers full skill folders.",
       "limitations": []
     },
     {
@@ -24,7 +24,7 @@
       "skill_mode": "pointer",
       "auto_configured": true,
       "supports_model_invocation": false,
-      "summary": "Arcana injects the Grimoire block and registers pointer-only SKILL.md folders.",
+      "summary": "Arcana injects the Grimoire routing block and registers pointer-only SKILL.md folders.",
       "limitations": [
         "Registered skill directories contain SKILL.md only."
       ]
@@ -38,7 +38,7 @@
       "skill_mode": "none",
       "auto_configured": false,
       "supports_model_invocation": false,
-      "summary": "Paste the Grimoire block manually into Custom Instructions.",
+      "summary": "Paste the Grimoire routing block manually into Custom Instructions.",
       "limitations": [
         "No local skill directory is available to Arcana."
       ]
@@ -52,7 +52,7 @@
       "skill_mode": "none",
       "auto_configured": false,
       "supports_model_invocation": false,
-      "summary": "Add the Grimoire block manually to repository instructions when useful.",
+      "summary": "Add the Grimoire routing block manually to repository instructions when useful.",
       "limitations": [
         "Project-level files require explicit user approval before editing.",
         "Length limits may require trimming to the core routing sections."
@@ -67,7 +67,7 @@
       "skill_mode": "none",
       "auto_configured": false,
       "supports_model_invocation": false,
-      "summary": "Add the Grimoire block manually to Cursor rules.",
+      "summary": "Add the Grimoire routing block manually to Cursor rules.",
       "limitations": [
         "Arcana does not manage Cursor rule files automatically."
       ]

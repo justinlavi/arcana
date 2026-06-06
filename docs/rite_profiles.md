@@ -35,6 +35,7 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 | `rites/new_page.py` | `plan_apply` | `python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title "<title>"` | `python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title "<title>" --apply` | a new `<grimoire>/chapters/<chapter>/<slug>.md` page |
 | `rites/sync_skills.py` | `plan_apply` | `python rites/sync_skills.py --dry-run` | `python rites/sync_skills.py` | supported agent skill directories |
 | `rites/repair_links.py` | `plan_apply` | `python rites/repair_links.py --grimoire <path>` | `python rites/repair_links.py --grimoire <path> --apply` | active-grimoire Markdown files |
+| `rites/restructure_grimoire.py` | `plan_apply` | `python rites/restructure_grimoire.py --grimoire <path> --move <src> <dst>` | `python rites/restructure_grimoire.py --grimoire <path> --move <src> <dst> --apply` | active-grimoire chapter pages/folders and the wikilinks that target them |
 | `rites/summon.sh` | `apply_only` | none | `bash rites/summon.sh` | install tree, selected grimoires, library, agent files |
 | `rites/summon_core.py` | `apply_only` | none | `python rites/summon.py` | install tree, selected grimoires, library, agent files |
 | `rites/summon_gui.py` | `apply_only` | none | `python rites/summon.py --gui` | GUI settings, install tree, selected grimoires, library, agent files |

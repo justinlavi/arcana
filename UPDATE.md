@@ -105,20 +105,22 @@ per-grimoire classification before writing.
 
 ### 4. Confirm the agent routing block
 
-Step 3's `summon.py --update --apply` already reconciles the marked Grimoire block
-in every automatic instruction target through `rites/inject_agent_file.py`: it
-creates a missing file with `# <title>` and the canonical block, inserts a block
-into a block-less file, and refreshes one clean marked region in place — all
-deterministic. Confirm from the envelope's `agent_blocks` step which targets were
-created, inserted, or refreshed.
+Step 3's `summon.py --update --apply` already reconciles the marked Grimoire
+routing block in every automatic instruction target through
+`rites/inject_agent_file.py`. The block is the region between
+`<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->` and `<!-- END GRIMOIRE KNOWLEDGE BASE -->`,
+and those markers are the whole contract: it creates a missing file with the block
+and refreshes one clean marked region in place — both deterministic. Confirm from
+the envelope's `agent_blocks` step which targets were created or refreshed.
 
-The rite reports a target as **ambiguous** (and writes nothing) only when it has
-duplicate or malformed markers, or a block tangled with hand-authored content.
-Those are the genuinely non-deterministic cases. For each one, read
-`rites/templates/grimoire_block.md` and replace only the marked region by hand,
-preserving all non-Grimoire content; if the boundaries are unclear, stop and ask
-the user. (`/grm-sync agentfile`, or the maintainer's `/arc-sync agentfile`, runs
-this same rite plus the judgment fallback.)
+The rite reports a target for **review** (and writes nothing) when there is no
+clean marked region: a file with no block, a pre-marker block, or duplicate or
+malformed markers. For each one, read `rites/templates/grimoire_block.md` and place
+the canonical block caring only about the marked region — replace an existing
+routing block in any form, or insert one after the first heading — preserving every
+line outside the markers; if the file's intent is unclear, stop and ask the user.
+(`/grm-sync agentfile`, or the maintainer's `/arc-sync agentfile`, runs this same
+rite plus the judgment step.)
 
 ### 5. Final gate
 

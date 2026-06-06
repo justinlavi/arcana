@@ -287,43 +287,61 @@ def test_inject_agent_file_is_idempotent_on_rerun(tmp_path):
     summon_core.inject_agent_file(_FullLog(), target, "AGENTS")
     once = target.read_text(encoding="utf-8")
     assert once.count(summon_core.BEGIN_SENTINEL) == 1
-    assert once.count(summon_core.HEADING_SENTINEL) == 1
+    assert once.count(summon_core.END_SENTINEL) == 1
     # Re-running must not append a second block.
     summon_core.inject_agent_file(_FullLog(), target, "AGENTS")
     twice = target.read_text(encoding="utf-8")
     assert twice == once
 
 
-def test_inject_agent_file_skips_marker_only_block(tmp_path):
-    # A block with BEGIN/END markers but no heading - the case the old
-    # heading-only check would double-inject - is detected and left untouched.
+def test_inject_agent_file_skips_when_current_block_present(tmp_path):
+    # A file already carrying the current canonical block is left untouched.
     target = tmp_path / "AGENTS.md"
     target.write_text(
-        "# AGENTS\n\n"
-        f"{summon_core.BEGIN_SENTINEL}\ncustom block, no heading\n{summon_core.END_SENTINEL}\n",
+        "# AGENTS\n\n" + summon_core.canonical_routing_block() + "\n",
         encoding="utf-8", newline="\n",
     )
     before = target.read_text(encoding="utf-8")
     summon_core.inject_agent_file(_FullLog(), target, "AGENTS")
+    assert target.read_text(encoding="utf-8") == before
+
+
+def test_inject_agent_file_refreshes_stale_marked_block(tmp_path):
+    # One clean BEGIN..END region whose content is out of date is refreshed in
+    # place; surrounding content is preserved and no second block appears.
+    target = tmp_path / "AGENTS.md"
+    target.write_text(
+        f"# AGENTS\nintro\n{summon_core.BEGIN_SENTINEL}\nstale body\n{summon_core.END_SENTINEL}\ntail\n",
+        encoding="utf-8", newline="\n",
+    )
+    summon_core.inject_agent_file(_FullLog(), target, "AGENTS")
     after = target.read_text(encoding="utf-8")
-    assert after == before
+    assert summon_core.canonical_routing_block() in after
+    assert "stale body" not in after and "intro" in after and "tail" in after
     assert after.count(summon_core.BEGIN_SENTINEL) == 1
-    assert summon_core.HEADING_SENTINEL not in after
 
 
-def test_inject_agent_file_skips_legacy_heading_only_block(tmp_path):
-    # A block with the heading but no markers is still detected.
+def test_inject_agent_file_inserts_into_blockless_file_preserving_content(tmp_path):
+    # A file with content but no block signature gets the marked block inserted at
+    # install time; existing user content is preserved.
     target = tmp_path / "AGENTS.md"
-    target.write_text(
-        "# AGENTS\n\n## Grimoire Knowledge Base\n\nlegacy block\n",
-        encoding="utf-8", newline="\n",
-    )
-    before = target.read_text(encoding="utf-8")
+    target.write_text("# AGENTS\n\nmy own notes\n", encoding="utf-8", newline="\n")
     summon_core.inject_agent_file(_FullLog(), target, "AGENTS")
     after = target.read_text(encoding="utf-8")
-    assert after == before
-    assert after.count(summon_core.HEADING_SENTINEL) == 1
-    assert summon_core.BEGIN_SENTINEL not in after
+    assert after.count(summon_core.BEGIN_SENTINEL) == 1
+    assert "my own notes" in after
+
+
+def test_inject_agent_file_never_duplicates_a_legacy_heading_block(tmp_path):
+    # A pre-marker (heading-only) block has no clean markers; the install pass must
+    # leave it for judgment, never append a second block.
+    target = tmp_path / "AGENTS.md"
+    original = "# AGENTS\n## Grimoire Knowledge Base\nlegacy body\n"
+    target.write_text(original, encoding="utf-8", newline="\n")
+    summon_core.inject_agent_file(_FullLog(), target, "AGENTS")
+    after = target.read_text(encoding="utf-8")
+    assert after == original  # untouched
+    assert after.count(summon_core.BEGIN_SENTINEL) == 0
 
 
 # ---------------------------------------------------------------------------

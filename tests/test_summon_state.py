@@ -19,6 +19,9 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 NO_GIT = lambda *a, **k: (False, "")
 OK_VALIDATE = lambda root: (True, "ok")
 
+# A clean, well-formed routing block - the "present" state under marker-only detection.
+BLOCK = f"# Title\n{S.BEGIN_SENTINEL}\n## Grimoire Knowledge Base\n{S.END_SENTINEL}\n"
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -81,7 +84,7 @@ def test_inspect_in_sync_when_library_matches_disk(tmp_path):
     home = _make_home(tmp_path, with_grimoire=False)
     state = S.inspect_install(
         home, REPO_ROOT,
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, registered=2),
         git_fn=NO_GIT,
     )
@@ -93,28 +96,29 @@ def test_inspect_in_sync_when_library_matches_disk(tmp_path):
     "content,expected",
     [
         ("just a file\n", "none"),
-        (f"# Title\n{S.HEADING_SENTINEL}\n", "heading"),
-        (f"# Title\n{S.BEGIN_SENTINEL}\n...\n", "markers"),
-        (f"{S.HEADING_SENTINEL}\n{S.BEGIN_SENTINEL}\n", "both"),
+        ("# Title\n## Grimoire Knowledge Base\nlegacy, no markers\n", "review"),
+        (f"# Title\n{S.BEGIN_SENTINEL}\nbody but no end\n", "review"),
+        (f"{S.BEGIN_SENTINEL}\nbody\n{S.END_SENTINEL}\n", "present"),
+        (f"{S.BEGIN_SENTINEL}\na\n{S.END_SENTINEL}\n{S.BEGIN_SENTINEL}\nb\n{S.END_SENTINEL}\n", "review"),
     ],
 )
-def test_inspect_detects_both_block_sentinels(tmp_path, content, expected):
+def test_inspect_classifies_routing_block_markers(tmp_path, content, expected):
     state = _inspect(tmp_path, block=content, registered=1)
     target = state["agent_targets"][0]
     assert target["block_marker"] == expected
-    assert target["block_present"] is (expected != "none")
+    assert target["block_present"] is (expected == "present")
 
 
-def test_block_present_via_markers_is_not_drift(tmp_path):
-    """A block written with BEGIN/END markers must not be flagged as missing."""
+def test_clean_marked_block_is_not_drift(tmp_path):
+    """One well-formed BEGIN..END region is present, not missing."""
     home = _make_home(tmp_path, with_grimoire=False)
     state = S.inspect_install(
         home, REPO_ROOT,
-        instruction_targets=_instruction_targets(tmp_path, S.BEGIN_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, registered=1),
         git_fn=NO_GIT,
     )
-    assert state["agent_targets"][0]["block_marker"] == "markers"
+    assert state["agent_targets"][0]["block_marker"] == "present"
     assert S._missing_block_ids(state) == []
     assert S.drift_detected(state) is False
 
@@ -153,7 +157,7 @@ def test_stale_entry_is_red_tier_prune_action(tmp_path):
     )
     state = S.inspect_install(
         home, REPO_ROOT,
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, registered=1),
         git_fn=NO_GIT,
     )
@@ -196,7 +200,7 @@ def test_reconcile_apply_writes_library_and_registers_skills(tmp_path):
     calls = []
     out = S.reconcile(
         home, REPO_ROOT, apply=True,
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, 0),
         git_fn=NO_GIT,
         skill_runner=lambda script: (calls.append(script) or (0, "Registered: 3")),
@@ -219,7 +223,7 @@ def test_reconcile_apply_preserves_stale_without_prune(tmp_path):
     )
     S.reconcile(
         home, REPO_ROOT, apply=True, prune=False,
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, 1),
         git_fn=NO_GIT,
         skill_runner=lambda script: (0, ""),
@@ -238,7 +242,7 @@ def test_reconcile_apply_prune_removes_stale(tmp_path):
     )
     out = S.reconcile(
         home, REPO_ROOT, apply=True, prune=True,
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, 1),
         git_fn=NO_GIT,
         skill_runner=lambda script: (0, ""),
@@ -312,7 +316,7 @@ def test_reconcile_apply_blocked_on_broken_base(tmp_path):
     home = _make_home(tmp_path)
     out = S.reconcile(
         home, REPO_ROOT, apply=True,
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, 0),
         git_fn=NO_GIT,
         skill_runner=lambda script: (0, ""),
@@ -328,7 +332,7 @@ def test_reconcile_apply_partial_failure_degrades_status(tmp_path):
     home = _make_home(tmp_path)
     out = S.reconcile(
         home, REPO_ROOT, apply=True,
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, 0),
         git_fn=NO_GIT,
         skill_runner=lambda script: (1, "collision"),  # skills fail
@@ -409,7 +413,7 @@ def test_run_check_exits_0_when_clean(tmp_path, capsys):
     rc = S.run_state_command(
         _args(check=True, home=str(home)),
         transcript_path=tmp_path / "t.json",
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, 2),
         git_fn=NO_GIT,
         now=lambda: "t", run_id="rid",
@@ -422,7 +426,7 @@ def test_run_reconcile_apply_converges_to_exit_0(tmp_path, capsys):
     rc = S.run_state_command(
         _args(reconcile=True, apply=True, home=str(home)),
         transcript_path=tmp_path / "t.json",
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, 1),
         git_fn=NO_GIT,
         skill_runner=lambda script: (0, ""),
@@ -439,7 +443,7 @@ def test_run_reconcile_apply_blocked_exits_1(tmp_path, capsys):
     rc = S.run_state_command(
         _args(reconcile=True, apply=True, home=str(home)),
         transcript_path=tmp_path / "t.json",
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, 0),
         git_fn=NO_GIT,
         skill_runner=lambda script: (0, ""),
@@ -456,7 +460,7 @@ def test_run_reconcile_plan_exits_1_on_drift(tmp_path, capsys):
     rc = S.run_state_command(
         _args(reconcile=True, apply=False, home=str(home)),
         transcript_path=tmp_path / "t.json",
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, 1),
         git_fn=NO_GIT,
         now=lambda: "t", run_id="rid",
@@ -471,7 +475,7 @@ def test_transcript_path_arg_overrides_default(tmp_path, capsys):
     tp = tmp_path / "elsewhere" / "mine.json"
     S.run_state_command(
         _args(check=True, home=str(home), transcript_path=str(tp)),
-        instruction_targets=_instruction_targets(tmp_path, S.HEADING_SENTINEL),
+        instruction_targets=_instruction_targets(tmp_path, BLOCK),
         skill_targets=_skill_targets(tmp_path, 1),
         git_fn=NO_GIT,
         now=lambda: "t", run_id="rid",

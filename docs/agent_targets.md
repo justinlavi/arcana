@@ -37,7 +37,7 @@ configuration, and known limits.
 ## Instruction Modes
 
 - `auto`: the Summoning Rite and `/arc-sync agentfile` can write the canonical
-  Grimoire block to the target instruction file.
+  Grimoire routing block to the target instruction file.
 - `manual`: copy the canonical block from
   [grimoire block](../rites/templates/grimoire_block.md)
   after explicit user approval.

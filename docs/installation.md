@@ -199,7 +199,7 @@ If you can't run the summoning rite (no network, restricted environment, etc.):
 1. Clone Arcana to `~/grimoires/arcana/`.
 2. Clone each grimoire to `~/grimoires/<grimoire-name>/`.
 3. Create `~/grimoires/library.json` with one entry per grimoire (see [reference](reference.md#local-library)).
-4. Add the Grimoire instruction block to the instruction targets listed in [agent targets](agent_targets.md) — the canonical block lives at [grimoire block](../rites/templates/grimoire_block.md). The simplest way to (re)apply it is to ask your agent to run `/grm-sync agentfile`, which creates a missing instruction file and refreshes a stale block. If you have no agent session yet, run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`. (Maintainer equivalent: `/arc-sync agentfile`.)
+4. Add the Grimoire routing block to the instruction targets listed in [agent targets](agent_targets.md) — the canonical block lives at [grimoire block](../rites/templates/grimoire_block.md). The simplest way to (re)apply it is to ask your agent to run `/grm-sync agentfile`, which creates a missing instruction file and refreshes a stale block. If you have no agent session yet, run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`. (Maintainer equivalent: `/arc-sync agentfile`.)
 5. Register skills: the easy path is to ask your agent to run `/grm-sync skills`. If you have no agent session yet, run it directly: `python3 ~/grimoires/arcana/rites/sync_skills.py`.
 
 If an existing installation is far behind and its registered slash commands no
@@ -240,7 +240,7 @@ Pick any grimoire from your library and ask the agent:
 
 > "Read the {grimoire-name} root hub and tell me what chapters it routes to."
 
-The agent should resolve `local_path` from `~/grimoires/library.json`, read `<grimoire>/<grimoire>.md`, and report the chapter list — exactly what's in the file, no invention. If it makes things up or can't find the file, your agent's instruction block is missing the routing rules.
+The agent should resolve `local_path` from `~/grimoires/library.json`, read `<grimoire>/<grimoire>.md`, and report the chapter list — exactly what's in the file, no invention. If it makes things up or can't find the file, your agent's routing block is missing the routing rules.
 
 ### 4. (Optional) Walk a full route
 

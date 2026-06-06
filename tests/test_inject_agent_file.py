@@ -1,8 +1,8 @@
-"""Tests for the deterministic agent instruction-block injector.
+"""Tests for the agent routing-block injector (marker-only).
 
 Every case runs against a temp file so no test reads or writes the real `~`.
-The canonical block text and sentinels are single-sourced from the rite, which
-loads them from summon_core, so the fixtures cannot drift from the template.
+The canonical block and markers are single-sourced from the rite, so the
+fixtures cannot drift from the template.
 """
 
 from pathlib import Path
@@ -11,12 +11,11 @@ import inject_agent_file as I
 
 BEGIN = I.BEGIN_SENTINEL
 END = I.END_SENTINEL
-HEADING = I.HEADING_SENTINEL
 CANON = I.canonical_marked_block()
 
 
 # ---------------------------------------------------------------------------
-# plan_block classification
+# plan_block classification (BEGIN/END markers only)
 # ---------------------------------------------------------------------------
 
 
@@ -24,35 +23,38 @@ def test_plan_absent_is_create():
     assert I.plan_block(None)[0] == "create"
 
 
-def test_plan_blockless_is_insert():
-    assert I.plan_block("# AGENTS\nsome personal notes\n")[0] == "insert"
-
-
 def test_plan_canonical_region_is_present():
     content = f"# AGENTS\nintro\n{CANON}\ntail\n"
     assert I.plan_block(content)[0] == "present"
 
 
-def test_plan_stale_marked_region_is_replace():
+def test_plan_stale_marked_region_is_refresh():
     content = f"# AGENTS\n{BEGIN}\nold body\n{END}\n"
-    assert I.plan_block(content)[0] == "replace"
+    assert I.plan_block(content)[0] == "refresh"
 
 
-def test_plan_legacy_heading_only_is_present():
-    assert I.plan_block(f"# AGENTS\n{HEADING}\nold body\n")[0] == "present"
+def test_plan_blockless_file_is_insert():
+    # No block signature at all - safe to add one mechanically.
+    assert I.plan_block("# AGENTS\nsome personal notes\n")[0] == "insert"
 
 
-def test_plan_duplicate_markers_is_ambiguous():
+def test_plan_legacy_heading_only_is_review():
+    # A pre-marker block (heading, no markers) is block-like but not a clean
+    # region; it goes to the judgment edit so we never append a second block.
+    assert I.plan_block("# AGENTS\n## Grimoire Knowledge Base\nold body\n")[0] == "review"
+
+
+def test_plan_duplicate_markers_is_review():
     content = f"{BEGIN}\na\n{END}\n{BEGIN}\nb\n{END}\n"
-    assert I.plan_block(content)[0] == "ambiguous"
+    assert I.plan_block(content)[0] == "review"
 
 
-def test_plan_begin_without_end_is_ambiguous():
-    assert I.plan_block(f"# AGENTS\n{BEGIN}\nbody but no end marker\n")[0] == "ambiguous"
+def test_plan_begin_without_end_is_review():
+    assert I.plan_block(f"# AGENTS\n{BEGIN}\nbody but no end marker\n")[0] == "review"
 
 
 # ---------------------------------------------------------------------------
-# apply_block writes
+# apply_block writes only create / refresh
 # ---------------------------------------------------------------------------
 
 
@@ -75,16 +77,6 @@ def test_apply_is_idempotent_on_rerun(tmp_path):
     assert first.count(BEGIN) == 1
 
 
-def test_apply_inserts_into_blockless_file(tmp_path):
-    target = tmp_path / "CLAUDE.md"
-    target.write_text("# CLAUDE\n\nmy own project rules\n", encoding="utf-8")
-    result = I.apply_block(target, "CLAUDE", apply=True)
-    assert result["action"] == "insert" and result["status"] == "ok"
-    content = target.read_text(encoding="utf-8")
-    assert content.count(BEGIN) == 1
-    assert "my own project rules" in content  # user content preserved
-
-
 def test_apply_refreshes_stale_region_and_preserves_surrounding(tmp_path):
     target = tmp_path / "CLAUDE.md"
     target.write_text(
@@ -92,20 +84,39 @@ def test_apply_refreshes_stale_region_and_preserves_surrounding(tmp_path):
         encoding="utf-8",
     )
     result = I.apply_block(target, "CLAUDE", apply=True)
-    assert result["action"] == "replace" and result["status"] == "ok"
+    assert result["action"] == "refresh" and result["status"] == "ok"
     content = target.read_text(encoding="utf-8")
     assert CANON in content and "stale body" not in content
     assert "intro line" in content and "my own tail" in content
     assert content.count(BEGIN) == 1
 
 
-def test_apply_skips_ambiguous_without_writing(tmp_path):
+def test_apply_inserts_into_blockless_file_preserving_content(tmp_path):
+    target = tmp_path / "CLAUDE.md"
+    target.write_text("# CLAUDE\n\nmy own project rules\n", encoding="utf-8")
+    result = I.apply_block(target, "CLAUDE", apply=True)
+    assert result["action"] == "insert" and result["status"] == "ok"
+    content = target.read_text(encoding="utf-8")
+    assert content.count(BEGIN) == 1 and "my own project rules" in content
+
+
+def test_apply_legacy_heading_only_is_review_without_writing(tmp_path):
+    # A pre-marker block must never be duplicated by a mechanical pass.
+    target = tmp_path / "CLAUDE.md"
+    original = "# CLAUDE\n## Grimoire Knowledge Base\nlegacy body\n"
+    target.write_text(original, encoding="utf-8")
+    result = I.apply_block(target, "CLAUDE", apply=True)
+    assert result["action"] == "review" and result["status"] == "review"
+    assert target.read_text(encoding="utf-8") == original  # untouched - judgment upgrades it
+
+
+def test_apply_malformed_markers_is_review_without_writing(tmp_path):
     target = tmp_path / "CLAUDE.md"
     original = f"{BEGIN}\na\n{END}\n{BEGIN}\nb\n{END}\n"
     target.write_text(original, encoding="utf-8")
     result = I.apply_block(target, "CLAUDE", apply=True)
-    assert result["action"] == "ambiguous" and result["status"] == "skipped"
-    assert target.read_text(encoding="utf-8") == original  # untouched
+    assert result["action"] == "review" and result["status"] == "review"
+    assert target.read_text(encoding="utf-8") == original
 
 
 def test_plan_mode_writes_nothing(tmp_path):

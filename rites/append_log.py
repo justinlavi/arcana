@@ -19,7 +19,7 @@ Usage:
 Args:
     --grimoire   Path to the grimoire root (default: cwd)
     --op         One of: import, query, health-check, improve,
-                 rebuild-index, create, manual
+                 rebuild-index, create, move, remove, manual
     --title      Short human-readable title for the entry
     --skill      The skill that performed the operation (or 'manual')
     --field      Repeatable: extra `key=value` lines to add to the entry body
@@ -38,7 +38,7 @@ from diagnostics import ResultReporter, add_output_format_arg
 # Grimoire-content operations. See formulae/log_entry.formula.md (Scope) for the entry rules.
 VALID_OPS = {
     "import", "query", "health-check", "improve",
-    "rebuild-index", "create", "manual",
+    "rebuild-index", "create", "move", "remove", "manual",
 }
 
 

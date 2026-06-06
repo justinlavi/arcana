@@ -48,11 +48,9 @@ Mutation profile: `plan_apply` via `rites/sync_skills.py`. Apply directly when t
 python3 ARCANA_HOME/rites/sync_skills.py --grimoire GRIMOIRE_ROOT
 ```
 
-On Windows, use `python` instead of `python3`. Then tell the user how many Arcana and active-grimoire skills were registered, how many owned stale registrations were cleaned, how many unowned directories were preserved, any collisions, and which agent targets were written.
+On Windows, use `python` instead of `python3`. Then tell the user how many Arcana and active-grimoire skills were registered, how many stale skills were cleaned, any collisions, and which agent targets were written. The `arc-`, `grm-`, and grimoire prefixes are Arcana-owned namespaces, so a stale skill in one (not in the current catalog) is removed automatically; skills outside every managed prefix are left untouched.
 
-If the rite reports `Preserve unowned` entries or `without Arcana ownership marker` collisions under this grimoire's prefix, apply the propose-then-confirm judgment in [[invocations/meta/skill_orphan_reconcile|skill orphan reconcile]] to classify and, on one confirmation, remove stale Arcana artifacts - then re-register.
-
-Optional flags: `--dry-run` (preview), `--reset-managed` (replace managed namespaces after major command-family changes), `--agent claude|codex` (one target), `--format json` (structured envelope).
+Optional flags: `--dry-run` (preview), `--reset-managed` (clear the managed namespaces and write the catalog fresh, after major command-family changes), `--agent claude|codex` (one target), `--format json` (structured envelope).
 
 ---
 
@@ -90,7 +88,7 @@ Mutation profile: `plan_apply` via `rites/inject_agent_file.py`. Create or refre
 python3 ARCANA_HOME/rites/inject_agent_file.py
 ```
 
-The rite classifies each automatic instruction target: a missing file will be **created** with the canonical block; a block-less file will get one **inserted**; a single clean marked region will be **refreshed**; a file with duplicate or malformed markers is reported **ambiguous** and left untouched.
+The routing block is the region between `<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->` and `<!-- END GRIMOIRE KNOWLEDGE BASE -->`; those markers are the whole contract. The rite classifies each automatic instruction target from them alone: a missing file is **created** with the block; a single clean marked region is **refreshed** in place; anything else - a file with no block, a pre-marker block, or duplicate/malformed markers - is reported for **review** and left untouched.
 
 ### 2. Apply the deterministic changes
 
@@ -100,9 +98,14 @@ python3 ARCANA_HOME/rites/inject_agent_file.py --apply
 
 Creating a missing file and refreshing one clean marked region are deterministic and safe. Target one agent with `--agent claude|codex`.
 
-### 3. Resolve ambiguous targets by judgment
+### 3. Resolve review targets by judgment
 
-For any target the rite reports as `ambiguous` (duplicate or malformed markers, or a block tangled with hand-authored content), apply the conservative patch procedure in [[invocations/arc/sync|sync]] (the `agentfile` sub-target): replace only the marked region, preserve all non-Grimoire content, and stop and ask if the boundaries are unclear. Never rewrite a project-level instruction file without confirmation.
+For any target the rite reports as `review`, read the file and place the canonical block correctly, caring only about the marked region:
+
+- If the file has a routing block in any form - a malformed marked region, or a pre-marker `## Grimoire Knowledge Base` section - replace it with the canonical block (the full `<!-- BEGIN ... -->` ... `<!-- END ... -->` from `ARCANA_HOME/rites/templates/grimoire_block.md`).
+- If the file has no block at all, insert the canonical block after the first top-level heading, or at the end.
+
+Preserve every line outside the markers exactly - the user's own agent instructions live there and you never touch them, just as the user never edits inside the block. Stop and ask if the file's intent is genuinely unclear, and never edit a project-level instruction file without confirmation.
 
 ---
 

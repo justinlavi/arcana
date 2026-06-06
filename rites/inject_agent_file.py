@@ -1,31 +1,32 @@
 #!/usr/bin/env python3
-"""Agent instruction-block injector - deterministic create / insert / refresh.
+"""Agent routing-block injector - deterministic create / refresh, judgment for the rest.
 
 Sister to `sync_skills.py` (skill registration) and `sync_library.py` (library
-reconciliation). Where those keep the skill directories and the library in sync
-with reality, this rite keeps the marked Grimoire routing block in each
-automatic agent instruction file (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`,
-...) in sync with the canonical template.
+reconciliation). This rite keeps the Grimoire routing block - the region between
+`<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->` and `<!-- END GRIMOIRE KNOWLEDGE BASE -->` -
+current in each agent instruction file (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`).
 
-It handles the mechanical majority deterministically and leaves only genuinely
-ambiguous files to a human/AI judgment edit:
+The BEGIN/END markers are the sole contract. Everything between them is
+Arcana-owned and the user never edits it; everything outside is the user's. The
+rite does only what is unambiguous from those markers:
 
-  * absent file    -> create it with `# <title>` and the canonical block
-  * file, no block -> insert the canonical block
-  * one clean marked region -> refresh it in place (idempotent: a block that
-    already matches the template is left untouched)
-  * legacy heading-only block (no BEGIN/END markers) -> reported present,
-    left as-is (upgrading it has no marker boundary, so it is judgment work)
-  * duplicate or malformed markers -> reported ambiguous and skipped, for the
-    `/grm-sync agentfile` (or `/arc-sync agentfile`) judgment edit
+  * absent file                 -> create it with a heading and the block
+  * exactly one clean BEGIN..END -> refresh it in place (idempotent: a block that
+                                    already matches the template is left alone)
+  * anything else               -> report `review` and write nothing
 
-The canonical block text and the BEGIN/END/heading sentinels are single-sourced
-from `summon_core`, so this detector and the install-time injector can never
-disagree. Writes are UTF-8 without BOM and LF line endings.
+`review` covers every delicate case: a file with no block, a block with
+duplicate or malformed markers, or a pre-marker block from an old install. These
+are not mechanical decisions - the agentfile judgment edit (in the /grm-sync and
+/arc-sync invocations) reads the file, finds or upgrades the block caring only
+about the marked region, and preserves all user content outside it. The rite
+never guesses and never duplicates.
 
-Mutation profile: plan_apply. The default mode plans (reports per-target
-actions without writing); `--apply` performs the deterministic create/insert/
-refresh actions.
+The block text and markers are single-sourced from `summon_core`. Writes are
+UTF-8 without BOM and LF line endings.
+
+Mutation profile: plan_apply. The default plans; `--apply` performs the
+deterministic create/refresh.
 
 Usage:
     python3 inject_agent_file.py [--agent all|TARGET] [--apply] [--arcana-root PATH]
@@ -46,83 +47,37 @@ from diagnostics import ResultReporter, add_output_format_arg
 
 BEGIN_SENTINEL = summon_core.BEGIN_SENTINEL
 END_SENTINEL = summon_core.END_SENTINEL
-HEADING_SENTINEL = summon_core.HEADING_SENTINEL
 
 # Actions that write to disk under --apply.
-WRITING_ACTIONS = ("create", "insert", "replace")
+WRITING_ACTIONS = ("create", "insert", "refresh")
 
-
-class _QuietLog:
-    """No-op logger so the reused summon_core injector stays silent here.
-
-    This rite renders its own per-target lines from the structured results; the
-    underlying summon_core.inject_agent_file only calls .info/.ok.
-    """
-
-    def info(self, msg: str) -> None:  # noqa: D401 - logger surface
-        pass
-
-    def ok(self, msg: str) -> None:
-        pass
-
-    def warn(self, msg: str) -> None:
-        pass
-
-    def err(self, msg: str) -> None:
-        pass
-
-    def line(self, text: str) -> None:
-        pass
+REASONS = {
+    "create": "file absent",
+    "present": "routing block present and current",
+    "refresh": "routing block out of date",
+    "insert": "no routing block - safe to add",
+    "review": "block-like but not one clean BEGIN..END region",
+}
 
 
 def canonical_marked_block() -> str:
     """Return the canonical BEGIN..END block with no surrounding blank lines."""
-    return summon_core.GRIMOIRE_BLOCK.strip()
+    return summon_core.canonical_routing_block()
 
 
 def plan_block(content: str | None) -> tuple[str, str]:
-    """Classify the action one target needs. Returns (action, reason).
-
-    `content` is the file text, or None when the file does not exist. `action`
-    is one of: create, insert, replace, present, ambiguous.
-    """
-    if content is None:
-        return "create", "file absent"
-
-    has_begin = BEGIN_SENTINEL in content
-    has_end = END_SENTINEL in content
-    has_heading = HEADING_SENTINEL in content
-
-    if not has_begin and not has_end:
-        if has_heading:
-            return "present", "legacy heading-only block"
-        return "insert", "no Grimoire block"
-
-    if content.count(BEGIN_SENTINEL) == 1 and content.count(END_SENTINEL) == 1:
-        begin = content.find(BEGIN_SENTINEL)
-        end = content.find(END_SENTINEL)
-        if begin < end:
-            region = content[begin : end + len(END_SENTINEL)]
-            if region == canonical_marked_block():
-                return "present", "canonical block present"
-            return "replace", "refresh marked block"
-
-    return "ambiguous", "duplicate or malformed Grimoire markers"
-
-
-def _refresh_marked_region(content: str) -> str:
-    """Replace the single clean BEGIN..END region with the canonical block."""
-    begin = content.find(BEGIN_SENTINEL)
-    end = content.find(END_SENTINEL) + len(END_SENTINEL)
-    return content[:begin] + canonical_marked_block() + content[end:]
+    """Classify the action one target needs (shared classifier in summon_core)."""
+    action = summon_core.classify_routing_block(content)
+    return action, REASONS[action]
 
 
 def apply_block(path: Path, title: str, *, apply: bool) -> dict[str, Any]:
     """Plan, and under `apply` perform, the block action for one target.
 
     Returns {"path", "action", "reason", "status"}. `status` is "planned" in
-    plan mode; in apply mode it is "ok" (wrote), "noop" (already present), or
-    "skipped" (ambiguous - left for the judgment edit).
+    plan mode; in apply mode it is "ok" (wrote), "noop" (already current), or
+    "review" (handed to the judgment edit - the rite wrote nothing). The rite
+    never appends over a block-like file, so it can never create a duplicate.
     """
     path = Path(path)
     content = path.read_text(encoding="utf-8", errors="replace") if path.is_file() else None
@@ -136,16 +91,26 @@ def apply_block(path: Path, title: str, *, apply: bool) -> dict[str, Any]:
     if not apply:
         return result
 
-    if action in ("create", "insert"):
-        # summon_core.inject_agent_file creates an absent file with `# <title>`
-        # and inserts the canonical block, or inserts into a block-less file.
-        summon_core.inject_agent_file(_QuietLog(), path, title)
+    if action == "create":
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"# {title}\n" + summon_core.GRIMOIRE_BLOCK, encoding="utf-8", newline="\n")
         result["status"] = "ok"
-    elif action == "replace":
-        path.write_text(_refresh_marked_region(content), encoding="utf-8", newline="\n")
+    elif action == "insert":
+        if content.startswith(f"# {title}"):
+            cut = content.index("\n") + 1 if "\n" in content else len(content)
+            new = content[:cut] + summon_core.GRIMOIRE_BLOCK + content[cut:]
+        else:
+            new = content + summon_core.GRIMOIRE_BLOCK
+        path.write_text(new, encoding="utf-8", newline="\n")
         result["status"] = "ok"
-    elif action == "ambiguous":
-        result["status"] = "skipped"
+    elif action == "refresh":
+        begin = content.find(BEGIN_SENTINEL)
+        end = content.find(END_SENTINEL) + len(END_SENTINEL)
+        path.write_text(content[:begin] + canonical_marked_block() + content[end:],
+                        encoding="utf-8", newline="\n")
+        result["status"] = "ok"
+    elif action == "review":
+        result["status"] = "review"
     return result
 
 
@@ -164,19 +129,19 @@ def _record(reporter: ResultReporter, target: dict[str, Any], result: dict[str, 
     action = result["action"]
     if action in WRITING_ACTIONS:
         if apply:
-            reporter.mutation(action, path=path, detail=f"{action} Grimoire block in {tid}")
+            reporter.mutation(action, path=path, detail=f"{action} routing block in {tid}")
         else:
-            reporter.message("info", f"would {action} Grimoire block in {tid} ({path})", path=path)
-    elif action == "ambiguous":
+            reporter.message("info", f"would {action} routing block in {tid} ({path})", path=path)
+    elif action == "review":
         reporter.message(
             "warning",
-            f"{tid}: {result['reason']} - left for the agentfile judgment edit ({path})",
+            f"{tid}: {result['reason']} - handed to the agentfile judgment edit ({path})",
             path=path,
         )
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Agent instruction-block injector")
+    parser = argparse.ArgumentParser(description="Agent routing-block injector")
     parser.add_argument(
         "--agent",
         default="all",
@@ -185,7 +150,7 @@ def main() -> int:
     parser.add_argument(
         "--apply",
         action="store_true",
-        help="Create, insert, or refresh the Grimoire block (default: plan only)",
+        help="Create or refresh the routing block (default: plan only)",
     )
     parser.add_argument(
         "--arcana-root",
@@ -206,23 +171,24 @@ def main() -> int:
 
     if human:
         print()
-        print("  Agent Instruction Block Injector")
-        print("  --------------------------------")
+        print("  Agent Routing-Block Injector")
+        print("  ----------------------------")
         if not args.apply:
             print("  [INFO]  Plan mode - no files will be written")
         print()
 
     if not targets:
+        message = f"no automatic instruction target matched --agent {args.agent!r}"
         if human:
-            print(f"  [WARN]  No automatic instruction target matched --agent {args.agent!r}")
+            print(f"  [WARN]  {message}")
             print()
         else:
-            reporter.message("warning", f"no automatic instruction target matched --agent {args.agent!r}")
+            reporter.message("warning", message)
             reporter.emit(args.format, summary={"created": 0, "inserted": 0, "refreshed": 0,
-                                                "present": 0, "ambiguous": 0})
+                                                "present": 0, "review": 0})
         return 0
 
-    counts = {"create": 0, "insert": 0, "replace": 0, "present": 0, "ambiguous": 0}
+    counts = {"create": 0, "insert": 0, "refresh": 0, "present": 0, "review": 0}
     for target in targets:
         result = apply_block(Path(target["path"]), target.get("title") or Path(target["path"]).name,
                              apply=args.apply)
@@ -232,34 +198,29 @@ def main() -> int:
             verb = {
                 "create": "would create" if not args.apply else "created",
                 "insert": "would insert into" if not args.apply else "inserted into",
-                "replace": "would refresh" if not args.apply else "refreshed",
+                "refresh": "would refresh" if not args.apply else "refreshed",
                 "present": "present (no change)",
-                "ambiguous": "ambiguous - needs the agentfile judgment edit",
+                "review": f"needs the agentfile judgment edit - {result['reason']}",
             }[result["action"]]
-            print(f"  [{ 'OK' if result['status'] in ('ok', 'noop') else 'WARN' }]    "
-                  f"{target.get('id')}: {verb} ({target.get('path')})")
+            tag = "OK" if result["status"] in ("ok", "noop", "planned") and result["action"] != "review" else "WARN"
+            print(f"  [{tag}]    {target.get('id')}: {verb} ({target.get('path')})")
 
     summary = {
         "created": counts["create"],
         "inserted": counts["insert"],
-        "refreshed": counts["replace"],
+        "refreshed": counts["refresh"],
         "present": counts["present"],
-        "ambiguous": counts["ambiguous"],
+        "review": counts["review"],
     }
 
     if human:
         print()
-        if args.apply:
-            print(f"  Created {counts['create']}, inserted {counts['insert']}, "
-                  f"refreshed {counts['replace']}, present {counts['present']}, "
-                  f"ambiguous {counts['ambiguous']}.")
-        else:
-            print(f"  Plan: create {counts['create']}, insert {counts['insert']}, "
-                  f"refresh {counts['replace']}, present {counts['present']}, "
-                  f"ambiguous {counts['ambiguous']}.")
-        if counts["ambiguous"]:
-            print("  Ambiguous targets keep existing content; refresh them with the "
-                  "agentfile judgment edit.")
+        prefix = "Plan:" if not args.apply else "Done:"
+        print(f"  {prefix} create {counts['create']}, insert {counts['insert']}, "
+              f"refresh {counts['refresh']}, present {counts['present']}, review {counts['review']}.")
+        if counts["review"]:
+            print("  Review targets keep their content unchanged; resolve them with the "
+                  "agentfile judgment edit (/grm-sync agentfile).")
         print()
     else:
         reporter.emit(args.format, summary=summary)

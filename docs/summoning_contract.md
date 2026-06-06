@@ -41,7 +41,7 @@ Every source install path, CLI or GUI, must preserve this install order:
 3. Optionally discover grimoires from a GitHub/GitLab scope.
 4. Optionally install selected grimoires.
 5. Update `~/grimoires/library.json` for installed grimoires.
-6. Inject supported agent instruction blocks.
+6. Inject supported agent routing blocks.
 7. Register Arcana and grimoire skills.
 8. Report completion or update instructions.
 

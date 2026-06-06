@@ -22,7 +22,7 @@ Design rules (mirrors the deferred-fragility and autonomy boundaries):
 * `--reconcile --apply` repairs the library (additively) and re-syncs
   skills. It refuses on a base that fails `validate.py` (no repair on a broken
   tree), never deletes a library entry unless `--prune` is given, and never
-  rewrites agent instruction blocks (the BEGIN/END vs heading sentinel
+  rewrites agent routing blocks (the BEGIN/END vs heading sentinel
   mismatch makes that non-deterministic - it is reported, not performed).
 * `--check` and `--reconcile` stay offline; the network-aware `--update` (in
   `update_grimoires.py`) pulls every library grimoire before healing. Pulling
@@ -46,12 +46,9 @@ from diagnostics import ResultReporter, add_output_format_arg
 
 SCHEMA_VERSION = 1
 
-# Idempotency sentinels for the injected Grimoire block. A block written by any
-# path - the injector, the template, UPDATE.md, or /arc-sync agentfile - counts
-# as present when EITHER sentinel is found; reporting only one would mislabel the
-# other as drift and invite a double-injection. Single-sourced from summon_core
-# (the injector) so the detector and the injector can never disagree.
-from summon_core import BEGIN_SENTINEL, HEADING_SENTINEL
+# The Grimoire routing block is defined solely by its BEGIN/END markers, single-
+# sourced from summon_core so the detector and the injector cannot disagree.
+from summon_core import BEGIN_SENTINEL, END_SENTINEL, BLOCK_HEADING
 
 NETWORK_PULL_NOTE = "skipped (human-gated; see UPDATE.md step 2)"
 
@@ -76,16 +73,20 @@ def default_transcript_path() -> Path:
 
 
 def _detect_block_marker(content: str) -> str:
-    """Classify how an agent instruction file carries the Grimoire block."""
-    has_heading = HEADING_SENTINEL in content
-    has_markers = BEGIN_SENTINEL in content
-    if has_heading and has_markers:
-        return "both"
-    if has_heading:
-        return "heading"
-    if has_markers:
-        return "markers"
-    return "none"
+    """Classify how an agent instruction file carries the Grimoire routing block.
+
+    "present" is exactly one well-formed BEGIN..END region; "none" is no block at
+    all (not even the heading); "review" is anything block-like that is not one
+    clean region (a stray/duplicate marker, or a pre-marker heading-only block)
+    and must be resolved by the agentfile judgment edit.
+    """
+    n_begin = content.count(BEGIN_SENTINEL)
+    n_end = content.count(END_SENTINEL)
+    if n_begin == 1 and n_end == 1 and content.find(BEGIN_SENTINEL) < content.find(END_SENTINEL):
+        return "present"
+    if n_begin == 0 and n_end == 0 and BLOCK_HEADING not in content:
+        return "none"
+    return "review"
 
 
 def _instruction_targets(arcana_root: Path, override: Any) -> list[dict[str, Any]]:
@@ -156,7 +157,7 @@ def inspect_install(
         "warnings": list(scan["warnings"]),
     }
 
-    # Agent instruction blocks
+    # Agent routing blocks
     agent_state = []
     for target in _instruction_targets(arcana_root, instruction_targets):
         path = Path(target["path"])
@@ -174,7 +175,7 @@ def inspect_install(
             "path": str(path),
             "title": target.get("title") or path.name,
             "instruction_file_exists": exists,
-            "block_present": marker != "none",
+            "block_present": marker == "present",
             "block_marker": marker,
         })
 
@@ -216,7 +217,8 @@ def _skills_absent(state: dict[str, Any]) -> bool:
 
 
 def _missing_block_ids(state: dict[str, Any]) -> list[str]:
-    return [a["id"] for a in state["agent_targets"] if a["block_marker"] == "none"]
+    """Ids whose routing block is not cleanly present (absent, or needs review)."""
+    return [a["id"] for a in state["agent_targets"] if a["block_marker"] != "present"]
 
 
 def drift_detected(state: dict[str, Any]) -> bool:
@@ -265,7 +267,7 @@ def next_actions(state: dict[str, Any], arcana_root: Path) -> list[dict[str, Any
             "kind": "agent_block_update",
             "tier": "amber",
             "command": "/grm-sync agentfile",
-            "reason": f"agent instruction block absent for: {', '.join(missing_blocks)}",
+            "reason": f"agent routing block absent for: {', '.join(missing_blocks)}",
         })
     if _skills_absent(state):
         actions.append({
@@ -302,7 +304,7 @@ def residual(state: dict[str, Any], *, prune: bool) -> list[dict[str, Any]]:
         items.append({
             "kind": "agent_block",
             "tier": "amber",
-            "reason": f"agent instruction block must be refreshed via /grm-sync agentfile for: {', '.join(missing_blocks)}",
+            "reason": f"agent routing block must be refreshed via /grm-sync agentfile for: {', '.join(missing_blocks)}",
         })
     if not state["arcana"]["working_tree_populated"]:
         items.append({
@@ -333,7 +335,7 @@ def _default_skill_runner(register_script: Path) -> tuple[int, str]:
 
 
 def _default_agent_injector(path: Path, title: str, *, apply: bool) -> dict[str, Any]:
-    """Create / insert / refresh the marked Grimoire block in one agent file.
+    """Create / insert / refresh the marked Grimoire routing block in one agent file.
 
     Lazy import keeps summon_state importable without pulling the injector at
     module load, and avoids any import-time cycle. The injector is deterministic
@@ -517,7 +519,7 @@ def _reconcile_agent_blocks(
     reporter: ResultReporter,
     injector: Callable | None = None,
 ) -> dict[str, Any]:
-    """Create, insert, or refresh the marked Grimoire block in each agent file.
+    """Create, insert, or refresh the marked Grimoire routing block in each agent file.
 
     Deterministic for the common cases - an absent file is created with the
     canonical block, a block-less file gets one inserted, and a single clean
@@ -527,7 +529,7 @@ def _reconcile_agent_blocks(
     Plan mode writes nothing and reports what `--apply` would do.
     """
     injector = injector or _default_agent_injector
-    step = {"id": "agent_blocks", "label": "Agent instruction blocks", "status": "noop",
+    step = {"id": "agent_blocks", "label": "Agent routing blocks", "status": "noop",
             "mutations": [], "messages": []}
 
     wrote = False
@@ -538,22 +540,22 @@ def _reconcile_agent_blocks(
         result = injector(Path(path), title, apply=apply)
         action = result["action"]
         tid = target["id"]
-        if action in ("create", "insert", "replace"):
+        if action in ("create", "insert", "refresh"):
             if apply:
-                reporter.mutation("write", path=path, detail=f"{action} agent block {tid}")
+                reporter.mutation("write", path=path, detail=f"{action} routing block {tid}")
                 step["mutations"].append({"action": "write", "path": path,
                                           "detail": f"{action} {tid}"})
                 wrote = True
             else:
-                text = f"agent_blocks: would {action} Grimoire block for {tid}"
+                text = f"agent_blocks: would {action} routing block for {tid}"
                 reporter.message("info", text)
                 step["messages"].append({"severity": "info", "message": text})
                 drift = True
-        elif action == "ambiguous":
+        elif action == "review":
             text = (
-                f"agent_blocks: {tid} has duplicate or malformed Grimoire markers - "
-                "refresh with /grm-sync agentfile (or /arc-sync agentfile); not auto-written "
-                "because its boundaries are ambiguous"
+                f"agent_blocks: {tid} - {result.get('reason', 'needs review')}; resolve with "
+                "/grm-sync agentfile (or /arc-sync agentfile). Not auto-written: there is no "
+                "clean routing block to create or refresh mechanically."
             )
             reporter.message("warning", text)
             step["messages"].append({"severity": "warning", "message": text})
@@ -793,10 +795,10 @@ def _print_human(operation: str, state: dict[str, Any], result_steps, drift, tra
             f"~{len(lib['mismatched'])} mismatched, !{len(lib['stale'])} stale"
         )
     for a in state["agent_targets"]:
-        if a["block_marker"] == "none":
-            log.warn(f"Agent block absent: {a['id']} ({a['path']})")
+        if a["block_marker"] == "present":
+            log.ok(f"Routing block present: {a['id']}")
         else:
-            log.ok(f"Agent block present ({a['block_marker']}): {a['id']}")
+            log.warn(f"Routing block {a['block_marker']}: {a['id']} ({a['path']})")
     total_skills = sum(s["arcana_managed_count"] for s in state["skills"])
     (log.ok if total_skills else log.warn)(f"Synced skills: {total_skills}")
     if grimoires is not None:
