@@ -112,7 +112,7 @@ Adding `when_to_use` makes a skill discoverable by intent in Claude Code (the us
 When adding a new skill, decide: does the user describe a *problem* that maps to this skill? If yes, give it a `when_to_use`. If the skill is destructive or maintainer-only, set `disable-model-invocation: true`.
 
 Arcana declares command families in `arcana.json`:
-- `arc-*` for Arcana platform operations, including maintainer validation, library, agent, workspace, and help commands.
+- `arc-*` for Arcana platform and maintainer operations: the engine, the home library, agent files, and agent skill directories (validate, sync, adopt, clean, update, improve, help).
 - `grm-*` for universal grimoire operations that act on the active grimoire.
 
 Normal grimoires declare one skill prefix in their own `grimoire.json`, such as `jpn-*` or `oly-*`.

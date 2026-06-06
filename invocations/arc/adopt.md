@@ -2,7 +2,7 @@
 type: playbook
 title: "Adopt Grimoire"
 aliases: ["library-adopt", "adopt-grimoire"]
-tags: [arcana/invocations, type/playbook, scope/library]
+tags: [arcana/invocations, type/playbook, scope/arcana]
 authority: grimoire
 last_verified: 2026-05-25
 ---

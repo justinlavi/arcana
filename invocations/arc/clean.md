@@ -2,7 +2,7 @@
 type: playbook
 title: "Clean Workspace Artifacts"
 aliases: ["workspace-clean", "clean-artifacts"]
-tags: [arcana/invocations, type/playbook, scope/workspace]
+tags: [arcana/invocations, type/playbook, scope/arcana]
 authority: grimoire
 last_verified: 2026-05-25
 ---

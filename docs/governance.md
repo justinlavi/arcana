@@ -135,7 +135,7 @@ contracts.
 Include in Arcana if it applies to **every** grimoire that references it:
 
 - **Documentation**: README, installation, operating model, reference, governance.
-- **Invocations**: grimoire operations, Arcana maintenance, agent configuration, library management, workspace operations, help, and shared meta fragments.
+- **Invocations**: grimoire operations (`invocations/grm/`), Arcana maintenance (`invocations/arc/`, with sync, adopt, clean, validators, and quality sub-areas), and shared meta fragments (`invocations/meta/`).
 - **Formulae**: grimoire scaffold, chapter hubs, pages, sources, log entries, and invocation skeletons.
 - **Rites**: validation, registration, library sync, etc.
 - **Resources**: branding assets.

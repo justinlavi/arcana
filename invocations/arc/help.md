@@ -2,7 +2,7 @@
 type: playbook
 title: "Help"
 aliases: ["help", "skill-catalog"]
-tags: [arcana/invocations, type/playbook, scope/help]
+tags: [arcana/invocations, type/playbook, scope/arcana]
 authority: grimoire
 last_verified: 2026-05-25
 ---
