@@ -27,7 +27,7 @@ Show a grimoire author the commands they reach for from inside a grimoire: the `
 
 ### 1. Show the /grm-* command family
 
-Read [[docs/skills|skills]] and present its `/grm-*` rows - the grimoire operations. It is the canonical, sync-generated list. If `docs/skills.md` is missing, fall back to scanning `skills/grm/*/SKILL.md` and warn that it should be regenerated with `python3 rites/sync_docs.py --apply`.
+Read [[docs/skills|skills]] and present its catalog rows for the `/grm-*` commands (Command / what it does) - the grimoire operations. Ignore the maintainer-facing "Command contract" section. It is the canonical, sync-generated list. If `docs/skills.md` is missing, fall back to scanning `skills/grm/*/SKILL.md` and warn that it should be regenerated with `python3 rites/sync_docs.py --apply`.
 
 ### 2. Show the active grimoire's own skills
 

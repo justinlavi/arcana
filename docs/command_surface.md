@@ -28,7 +28,7 @@ command's `mutation_profile` agrees with the rite-profile contract
 command whose `rite_owner` is profiled must share that rite's profile, and a
 command whose `rite_owner` is not write-capable (absent from the contract) must
 be `read_only`.
-`docs/skills.md` renders the same matrix as the generated skill catalog.
+The "Command contract" section of `docs/skills.md` renders the same matrix as a maintainer reference, below the user-facing catalog.
 
 ## Fields
 
