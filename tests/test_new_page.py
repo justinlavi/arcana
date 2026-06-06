@@ -1,7 +1,7 @@
 """Tests for the new_page stamping rite.
 
 Invokes the rite as a subprocess against the good_grimoire fixture, the same way
-the create-chapter flow does, and confirms the stamped page satisfies the
+the /grm-add flow does, and confirms the stamped page satisfies the
 frontmatter schema validator.
 """
 

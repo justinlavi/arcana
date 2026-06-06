@@ -13,8 +13,8 @@ Agent operations that update local agent configuration or agent skill directorie
 
 | Invocation | Skill | What it does |
 |---|---|---|
-| [[invocations/agent/sync_skills|sync skills]] | `/arc-agent-sync-skills` | Sync Arcana-shipped skills and installed grimoire skills into supported agent skill directories |
-| [[invocations/agent/sync_instructions|sync instructions]] | `/arc-agent-sync-instructions` | Refresh the canonical Grimoire instruction block in agent instruction files |
+| [[invocations/agent/sync_skills|sync skills]] | `/arc-sync-skills` | Sync Arcana-shipped skills and installed grimoire skills into supported agent skill directories |
+| [[invocations/agent/sync_agentfile|sync agentfile]] | `/arc-sync-agentfile` | Refresh the canonical Grimoire instruction block in agent instruction files |
 
 ## Related
 

@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.4.0] - 2026-06-05
+
+MINOR. Existing grimoire content stays valid. This release renames and
+consolidates the public command surface and requires skill re-registration so
+agents see the new commands.
+
+### Changed
+
+- **Sync commands are symmetric.** `/arc-agent-sync-skills` becomes
+  `/arc-sync-skills`, matching the `/grm-sync-skills` stem. The agent-file
+  instruction sync `/arc-agent-sync-instructions` becomes `/arc-sync-agentfile`,
+  named for what it writes (the Grimoire block inside CLAUDE.md / AGENTS.md).
+  The `agent` skill family drops its `agent-` slug prefix; the skills still live
+  under `skills/agent/` and the backing rite `rites/sync_skills.py` is unchanged.
+- **Content authoring is one command.** `/grm-create-chapter` and
+  `/grm-capture-answer` are retired in favor of **`/grm-add`**, which adds
+  knowledge as the right-sized unit — a page under an existing chapter or a new
+  chapter (folder + hub) — written fresh or distilled from the current chat
+  session. It reuses `rites/new_page.py` and `formulae/chapter_hub.formula.md`;
+  external sources still go through `/grm-import`. This leaves a clean trio:
+  `/grm-create` (the grimoire), `/grm-add` (knowledge in it), `/grm-import`
+  (external sources). The `capture-answer` log op is dropped; `/grm-add` logs
+  under the existing `create` op.
+
 ## [1.3.0] - 2026-06-04
 
 MINOR. Existing grimoire content stays valid. This release changes Arcana's

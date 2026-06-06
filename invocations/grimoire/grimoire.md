@@ -15,11 +15,10 @@ Grimoire operations that create, update, validate, or improve a grimoire. Arcana
 |---|---|---|
 | [[invocations/grimoire/help|help]] | `/grm-help` | Show the grimoire command catalog and the active grimoire's own skills |
 | [[invocations/grimoire/create_grimoire|create grimoire]] | `/grm-create` | Create a new grimoire |
-| [[invocations/grimoire/create_chapter|create chapter]] | `/grm-create-chapter` | Add a knowledge chapter to the active grimoire |
+| [[invocations/grimoire/add|add]] | `/grm-add` | Add knowledge to the grimoire as a page or a chapter, fresh or captured from the chat session |
 | [[invocations/grimoire/update|update]] | `/grm-update` | Update Arcana and every grimoire in the library to a current, validated, synchronized state |
 | [[invocations/grimoire/sync_skills|sync skills]] | `/grm-sync-skills` | Sync Arcana skills and the active grimoire's own skills |
 | [[invocations/grimoire/import|import]] | `/grm-import` | File source artifacts and update affected wiki pages |
-| [[invocations/grimoire/capture_answer|capture answer]] | `/grm-capture-answer` | Promote a chat answer into a properly-frontmattered wiki page |
 | [[invocations/grimoire/health_check|health check]] | `/grm-health-check` | Health-check the grimoire |
 | [[invocations/grimoire/repair_links|repair links]] | `/grm-repair-links` | Promote filename-only wikilinks to canonical full-path form |
 | [[invocations/grimoire/improve_grimoire|improve grimoire]] | `/grm-improve` | Comprehensive grimoire improvement |
@@ -30,9 +29,9 @@ Grimoire operations that create, update, validate, or improve a grimoire. Arcana
 
 ## Typical Flow
 
-1. Create: `/grm-create`, then `/grm-create-chapter` per topic.
-2. Import: `/grm-import <source>` to file new sources and update the wiki.
-3. Capture: `/grm-capture-answer` to promote substantive chat answers.
+1. Create: `/grm-create` for a new grimoire.
+2. Add: `/grm-add` to add a page or chapter — fresh, or capturing a substantive chat answer.
+3. Import: `/grm-import <source>` to file new sources and update the wiki.
 4. Health-check: `/grm-health-check` periodically.
 5. Improve: `/grm-improve` for a comprehensive normalize-and-optimize pass.
 6. Update: `/grm-update` when Arcana or a grimoire may be stale.

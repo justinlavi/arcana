@@ -57,7 +57,7 @@ End with a one-line total: `Total: N skills across M sources (Arcana + <list>)`.
 ## Related
 
 - **Arcana skill catalog (canonical)**: [[docs/skills|skills]]
-- **Global skill registration**: `/arc-agent-sync-skills`
+- **Global skill registration**: `/arc-sync-skills`
 - **Active-grimoire skill registration**: `/grm-sync-skills`
 - **Catalog reconciliation**: `/arc-library-sync`
 - **Skill system mechanics**: [[docs/agent_configuration|agent configuration]]

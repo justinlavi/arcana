@@ -1,13 +1,13 @@
 ---
 type: playbook
-title: "Sync Agent Grimoire Instructions"
-aliases: ["sync-agent-instructions", "refresh-agent-block"]
+title: "Sync Agent File Grimoire Block"
+aliases: ["sync-agentfile", "refresh-agent-block"]
 tags: [arcana/invocations, type/playbook, scope/agent]
 authority: grimoire
 last_verified: 2026-05-25
 ---
 
-# Invocation: Sync Agent Grimoire Instructions
+# Invocation: Sync Agent File Grimoire Block
 
 ## Purpose
 
@@ -18,7 +18,7 @@ Canonical block: `ARCANA_HOME/rites/templates/grimoire_block.md`.
 ## Invocation
 
 ```
-/arc-agent-sync-instructions
+/arc-sync-agentfile
 ```
 
 Optional user text may name explicit files to update.
@@ -70,7 +70,7 @@ After editing each file:
 
 ### 5. Sync skills if needed
 
-This skill updates instruction files only. If the user also needs newly added skills to appear in slash-command pickers, run or recommend `/arc-agent-sync-skills` separately.
+This skill updates instruction files only. If the user also needs newly added skills to appear in slash-command pickers, run or recommend `/arc-sync-skills` separately.
 
 ## Safety Rules
 
@@ -86,4 +86,4 @@ This skill updates instruction files only. If the user also needs newly added sk
 - Canonical block: `ARCANA_HOME/rites/templates/grimoire_block.md`
 - Agent targets: `ARCANA_HOME/docs/agent_targets.md`
 - Agent configuration: `ARCANA_HOME/docs/agent_configuration.md`
-- Skill registration: `/arc-agent-sync-skills`
+- Skill registration: `/arc-sync-skills`

@@ -85,7 +85,7 @@ Check that examples in documentation also use snake_case:
 Check that skill examples follow [[docs/skill_schema|skill schema]]:
 - `/arc-*` for Arcana itself and platform support
 - `/grm-*` for active grimoires
-- `/arc-library-*`, `/arc-agent-*`, and `/arc-workspace-*` for support targets
+- `/arc-library-*` and `/arc-workspace-*` for support targets
 
 ## Outputs
 
@@ -105,7 +105,7 @@ Check that skill examples follow [[docs/skill_schema|skill schema]]:
 
 **On violations**:
 ```
-  Hyphenated filename (should use snake_case): invocations/grimoire/create-chapter.md
+  Hyphenated filename (should use snake_case): chapters/knife-skills.md
   CamelCase filename (should use snake_case): docs/quickStart.md
   Naming validation found 2 issues
 ```

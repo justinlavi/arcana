@@ -16,7 +16,7 @@
     "agent": {
       "skill_prefix": "arc",
       "path": "skills/agent",
-      "slug_prefix": "agent"
+      "slug_prefix": ""
     },
     "library": {
       "skill_prefix": "arc",

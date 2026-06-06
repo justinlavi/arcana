@@ -1,5 +1,5 @@
 ---
-name: {{SKILL_PREFIX}}-agent-sync-instructions
+name: {{SKILL_PREFIX}}-sync-agentfile
 description: Sync the Grimoire instruction block in user agent files while preserving non-Grimoire content
 when_to_use: User asks to update, refresh, sync, repair, or reinstall the Grimoire block in AGENTS.md, CLAUDE.md, Copilot instructions, custom agent instructions, or other agent configuration files.
 user-invocable: true
@@ -19,4 +19,4 @@ This is AI-guided file editing, not a blind script. Preserve all non-Grimoire in
 
 ## Invocation
 
-!`cat {{ARCANA_PATH}}/invocations/agent/sync_instructions.md`
+!`cat {{ARCANA_PATH}}/invocations/agent/sync_agentfile.md`

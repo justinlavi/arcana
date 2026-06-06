@@ -6,8 +6,8 @@ Templates the LLM copies when scaffolding new content. Each `*.formula.md` carri
 
 | File | Use it for | Expanded by |
 |---|---|---|
-| [Page.Formula](page.formula.md) | A new authored knowledge page (concept, entity, source, playbook, reference) inside `chapters/`. Carries the canonical frontmatter shape. | `/grm-create-chapter`, `/grm-capture-answer`, `/grm-import` |
-| [Chapter Hub.Formula](chapter_hub.formula.md) | A new chapter or sub-chapter hub (`<folder>/<folder>.md`). Hub-level frontmatter and routing-list scaffolding. | `/grm-create-chapter` |
+| [Page.Formula](page.formula.md) | A new authored knowledge page (concept, entity, source, playbook, reference) inside `chapters/`. Carries the canonical frontmatter shape. | `/grm-add`, `/grm-import` |
+| [Chapter Hub.Formula](chapter_hub.formula.md) | A new chapter or sub-chapter hub (`<folder>/<folder>.md`). Hub-level frontmatter and routing-list scaffolding. | `/grm-add` |
 | [Source.Formula](source.formula.md) | A `type: source` wrapper under `sources/` with capture metadata, source body, or a pointer to a sibling raw artifact. | `/grm-import` |
 | [Log Entry.Formula](log_entry.formula.md) | The shape of a single entry appended to a grimoire's `log.md`. | `rites/append_log.py`, called by every mutating skill |
 | [Invocation.Formula](invocation.formula.md) | A new Arcana invocation (workflow doc referenced by a skill). Maintainer-only. | manual authoring |

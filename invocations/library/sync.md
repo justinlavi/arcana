@@ -47,7 +47,7 @@ python3 ARCANA_HOME/rites/sync_library.py --apply
 python3 ARCANA_HOME/rites/sync_skills.py
 ```
 
-Or invoke `/arc-agent-sync-skills`.
+Or invoke `/arc-sync-skills`.
 
 ## Notes
 

@@ -1,5 +1,5 @@
 ---
-name: {{SKILL_PREFIX}}-agent-sync-skills
+name: {{SKILL_PREFIX}}-sync-skills
 description: Sync Arcana skills and installed grimoire skills into supported agent skill directories
 when_to_use: A skill isn't appearing in the slash-command picker; user just added, renamed, or edited a SKILL.md; user installed a new grimoire; user mentions "skill not recognized" or "after editing skills". Run after any change in skills/ that the agent needs to pick up.
 user-invocable: true

@@ -139,7 +139,7 @@ rm -f {{grimoire_directory}}/chapters/.gitkeep
 
 ## Step 5: Create Initial Chapters
 
-For each selected chapter, follow `ARCANA_HOME/invocations/grimoire/create_chapter.md` with these inputs auto-filled:
+For each selected chapter, follow `ARCANA_HOME/invocations/grimoire/add.md` with these inputs auto-filled:
 
 - **name**: from selection
 - **purpose**: from selection
@@ -148,7 +148,7 @@ For each selected chapter, follow `ARCANA_HOME/invocations/grimoire/create_chapt
 
 Create chapter hub `chapters/<chapter>/<chapter>.md` with canonical frontmatter and routing to planned sub_topics. Do not generate full leaf docs in this pass — placeholders or TODOs in the chapter hub are acceptable.
 
-If a chapter creation fails, report it and continue with the rest. The user can retry with `/grm-create-chapter <name>`.
+If a chapter creation fails, report it and continue with the rest. The user can retry with `/grm-add <name>`.
 
 ---
 
@@ -217,9 +217,9 @@ If the relevant agent instruction file already includes the Grimoire block, also
 
 ## Related
 
-- **Chapter creation**: [[invocations/grimoire/create_chapter|create chapter]]
+- **Chapter creation**: [[invocations/grimoire/add|add]]
 - **Template formula**: `ARCANA_HOME/formulae/grimoire/`
 - **Page schema**: `ARCANA_HOME/docs/page_schema.md`
-- **Skill registration**: `/arc-agent-sync-skills` (reads each grimoire's `grimoire.json`)
+- **Skill registration**: `/arc-sync-skills` (reads each grimoire's `grimoire.json`)
 - **Structure validator**: `/grm-validate structure`
 - **Agent block**: `ARCANA_HOME/rites/templates/grimoire_block.md`

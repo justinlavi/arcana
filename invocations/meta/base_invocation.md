@@ -30,13 +30,13 @@ Anything you author following this template must conform to:
 Use this four-phase template when:
 
 - The user has a goal that requires reading external material and producing a single canonical wiki page.
-- No more specific invocation applies (`/grm-import` for filing a source, `/grm-capture-answer` for promoting a chat answer, `/grm-create-chapter` for scaffolding a new chapter).
+- No more specific invocation applies (`/grm-import` for filing a source, `/grm-add` for adding a page or chapter — including promoting a chat answer).
 
 ## When NOT to follow this pattern
 
 - The user has a single source artifact to absorb — use [[invocations/grimoire/import|import]].
-- The user wants a chat answer promoted to a page — use [[invocations/grimoire/capture_answer|capture answer]].
-- The user wants to scaffold a new chapter or grimoire — use the `create_*` invocations.
+- The user wants a chat answer promoted to a page, or a new chapter scaffolded — use [[invocations/grimoire/add|add]].
+- The user wants to create a whole new grimoire — use [[invocations/grimoire/create_grimoire|create grimoire]].
 - The user is auditing or reorganizing — use [[invocations/grimoire/improve_grimoire|improve grimoire]] or [[invocations/grimoire/health_check|health check]].
 
 ---

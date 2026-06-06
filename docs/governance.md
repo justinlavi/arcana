@@ -92,7 +92,7 @@ Reversible but judgment-bearing, or writing outside the repo:
 - Orphan wiring, terminology standardization, page promotion, merging duplicates.
 - Any change touching more than ten files.
 - Reconciling the grimoire library or registering skills into agent directories
-  under the user's home (`/arc-library-sync`, `/arc-agent-sync-skills`,
+  under the user's home (`/arc-library-sync`, `/arc-sync-skills`,
   `/grm-sync-skills`).
 
 ### Human sign-off required
@@ -283,7 +283,7 @@ Arcana files must **not**:
 
 Each grimoire is responsible for:
 
-1. **Its own content**: chapters, skills, manifest. Use Arcana's `/grm-create-chapter` and the page formula for new pages.
+1. **Its own content**: chapters, skills, manifest. Use Arcana's `/grm-add` and the page formula for new pages.
 2. **Staying in step with Arcana**: pull updates periodically; run `/grm-validate` after pulling.
 3. **Reporting issues** in Arcana itself (broken invocations, formula bugs, validator false positives).
 

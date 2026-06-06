@@ -73,39 +73,21 @@
       "validation_profile": "python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT"
     },
     {
-      "command": "/grm-create-chapter",
+      "command": "/grm-add",
       "family": "grimoire",
-      "skill_source": "skills/grimoire/create-chapter/SKILL.md",
-      "invocation": "invocations/grimoire/create_chapter.md",
+      "skill_source": "skills/grimoire/add/SKILL.md",
+      "invocation": "invocations/grimoire/add.md",
       "guard": "invocations/meta/grimoire_directory_guard.md",
       "owner_type": "hybrid",
       "rite_owner": null,
       "preconditions": [
         "Registered active grimoire",
-        "Chapter name",
-        "Chapter purpose"
+        "Material to add (a topic or a chat answer to capture)"
       ],
       "mutation_profile": "judgment_gated",
-      "mutation_behavior": "Creates a chapter hub, optional leaf stubs, and root or parent hub routes inside the active grimoire.",
+      "mutation_behavior": "Adds knowledge to the active grimoire as a page or a chapter, sized to the material; stamps leaf pages via new_page.py, scaffolds a chapter hub from formula when warranted, and wires the addition into a hub. External sources go through /grm-import.",
       "log_behavior": "Appends one create entry to the active grimoire log.md.",
-      "validation_profile": "python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT"
-    },
-    {
-      "command": "/grm-capture-answer",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/capture-answer/SKILL.md",
-      "invocation": "invocations/grimoire/capture_answer.md",
-      "guard": "invocations/meta/grimoire_directory_guard.md",
-      "owner_type": "judgment",
-      "rite_owner": null,
-      "preconditions": [
-        "Registered active grimoire",
-        "Recent substantive chat answer"
-      ],
-      "mutation_profile": "judgment_gated",
-      "mutation_behavior": "Captures a substantive chat answer as a wiki page and routes it through an active-grimoire hub.",
-      "log_behavior": "Appends one capture-answer entry to the active grimoire log.md.",
-      "validation_profile": "python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT"
+      "validation_profile": "python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT"
     },
     {
       "command": "/grm-help",
@@ -280,7 +262,7 @@
       "validation_profile": "Run as a judgment pass; confirm fixes with /grm-validate structure and /grm-validate links when files change."
     },
     {
-      "command": "/arc-agent-sync-skills",
+      "command": "/arc-sync-skills",
       "family": "agent",
       "skill_source": "skills/agent/sync-skills/SKILL.md",
       "invocation": "invocations/agent/sync_skills.md",
@@ -297,10 +279,10 @@
       "validation_profile": "python rites/sync_skills.py --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions."
     },
     {
-      "command": "/arc-agent-sync-instructions",
+      "command": "/arc-sync-agentfile",
       "family": "agent",
-      "skill_source": "skills/agent/sync-instructions/SKILL.md",
-      "invocation": "invocations/agent/sync_instructions.md",
+      "skill_source": "skills/agent/sync-agentfile/SKILL.md",
+      "invocation": "invocations/agent/sync_agentfile.md",
       "guard": null,
       "owner_type": "judgment",
       "rite_owner": null,

@@ -30,7 +30,7 @@ def _template_files():
 def _consumer_files():
     return _template_files() + [
         REPO_ROOT / "invocations" / "grimoire" / "create_grimoire.md",
-        REPO_ROOT / "invocations" / "grimoire" / "create_chapter.md",
+        REPO_ROOT / "invocations" / "grimoire" / "add.md",
     ]
 
 

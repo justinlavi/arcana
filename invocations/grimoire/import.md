@@ -19,7 +19,7 @@ Bring external content into a grimoire. The skill is polymorphic - it accepts a 
 
 `sources/` and `chapters/` are the destinations. `inbox/` is the (optional) staging area.
 
-For a one-off chat answer with no source artifact, use `/grm-capture-answer` instead.
+For a one-off chat answer with no source artifact, use `/grm-add` instead.
 
 ## Invocation
 
@@ -161,4 +161,4 @@ Surface in chat:
 - Source formula: `ARCANA_HOME/formulae/source.formula.md`
 - Page formula: `ARCANA_HOME/formulae/page.formula.md`
 - Health-check after a batch of imports: `/grm-health-check`
-- Promote a chat answer (no source) into a page: `/grm-capture-answer`
+- Promote a chat answer (no source) into a page: `/grm-add`

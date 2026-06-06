@@ -70,7 +70,7 @@ Validates hub files are **thin routers**:
 
 ### Creation
 - Create new grimoire -> [[invocations/grimoire/create_grimoire|create grimoire]]
-- Add knowledge chapter -> [[invocations/grimoire/create_chapter|create chapter]]
+- Add knowledge chapter -> [[invocations/grimoire/add|add]]
 ```
 
 **Example of thick router** (❌ wrong):
@@ -139,7 +139,7 @@ For each format violation:
 
 **On violations**:
 ```
-⚠️  Format violations in: invocations/grimoire/create_chapter.md
+⚠️  Format violations in: invocations/grimoire/add.md
    Missing section: ^## .*Invocation
 ❌ Format validation failed with 1 issues
 ```

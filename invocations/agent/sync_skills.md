@@ -1,7 +1,7 @@
 ---
 type: playbook
 title: "Sync Agent Skills"
-aliases: ["sync-agent-skills", "refresh-agent-skills"]
+aliases: ["sync-skills", "refresh-skills"]
 tags: [arcana/invocations, type/playbook, scope/agent]
 authority: grimoire
 last_verified: 2026-05-25
@@ -18,7 +18,7 @@ Use this global command after Arcana skill changes, after installing or removing
 ## Invocation
 
 ```
-/arc-agent-sync-skills
+/arc-sync-skills
 ```
 
 ## Workflow
@@ -100,6 +100,6 @@ of parsing prose.
 
 - Active-grimoire skill sync: [[invocations/grimoire/sync_skills|sync skills]]
 - Reconcile stale/renamed skill orphans: [[invocations/meta/skill_orphan_reconcile|skill orphan reconcile]]
-- Agent block update: [[invocations/agent/sync_instructions|sync instructions]]
+- Agent file block sync: [[invocations/agent/sync_agentfile|sync agentfile]]
 - Agent targets: [[docs/agent_targets|agent targets]]
 - Agent configuration: [[docs/agent_configuration|agent configuration]]

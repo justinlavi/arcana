@@ -48,11 +48,10 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 **Grimoire operations** -> [[invocations/grimoire/grimoire|grimoire]]
 
 - Create a grimoire -> [[invocations/grimoire/create_grimoire|create grimoire]]
-- Create a chapter -> [[invocations/grimoire/create_chapter|create chapter]]
+- Add a page or chapter -> [[invocations/grimoire/add|add]]
 - Update the grimoire and its Arcana -> [[invocations/grimoire/update|update]]
 - Sync active-grimoire agent skills -> [[invocations/grimoire/sync_skills|sync skills]]
 - Import a source -> [[invocations/grimoire/import|import]]
-- Capture a chat answer -> [[invocations/grimoire/capture_answer|capture answer]]
 - Health-check a grimoire -> [[invocations/grimoire/health_check|health check]]
 - Improve a grimoire -> [[invocations/grimoire/improve_grimoire|improve grimoire]]
 - Audit grimoire semantics -> [[invocations/grimoire/audit_semantics|audit semantics]]
@@ -71,7 +70,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 **Agent operations** -> [[invocations/agent/agent|agent]]
 
 - Sync agent skills -> [[invocations/agent/sync_skills|sync skills]]
-- Update agent instructions -> [[invocations/agent/sync_instructions|sync instructions]]
+- Update agent instructions -> [[invocations/agent/sync_agentfile|sync instructions]]
 
 **Library operations** -> [[invocations/library/library|library]]
 

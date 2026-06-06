@@ -31,7 +31,7 @@ If a content change happens to land while you are merging or rebasing, log the c
 
 # Right - scoped by the content that changed
 ## [2026-05-20 09:00] create | Poolish preferment page
-- skill: /grm-create-chapter
+- skill: /grm-add
 - pages: chapters/techniques/poolish.md (new), chapters/techniques/techniques.md
 - note: Adds the poolish preferment method and routes it from the techniques hub.
 ```
@@ -44,7 +44,7 @@ Every entry begins with a level-2 heading in this exact shape:
 ## [YYYY-MM-DD HH:MM] <op> | <title>
 ```
 
-- `<op>` is one of: `import`, `query`, `health-check`, `improve`, `capture-answer`, `rebuild-index`, `create`, `manual`. These name grimoire-content operations, not git operations - there is no `merge`, `rebase`, or `push` op (see Scope above).
+- `<op>` is one of: `import`, `query`, `health-check`, `improve`, `rebuild-index`, `create`, `manual`. These name grimoire-content operations, not git operations - there is no `merge`, `rebase`, or `push` op (see Scope above).
 - `<title>` is a short human-readable label (source name, query summary, etc.).
 
 This shape lets you scan recent activity with `grep '^## \[' log.md | tail -20`.
@@ -55,7 +55,7 @@ Free-form bullet list, but include at minimum:
 
 - `- skill: /<skill prefix>-<verb>` (or `manual` if hand-edited)
 - `- pages: ` comma-separated relative paths touched
-- For `import` / `capture-answer`: `- source: sources/<filename>` or `- source: chat`
+- For `import` (and `create` entries capturing a chat answer): `- source: sources/<filename>` or `- source: chat`
 
 ## Example entries
 
@@ -71,8 +71,8 @@ Free-form bullet list, but include at minimum:
 - stale (>90d): 3
 - missing-xref candidates: 2 ("autolyse", "windowpane test")
 
-## [2026-05-13 09:14] capture-answer | sourdough vs ciabatta comparison
-- skill: /grm-capture-answer
+## [2026-05-13 09:14] create | sourdough vs ciabatta comparison
+- skill: /grm-add
 - source: chat
 - pages: chapters/comparisons/sourdough_vs_ciabatta.md (new), chapters/comparisons/comparisons.md
 ```

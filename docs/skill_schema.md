@@ -24,7 +24,7 @@ The families are declared in `arcana.json`.
 | `arcana` | `arc` | Arcana platform and maintainer operations | `/arc-validate links` |
 | `grimoire` | `grm` | Universal operations from the active grimoire context | `/grm-validate links` |
 | `library` | `arc` | Operations that affect `~/grimoires/library.json` | `/arc-library-sync` |
-| `agent` | `arc` | Operations that affect agent files or agent skill directories | `/arc-agent-sync-instructions` |
+| `agent` | `arc` | Operations that affect agent files or agent skill directories | `/arc-sync-agentfile` |
 | `workspace` | `arc` | Operations that intentionally affect Arcana plus installed grimoires | `/arc-workspace-clean` |
 | `help` | `arc` | Skill discovery and help | `/arc-help` |
 
@@ -97,7 +97,7 @@ Arcana skill source folders are grouped by command family, then flattened during
 skills/arcana/validate/SKILL.md            -> /arc-validate
 skills/grimoire/validate/SKILL.md          -> /grm-validate
 skills/grimoire/audit-semantics/SKILL.md   -> /grm-audit-semantics
-skills/agent/sync-skills/SKILL.md          -> /arc-agent-sync-skills
+skills/agent/sync-skills/SKILL.md          -> /arc-sync-skills
 ```
 
 The naming validator enforces folder/frontmatter agreement and rejects skill files outside the declared command families.
@@ -115,7 +115,7 @@ Invocation files follow the same target boundary:
 ```text
 invocations/arcana/...     -> /arc-*
 invocations/grimoire/...   -> /grm-*
-invocations/agent/...      -> /arc-agent-*
+invocations/agent/...      -> /arc-* (e.g. /arc-sync-skills, /arc-sync-agentfile)
 invocations/help/...       -> /arc-help
 invocations/library/...    -> /arc-library-*
 invocations/workspace/...  -> /arc-workspace-*
