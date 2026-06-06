@@ -104,7 +104,7 @@ per-grimoire classification before writing.
 The marked Grimoire block is the one step the rite leaves to judgment, because
 the BEGIN/END-vs-heading sentinels make injection non-deterministic. Read
 `rites/templates/grimoire_block.md`, `rites/data/agent_targets.json`, and
-`invocations/agent/sync_agentfile.md`, then replace only the marked block in
+`invocations/arc/sync.md`, then replace only the marked block in
 each automatic instruction target:
 
 ```text
@@ -114,7 +114,7 @@ each automatic instruction target:
 ```
 
 Preserve all non-Grimoire content exactly. If block boundaries are ambiguous,
-stop and ask the user. (`/arc-sync-agentfile` does this once skills are
+stop and ask the user. (`/arc-sync agentfile` does this once skills are
 registered.)
 
 ### 5. Final gate
@@ -156,6 +156,6 @@ current.
 - [Installation](docs/installation.md)
 - [Agent configuration](docs/agent_configuration.md)
 - [Summoning contract](docs/summoning_contract.md)
-- [Register agent skills](invocations/agent/sync_skills.md)
+- [Sync skills, library, and the agent file](invocations/arc/sync.md)
 - [Reconcile skill orphans](invocations/meta/skill_orphan_reconcile.md)
-- [Update from a grimoire](invocations/grimoire/update.md)
+- [Update from a grimoire](invocations/grm/update.md)

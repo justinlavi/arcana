@@ -33,7 +33,7 @@ def test_smart_arcana_deletion_selects_structure(monkeypatch):
 
 def test_smart_arcana_deleted_skill_selects_skill_refs(monkeypatch):
     monkeypatch.setattr(
-        validate, "git_changed_files", lambda root: [("D", "skills/arcana/x/SKILL.md")]
+        validate, "git_changed_files", lambda root: [("D", "skills/arc/x/SKILL.md")]
     )
     rites = validate.determine_smart_rites("arcana", validate.ARCANA_ROOT)
     assert "validate_skill_refs.py" in rites

@@ -3,34 +3,14 @@
   "kind": "arcana",
   "skill_prefix": "arc",
   "skill_families": {
-    "arcana": {
-      "skill_prefix": "arc",
-      "path": "skills/arcana",
-      "slug_prefix": ""
-    },
-    "grimoire": {
+    "grm": {
       "skill_prefix": "grm",
-      "path": "skills/grimoire",
+      "path": "skills/grm",
       "slug_prefix": ""
     },
-    "agent": {
+    "arc": {
       "skill_prefix": "arc",
-      "path": "skills/agent",
-      "slug_prefix": ""
-    },
-    "library": {
-      "skill_prefix": "arc",
-      "path": "skills/library",
-      "slug_prefix": "library"
-    },
-    "workspace": {
-      "skill_prefix": "arc",
-      "path": "skills/workspace",
-      "slug_prefix": "workspace"
-    },
-    "help": {
-      "skill_prefix": "arc",
-      "path": "skills/help",
+      "path": "skills/arc",
       "slug_prefix": ""
     }
   },

@@ -440,7 +440,7 @@ def is_skipped(rel, skip_dirs: Iterable[str]) -> bool:
     `rel` may be a Path or a string. A skip entry matches as a leading path
     prefix at segment boundaries: a single-segment entry like ``sources`` skips
     ``sources/...`` but never a sibling like ``sources_extra/...``, and a
-    multi-segment entry like ``invocations/arcana/validators`` skips only that
+    multi-segment entry like ``invocations/arc/validators`` skips only that
     subtree.
     """
     if isinstance(rel, Path):

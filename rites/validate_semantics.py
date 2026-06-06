@@ -32,7 +32,7 @@ SKIP_FILES = {
 }
 
 SKIP_DIRS = {
-    "invocations/arcana/quality",  # quality docs may discuss historical terms
+    "invocations/arc/quality",  # quality docs may discuss historical terms
     "sources",  # imported source artifacts may have hyphens in their original names
 }
 

@@ -52,8 +52,8 @@ INLINE_CODE_RE = re.compile(r"`[^`]*`")
 
 
 SKIP_DIRS = {
-    "invocations/arcana/validators",
-    "invocations/arcana/quality",
+    "invocations/arc/validators",
+    "invocations/arc/quality",
     "sources",
     "inbox",
     "tests",

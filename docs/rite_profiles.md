@@ -62,5 +62,5 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 ## Related
 
 - Script vs AI split: [script vs ai](script_vs_ai.md)
-- Rite quality review: [validate rites](../invocations/arcana/quality/validate_rites.md)
+- Rite quality review: [validate rites](../invocations/arc/quality/validate_rites.md)
 - Rite profile helper: [`../rites/rite_profiles.py`](../rites/rite_profiles.py)

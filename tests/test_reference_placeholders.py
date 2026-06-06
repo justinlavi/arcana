@@ -29,8 +29,8 @@ def _template_files():
 
 def _consumer_files():
     return _template_files() + [
-        REPO_ROOT / "invocations" / "grimoire" / "create_grimoire.md",
-        REPO_ROOT / "invocations" / "grimoire" / "add.md",
+        REPO_ROOT / "invocations" / "grm" / "create_grimoire.md",
+        REPO_ROOT / "invocations" / "grm" / "add.md",
     ]
 
 

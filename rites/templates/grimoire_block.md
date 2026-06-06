@@ -5,7 +5,7 @@
 
 **Arcana key**: `ARCANA_HOME` - resolved from the library or defaults to `~/grimoires/arcana/`.
 
-**Skills**: Arcana ships `/arc-*` platform skills (e.g. `/arc-help`, `/arc-sync-skills`) and `/grm-*` universal grimoire skills (e.g. `/grm-import`, `/grm-health-check`, `/grm-improve`). Each grimoire ships its own `/<skill prefix>-*` skills declared in its `grimoire.json`.
+**Skills**: Arcana ships `/arc-*` platform skills (e.g. `/arc-help`, `/arc-sync`) and `/grm-*` universal grimoire skills (e.g. `/grm-import`, `/grm-health-check`, `/grm-update`). Each grimoire ships its own `/<skill prefix>-*` skills declared in its `grimoire.json`.
 
 ### Hub convention
 
@@ -43,6 +43,6 @@ Pages with `authority: external` or `hybrid` cite their `sources:` (paths under 
 | Sort a folder of mixed content (zip extract, drafts, etc.) | `/grm-import <folder>` (or drop into `inbox/` and run `/grm-import`) |
 | Add a page or chapter (or capture a chat answer) | `/grm-add` |
 | Health-check the grimoire | `/grm-health-check` |
-| Audit naming and structure | `/grm-improve` |
+| Audit naming and structure | `/grm-health-check` |
 | List every skill installed | `/arc-help` |
 <!-- END GRIMOIRE KNOWLEDGE BASE -->

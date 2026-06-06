@@ -59,7 +59,7 @@ An agent may act **unattended** only when all four conditions hold:
 
 1. **Deterministic** — the change is mechanical (a fix with one correct form), or
    a prose-wrong contract fix the
-   [contract-coherence audit](../invocations/arcana/quality/audit_contract_coherence.md)
+   [contract-coherence audit](../invocations/arc/quality/audit_contract_coherence.md)
    flagged: a verifiable claim about the code, edited in contract data only, with
    code-wrong findings deferred. A content change that needs a judgment call is
    not deterministic — propose it instead.
@@ -70,7 +70,7 @@ An agent may act **unattended** only when all four conditions hold:
 4. **Not on the human-sign-off list** below.
 
 If any condition fails, the change is **proposed**, not applied: surface it for
-one confirmation (the `/grm-health-check` / `/grm-improve` model) or escalate to the
+one confirmation (the `/grm-health-check` model) or escalate to the
 human maintainer.
 
 ### Unattended
@@ -92,8 +92,8 @@ Reversible but judgment-bearing, or writing outside the repo:
 - Orphan wiring, terminology standardization, page promotion, merging duplicates.
 - Any change touching more than ten files.
 - Reconciling the grimoire library or registering skills into agent directories
-  under the user's home (`/arc-library-sync`, `/arc-sync-skills`,
-  `/grm-sync-skills`).
+  under the user's home (`/arc-sync library`, `/arc-sync skills`,
+  `/grm-sync`).
 
 ### Human sign-off required
 
@@ -183,7 +183,7 @@ Two consequences of this rule are easy to get wrong:
 
 ### Self-healing and the compatibility line
 
-Arcana is built to be **self-healing**: a grimoire is brought current not by hand but by Arcana's own update path — the mechanical repair rites, `/grm-update`, the scaffold re-sync inside `/grm-improve`, and, when the installed skills are themselves too old to run, the skill-less [Update](../UPDATE.md) procedure. The update first **pulls every grimoire in the library** and heals only the ones it confirmed current, so a grimoire whose fix already exists upstream is fast-forwarded rather than re-derived locally. That sharpens where the MINOR/MAJOR line falls, and it is *why* "must migrate" in the table above means **must migrate by hand**:
+Arcana is built to be **self-healing**: a grimoire is brought current not by hand but by Arcana's own update path — the mechanical repair rites, `/grm-update` (which re-syncs the managed scaffold), and, when the installed skills are themselves too old to run, the skill-less [Update](../UPDATE.md) procedure. The update first **pulls every grimoire in the library** and heals only the ones it confirmed current, so a grimoire whose fix already exists upstream is fast-forwarded rather than re-derived locally. That sharpens where the MINOR/MAJOR line falls, and it is *why* "must migrate" in the table above means **must migrate by hand**:
 
 - A transition Arcana can perform **automatically and deterministically** — re-syncing managed scaffold, refreshing the README update block, or repairing wikilinks — is **not** a manual migration. If every existing grimoire can be healed to current with no human judgment, the change is **MINOR**, even though grimoire files change in the heal.
 - **The obligation rides with the change author: ship the heal with the change.** A change that would otherwise break grimoires must land together with the heal that fixes them — the update rite's mechanical pass and/or the grimoire formula, so the update converges any grimoire to current. An un-shipped heal is theoretical — without it, the change is a real break (MAJOR).

@@ -4,7 +4,7 @@
   "evals": [
     {
       "eval_id": "import_layer_classification",
-      "invocation": "invocations/grimoire/import.md",
+      "invocation": "invocations/grm/import.md",
       "grimoire_name": "cooking",
       "user_request": "/grm-import   (no argument: sweep inbox/)",
       "scenario_files": {
@@ -71,7 +71,7 @@
     },
     {
       "eval_id": "health_check_seeded_contradiction",
-      "invocation": "invocations/grimoire/health_check.md",
+      "invocation": "invocations/grm/health_check.md",
       "grimoire_name": "biolab",
       "user_request": "/grm-health-check",
       "scenario_files": {
@@ -116,7 +116,7 @@
     },
     {
       "eval_id": "add_page_placement",
-      "invocation": "invocations/grimoire/add.md",
+      "invocation": "invocations/grm/add.md",
       "grimoire_name": "kitchen",
       "user_request": "/grm-add   Promote this chat answer into the wiki: \"The Maillard reaction is a chemical reaction between amino acids and reducing sugars that gives browned food its flavor. It proceeds rapidly above about 140 degrees C, which is why searing and roasting brown food but boiling does not.\"",
       "scenario_files": {

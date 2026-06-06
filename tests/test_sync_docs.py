@@ -16,9 +16,9 @@ def test_skill_catalog_renders_command_surface_metadata():
         "| Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |"
         in content
     )
-    assert "[`/grm-validate`](../skills/grimoire/validate/SKILL.md)" in content
+    assert "[`/grm-validate`](../skills/grm/validate/SKILL.md)" in content
     assert (
-        "[`validate.md`](../invocations/grimoire/validators/validate.md)"
+        "[`validate.md`](../invocations/grm/validators/validate.md)"
         in content
     )
     assert "[`validate.py`](../rites/validate.py)" in content

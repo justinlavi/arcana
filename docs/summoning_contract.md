@@ -123,7 +123,7 @@ Boundaries the surface keeps:
   each removal is recorded as a mutation.
 - **Agent blocks are reported, not rewritten** — the heading and BEGIN/END
   sentinels are both treated as "present," and a missing block points at
-  `/arc-sync-agentfile` rather than risking a double-injection.
+  `/arc-sync agentfile` rather than risking a double-injection.
 - **Network pull is out of scope** — updating Arcana itself stays the human step
   from [Update](../UPDATE.md).
 

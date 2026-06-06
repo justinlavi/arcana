@@ -333,8 +333,8 @@ Pick by the same rule that applies to rites vs invocations themselves:
 
 | If the skill's job is | Pick this backing | Examples |
 |---|---|---|
-| Mechanical, deterministic, no judgment required | Rite-backed | `/arc-sync-skills`, `/arc-library-sync`, `/arc-workspace-clean`, `/arc-validate` selectors |
-| Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/grm-create`, `/grm-improve`, `/arc-improve`, `/arc-help` |
+| Mechanical, deterministic, no judgment required | Rite-backed | `/arc-sync skills`, `/arc-sync library`, `/arc-clean`, `/arc-validate` selectors |
+| Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/grm-create`, `/grm-health-check`, `/arc-improve`, `/arc-help` |
 | Both — the rite gathers data, the AI interprets | **Both, in that order**: skill body runs the rite first, then loads an invocation that reads the rite's output | `/arc-validate semantics` could evolve into this if/when the analysis judgment grows beyond the rite's pattern check |
 
 Two anti-patterns to avoid:

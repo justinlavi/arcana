@@ -5,8 +5,8 @@ Writes a `grimoire.json` manifest into the target directory so the
 registration and library rites recognize it. Validates the skill_prefix
 isn't already used by another grimoire.
 
-After adopting, run `/arc-library-sync --apply` to register the grimoire
-in the local library, then `/arc-sync-skills` if it ships skills.
+After adopting, run `/arc-sync library --apply` to register the grimoire
+in the local library, then `/arc-sync skills` if it ships skills.
 
 Usage:
     python3 adopt_grimoire.py <directory> --skill-prefix <prefix> [--description "<desc>"]
@@ -155,8 +155,8 @@ def main():
         print()
 
         print("  Next steps:")
-        print("    1. Run /arc-library-sync to verify, then --apply to register.")
-        print("    2. If this grimoire ships skills, run /arc-sync-skills.")
+        print("    1. Run /arc-sync library to verify, then --apply to register.")
+        print("    2. If this grimoire ships skills, run /arc-sync skills.")
         print()
     else:
         reporter.emit(args.format, summary={"name": name, "skill_prefix": args.skill_prefix})

@@ -62,7 +62,7 @@ python3 ~/grimoires/arcana/rites/sync_library.py --apply
 python3 ~/grimoires/arcana/rites/sync_skills.py
 ```
 
-Add the canonical Grimoire instruction block to your agent file using `/arc-sync-agentfile` once skills are registered, or paste it manually from [`rites/templates/grimoire_block.md`](https://github.com/justinlavi/arcana/blob/main/rites/templates/grimoire_block.md).
+Add the canonical Grimoire instruction block to your agent file using `/arc-sync agentfile` once skills are registered, or paste it manually from [`rites/templates/grimoire_block.md`](https://github.com/justinlavi/arcana/blob/main/rites/templates/grimoire_block.md).
 
 ## Layout
 
@@ -93,7 +93,7 @@ Add the canonical Grimoire instruction block to your agent file using `/arc-sync
 | Add a page or chapter (fresh, or capturing a chat answer) | `/grm-add` |
 | Import a new source into `sources/` and update affected pages | `/grm-import` |
 | Health-check the grimoire (orphans, stale, ghost refs) | `/grm-health-check` |
-| Audit naming and structure | `/grm-improve` |
+| Audit naming and structure | `/grm-health-check` |
 
 ## Layers (the LLM-wiki model)
 

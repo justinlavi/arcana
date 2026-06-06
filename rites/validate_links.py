@@ -51,7 +51,7 @@ PLACEHOLDER_TOKENS = ["{", "<", "invocation_name", "chapter_name", "file_name",
                       "path/to/related", "path/url/system", "Source title"]
 
 # Legacy placeholder tokens that have been renamed. Any occurrence in grimoire
-# content is flagged so /grm-improve sweeps catch terminology drift instead of
+# content is flagged so /grm-health-check sweeps catch terminology drift instead of
 # relying on LLM judgment alone. Format: { legacy_token: current_token }.
 DEPRECATED_TOKENS = {
     "GRIMOIRE_ARCANA": "ARCANA_HOME",

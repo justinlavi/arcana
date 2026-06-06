@@ -4,60 +4,10 @@
   "description": "Authoritative contract linking each public Arcana-shipped slash command to its skill source, invocation home, workflow owner, safety posture, and validation profile.",
   "commands": [
     {
-      "command": "/arc-improve",
-      "family": "arcana",
-      "skill_source": "skills/arcana/improve/SKILL.md",
-      "invocation": "invocations/arcana/improve_arcana.md",
-      "guard": null,
-      "owner_type": "judgment",
-      "rite_owner": null,
-      "preconditions": [
-        "Arcana root",
-        "Maintainer intent"
-      ],
-      "mutation_profile": "judgment_gated",
-      "mutation_behavior": "May edit Arcana source, docs, tests, skills, and generated artifacts after reading current context.",
-      "log_behavior": "Updates CHANGELOG.md for user-visible Arcana changes.",
-      "validation_profile": "python rites/validate.py --parallel; python -m pytest; python rites/sync_docs.py --apply when generated docs change."
-    },
-    {
-      "command": "/arc-validate",
-      "family": "arcana",
-      "skill_source": "skills/arcana/validate/SKILL.md",
-      "invocation": "invocations/arcana/validators/validate.md",
-      "guard": null,
-      "owner_type": "rite",
-      "rite_owner": "rites/validate.py",
-      "preconditions": [
-        "Arcana root"
-      ],
-      "mutation_profile": "read_only",
-      "mutation_behavior": "Runs the deterministic Arcana validator suite, optionally narrowed by selector; parallel mode may refresh transient rite artifacts.",
-      "log_behavior": "Does not append grimoire or Arcana logs.",
-      "validation_profile": "python rites/validate.py [all|smart|auto|summary|parallel|SELECTOR...]"
-    },
-    {
-      "command": "/grm-audit-semantics",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/audit-semantics/SKILL.md",
-      "invocation": "invocations/grimoire/audit_semantics.md",
-      "guard": "invocations/meta/grimoire_directory_guard.md",
-      "owner_type": "judgment",
-      "rite_owner": null,
-      "preconditions": [
-        "Registered active grimoire",
-        "Arcana is not the active target"
-      ],
-      "mutation_profile": "read_only",
-      "mutation_behavior": "Reads the active grimoire and reports semantic naming, routing, and discoverability findings.",
-      "log_behavior": "Does not append grimoire logs unless a separate apply workflow edits files.",
-      "validation_profile": "Run grimoire validators after applying any accepted recommendations."
-    },
-    {
       "command": "/grm-create",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/create/SKILL.md",
-      "invocation": "invocations/grimoire/create_grimoire.md",
+      "family": "grm",
+      "skill_source": "skills/grm/create/SKILL.md",
+      "invocation": "invocations/grm/create_grimoire.md",
       "guard": null,
       "owner_type": "hybrid",
       "rite_owner": null,
@@ -74,9 +24,9 @@
     },
     {
       "command": "/grm-add",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/add/SKILL.md",
-      "invocation": "invocations/grimoire/add.md",
+      "family": "grm",
+      "skill_source": "skills/grm/add/SKILL.md",
+      "invocation": "invocations/grm/add.md",
       "guard": "invocations/meta/grimoire_directory_guard.md",
       "owner_type": "hybrid",
       "rite_owner": null,
@@ -90,44 +40,10 @@
       "validation_profile": "python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT"
     },
     {
-      "command": "/grm-help",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/help/SKILL.md",
-      "invocation": "invocations/grimoire/help.md",
-      "guard": "invocations/meta/grimoire_directory_guard.md",
-      "owner_type": "judgment",
-      "rite_owner": null,
-      "preconditions": [
-        "Active grimoire",
-        "Arcana skill catalog"
-      ],
-      "mutation_profile": "read_only",
-      "mutation_behavior": "Reads the generated Arcana skill catalog and the active grimoire's own skill frontmatter; presents the /grm-* family and the grimoire's own skills.",
-      "log_behavior": "Does not append grimoire or Arcana logs.",
-      "validation_profile": "python rites/sync_docs.py --apply when Arcana skill frontmatter or command-surface metadata changes."
-    },
-    {
-      "command": "/grm-improve",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/improve/SKILL.md",
-      "invocation": "invocations/grimoire/improve_grimoire.md",
-      "guard": "invocations/meta/grimoire_directory_guard.md",
-      "owner_type": "hybrid",
-      "rite_owner": null,
-      "preconditions": [
-        "Registered active grimoire",
-        "Current Arcana scaffold contract"
-      ],
-      "mutation_profile": "judgment_gated",
-      "mutation_behavior": "Audits and may edit active-grimoire scaffold files, hubs, links, routing, and chapter organization.",
-      "log_behavior": "Appends active-grimoire log entries for applied improvements when files change.",
-      "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT before and after edits; run /grm-audit-boundaries as the judgment boundary pass."
-    },
-    {
       "command": "/grm-import",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/import/SKILL.md",
-      "invocation": "invocations/grimoire/import.md",
+      "family": "grm",
+      "skill_source": "skills/grm/import/SKILL.md",
+      "invocation": "invocations/grm/import.md",
       "guard": "invocations/meta/grimoire_directory_guard.md",
       "owner_type": "judgment",
       "rite_owner": null,
@@ -141,10 +57,44 @@
       "validation_profile": "python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_provenance.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT"
     },
     {
+      "command": "/grm-sync",
+      "family": "grm",
+      "skill_source": "skills/grm/sync/SKILL.md",
+      "invocation": "invocations/grm/sync.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "rite",
+      "rite_owner": "rites/sync_skills.py",
+      "preconditions": [
+        "Registered active grimoire",
+        "Supported agent target or all supported targets"
+      ],
+      "mutation_profile": "plan_apply",
+      "mutation_behavior": "Plans and writes Arcana-shipped skills and active-grimoire skills into supported agent skill directories; generated SKILL.md files carry Arcana ownership metadata, generated provenance can prove ownership, unowned collisions block apply, stale cleanup touches only owned generated skills, and --reset-managed replaces current managed namespace directories before re-registering.",
+      "log_behavior": "Does not append grimoire logs.",
+      "validation_profile": "python rites/sync_skills.py --grimoire GRIMOIRE_ROOT --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions."
+    },
+    {
+      "command": "/grm-validate",
+      "family": "grm",
+      "skill_source": "skills/grm/validate/SKILL.md",
+      "invocation": "invocations/grm/validators/validate.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "rite",
+      "rite_owner": "rites/validate.py",
+      "preconditions": [
+        "Registered active grimoire",
+        "Arcana is not the active target"
+      ],
+      "mutation_profile": "read_only",
+      "mutation_behavior": "Runs the deterministic grimoire validator suite against the active grimoire, optionally narrowed by selector; parallel mode may refresh transient rite artifacts.",
+      "log_behavior": "Does not append grimoire logs.",
+      "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT [all|smart|auto|summary|parallel|SELECTOR...]"
+    },
+    {
       "command": "/grm-health-check",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/health-check/SKILL.md",
-      "invocation": "invocations/grimoire/health_check.md",
+      "family": "grm",
+      "skill_source": "skills/grm/health-check/SKILL.md",
+      "invocation": "invocations/grm/health_check.md",
       "guard": "invocations/meta/grimoire_directory_guard.md",
       "owner_type": "hybrid",
       "rite_owner": null,
@@ -160,27 +110,43 @@
       "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT"
     },
     {
-      "command": "/grm-sync-skills",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/sync-skills/SKILL.md",
-      "invocation": "invocations/grimoire/sync_skills.md",
+      "command": "/grm-audit-semantics",
+      "family": "grm",
+      "skill_source": "skills/grm/audit-semantics/SKILL.md",
+      "invocation": "invocations/grm/audit_semantics.md",
       "guard": "invocations/meta/grimoire_directory_guard.md",
-      "owner_type": "rite",
-      "rite_owner": "rites/sync_skills.py",
+      "owner_type": "judgment",
+      "rite_owner": null,
       "preconditions": [
         "Registered active grimoire",
-        "Supported agent target or all supported targets"
+        "Arcana is not the active target"
       ],
-      "mutation_profile": "plan_apply",
-      "mutation_behavior": "Plans and writes Arcana-shipped skills and active-grimoire skills into supported agent skill directories; generated SKILL.md files carry Arcana ownership metadata, generated provenance can prove ownership, unowned collisions block apply, stale cleanup touches only owned generated skills, and --reset-managed replaces current managed namespace directories before re-registering.",
+      "mutation_profile": "read_only",
+      "mutation_behavior": "Reads the active grimoire and reports semantic naming, routing, and discoverability findings.",
+      "log_behavior": "Does not append grimoire logs unless a separate apply workflow edits files.",
+      "validation_profile": "Run grimoire validators after applying any accepted recommendations."
+    },
+    {
+      "command": "/grm-audit-boundaries",
+      "family": "grm",
+      "skill_source": "skills/grm/audit-boundaries/SKILL.md",
+      "invocation": "invocations/grm/audit_boundaries.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "judgment",
+      "rite_owner": null,
+      "preconditions": [
+        "Registered active grimoire"
+      ],
+      "mutation_profile": "read_only",
+      "mutation_behavior": "Reads the active grimoire and reports magical-boundary terminology and layer-separation findings.",
       "log_behavior": "Does not append grimoire logs.",
-      "validation_profile": "python rites/sync_skills.py --grimoire GRIMOIRE_ROOT --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions."
+      "validation_profile": "Run as a judgment pass; confirm fixes with /grm-validate structure and /grm-validate links when files change."
     },
     {
       "command": "/grm-repair-links",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/repair-links/SKILL.md",
-      "invocation": "invocations/grimoire/repair_links.md",
+      "family": "grm",
+      "skill_source": "skills/grm/repair-links/SKILL.md",
+      "invocation": "invocations/grm/repair_links.md",
       "guard": "invocations/meta/grimoire_directory_guard.md",
       "owner_type": "rite",
       "rite_owner": "rites/repair_links.py",
@@ -195,9 +161,9 @@
     },
     {
       "command": "/grm-update",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/update/SKILL.md",
-      "invocation": "invocations/grimoire/update.md",
+      "family": "grm",
+      "skill_source": "skills/grm/update/SKILL.md",
+      "invocation": "invocations/grm/update.md",
       "guard": "invocations/meta/grimoire_directory_guard.md",
       "owner_type": "hybrid",
       "rite_owner": null,
@@ -212,94 +178,60 @@
       "validation_profile": "python rites/validate.py --summary; python rites/validate.py --grimoire GRIMOIRE_ROOT --summary"
     },
     {
-      "command": "/arc-update",
-      "family": "arcana",
-      "skill_source": "skills/arcana/update/SKILL.md",
-      "invocation": "invocations/arcana/update.md",
+      "command": "/grm-help",
+      "family": "grm",
+      "skill_source": "skills/grm/help/SKILL.md",
+      "invocation": "invocations/grm/help.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "judgment",
+      "rite_owner": null,
+      "preconditions": [
+        "Active grimoire",
+        "Arcana skill catalog"
+      ],
+      "mutation_profile": "read_only",
+      "mutation_behavior": "Reads the generated Arcana skill catalog and the active grimoire's own skill frontmatter; presents the /grm-* family and the grimoire's own skills.",
+      "log_behavior": "Does not append grimoire or Arcana logs.",
+      "validation_profile": "python rites/sync_docs.py --apply when Arcana skill frontmatter or command-surface metadata changes."
+    },
+    {
+      "command": "/arc-validate",
+      "family": "arc",
+      "skill_source": "skills/arc/validate/SKILL.md",
+      "invocation": "invocations/arc/validators/validate.md",
+      "guard": null,
+      "owner_type": "rite",
+      "rite_owner": "rites/validate.py",
+      "preconditions": [
+        "Arcana root"
+      ],
+      "mutation_profile": "read_only",
+      "mutation_behavior": "Runs the deterministic Arcana validator suite, optionally narrowed by selector; parallel mode may refresh transient rite artifacts.",
+      "log_behavior": "Does not append grimoire or Arcana logs.",
+      "validation_profile": "python rites/validate.py [all|smart|auto|summary|parallel|SELECTOR...]"
+    },
+    {
+      "command": "/arc-sync",
+      "family": "arc",
+      "skill_source": "skills/arc/sync/SKILL.md",
+      "invocation": "invocations/arc/sync.md",
       "guard": null,
       "owner_type": "hybrid",
       "rite_owner": null,
       "preconditions": [
-        "Arcana Git checkout",
-        "Clean Arcana worktree before pull"
-      ],
-      "mutation_profile": "judgment_gated",
-      "mutation_behavior": "Follows the UPDATE.md procedure: pulls Arcana with git --ff-only, then runs summon.py --update --apply to reconcile the library, pull every grimoire (branch-aware, manual-pull fallback for private hosts), reset and sync skills, refresh marked agent blocks, and heal only the grimoires confirmed current.",
-      "log_behavior": "Does not append grimoire logs.",
-      "validation_profile": "python rites/validate.py --summary"
-    },
-    {
-      "command": "/grm-validate",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/validate/SKILL.md",
-      "invocation": "invocations/grimoire/validators/validate.md",
-      "guard": "invocations/meta/grimoire_directory_guard.md",
-      "owner_type": "rite",
-      "rite_owner": "rites/validate.py",
-      "preconditions": [
-        "Registered active grimoire",
-        "Arcana is not the active target"
-      ],
-      "mutation_profile": "read_only",
-      "mutation_behavior": "Runs the deterministic grimoire validator suite against the active grimoire, optionally narrowed by selector; parallel mode may refresh transient rite artifacts.",
-      "log_behavior": "Does not append grimoire logs.",
-      "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT [all|smart|auto|summary|parallel|SELECTOR...]"
-    },
-    {
-      "command": "/grm-audit-boundaries",
-      "family": "grimoire",
-      "skill_source": "skills/grimoire/audit-boundaries/SKILL.md",
-      "invocation": "invocations/grimoire/audit_boundaries.md",
-      "guard": "invocations/meta/grimoire_directory_guard.md",
-      "owner_type": "judgment",
-      "rite_owner": null,
-      "preconditions": [
-        "Registered active grimoire"
-      ],
-      "mutation_profile": "read_only",
-      "mutation_behavior": "Reads the active grimoire and reports magical-boundary terminology and layer-separation findings.",
-      "log_behavior": "Does not append grimoire logs.",
-      "validation_profile": "Run as a judgment pass; confirm fixes with /grm-validate structure and /grm-validate links when files change."
-    },
-    {
-      "command": "/arc-sync-skills",
-      "family": "agent",
-      "skill_source": "skills/agent/sync-skills/SKILL.md",
-      "invocation": "invocations/agent/sync_skills.md",
-      "guard": null,
-      "owner_type": "rite",
-      "rite_owner": "rites/sync_skills.py",
-      "preconditions": [
         "Arcana root",
-        "Supported agent target or all supported targets"
-      ],
-      "mutation_profile": "plan_apply",
-      "mutation_behavior": "Plans and writes Arcana-shipped skills and installed grimoire skills into supported agent skill directories; generated SKILL.md files carry Arcana ownership metadata, generated provenance can prove ownership, unowned collisions block apply, stale cleanup touches only owned generated skills, and --reset-managed replaces current managed namespace directories before re-registering.",
-      "log_behavior": "Does not append grimoire or Arcana logs.",
-      "validation_profile": "python rites/sync_skills.py --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions."
-    },
-    {
-      "command": "/arc-sync-agentfile",
-      "family": "agent",
-      "skill_source": "skills/agent/sync-agentfile/SKILL.md",
-      "invocation": "invocations/agent/sync_agentfile.md",
-      "guard": null,
-      "owner_type": "judgment",
-      "rite_owner": null,
-      "preconditions": [
-        "Canonical grimoire block",
-        "User agent instruction file target"
+        "One positional sub-target: skills, library, or agentfile"
       ],
       "mutation_profile": "judgment_gated",
-      "mutation_behavior": "Syncs only the marked Grimoire instruction block in user agent instruction files.",
+      "mutation_behavior": "Routes a single positional sub-target. skills: registers Arcana-shipped and installed grimoire skills into supported agent skill directories via rites/sync_skills.py. library: reconciles ~/grimoires/library.json against disk via rites/sync_library.py. agentfile: refreshes the marked Grimoire instruction block in user agent instruction files as a judgment edit. A bare invocation with no sub-target refuses and lists the sub-targets; it never defaults to all because agentfile rewrites user agent files.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
-      "validation_profile": "Re-read touched files and confirm exactly one canonical Grimoire block per file."
+      "validation_profile": "skills: python rites/sync_skills.py --dry-run. library: python rites/sync_library.py. agentfile: re-read touched files and confirm exactly one canonical Grimoire block per file."
     },
     {
-      "command": "/arc-library-adopt",
-      "family": "library",
-      "skill_source": "skills/library/adopt/SKILL.md",
-      "invocation": "invocations/library/adopt.md",
+      "command": "/arc-adopt",
+      "family": "arc",
+      "skill_source": "skills/arc/adopt/SKILL.md",
+      "invocation": "invocations/arc/adopt.md",
       "guard": null,
       "owner_type": "rite",
       "rite_owner": "rites/adopt_grimoire.py",
@@ -313,26 +245,10 @@
       "validation_profile": "python rites/adopt_grimoire.py TARGET --skill-prefix PREFIX --description DESC; python rites/sync_library.py --apply"
     },
     {
-      "command": "/arc-library-sync",
-      "family": "library",
-      "skill_source": "skills/library/sync/SKILL.md",
-      "invocation": "invocations/library/sync.md",
-      "guard": null,
-      "owner_type": "rite",
-      "rite_owner": "rites/sync_library.py",
-      "preconditions": [
-        "Grimoire home"
-      ],
-      "mutation_profile": "plan_apply",
-      "mutation_behavior": "Dry-run reports local library drift; --apply reconciles library.json entries.",
-      "log_behavior": "Does not append grimoire logs.",
-      "validation_profile": "python rites/sync_library.py; python rites/sync_library.py --apply when approved."
-    },
-    {
-      "command": "/arc-workspace-clean",
-      "family": "workspace",
-      "skill_source": "skills/workspace/clean/SKILL.md",
-      "invocation": "invocations/workspace/clean.md",
+      "command": "/arc-clean",
+      "family": "arc",
+      "skill_source": "skills/arc/clean/SKILL.md",
+      "invocation": "invocations/arc/clean.md",
       "guard": null,
       "owner_type": "rite",
       "rite_owner": "rites/clean_artifacts.py",
@@ -345,10 +261,44 @@
       "validation_profile": "python rites/clean_artifacts.py --dry-run"
     },
     {
+      "command": "/arc-update",
+      "family": "arc",
+      "skill_source": "skills/arc/update/SKILL.md",
+      "invocation": "invocations/arc/update.md",
+      "guard": null,
+      "owner_type": "hybrid",
+      "rite_owner": null,
+      "preconditions": [
+        "Arcana Git checkout",
+        "Clean Arcana worktree before pull"
+      ],
+      "mutation_profile": "judgment_gated",
+      "mutation_behavior": "Follows the UPDATE.md procedure: pulls Arcana with git --ff-only, then runs summon.py --update --apply to reconcile the library, pull every grimoire (branch-aware, manual-pull fallback for private hosts), reset and sync skills, refresh marked agent blocks, and heal only the grimoires confirmed current.",
+      "log_behavior": "Does not append grimoire logs.",
+      "validation_profile": "python rites/validate.py --summary"
+    },
+    {
+      "command": "/arc-improve",
+      "family": "arc",
+      "skill_source": "skills/arc/improve/SKILL.md",
+      "invocation": "invocations/arc/improve_arcana.md",
+      "guard": null,
+      "owner_type": "judgment",
+      "rite_owner": null,
+      "preconditions": [
+        "Arcana root",
+        "Maintainer intent"
+      ],
+      "mutation_profile": "judgment_gated",
+      "mutation_behavior": "May edit Arcana source, docs, tests, skills, and generated artifacts after reading current context.",
+      "log_behavior": "Updates CHANGELOG.md for user-visible Arcana changes.",
+      "validation_profile": "python rites/validate.py --parallel; python -m pytest; python rites/sync_docs.py --apply when generated docs change."
+    },
+    {
       "command": "/arc-help",
-      "family": "help",
-      "skill_source": "skills/help/help/SKILL.md",
-      "invocation": "invocations/help/help.md",
+      "family": "arc",
+      "skill_source": "skills/arc/help/SKILL.md",
+      "invocation": "invocations/arc/help.md",
       "guard": null,
       "owner_type": "judgment",
       "rite_owner": null,
