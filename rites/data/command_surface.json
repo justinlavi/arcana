@@ -4,6 +4,23 @@
   "description": "Authoritative contract linking each public Arcana-shipped slash command to its skill source, invocation home, workflow owner, safety posture, and validation profile.",
   "commands": [
     {
+      "command": "/grm-adopt",
+      "family": "grm",
+      "skill_source": "skills/grm/adopt/SKILL.md",
+      "invocation": "invocations/grm/adopt.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "rite",
+      "rite_owner": "rites/adopt_grimoire.py",
+      "preconditions": [
+        "Unmanaged directory under the grimoire home",
+        "Unique grimoire skill prefix"
+      ],
+      "mutation_profile": "apply_only",
+      "mutation_behavior": "Writes a new grimoire.json manifest into an existing unmanaged folder and refuses to overwrite an existing manifest. User mirror of /arc-adopt.",
+      "log_behavior": "Does not append grimoire logs.",
+      "validation_profile": "python rites/adopt_grimoire.py TARGET --skill-prefix PREFIX --description DESC; python rites/sync_library.py --apply"
+    },
+    {
       "command": "/grm-create",
       "family": "grm",
       "skill_source": "skills/grm/create/SKILL.md",
@@ -62,16 +79,16 @@
       "skill_source": "skills/grm/sync/SKILL.md",
       "invocation": "invocations/grm/sync.md",
       "guard": "invocations/meta/grimoire_directory_guard.md",
-      "owner_type": "rite",
-      "rite_owner": "rites/sync_skills.py",
+      "owner_type": "hybrid",
+      "rite_owner": null,
       "preconditions": [
-        "Registered active grimoire",
-        "Supported agent target or all supported targets"
+        "Registered active grimoire (for the skills sub-target)",
+        "One of the sub-targets skills, library, or agentfile, or bare to run all three"
       ],
-      "mutation_profile": "plan_apply",
-      "mutation_behavior": "Plans and writes Arcana-shipped skills and active-grimoire skills into supported agent skill directories; generated SKILL.md files carry Arcana ownership metadata, generated provenance can prove ownership, unowned collisions block apply, stale cleanup touches only owned generated skills, and --reset-managed replaces current managed namespace directories before re-registering.",
+      "mutation_profile": "judgment_gated",
+      "mutation_behavior": "Routes an optional positional sub-target (bare runs all three). skills: registers Arcana-shipped and active-grimoire skills via sync_skills.py. library: reconciles ~/grimoires/library.json against disk via sync_library.py. agentfile: creates or refreshes the marked Grimoire instruction block via inject_agent_file.py, falling to a judgment edit only for files with ambiguous markers. A bare invocation reconciles all three scopes and reports every scope, including those it leaves unchanged. User mirror of /arc-sync.",
       "log_behavior": "Does not append grimoire logs.",
-      "validation_profile": "python rites/sync_skills.py --grimoire GRIMOIRE_ROOT --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions."
+      "validation_profile": "python rites/sync_skills.py --grimoire GRIMOIRE_ROOT --dry-run; python rites/sync_library.py; python rites/inject_agent_file.py"
     },
     {
       "command": "/grm-validate",

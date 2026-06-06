@@ -132,7 +132,7 @@ To register new or updated skills in the active grimoire, run `/grm-sync`. To re
 ## Troubleshooting
 
 **Agent doesn't see new skills**
-- Run `/grm-sync` from the active grimoire, or `/arc-sync skills` for a global refresh. Then open a new agent session (Claude Code / Codex caches skill listings).
+- Run `/grm-sync skills` from the active grimoire. Then open a new agent session (Claude Code / Codex caches skill listings). (Maintainers can refresh every installed grimoire at once with `/arc-sync skills`.)
 
 **Agent skills are badly stale or have old prefixes**
 - Pull Arcana, then follow [Arcana Update](../UPDATE.md). It is the stable path for cases where the installed slash-command layer cannot repair itself.
@@ -140,11 +140,11 @@ To register new or updated skills in the active grimoire, run `/grm-sync`. To re
 **Arcana may be stale**
 - Run `/grm-update`. It updates Arcana and every grimoire in `~/grimoires/library.json`; the current directory does not need to be a grimoire.
 
-**Agent has stale Grimoire routing instructions**
-- Run `/arc-sync agentfile`. It compares existing agent instruction files against the canonical block and updates only the Grimoire section.
+**Agent has stale or missing Grimoire routing instructions**
+- Ask your agent to run `/grm-sync agentfile`. It creates a missing instruction file and refreshes a stale Grimoire block, preserving your other content. (Maintainer equivalent: `/arc-sync agentfile`.)
 
 **Agent can't find a grimoire**
-- Verify the grimoire is in `~/grimoires/library.json` and the `local_path` resolves. Run `/arc-sync library` to detect and reconcile drift.
+- Verify the grimoire is in `~/grimoires/library.json` and the `local_path` resolves. Ask your agent to run `/grm-sync library` to reconcile the library against disk (the fix after moving or renaming a grimoire folder). (Maintainer equivalent: `/arc-sync library`.)
 
 **Skill names look wrong (`{{SKILL_PREFIX}}-...`)**
 - The grimoire is missing a `grimoire.json` or its `skill_prefix` field. See [reference](reference.md#grimoire-manifest).

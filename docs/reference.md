@@ -13,6 +13,26 @@ last_verified: 2026-05-12
 
 ---
 
+## In plain language
+
+New here? These are the only terms you need, and you never have to say them back to use the system.
+
+| Term | Plain meaning | Do you touch it? |
+|---|---|---|
+| Grimoire | A focused knowledge base (a wiki) on one subject. | Yes — it is your content. |
+| Arcana | The shared engine that powers every grimoire. | Rarely — it just runs. |
+| Hub | The index / table-of-contents page for a folder. | The AI keeps it current. |
+| Page | One knowledge document (a Markdown file). | Yes — you read and write these. |
+| Frontmatter | The labeled `---` block at the top of a page. | The AI maintains it. |
+| Rite | A Python automation script Arcana runs for you. | No — you never edit it. |
+| Invocation | A checklist the AI follows to carry out an operation. | No. |
+| Summoning rite | The one-line installer. | Once, to install. |
+| Skill | A slash command you type into your AI agent, like `/grm-add`. | Yes — you run these. |
+
+The rest of this page documents the playful "magical" names Arcana uses for these concepts. You can keep using the plain words above.
+
+---
+
 ## ⚡ The Magical Boundary ⚡
 
 **IMPORTANT**: Arcana and grimoires have two vocabulary layers with different jobs:

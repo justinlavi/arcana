@@ -31,6 +31,7 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 | `rites/append_log.py` | `append_only` | none | `python rites/append_log.py --grimoire <path> --op <op> --title "<title>"` | `<grimoire>/log.md` |
 | `rites/build_summon_binary.py` | `apply_only` | none | `python rites/build_summon_binary.py` | build artifacts, release archives, checksum files |
 | `rites/clean_artifacts.py` | `plan_apply` | `python rites/clean_artifacts.py --dry-run` | `python rites/clean_artifacts.py` | `rites/.artifacts` directories |
+| `rites/inject_agent_file.py` | `plan_apply` | `python rites/inject_agent_file.py` | `python rites/inject_agent_file.py --apply` | supported agent instruction files under the user's home directory |
 | `rites/new_page.py` | `plan_apply` | `python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title "<title>"` | `python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title "<title>" --apply` | a new `<grimoire>/chapters/<chapter>/<slug>.md` page |
 | `rites/sync_skills.py` | `plan_apply` | `python rites/sync_skills.py --dry-run` | `python rites/sync_skills.py` | supported agent skill directories |
 | `rites/repair_links.py` | `plan_apply` | `python rites/repair_links.py --grimoire <path>` | `python rites/repair_links.py --grimoire <path> --apply` | active-grimoire Markdown files |

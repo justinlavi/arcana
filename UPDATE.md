@@ -87,7 +87,11 @@ This is the deterministic core. In one pass it:
 
 **Quote the envelope** in your report: the `grimoire_summary` counts, each
 grimoire's `status`, and the `sync_skills` `registered`/`reset`/`cleaned`
-counts. If a grimoire appears under `needs_manual_pull`, it could **not** be
+counts. Then, for the human, render a plain one-line-per-grimoire summary keyed
+off those machine fields — for example "HR: up to date; Recipes: pulled new
+changes; Project Alpha: NOT updated, needs your login" — humanizing the quoted
+counts, never a number you counted yourself. If a grimoire appears under
+`needs_manual_pull`, it could **not** be
 brought current (a private host's auth, offline, a dirty or diverged tree). The
 update **did not touch it** — healing a stale tree would re-derive upstream work
 and cause divergence. List each such grimoire verbatim as:
@@ -99,23 +103,22 @@ A per-grimoire failure never aborts the run; the rest are still brought current.
 If the dry run helps first, run `--update` without `--apply` to see the
 per-grimoire classification before writing.
 
-### 4. Refresh the agent routing block
+### 4. Confirm the agent routing block
 
-The marked Grimoire block is the one step the rite leaves to judgment, because
-the BEGIN/END-vs-heading sentinels make injection non-deterministic. Read
-`rites/templates/grimoire_block.md`, `rites/data/agent_targets.json`, and
-`invocations/arc/sync.md`, then replace only the marked block in
-each automatic instruction target:
+Step 3's `summon.py --update --apply` already reconciles the marked Grimoire block
+in every automatic instruction target through `rites/inject_agent_file.py`: it
+creates a missing file with `# <title>` and the canonical block, inserts a block
+into a block-less file, and refreshes one clean marked region in place — all
+deterministic. Confirm from the envelope's `agent_blocks` step which targets were
+created, inserted, or refreshed.
 
-```text
-<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->
-...
-<!-- END GRIMOIRE KNOWLEDGE BASE -->
-```
-
-Preserve all non-Grimoire content exactly. If block boundaries are ambiguous,
-stop and ask the user. (`/arc-sync agentfile` does this once skills are
-registered.)
+The rite reports a target as **ambiguous** (and writes nothing) only when it has
+duplicate or malformed markers, or a block tangled with hand-authored content.
+Those are the genuinely non-deterministic cases. For each one, read
+`rites/templates/grimoire_block.md` and replace only the marked region by hand,
+preserving all non-Grimoire content; if the boundaries are unclear, stop and ask
+the user. (`/grm-sync agentfile`, or the maintainer's `/arc-sync agentfile`, runs
+this same rite plus the judgment fallback.)
 
 ### 5. Final gate
 

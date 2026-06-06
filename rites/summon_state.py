@@ -172,6 +172,7 @@ def inspect_install(
             "id": target.get("id"),
             "label": target.get("label"),
             "path": str(path),
+            "title": target.get("title") or path.name,
             "instruction_file_exists": exists,
             "block_present": marker != "none",
             "block_marker": marker,
@@ -263,7 +264,7 @@ def next_actions(state: dict[str, Any], arcana_root: Path) -> list[dict[str, Any
         actions.append({
             "kind": "agent_block_update",
             "tier": "amber",
-            "command": "/arc-sync agentfile",
+            "command": "/grm-sync agentfile",
             "reason": f"agent instruction block absent for: {', '.join(missing_blocks)}",
         })
     if _skills_absent(state):
@@ -301,7 +302,7 @@ def residual(state: dict[str, Any], *, prune: bool) -> list[dict[str, Any]]:
         items.append({
             "kind": "agent_block",
             "tier": "amber",
-            "reason": f"agent instruction block must be refreshed via /arc-sync agentfile for: {', '.join(missing_blocks)}",
+            "reason": f"agent instruction block must be refreshed via /grm-sync agentfile for: {', '.join(missing_blocks)}",
         })
     if not state["arcana"]["working_tree_populated"]:
         items.append({
@@ -329,6 +330,19 @@ def _default_skill_runner(register_script: Path) -> tuple[int, str]:
         env=summon_core._subprocess_env(),
     )
     return result.returncode, (result.stdout or "") + (result.stderr or "")
+
+
+def _default_agent_injector(path: Path, title: str, *, apply: bool) -> dict[str, Any]:
+    """Create / insert / refresh the marked Grimoire block in one agent file.
+
+    Lazy import keeps summon_state importable without pulling the injector at
+    module load, and avoids any import-time cycle. The injector is deterministic
+    for the create/insert/refresh cases and reports ambiguous files (duplicate or
+    malformed markers) without writing, so they fall to the judgment edit.
+    """
+    import inject_agent_file
+
+    return inject_agent_file.apply_block(Path(path), title, apply=apply)
 
 
 def _default_validate_runner(arcana_root: Path) -> tuple[bool, str]:
@@ -496,18 +510,58 @@ def _grimoire_step(grimoire_result: dict[str, Any], *, reporter: ResultReporter)
     return step
 
 
-def _reconcile_agent_blocks(state: dict[str, Any], *, reporter: ResultReporter) -> dict[str, Any]:
-    """Report-only: the BEGIN/END vs heading sentinel mismatch makes auto-write unsafe."""
+def _reconcile_agent_blocks(
+    state: dict[str, Any],
+    *,
+    apply: bool,
+    reporter: ResultReporter,
+    injector: Callable | None = None,
+) -> dict[str, Any]:
+    """Create, insert, or refresh the marked Grimoire block in each agent file.
+
+    Deterministic for the common cases - an absent file is created with the
+    canonical block, a block-less file gets one inserted, and a single clean
+    marked region is refreshed in place. A file with duplicate or malformed
+    markers is left untouched and reported for the `/grm-sync agentfile` (or
+    `/arc-sync agentfile`) judgment edit, since its boundaries are ambiguous.
+    Plan mode writes nothing and reports what `--apply` would do.
+    """
+    injector = injector or _default_agent_injector
     step = {"id": "agent_blocks", "label": "Agent instruction blocks", "status": "noop",
             "mutations": [], "messages": []}
-    missing = _missing_block_ids(state)
-    if missing:
-        text = (
-            f"agent_blocks: absent for {', '.join(missing)} - refresh with /arc-sync agentfile "
-            "(not auto-written: BEGIN/END vs heading sentinels make injection non-deterministic)"
-        )
-        reporter.message("warning", text)
-        step["messages"].append({"severity": "warning", "message": text})
+
+    wrote = False
+    drift = False
+    for target in state["agent_targets"]:
+        path = target["path"]
+        title = target.get("title") or Path(path).name
+        result = injector(Path(path), title, apply=apply)
+        action = result["action"]
+        tid = target["id"]
+        if action in ("create", "insert", "replace"):
+            if apply:
+                reporter.mutation("write", path=path, detail=f"{action} agent block {tid}")
+                step["mutations"].append({"action": "write", "path": path,
+                                          "detail": f"{action} {tid}"})
+                wrote = True
+            else:
+                text = f"agent_blocks: would {action} Grimoire block for {tid}"
+                reporter.message("info", text)
+                step["messages"].append({"severity": "info", "message": text})
+                drift = True
+        elif action == "ambiguous":
+            text = (
+                f"agent_blocks: {tid} has duplicate or malformed Grimoire markers - "
+                "refresh with /grm-sync agentfile (or /arc-sync agentfile); not auto-written "
+                "because its boundaries are ambiguous"
+            )
+            reporter.message("warning", text)
+            step["messages"].append({"severity": "warning", "message": text})
+            drift = True
+
+    if wrote:
+        step["status"] = "ok"
+    elif drift:
         step["status"] = "drift"
     return step
 
@@ -526,6 +580,7 @@ def reconcile(
     skill_runner: Callable | None = None,
     validate_runner: Callable | None = None,
     grimoire_processor: Callable | None = None,
+    agent_injector: Callable | None = None,
 ) -> dict[str, Any]:
     """Run the reconciliation and return reporter + steps + before/after state.
 
@@ -577,7 +632,8 @@ def reconcile(
 
     steps.append(_reconcile_skills(arcana_root, state_before, apply=apply,
                                    reporter=reporter, skill_runner=skill_runner))
-    steps.append(_reconcile_agent_blocks(state_before, reporter=reporter))
+    steps.append(_reconcile_agent_blocks(state_before, apply=apply, reporter=reporter,
+                                         injector=agent_injector))
 
     # Verify against post-write reality so the transcript reflects convergence.
     state_after = inspect_install(
@@ -803,6 +859,7 @@ def run_state_command(
     git_fn: Callable | None = None,
     skill_runner: Callable | None = None,
     validate_runner: Callable | None = None,
+    agent_injector: Callable | None = None,
     now: Callable | None = None,
     run_id: str | None = None,
 ) -> int:
@@ -832,6 +889,7 @@ def run_state_command(
         pull_grimoires=pull_grimoires, grimoire_fetch=grimoire_fetch,
         instruction_targets=instruction_targets, skill_targets=skill_targets,
         git_fn=git_fn, skill_runner=skill_runner, validate_runner=validate_runner,
+        agent_injector=agent_injector,
     )
     reporter = outcome["reporter"]
     state = outcome["state_after"]

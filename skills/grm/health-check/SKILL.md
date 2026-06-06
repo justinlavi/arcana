@@ -1,6 +1,6 @@
 ---
 name: {{SKILL_PREFIX}}-health-check
-description: Health-check the active grimoire for structural and knowledge-quality issues
+description: Full checkup of the active grimoire - start here to find broken links, orphans, stale or contradictory pages, and structure problems. The all-in-one health pass
 when_to_use: Quarterly hygiene pass; after a batch of imports; user mentions "health check the wiki", "check the grimoire", or "find orphans / stale pages / contradictions". Combines mechanical validators with judgment-based passes.
 user-invocable: true
 allowed-tools: Bash Read Edit

@@ -250,6 +250,64 @@ def test_reconcile_apply_prune_removes_stale(tmp_path):
     assert any("ghost" in (m["detail"] or "") for m in removals)
 
 
+def test_reconcile_apply_creates_absent_agent_file(tmp_path):
+    """A deleted/absent agent instruction file is recreated with the block."""
+    home = _make_home(tmp_path, with_grimoire=False)
+    agent_path = tmp_path / "AGENTS.md"  # absent on purpose
+    out = S.reconcile(
+        home, REPO_ROOT, apply=True,
+        instruction_targets=[{"id": "codex", "label": "Codex",
+                              "path": str(agent_path), "title": "AGENTS.md"}],
+        skill_targets=_skill_targets(tmp_path, 1),
+        git_fn=NO_GIT,
+        skill_runner=lambda script: (0, ""),
+        validate_runner=OK_VALIDATE,
+    )
+    assert agent_path.is_file()
+    content = agent_path.read_text(encoding="utf-8")
+    assert content.count(S.BEGIN_SENTINEL) == 1
+    step = next(s for s in out["steps"] if s["id"] == "agent_blocks")
+    assert step["status"] == "ok"
+
+
+def test_reconcile_apply_honors_agent_injector_seam(tmp_path):
+    """The agent-block step routes through the injectable seam under --apply."""
+    calls = []
+
+    def fake_injector(path, title, *, apply):
+        calls.append((str(path), title, apply))
+        return {"path": str(path), "action": "create", "reason": "x", "status": "ok"}
+
+    home = _make_home(tmp_path, with_grimoire=False)
+    out = S.reconcile(
+        home, REPO_ROOT, apply=True,
+        instruction_targets=[{"id": "codex", "label": "Codex",
+                              "path": str(tmp_path / "AGENTS.md"), "title": "AGENTS.md"}],
+        skill_targets=_skill_targets(tmp_path, 1),
+        git_fn=NO_GIT,
+        skill_runner=lambda script: (0, ""),
+        validate_runner=OK_VALIDATE,
+        agent_injector=fake_injector,
+    )
+    assert calls and calls[0][2] is True
+    step = next(s for s in out["steps"] if s["id"] == "agent_blocks")
+    assert step["status"] == "ok"
+
+
+def test_reconcile_plan_does_not_write_agent_file(tmp_path):
+    """Plan mode reports the agent-block action but writes nothing."""
+    home = _make_home(tmp_path, with_grimoire=False)
+    agent_path = tmp_path / "AGENTS.md"  # absent
+    S.reconcile(
+        home, REPO_ROOT, apply=False,
+        instruction_targets=[{"id": "codex", "label": "Codex",
+                              "path": str(agent_path), "title": "AGENTS.md"}],
+        skill_targets=_skill_targets(tmp_path, 1),
+        git_fn=NO_GIT,
+    )
+    assert not agent_path.exists()
+
+
 def test_reconcile_apply_blocked_on_broken_base(tmp_path):
     home = _make_home(tmp_path)
     out = S.reconcile(

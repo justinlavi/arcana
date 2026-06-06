@@ -1,6 +1,6 @@
 ---
 name: {{SKILL_PREFIX}}-audit-boundaries
-description: Audit magical boundary compliance - grimoires must not borrow Arcana's system terminology
+description: Advanced, opt-in check that a grimoire's pages don't reuse Arcana's internal command and system words (for maintainers and pre-release review)
 when_to_use: Before publishing or releasing a grimoire; after restructuring chapters; during PR review of grimoire changes; user mentions "magical boundary", "system vs content terminology", or "is my grimoire using Arcana words it shouldn't".
 user-invocable: true
 disable-model-invocation: true

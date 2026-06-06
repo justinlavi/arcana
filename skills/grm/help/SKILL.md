@@ -1,7 +1,7 @@
 ---
 name: {{SKILL_PREFIX}}-help
 description: Display the grimoire command catalog (/grm-*) and the active grimoire's own skills
-when_to_use: Author working inside a grimoire asks what grimoire commands exist, how to operate on the active grimoire, or "what can I do here". Use when the user knows the /grm- prefix. For the full Arcana/platform catalog and every installed grimoire, use /arc-help.
+when_to_use: User asks what commands exist, what they can do here, how to operate the active grimoire, or "what can Grimoire do" / "list grimoire commands" / "what can I do". The everyday help command for grimoire users. For the full platform catalog across every installed grimoire, use /arc-help.
 user-invocable: true
 allowed-tools: Bash Read
 ---

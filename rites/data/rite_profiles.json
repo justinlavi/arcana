@@ -48,6 +48,17 @@
       "tests": ["tests/test_rite_profiles.py"]
     },
     {
+      "path": "rites/inject_agent_file.py",
+      "profile": "plan_apply",
+      "default_mode": "plan",
+      "plan_command": "python rites/inject_agent_file.py",
+      "apply_command": "python rites/inject_agent_file.py --apply",
+      "writes": ["supported agent instruction files under the user's home directory"],
+      "idempotency": "After apply, rerun reports every target present: an absent file is created with the canonical block, a block-less file gets one inserted, a single clean marked region is refreshed in place, and a block already matching the template is left unchanged. Files with duplicate or malformed markers are left untouched and reported for the agentfile judgment edit.",
+      "validation_profile": "python rites/inject_agent_file.py; python -m pytest tests/test_inject_agent_file.py",
+      "tests": ["tests/test_inject_agent_file.py", "tests/test_rite_profiles.py"]
+    },
+    {
       "path": "rites/new_page.py",
       "profile": "plan_apply",
       "default_mode": "plan",

@@ -1010,7 +1010,7 @@ def main() -> int:
         if not args.dry_run and total_registered > 0:
             labels = ", ".join(result["label"] for result in results)
             print(f"  Skills are now available for: {labels}.")
-            print("  Try: /arc-help")
+            print("  Try: /grm-help inside a grimoire, or /grm-create to start one")
             print()
 
     if reporter is not None:

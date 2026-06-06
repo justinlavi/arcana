@@ -925,7 +925,7 @@ def _print_cli_summary(mode, installed_keys, skills_ok):
     print("  Next steps:")
     agent_labels = ", ".join(target["label"] for target in automatic_instruction_targets(REPO_ROOT))
     print(f"    1. Open a new {agent_labels} session")
-    print("    2. Try: /arc-help")
+    print("    2. Try: /grm-create  (maintainers: /arc-help lists the full platform catalog)")
     print()
 
 

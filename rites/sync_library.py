@@ -359,11 +359,11 @@ def print_report(scan, diff, home, library_path, apply_mode, human=True, reporte
             print("  Unmanaged directories (no grimoire.json - won't be added):")
         for path in scan["unmanaged"]:
             if human:
-                info(f"{path.name}/  -> add grimoire.json or move out of {home}")
+                info(f"{path.name}/  -> register with /grm-adopt {path.name}, or move it out of {home}")
             if reporter is not None:
                 reporter.message(
                     "warning",
-                    f"unmanaged: {path.name}/ (no grimoire.json - won't be added)",
+                    f"unmanaged: {path.name}/ (no grimoire.json - register with /grm-adopt {path.name})",
                     path=path,
                 )
         if human:
@@ -490,7 +490,7 @@ def main():
                 ok(f"Library written: {library_path}")
                 print()
                 print("  Sync skills to pick up any new grimoires:")
-                print("    /arc-sync skills")
+                print("    /grm-sync skills")
                 print()
         elif not conflict and human:
             ok("Library already reconciled by a concurrent process; nothing to write.")

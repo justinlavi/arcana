@@ -1,6 +1,6 @@
 ---
 name: {{SKILL_PREFIX}}-audit-semantics
-description: Audit grimoire naming and organization for discoverability and token efficiency
+description: Advanced, opt-in review of page and chapter naming so things stay easy to find (a deeper pass than /grm-health-check's checkup)
 when_to_use: User asks about naming quality, discoverability, or organization of a grimoire; user mentions chapter or page names feel awkward, redundant, or hard to find; user wants a judgment-based audit of naming and organization. Operates on the active grimoire.
 user-invocable: true
 disable-model-invocation: true

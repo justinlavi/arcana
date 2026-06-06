@@ -61,7 +61,7 @@ Arcana ships universal operations every grimoire inherits:
 - **`/grm-validate [selector]`** — run the full deterministic validator profile for the active grimoire, or a targeted mechanical check.
 - **`/grm-update`** — bring Arcana and every grimoire in the library back to a current, validated, synchronized state.
 - **`/grm-sync`** — refresh Arcana skills plus the active grimoire's own skills.
-- **`/grm-audit-semantics`** — and more.
+- **`/grm-help`** — list every grimoire command you can run.
 
 Arcana command families are prefix-explicit: `/arc-*` acts on Arcana and platform surfaces (the engine, the home library `~/grimoires/library.json`, agent files, and agent skill directories); `/grm-*` acts on the active grimoire. Full rules live in [skill schema](docs/skill_schema.md).
 
@@ -104,15 +104,23 @@ target matrix lives in [agent targets](docs/agent_targets.md):
 
 ## Install
 
+**Before you start.** Arcana runs *inside* an AI coding agent — its `/grm-*` and `/arc-*` commands are typed into that agent, not into a plain terminal. So you need three things first:
+
+1. **A terminal with `git`** — to run the one-line installer below. (No terminal? See [Install without a terminal](docs/installation.md#install-without-a-terminal).)
+2. **One supported AI agent, installed and signed in** — [Claude Code](https://docs.claude.com/en/docs/claude-code) or [Codex / ChatGPT CLI](https://developers.openai.com/codex/cli). This is the program you will type `/grm-create` into. See [Supported Agents](#supported-agents).
+3. **About five minutes.**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
 ```
+
+This installs into `~/grimoires/` and configures the AI agents you already have; it asks before installing any optional dependency and does not run as root. (On Arch-based systems, an accepted dependency prompt may use `sudo pacman` to install `python-pip` first.)
 
 The summoning rite installs **Arcana** — the framework — configures your AI agents, and registers the `/arc-*` and `/grm-*` skill sets. If you have existing grimoires hosted on GitHub or GitLab, the rite can discover and clone them too. Otherwise, skip straight to building your first grimoire from scratch after Arcana is up.
 
 Detailed installer mode rules live in [summoning contract](docs/summoning_contract.md).
 
-Open a new agent session and run `/arc-help` to see every available command, or run `/grm-create` to start your first grimoire.
+Open a new session inside your AI agent (not a plain terminal) and run `/grm-create` to start your first grimoire. (Maintainers: `/arc-help` lists the full platform catalog.)
 
 **Out of date, or something seems wrong?** Update brings Arcana and every grimoire in the library back to a current, validated, synchronized state. Two ways to start it:
 
@@ -123,7 +131,9 @@ Open a new agent session and run `/arc-help` to see every available command, or 
 
 Both follow [UPDATE.md](UPDATE.md).
 
--> [installation](docs/installation.md) - [5-minute smoke test](docs/installation.md#verify-your-install-5-minute-smoke-test)
+**If something stops working** — skills vanished, the agent can't find a grimoire, or it's guessing instead of reading files — open a new session in your agent and run `/grm-update`.
+
+-> [installation](docs/installation.md) - [5-minute smoke test](docs/installation.md#verify-your-install-5-minute-smoke-test) - [troubleshooting](docs/installation.md#troubleshooting)
 
 ---
 
@@ -176,19 +186,27 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 
 ## Documentation
 
+**For everyone**
+
 | | |
 |---|---|
 | [Update](UPDATE.md) | Skill-less entry point to bring Arcana and every grimoire current |
-| [Installation](docs/installation.md) | One-command setup, manual setup, 5-minute smoke test, troubleshooting |
-| [Summoning Contract](docs/summoning_contract.md) | Summoning Rite installer contract: install/update modes, drift detection, fallbacks |
-| [Agent Targets](docs/agent_targets.md) | Supported agent target registry |
-| [Agent Configuration](docs/agent_configuration.md) | Claude Code, Codex, Copilot, Cursor |
-| [Skills](docs/skills.md) | Every `/arc-*` command with descriptions |
-| [Skill Schema](docs/skill_schema.md) | Command-family naming rules |
+| [Installation](docs/installation.md) | Before you start, one-command setup, install without a terminal, manual setup, smoke test, troubleshooting |
+| [Agent Configuration](docs/agent_configuration.md) | Per-agent setup: Claude Code, Codex, Copilot, Cursor |
 | [Operating Model](docs/operating_model.md) | Storage layers and routing |
 | [Page Schema](docs/page_schema.md) | Frontmatter spec for every page |
 | [Obsidian](docs/obsidian.md) | Open as a vault; graph-view color groups |
-| [Reference](docs/reference.md) | Terminology, schemas, path conventions |
+| [VS Code](docs/vscode.md) | VS Code wikilink setup |
+| [Skills](docs/skills.md) | Every command with descriptions |
+| [Reference](docs/reference.md) | Plain-language terms, then full terminology and conventions |
+
+**Maintainer reference**
+
+| | |
+|---|---|
+| [Summoning Contract](docs/summoning_contract.md) | Summoning Rite installer contract: install/update modes, drift detection, fallbacks |
+| [Agent Targets](docs/agent_targets.md) | Supported agent target registry |
+| [Skill Schema](docs/skill_schema.md) | Command-family naming rules |
 | [Script Vs Ai](docs/script_vs_ai.md) | When to use rites vs invocations |
 | [Evals](docs/evals.md) | Model-in-the-loop behavioral coverage for invocations |
 | [Governance](docs/governance.md) | Maintaining and versioning Arcana |
@@ -196,6 +214,5 @@ Create as many grimoires as you need. Arcana provides the framework; each grimoi
 | [Rite Profiles](docs/rite_profiles.md) | Mutating-rite plan/apply/append contract |
 | [Release](docs/release.md) | Release and publish workflow |
 | [Architecture Backlog](docs/architecture_backlog.md) | Deferred architecture work queue |
-| [VS Code](docs/vscode.md) | VS Code wikilink setup |
 | [Contributing](CONTRIBUTING.md) | How to contribute to Arcana |
 | [Arcana](arcana.md) | Navigate everything |
