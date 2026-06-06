@@ -38,16 +38,16 @@ def test_command_surface_validator_reports_missing_public_skill(tmp_path):
         json.dumps({
             "skill_prefix": "arc",
             "skill_families": {
-                "arcana": {
+                "arc": {
                     "skill_prefix": "arc",
-                    "path": "skills/arcana",
+                    "path": "skills/arc",
                     "slug_prefix": "",
                 }
             },
         }),
     )
     _write(
-        tmp_path / "skills/arcana/example/SKILL.md",
+        tmp_path / "skills/arc/example/SKILL.md",
         "---\nname: {{SKILL_PREFIX}}-example\ndescription: Example\n---\n",
     )
     _write(

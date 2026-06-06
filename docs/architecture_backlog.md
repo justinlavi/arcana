@@ -12,7 +12,7 @@ last_verified: 2026-05-25
 ## Purpose
 
 Durable queue for deferred architecture opportunities found during
-`/arc-improve` and `invocations/arcana/quality/review_architecture.md`.
+`/arc-improve` and `invocations/arc/quality/review_architecture.md`.
 
 The architecture review report should mention deferred items in chat, but
 large items also belong here when they need maintainer review, sequencing, or

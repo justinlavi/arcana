@@ -61,4 +61,4 @@ When adding, removing, or renaming a public Arcana-shipped command:
 
 - Skill schema: [skill schema](skill_schema.md)
 - Generated skill catalog: [skills](skills.md)
-- Validator: [validate skill refs](../invocations/arcana/validators/validate_skill_refs.md)
+- Validator: [validate skill refs](../invocations/arc/validators/validate_skill_refs.md)

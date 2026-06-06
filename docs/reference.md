@@ -50,7 +50,7 @@ When **creating knowledge** inside chapters:
 | Knowledge category | **Chapter** | `chapters/` |
 | Sub-category | **Sub-chapter** | `chapters/{name}/{sub}/` |
 | Knowledge document | **Page** | `*.md` files |
-| Executable workflow | **Invocation** | `invocations/grimoire/*.md` and `invocations/arcana/*.md` |
+| Executable workflow | **Invocation** | `invocations/grm/*.md` and `invocations/arc/*.md` |
 | Template/blueprint | **Formula** | `formulae/*.md` (Arcana only) |
 | Automation script | **Rite** | `rites/*.py` (Arcana only) |
 
@@ -80,7 +80,7 @@ Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` and the r
 
 Arcana uses one local library: `~/grimoires/library.json`. It is a **pure registry**: it records *where* installed grimoires live, nothing else. Each grimoire's identity (name, skill prefix, description) lives in its own [manifest](#grimoire-manifest).
 
-`~/grimoires/library.json`, created by the summoning rite or `/arc-library-sync`. Lists grimoires the user has cloned and where they live on disk.
+`~/grimoires/library.json`, created by the summoning rite or `/arc-sync library`. Lists grimoires the user has cloned and where they live on disk.
 
 ```json
 {
@@ -101,7 +101,7 @@ Fields:
 - `local_path` — absolute filesystem path to the grimoire root (supports `$HOME`).
 - `online_path` — git clone URL; set to `null` if not applicable.
 
-To add a grimoire, run `/arc-library-sync` after cloning into `~/grimoires/`. To detect drift (stale entries, missing grimoires, unmanaged directories), run the same skill in dry-run mode.
+To add a grimoire, run `/arc-sync library` after cloning into `~/grimoires/`. To detect drift (stale entries, missing grimoires, unmanaged directories), run the same skill in dry-run mode.
 
 ---
 
@@ -130,12 +130,8 @@ Arcana is not a grimoire and uses `arcana.json` instead:
   "kind": "arcana",
   "skill_prefix": "arc",
   "skill_families": {
-    "arcana": {"skill_prefix": "arc", "path": "skills/arcana", "slug_prefix": ""},
-    "grimoire": {"skill_prefix": "grm", "path": "skills/grimoire", "slug_prefix": ""},
-    "agent": {"skill_prefix": "arc", "path": "skills/agent", "slug_prefix": "agent"},
-    "library": {"skill_prefix": "arc", "path": "skills/library", "slug_prefix": "library"},
-    "workspace": {"skill_prefix": "arc", "path": "skills/workspace", "slug_prefix": "workspace"},
-    "help": {"skill_prefix": "arc", "path": "skills/help", "slug_prefix": ""}
+    "grm": {"skill_prefix": "grm", "path": "skills/grm", "slug_prefix": ""},
+    "arc": {"skill_prefix": "arc", "path": "skills/arc", "slug_prefix": ""}
   },
   "description": "Framework for creating and maintaining grimoires"
 }

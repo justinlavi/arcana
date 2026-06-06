@@ -56,15 +56,14 @@ Knowledge and skills compound: the better your documentation, the smarter your s
 Arcana ships universal operations every grimoire inherits:
 
 - **`/grm-import <source>`** — file a source under `sources/`, scan existing chapters, propose page updates, apply them, append to `log.md`.
-- **`/grm-capture-answer`** — promote a chat answer (analysis, comparison, derived insight) into a properly-frontmattered wiki page so it doesn't evaporate into chat history.
+- **`/grm-add`** — add knowledge to the grimoire as a page or a chapter, written fresh or distilled from the current chat session (so a good answer doesn't evaporate into chat history).
 - **`/grm-health-check`** — health-check the wiki: orphans, stale claims (>90 days unverified), ghost references (entities mentioned often but lacking a page), contradictions, missing cross-references.
-- **`/grm-improve`** — comprehensive normalize-and-optimize pass.
 - **`/grm-validate [selector]`** — run the full deterministic validator profile for the active grimoire, or a targeted mechanical check.
 - **`/grm-update`** — bring Arcana and every grimoire in the library back to a current, validated, synchronized state.
-- **`/grm-sync-skills`** — refresh Arcana skills plus the active grimoire's own skills.
-- **`/grm-create-chapter`**, **`/grm-audit-semantics`** — and more.
+- **`/grm-sync`** — refresh Arcana skills plus the active grimoire's own skills.
+- **`/grm-audit-semantics`** — and more.
 
-Arcana command families are prefix-explicit: `/arc-*` acts on Arcana/platform surfaces, `/grm-*` acts on an active grimoire, `/arc-library-*` acts on `~/grimoires/library.json`, `/arc-agent-*` acts on agent configuration, and `/arc-workspace-*` intentionally spans the local workspace. Full rules live in [skill schema](docs/skill_schema.md).
+Arcana command families are prefix-explicit: `/arc-*` acts on Arcana and platform surfaces (the engine, the home library `~/grimoires/library.json`, agent files, and agent skill directories); `/grm-*` acts on the active grimoire. Full rules live in [skill schema](docs/skill_schema.md).
 
 The human curates sources and asks questions. The LLM does the bookkeeping.
 

@@ -21,14 +21,10 @@ The families are declared in `arcana.json`.
 
 | Family | Prefix | Use For | Example |
 |---|---|---|---|
-| `arcana` | `arc` | Arcana platform and maintainer operations | `/arc-validate links` |
-| `grimoire` | `grm` | Universal operations from the active grimoire context | `/grm-validate links` |
-| `library` | `arc` | Operations that affect `~/grimoires/library.json` | `/arc-library-sync` |
-| `agent` | `arc` | Operations that affect agent files or agent skill directories | `/arc-agent-sync-instructions` |
-| `workspace` | `arc` | Operations that intentionally affect Arcana plus installed grimoires | `/arc-workspace-clean` |
-| `help` | `arc` | Skill discovery and help | `/arc-help` |
+| `grm` | `grm` | Universal operations from the active grimoire context | `/grm-validate links` |
+| `arc` | `arc` | Arcana platform and maintainer operations: the engine, the home library, agent files, and agent skill directories | `/arc-validate links` |
 
-Normal grimoires still declare exactly one `skill_prefix` in `grimoire.json`, such as `jpn` or `oly`. Arcana is special because it ships both platform commands and universal grimoire-context commands.
+Each family maps to one source directory (`skills/grm/`, `skills/arc/`) and one slash-command prefix. Normal grimoires still declare exactly one `skill_prefix` in `grimoire.json`, such as `jpn` or `oly`. Arcana is special because it ships both platform commands (`arc`) and universal grimoire-context commands (`grm`).
 
 ## Source Names
 
@@ -38,7 +34,7 @@ Source skill files use the placeholder form:
 name: {{SKILL_PREFIX}}-<registered-slug>
 ```
 
-The registration rite substitutes `{{SKILL_PREFIX}}` with the command family's prefix. For example, `skills/grimoire/validate/SKILL.md` declares `{{SKILL_PREFIX}}-validate` and registers as `/grm-validate`.
+The registration rite substitutes `{{SKILL_PREFIX}}` with the command family's prefix. For example, `skills/grm/validate/SKILL.md` declares `{{SKILL_PREFIX}}-validate` and registers as `/grm-validate`.
 
 Some `/grm-*` commands intentionally maintain Arcana from the active grimoire context. For example, `/grm-update` brings the active grimoire and its Arcana back to a current, validated, synchronized state. Keep these rare and name the external target explicitly. These commands may resolve the active grimoire from `~/grimoires/library.json`; they should not require terminal cwd when an unambiguous grimoire can be selected.
 
@@ -94,10 +90,10 @@ That name is correct for Arcana only. If users also need to validate a grimoire,
 Arcana skill source folders are grouped by command family, then flattened during registration:
 
 ```text
-skills/arcana/validate/SKILL.md            -> /arc-validate
-skills/grimoire/validate/SKILL.md          -> /grm-validate
-skills/grimoire/audit-semantics/SKILL.md   -> /grm-audit-semantics
-skills/agent/sync-skills/SKILL.md          -> /arc-agent-sync-skills
+skills/arc/validate/SKILL.md            -> /arc-validate
+skills/arc/sync/SKILL.md                -> /arc-sync
+skills/grm/validate/SKILL.md            -> /grm-validate
+skills/grm/audit-semantics/SKILL.md     -> /grm-audit-semantics
 ```
 
 The naming validator enforces folder/frontmatter agreement and rejects skill files outside the declared command families.
@@ -113,13 +109,9 @@ the contract whenever command references are validated.
 Invocation files follow the same target boundary:
 
 ```text
-invocations/arcana/...     -> /arc-*
-invocations/grimoire/...   -> /grm-*
-invocations/agent/...      -> /arc-agent-*
-invocations/help/...       -> /arc-help
-invocations/library/...    -> /arc-library-*
-invocations/workspace/...  -> /arc-workspace-*
-invocations/meta/...       -> shared fragments and templates only
+invocations/grm/...   -> /grm-*
+invocations/arc/...    -> /arc-*
+invocations/meta/...   -> shared fragments and templates only
 ```
 
 Shared rites may live once under `rites/` and accept flags such as `--grimoire`; user-facing skills and invocation docs remain target-specific.

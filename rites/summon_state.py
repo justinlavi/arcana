@@ -47,7 +47,7 @@ from diagnostics import ResultReporter, add_output_format_arg
 SCHEMA_VERSION = 1
 
 # Idempotency sentinels for the injected Grimoire block. A block written by any
-# path - the injector, the template, UPDATE.md, or /arc-agent-sync-instructions - counts
+# path - the injector, the template, UPDATE.md, or /arc-sync agentfile - counts
 # as present when EITHER sentinel is found; reporting only one would mislabel the
 # other as drift and invite a double-injection. Single-sourced from summon_core
 # (the injector) so the detector and the injector can never disagree.
@@ -263,7 +263,7 @@ def next_actions(state: dict[str, Any], arcana_root: Path) -> list[dict[str, Any
         actions.append({
             "kind": "agent_block_update",
             "tier": "amber",
-            "command": "/arc-agent-sync-instructions",
+            "command": "/arc-sync agentfile",
             "reason": f"agent instruction block absent for: {', '.join(missing_blocks)}",
         })
     if _skills_absent(state):
@@ -301,7 +301,7 @@ def residual(state: dict[str, Any], *, prune: bool) -> list[dict[str, Any]]:
         items.append({
             "kind": "agent_block",
             "tier": "amber",
-            "reason": f"agent instruction block must be refreshed via /arc-agent-sync-instructions for: {', '.join(missing_blocks)}",
+            "reason": f"agent instruction block must be refreshed via /arc-sync agentfile for: {', '.join(missing_blocks)}",
         })
     if not state["arcana"]["working_tree_populated"]:
         items.append({
@@ -503,7 +503,7 @@ def _reconcile_agent_blocks(state: dict[str, Any], *, reporter: ResultReporter) 
     missing = _missing_block_ids(state)
     if missing:
         text = (
-            f"agent_blocks: absent for {', '.join(missing)} - refresh with /arc-agent-sync-instructions "
+            f"agent_blocks: absent for {', '.join(missing)} - refresh with /arc-sync agentfile "
             "(not auto-written: BEGIN/END vs heading sentinels make injection non-deterministic)"
         )
         reporter.message("warning", text)

@@ -203,9 +203,9 @@ def test_is_skipped_does_not_match_sibling_prefix():
 
 
 def test_is_skipped_matches_multi_segment_prefix():
-    skip = {"invocations/arcana/validators"}
-    assert _lib.is_skipped("invocations/arcana/validators/x.md", skip)
-    assert not _lib.is_skipped("invocations/arcana/validators_extra/x.md", skip)
+    skip = {"invocations/arc/validators"}
+    assert _lib.is_skipped("invocations/arc/validators/x.md", skip)
+    assert not _lib.is_skipped("invocations/arc/validators_extra/x.md", skip)
 
 
 def test_is_skipped_is_anchored_at_path_start():

@@ -29,5 +29,5 @@ After absorption the `import` skill appends a single log entry to `log.md` summa
 ## What does NOT belong here
 
 - Files you want to keep around as immutable references -> `sources/` directly.
-- Authored wiki content you've already written -> `chapters/` directly (use `/grm-create-chapter` if you want scaffolding).
+- Authored wiki content you've already written -> `chapters/` directly (use `/grm-add` if you want scaffolding).
 - Operating state from another tool (caches, indexes, build artifacts).

@@ -76,7 +76,7 @@ def run_rite(name, profile="arcana", target_root=None):
                     "message": "validator did not emit a valid JSON diagnostic report",
                     "hint": (result.stdout + result.stderr)[-2000:],
                     "validator": "validate",
-                    "docs_reference": "invocations/arcana/validators/validators.md",
+                    "docs_reference": "invocations/arc/validators/validators.md",
                 }
             ],
         }

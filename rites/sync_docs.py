@@ -19,7 +19,6 @@ Usage:
 
 import argparse
 import difflib
-import re
 import sys
 from pathlib import Path
 
@@ -93,44 +92,36 @@ def load_command_metadata():
 
 
 def group_skills(skills):
-    """Group skills by target and purpose."""
+    """Group skills by command family and purpose.
+
+    Two command roots: grm (the universal grimoire surface) and arc (the Arcana
+    platform/maintainer surface). Validation entry points get their own bucket so
+    they read separately from the operational commands.
+    """
     groups = {}
     for skill in skills:
         name = skill["name"]
-        without_ns = re.sub(r"^[a-z]+-", "", name, count=1)
         if name == "grm-validate" or name.startswith("grm-validate-"):
             group = "grimoire_validate"
         elif name.startswith("grm-audit-"):
             group = "grimoire_audit"
         elif name.startswith("grm-"):
             group = "grimoire"
-        elif without_ns == "validate" or without_ns.startswith("validate-"):
+        elif name == "arc-validate" or name.startswith("arc-validate-"):
             group = "arcana_validate"
-        elif without_ns == "improve":
+        elif name.startswith("arc-"):
             group = "arcana"
-        elif without_ns.startswith("library-"):
-            group = "library"
-        elif without_ns.startswith("agent-"):
-            group = "agent"
-        elif without_ns.startswith("workspace-"):
-            group = "workspace"
-        elif without_ns == "help":
-            group = "help"
         else:
-            group = without_ns.split("-", 1)[0] if "-" in without_ns else without_ns
+            group = name.split("-", 1)[0] if "-" in name else name
         groups.setdefault(group, []).append(skill)
 
-    # Stable ordering: Arcana core first, then grimoire and support groups.
+    # Stable ordering: Arcana core first, then the grimoire surface.
     priority = {
         "arcana": 0,
         "arcana_validate": 1,
         "grimoire": 2,
         "grimoire_validate": 3,
         "grimoire_audit": 4,
-        "library": 5,
-        "agent": 6,
-        "workspace": 7,
-        "help": 8,
     }
     return sorted(groups.items(), key=lambda kv: (priority.get(kv[0], 99), kv[0]))
 
@@ -138,13 +129,9 @@ def group_skills(skills):
 GROUP_HEADERS = {
     "arcana": "Arcana maintenance",
     "arcana_validate": "Arcana validation",
-    "library": "Library management",
     "grimoire": "Grimoire operations",
     "grimoire_validate": "Grimoire validation",
     "grimoire_audit": "Grimoire audits",
-    "help": "Help",
-    "agent": "Agent configuration",
-    "workspace": "Workspace maintenance",
 }
 
 

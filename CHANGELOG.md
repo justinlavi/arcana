@@ -1,5 +1,71 @@
 # Changelog
 
+## [1.4.0] - 2026-06-05
+
+MINOR. Existing grimoire content stays valid. This release consolidates and
+restructures the public command surface and requires skill re-registration so
+agents see the new commands. Re-register with `/arc-sync skills --reset-managed`,
+or skill-less with `python3 rites/sync_skills.py --reset-managed --agent all`.
+
+### Changed
+
+- **Two command roots.** Every Arcana-shipped skill now lives under one of two
+  family roots — `skills/grm/` (the universal grimoire surface, `/grm-*`) and
+  `skills/arc/` (the Arcana platform and maintainer surface, `/arc-*`) — mirrored
+  by `invocations/grm/` and `invocations/arc/`. The former `arcana`, `grimoire`,
+  `agent`, `library`, `workspace`, and `help` families and the `slug_prefix`
+  mechanism are retired. Command names still derive from `prefix + folder`, so no
+  command name depends on a nested path.
+- **`/arc-sync` is one scope-respecting command.** The three platform syncs
+  collapse into `/arc-sync <target>` with a required positional sub-target:
+  `/arc-sync skills` registers skills into agent skill directories,
+  `/arc-sync library` reconciles `~/grimoires/library.json` against disk, and
+  `/arc-sync agentfile` refreshes the marked Grimoire block in agent instruction
+  files. A bare `/arc-sync` refuses and lists the sub-targets; it never defaults
+  to "all", because `agentfile` rewrites user agent files. The active-grimoire
+  skill sync stays separate as **`/grm-sync`**; `library` and `agentfile` are
+  deliberately not exposed under `/grm-*`.
+- **Shorter platform command names.** `/arc-library-adopt` becomes **`/arc-adopt`**
+  and `/arc-workspace-clean` becomes **`/arc-clean`** (still
+  `disable-model-invocation`). The backing rites are unchanged.
+- **Content authoring is one command.** `/grm-create-chapter` and
+  `/grm-capture-answer` are retired in favor of **`/grm-add`**, which adds
+  knowledge as the right-sized unit — a page under an existing chapter or a new
+  chapter — written fresh or captured from the current chat session. Clean trio:
+  `/grm-create` (a whole new grimoire), `/grm-add` (knowledge in one),
+  `/grm-import` (external sources).
+
+### Removed
+
+- **`/grm-improve` is gone.** Its jobs move to the commands it used to
+  orchestrate: bringing a grimoire current with Arcana is `/grm-update`; auditing
+  and normalizing is `/grm-health-check` plus the two judgment audits
+  `/grm-audit-semantics` and `/grm-audit-boundaries`. The two audits keep their
+  `disable-model-invocation` gate and are deliberately not merged into
+  health-check. `/arc-improve` is unchanged and remains the Arcana-self command.
+
+### Notes
+
+- `/grm-update` and `/arc-update` are an intentional mirror — the same update
+  procedure reached from the grimoire side and the maintainer side. They are not
+  to be merged.
+- No deprecation aliases: this is a clean break. Re-register skills as above so
+  stale `/arc-*` / `/grm-*` skill directories are replaced.
+
+Rename map (from the 1.3.0 surface):
+
+```
+/arc-agent-sync-skills         -> /arc-sync skills
+/arc-agent-sync-instructions   -> /arc-sync agentfile
+/arc-library-sync              -> /arc-sync library
+/arc-library-adopt             -> /arc-adopt
+/arc-workspace-clean           -> /arc-clean
+/grm-sync-skills               -> /grm-sync
+/grm-create-chapter            -> /grm-add
+/grm-capture-answer            -> /grm-add
+/grm-improve                   -> removed (use /grm-update, /grm-health-check, /grm-audit-*)
+```
+
 ## [1.3.0] - 2026-06-04
 
 MINOR. Existing grimoire content stays valid. This release changes Arcana's

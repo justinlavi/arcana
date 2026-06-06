@@ -45,44 +45,30 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 
 ## Invocations
 
-**Grimoire operations** -> [[invocations/grimoire/grimoire|grimoire]]
+**Grimoire operations** -> [[invocations/grm/grm|grm]]
 
-- Create a grimoire -> [[invocations/grimoire/create_grimoire|create grimoire]]
-- Create a chapter -> [[invocations/grimoire/create_chapter|create chapter]]
-- Update the grimoire and its Arcana -> [[invocations/grimoire/update|update]]
-- Sync active-grimoire agent skills -> [[invocations/grimoire/sync_skills|sync skills]]
-- Import a source -> [[invocations/grimoire/import|import]]
-- Capture a chat answer -> [[invocations/grimoire/capture_answer|capture answer]]
-- Health-check a grimoire -> [[invocations/grimoire/health_check|health check]]
-- Improve a grimoire -> [[invocations/grimoire/improve_grimoire|improve grimoire]]
-- Audit grimoire semantics -> [[invocations/grimoire/audit_semantics|audit semantics]]
-- Validate a grimoire -> [[invocations/grimoire/validators/validate|validate]]
-- Validate grimoire structure -> [[invocations/grimoire/validate_structure|validate structure]]
-- Audit grimoire boundaries -> [[invocations/grimoire/audit_boundaries|audit boundaries]]
-- Grimoire validator hub -> [[invocations/grimoire/validators/validators|validators]]
+- Create a grimoire -> [[invocations/grm/create_grimoire|create grimoire]]
+- Add a page or chapter -> [[invocations/grm/add|add]]
+- Update the grimoire and its Arcana -> [[invocations/grm/update|update]]
+- Sync active-grimoire agent skills -> [[invocations/grm/sync|sync]]
+- Import a source -> [[invocations/grm/import|import]]
+- Health-check a grimoire -> [[invocations/grm/health_check|health check]]
+- Audit grimoire semantics -> [[invocations/grm/audit_semantics|audit semantics]]
+- Validate a grimoire -> [[invocations/grm/validators/validate|validate]]
+- Validate grimoire structure -> [[invocations/grm/validate_structure|validate structure]]
+- Audit grimoire boundaries -> [[invocations/grm/audit_boundaries|audit boundaries]]
+- Grimoire validator hub -> [[invocations/grm/validators/validators|validators]]
 
-**Arcana maintenance** -> [[invocations/arcana/arcana|arcana]]
+**Arcana maintenance** -> [[invocations/arc/arc|arc]]
 
-- Improve Arcana -> [[invocations/arcana/improve_arcana|improve arcana]]
-- Update Arcana and grimoires -> [[invocations/arcana/update|update]]
-- Arcana validator hub -> [[invocations/arcana/validators/validators|validators]]
-- Arcana quality hub -> [[invocations/arcana/quality/quality|quality]]
-
-**Agent operations** -> [[invocations/agent/agent|agent]]
-
-- Sync agent skills -> [[invocations/agent/sync_skills|sync skills]]
-- Update agent instructions -> [[invocations/agent/sync_instructions|sync instructions]]
-
-**Library operations** -> [[invocations/library/library|library]]
-
-- Sync the local library -> [[invocations/library/sync|sync]]
-- Adopt an unmanaged grimoire -> [[invocations/library/adopt|adopt]]
-
-**Workspace operations** -> [[invocations/workspace/workspace|workspace]]
-
-- Clean workspace artifacts -> [[invocations/workspace/clean|clean]]
-
-**Help** -> [[invocations/help/help|help]]
+- Improve Arcana -> [[invocations/arc/improve_arcana|improve arcana]]
+- Update Arcana and grimoires -> [[invocations/arc/update|update]]
+- Sync skills, library, or agent file -> [[invocations/arc/sync|sync]]
+- Adopt an unmanaged grimoire -> [[invocations/arc/adopt|adopt]]
+- Clean workspace artifacts -> [[invocations/arc/clean|clean]]
+- Show the skill catalog -> [[invocations/arc/help|help]]
+- Arcana validator hub -> [[invocations/arc/validators/validators|validators]]
+- Arcana quality hub -> [[invocations/arc/quality/quality|quality]]
 
 **Meta support** -> [[invocations/meta/meta|meta]]
 

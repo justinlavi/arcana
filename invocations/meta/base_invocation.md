@@ -20,7 +20,7 @@ The magical/practical boundary, page schema, hub convention, and storage layers 
 Anything you author following this template must conform to:
 
 - **Page schema** — every authored page carries YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`). Required-fields matrix in [[docs/page_schema|page schema]].
-- **Magical boundary** — system terminology (invocation, formula, rite, hub) lives in Arcana only; chapter content uses domain-natural names (`templates/`, `scripts/`, `policies/`, `recipes/`). Full rules in [[invocations/grimoire/audit_boundaries|audit boundaries]].
+- **Magical boundary** — system terminology (invocation, formula, rite, hub) lives in Arcana only; chapter content uses domain-natural names (`templates/`, `scripts/`, `policies/`, `recipes/`). Full rules in [[invocations/grm/audit_boundaries|audit boundaries]].
 - **Hub convention** — every folder F has a hub at `F/<basename(F)>.md`. Depth is open-ended. See [[docs/operating_model|operating model]].
 
 ---
@@ -30,14 +30,14 @@ Anything you author following this template must conform to:
 Use this four-phase template when:
 
 - The user has a goal that requires reading external material and producing a single canonical wiki page.
-- No more specific invocation applies (`/grm-import` for filing a source, `/grm-capture-answer` for promoting a chat answer, `/grm-create-chapter` for scaffolding a new chapter).
+- No more specific invocation applies (`/grm-import` for filing a source, `/grm-add` for adding a page or chapter — including promoting a chat answer).
 
 ## When NOT to follow this pattern
 
-- The user has a single source artifact to absorb — use [[invocations/grimoire/import|import]].
-- The user wants a chat answer promoted to a page — use [[invocations/grimoire/capture_answer|capture answer]].
-- The user wants to scaffold a new chapter or grimoire — use the `create_*` invocations.
-- The user is auditing or reorganizing — use [[invocations/grimoire/improve_grimoire|improve grimoire]] or [[invocations/grimoire/health_check|health check]].
+- The user has a single source artifact to absorb — use [[invocations/grm/import|import]].
+- The user wants a chat answer promoted to a page, or a new chapter scaffolded — use [[invocations/grm/add|add]].
+- The user wants to create a whole new grimoire — use [[invocations/grm/create_grimoire|create grimoire]].
+- The user is auditing or reorganizing — use [[invocations/grm/health_check|health check]].
 
 ---
 

@@ -38,73 +38,44 @@ invoke `/arc-help`.
 
 | Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
 |---|---|---|---|---|---|---|---|
-| [`/arc-improve`](../skills/arcana/improve/SKILL.md) | Improve Arcana itself - maintainer only | [`improve_arcana.md`](../invocations/arcana/improve_arcana.md) | `judgment` | `judgment_gated` | `none` | `none` | `python rites/validate.py --parallel; python -m pytest; python rites/sync_docs.py --apply when generated docs change.` |
+| [`/arc-adopt`](../skills/arc/adopt/SKILL.md) | Adopt an unmanaged directory under ~/grimoires/ as a grimoire by writing its grimoire.json manifest | [`adopt.md`](../invocations/arc/adopt.md) | `rite` | `apply_only` | [`adopt_grimoire.py`](../rites/adopt_grimoire.py) | `none` | `python rites/adopt_grimoire.py TARGET --skill-prefix PREFIX --description DESC; python rites/sync_library.py --apply` |
+| [`/arc-clean`](../skills/arc/clean/SKILL.md) | Remove temporary rite artifacts under Arcana's rites/.artifacts | [`clean.md`](../invocations/arc/clean.md) | `rite` | `plan_apply` | [`clean_artifacts.py`](../rites/clean_artifacts.py) | `none` | `python rites/clean_artifacts.py --dry-run` |
+| [`/arc-help`](../skills/arc/help/SKILL.md) | Display the Arcana skill catalog and installed grimoire skill guide | [`help.md`](../invocations/arc/help.md) | `judgment` | `read_only` | `none` | `none` | `python rites/sync_docs.py --apply when Arcana skill frontmatter or command-surface metadata changes.` |
+| [`/arc-improve`](../skills/arc/improve/SKILL.md) | Improve Arcana itself - maintainer only | [`improve_arcana.md`](../invocations/arc/improve_arcana.md) | `judgment` | `judgment_gated` | `none` | `none` | `python rites/validate.py --parallel; python -m pytest; python rites/sync_docs.py --apply when generated docs change.` |
+| [`/arc-sync`](../skills/arc/sync/SKILL.md) | Sync the local environment to current Arcana by sub-target - skills (agent skill directories), library (~/grimoires/library.json), or agentfile (the Grimoire instruction block) | [`sync.md`](../invocations/arc/sync.md) | `hybrid` | `judgment_gated` | `none` | `none` | `skills: python rites/sync_skills.py --dry-run. library: python rites/sync_library.py. agentfile: re-read touched files and confirm exactly one canonical Grimoire block per file.` |
+| [`/arc-update`](../skills/arc/update/SKILL.md) | Update Arcana (and every grimoire) to a current, validated, synchronized state | [`update.md`](../invocations/arc/update.md) | `hybrid` | `judgment_gated` | `none` | `none` | `python rites/validate.py --summary` |
 
 ## Arcana validation
 
 | Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
 |---|---|---|---|---|---|---|---|
-| [`/arc-validate`](../skills/arcana/validate/SKILL.md) | Run Arcana mechanical validators, optionally narrowed by selector | [`validate.md`](../invocations/arcana/validators/validate.md) | `rite` | `read_only` | [`validate.py`](../rites/validate.py) | `none` | `python rites/validate.py [all\|smart\|auto\|summary\|parallel\|SELECTOR...]` |
+| [`/arc-validate`](../skills/arc/validate/SKILL.md) | Run Arcana mechanical validators, optionally narrowed by selector | [`validate.md`](../invocations/arc/validators/validate.md) | `rite` | `read_only` | [`validate.py`](../rites/validate.py) | `none` | `python rites/validate.py [all\|smart\|auto\|summary\|parallel\|SELECTOR...]` |
 
 ## Grimoire operations
 
 | Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
 |---|---|---|---|---|---|---|---|
-| [`/grm-capture-answer`](../skills/grimoire/capture-answer/SKILL.md) | Capture a substantive chat answer as a properly-frontmattered wiki page | [`capture_answer.md`](../invocations/grimoire/capture_answer.md) | `judgment` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT` |
-| [`/grm-create`](../skills/grimoire/create/SKILL.md) | Create a new grimoire with full scaffolding and library registration | [`create_grimoire.md`](../invocations/grimoire/create_grimoire.md) | `hybrid` | `judgment_gated` | `none` | `none` | `python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT` |
-| [`/grm-create-chapter`](../skills/grimoire/create-chapter/SKILL.md) | Create a new knowledge chapter in the active grimoire | [`create_chapter.md`](../invocations/grimoire/create_chapter.md) | `hybrid` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT` |
-| [`/grm-health-check`](../skills/grimoire/health-check/SKILL.md) | Health-check the active grimoire for structural and knowledge-quality issues | [`health_check.md`](../invocations/grimoire/health_check.md) | `hybrid` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate.py --grimoire GRIMOIRE_ROOT` |
-| [`/grm-help`](../skills/grimoire/help/SKILL.md) | Display the grimoire command catalog (/grm-*) and the active grimoire's own skills | [`help.md`](../invocations/grimoire/help.md) | `judgment` | `read_only` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/sync_docs.py --apply when Arcana skill frontmatter or command-surface metadata changes.` |
-| [`/grm-import`](../skills/grimoire/import/SKILL.md) | Import files, folders, or inbox content into the active grimoire | [`import.md`](../invocations/grimoire/import.md) | `judgment` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_provenance.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT` |
-| [`/grm-improve`](../skills/grimoire/improve/SKILL.md) | Comprehensive grimoire upgrade and improvement - align with current Arcana, audit, normalize, and optimize the active grimoire | [`improve_grimoire.md`](../invocations/grimoire/improve_grimoire.md) | `hybrid` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate.py --grimoire GRIMOIRE_ROOT before and after edits; run /grm-audit-boundaries as the judgment boundary pass.` |
-| [`/grm-repair-links`](../skills/grimoire/repair-links/SKILL.md) | Promote filename-only wikilinks to canonical full-path form across the active grimoire | [`repair_links.md`](../invocations/grimoire/repair_links.md) | `rite` | `plan_apply` | [`repair_links.py`](../rites/repair_links.py) | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/repair_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_orphans.py --grimoire GRIMOIRE_ROOT` |
-| [`/grm-sync-skills`](../skills/grimoire/sync-skills/SKILL.md) | Sync Arcana skills and the active grimoire's own skills into supported agent skill directories | [`sync_skills.md`](../invocations/grimoire/sync_skills.md) | `rite` | `plan_apply` | [`sync_skills.py`](../rites/sync_skills.py) | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/sync_skills.py --grimoire GRIMOIRE_ROOT --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions.` |
-| [`/grm-update`](../skills/grimoire/update/SKILL.md) | Update Arcana and every grimoire in the library to a current, validated, synchronized state | [`update.md`](../invocations/grimoire/update.md) | `hybrid` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate.py --summary; python rites/validate.py --grimoire GRIMOIRE_ROOT --summary` |
+| [`/grm-add`](../skills/grm/add/SKILL.md) | Add a single page or a new chapter to an existing grimoire - written fresh or captured from the current chat session | [`add.md`](../invocations/grm/add.md) | `hybrid` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT` |
+| [`/grm-create`](../skills/grm/create/SKILL.md) | Create a whole new grimoire (a new knowledge base) with full scaffolding and library registration | [`create_grimoire.md`](../invocations/grm/create_grimoire.md) | `hybrid` | `judgment_gated` | `none` | `none` | `python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT` |
+| [`/grm-health-check`](../skills/grm/health-check/SKILL.md) | Health-check the active grimoire for structural and knowledge-quality issues | [`health_check.md`](../invocations/grm/health_check.md) | `hybrid` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate.py --grimoire GRIMOIRE_ROOT` |
+| [`/grm-help`](../skills/grm/help/SKILL.md) | Display the grimoire command catalog (/grm-*) and the active grimoire's own skills | [`help.md`](../invocations/grm/help.md) | `judgment` | `read_only` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/sync_docs.py --apply when Arcana skill frontmatter or command-surface metadata changes.` |
+| [`/grm-import`](../skills/grm/import/SKILL.md) | Import files, folders, or inbox content into the active grimoire | [`import.md`](../invocations/grm/import.md) | `judgment` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_provenance.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT` |
+| [`/grm-repair-links`](../skills/grm/repair-links/SKILL.md) | Promote filename-only wikilinks to canonical full-path form across the active grimoire | [`repair_links.md`](../invocations/grm/repair_links.md) | `rite` | `plan_apply` | [`repair_links.py`](../rites/repair_links.py) | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/repair_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_orphans.py --grimoire GRIMOIRE_ROOT` |
+| [`/grm-sync`](../skills/grm/sync/SKILL.md) | Sync Arcana skills and the active grimoire's own skills into supported agent skill directories | [`sync.md`](../invocations/grm/sync.md) | `rite` | `plan_apply` | [`sync_skills.py`](../rites/sync_skills.py) | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/sync_skills.py --grimoire GRIMOIRE_ROOT --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions.` |
+| [`/grm-update`](../skills/grm/update/SKILL.md) | Update Arcana and every grimoire in the library to a current, validated, synchronized state | [`update.md`](../invocations/grm/update.md) | `hybrid` | `judgment_gated` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate.py --summary; python rites/validate.py --grimoire GRIMOIRE_ROOT --summary` |
 
 ## Grimoire validation
 
 | Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
 |---|---|---|---|---|---|---|---|
-| [`/grm-validate`](../skills/grimoire/validate/SKILL.md) | Run mechanical validators against the active grimoire, optionally narrowed by selector | [`validate.md`](../invocations/grimoire/validators/validate.md) | `rite` | `read_only` | [`validate.py`](../rites/validate.py) | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate.py --grimoire GRIMOIRE_ROOT [all\|smart\|auto\|summary\|parallel\|SELECTOR...]` |
+| [`/grm-validate`](../skills/grm/validate/SKILL.md) | Run mechanical validators against the active grimoire, optionally narrowed by selector | [`validate.md`](../invocations/grm/validators/validate.md) | `rite` | `read_only` | [`validate.py`](../rites/validate.py) | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `python rites/validate.py --grimoire GRIMOIRE_ROOT [all\|smart\|auto\|summary\|parallel\|SELECTOR...]` |
 
 ## Grimoire audits
 
 | Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
 |---|---|---|---|---|---|---|---|
-| [`/grm-audit-boundaries`](../skills/grimoire/audit-boundaries/SKILL.md) | Audit magical boundary compliance - grimoires must not borrow Arcana's system terminology | [`audit_boundaries.md`](../invocations/grimoire/audit_boundaries.md) | `judgment` | `read_only` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `Run as a judgment pass; confirm fixes with /grm-validate structure and /grm-validate links when files change.` |
-| [`/grm-audit-semantics`](../skills/grimoire/audit-semantics/SKILL.md) | Audit grimoire naming and organization for discoverability and token efficiency | [`audit_semantics.md`](../invocations/grimoire/audit_semantics.md) | `judgment` | `read_only` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `Run grimoire validators after applying any accepted recommendations.` |
-
-## Library management
-
-| Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
-|---|---|---|---|---|---|---|---|
-| [`/arc-library-adopt`](../skills/library/adopt/SKILL.md) | Adopt an unmanaged directory under ~/grimoires/ as a grimoire by writing its grimoire.json manifest | [`adopt.md`](../invocations/library/adopt.md) | `rite` | `apply_only` | [`adopt_grimoire.py`](../rites/adopt_grimoire.py) | `none` | `python rites/adopt_grimoire.py TARGET --skill-prefix PREFIX --description DESC; python rites/sync_library.py --apply` |
-| [`/arc-library-sync`](../skills/library/sync/SKILL.md) | Scan ~/grimoires/ for valid grimoires and reconcile against the local library (detect missing, stale, mismatched, and unmanaged entries) | [`sync.md`](../invocations/library/sync.md) | `rite` | `plan_apply` | [`sync_library.py`](../rites/sync_library.py) | `none` | `python rites/sync_library.py; python rites/sync_library.py --apply when approved.` |
-
-## Agent configuration
-
-| Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
-|---|---|---|---|---|---|---|---|
-| [`/arc-agent-sync-instructions`](../skills/agent/sync-instructions/SKILL.md) | Sync the Grimoire instruction block in user agent files while preserving non-Grimoire content | [`sync_instructions.md`](../invocations/agent/sync_instructions.md) | `judgment` | `judgment_gated` | `none` | `none` | `Re-read touched files and confirm exactly one canonical Grimoire block per file.` |
-| [`/arc-agent-sync-skills`](../skills/agent/sync-skills/SKILL.md) | Sync Arcana skills and installed grimoire skills into supported agent skill directories | [`sync_skills.md`](../invocations/agent/sync_skills.md) | `rite` | `plan_apply` | [`sync_skills.py`](../rites/sync_skills.py) | `none` | `python rites/sync_skills.py --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions.` |
-
-## Workspace maintenance
-
-| Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
-|---|---|---|---|---|---|---|---|
-| [`/arc-workspace-clean`](../skills/workspace/clean/SKILL.md) | Remove temporary rite artifacts under Arcana's rites/.artifacts | [`clean.md`](../invocations/workspace/clean.md) | `rite` | `plan_apply` | [`clean_artifacts.py`](../rites/clean_artifacts.py) | `none` | `python rites/clean_artifacts.py --dry-run` |
-
-## Help
-
-| Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
-|---|---|---|---|---|---|---|---|
-| [`/arc-help`](../skills/help/help/SKILL.md) | Display the Arcana skill catalog and installed grimoire skill guide | [`help.md`](../invocations/help/help.md) | `judgment` | `read_only` | `none` | `none` | `python rites/sync_docs.py --apply when Arcana skill frontmatter or command-surface metadata changes.` |
-
-## Update
-
-| Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |
-|---|---|---|---|---|---|---|---|
-| [`/arc-update`](../skills/arcana/update/SKILL.md) | Update Arcana (and every grimoire) to a current, validated, synchronized state | [`update.md`](../invocations/arcana/update.md) | `hybrid` | `judgment_gated` | `none` | `none` | `python rites/validate.py --summary` |
+| [`/grm-audit-boundaries`](../skills/grm/audit-boundaries/SKILL.md) | Audit magical boundary compliance - grimoires must not borrow Arcana's system terminology | [`audit_boundaries.md`](../invocations/grm/audit_boundaries.md) | `judgment` | `read_only` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `Run as a judgment pass; confirm fixes with /grm-validate structure and /grm-validate links when files change.` |
+| [`/grm-audit-semantics`](../skills/grm/audit-semantics/SKILL.md) | Audit grimoire naming and organization for discoverability and token efficiency | [`audit_semantics.md`](../invocations/grm/audit_semantics.md) | `judgment` | `read_only` | `none` | [`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md) | `Run grimoire validators after applying any accepted recommendations.` |
 
 ---
 
