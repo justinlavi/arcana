@@ -132,16 +132,6 @@ It must report no drift for the grimoires that were brought current. Report the
 exit status. Ask the user to open a fresh agent session, because agents cache
 skill listings.
 
-### Skill-orphan judgment (only if reported)
-
-If skill re-registration reports `Preserve unowned` entries or `without Arcana
-ownership marker` collisions under a managed prefix, those are directories the
-rite could not prove it owns — often a skill whose source was renamed or removed.
-Apply the propose-then-confirm judgment in
-[Reconcile skill orphans](invocations/meta/skill_orphan_reconcile.md): classify
-each as a stale Arcana artifact or user-authored, remove the stale ones on one
-confirmation, then re-run step 3.
-
 ### If the one command cannot run
 
 `summon.py --update` is itself skill-less. If a much older checkout lacks it, the
@@ -162,5 +152,4 @@ current.
 - [Agent configuration](docs/agent_configuration.md)
 - [Summoning contract](docs/summoning_contract.md)
 - [Sync skills, library, and the agent file](invocations/arc/sync.md)
-- [Reconcile skill orphans](invocations/meta/skill_orphan_reconcile.md)
 - [Update from a grimoire](invocations/grm/update.md)

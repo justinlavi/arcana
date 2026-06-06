@@ -142,7 +142,7 @@
         "Reconcile the local library additively under --reconcile --apply, preserving stale entries unless --prune is given.",
         "Sync skills under --reconcile/--update --apply via sync_skills.py --reset-managed.",
         "Refuse to reconcile when the Arcana base fails validate.py.",
-        "Detect agent routing blocks via both the heading and BEGIN/END sentinels, and report rather than rewrite them.",
+        "Detect agent routing blocks by their BEGIN/END markers only; under --reconcile/--update --apply, create an absent file, insert into a block-less file, and refresh one clean marked region in place, leaving any block-like-but-not-clean file (duplicate or malformed markers, or a pre-marker heading-only block) for the /grm-sync agentfile judgment edit.",
         "Exclude network pull of Arcana itself as a human-gated update step.",
         "Under --update, pull every library grimoire branch-aware (fetch, then fast-forward only a clean branch that is behind), heal only the grimoires confirmed current, collect unreachable/dirty/diverged grimoires into needs_manual_pull, and never abort the run on a per-grimoire auth or offline failure."
       ]

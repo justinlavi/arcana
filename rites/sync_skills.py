@@ -93,7 +93,6 @@ class PlanAction:
     target_dir: Path
     spec: SkillSpec | None = None
     reason: str = ""
-    owner: dict[str, Any] | None = None
 
 
 def is_valid_skill_prefix(skill_prefix: str) -> bool:
@@ -685,10 +684,10 @@ def register_target(
     )
     print_plan(plan, dry_run)
 
-    # Record collisions and preserved-unowned dirs as messages on every run; in
-    # dry-run, also record the planned creates/updates/cleanups as messages
-    # (plan mode writes nothing, so they are not mutations). Apply-mode mutations
-    # are recorded inside apply_registration_plan.
+    # Record collisions as messages on every run; in dry-run, also record the
+    # planned creates/updates/cleanups as messages (plan mode writes nothing, so
+    # they are not mutations). Apply-mode mutations are recorded inside
+    # apply_registration_plan.
     if reporter is not None:
         for action in plan["blocked"]:
             target = action.target_dir if str(action.target_dir) not in {"", "."} else None
@@ -702,7 +701,6 @@ def register_target(
         1 for action in plan["actions"] if action.action in {"create", "update"}
     )
     planned_cleaned = sum(1 for action in plan["actions"] if action.action == "cleanup")
-    preserved = 0  # managed namespaces are Arcana-owned; nothing is preserved as unowned
     blocked = len(plan["blocked"])
 
     applied_registered = 0
@@ -728,8 +726,6 @@ def register_target(
     if reset_count > 0:
         reset_action = "would reset" if dry_run else "reset"
         print(f"  {label}: {reset_action} {reset_count} managed namespace skill dir(s)")
-    if preserved > 0:
-        print(f"  {label}: preserved {preserved} unowned skill dir(s)")
     if blocked > 0:
         print(f"  {label}: blocked by {blocked} collision(s)")
     print()
@@ -740,7 +736,6 @@ def register_target(
         "registered": registered,
         "cleaned": cleaned,
         "reset": reset_count,
-        "preserved": preserved,
         "blocked": blocked,
         "mode": "plan" if dry_run else "apply",
     }
@@ -819,7 +814,6 @@ def main() -> int:
         total_registered = sum(result["registered"] for result in results)
         total_cleaned = sum(result["cleaned"] for result in results)
         total_reset = sum(result["reset"] for result in results)
-        total_preserved = sum(result["preserved"] for result in results)
         total_blocked = sum(result["blocked"] for result in results)
         if args.dry_run:
             print(f"  Planned registrations: {total_registered} skill(s)")
@@ -827,8 +821,6 @@ def main() -> int:
         else:
             print(f"  Registered: {total_registered} skill registration(s)")
             print(f"  Cleaned:    {total_cleaned} stale skill registration(s)")
-        if total_preserved:
-            print(f"  Preserved:  {total_preserved} unowned skill dir(s)")
         if total_reset:
             reset_label = "Planned reset" if args.dry_run else "Reset"
             print(f"  {reset_label}:      {total_reset} managed namespace skill dir(s)")
@@ -847,7 +839,6 @@ def main() -> int:
             "registered": total_registered,
             "cleaned": total_cleaned,
             "reset": total_reset,
-            "preserved": total_preserved,
             "blocked": total_blocked,
         })
 

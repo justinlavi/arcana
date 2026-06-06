@@ -228,6 +228,13 @@ def do_move(root: Path, src: str, dst: str, *, apply: bool, reporter: ResultRepo
             return refuse(reporter, human, error)
     if (root / dst_rel).exists():
         return refuse(reporter, human, f"{dst_rel} already exists - choose a destination that does not exist")
+    if dst_rel == src_rel or dst_rel.startswith(src_rel + "/") or src_rel.startswith(dst_rel + "/"):
+        return refuse(reporter, human,
+                      f"cannot move {src_rel} into itself or its own subpath ({dst_rel})")
+    dst_parent = (root / dst_rel).parent
+    if dst_parent.exists() and not dst_parent.is_dir():
+        return refuse(reporter, human,
+                      f"{Path(dst_rel).parent.as_posix()} exists but is not a directory")
     src_abs = root / src_rel
     if src_abs.is_file() and is_folder_hub(root, src_rel):
         return refuse(reporter, human,
@@ -237,20 +244,11 @@ def do_move(root: Path, src: str, dst: str, *, apply: bool, reporter: ResultRepo
     move = build_move_map(root, src_rel, dst_rel)
     remap = target_remap(move)
 
-    # Rewrite links across the whole grimoire (the moved files included, so their
-    # internal links are correct before they move).
-    rewrites: list[tuple[str, int]] = []
-    for path in iter_markdown(root):
-        try:
-            text = path.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-        new_text, n = rewrite_links_in_text(text, remap)
-        if n:
-            rewrites.append((rel_posix(path, root), n))
-            if apply:
-                path.write_text(new_text, encoding="utf-8", newline="\n")
-
+    # Apply moves the files first, then retargets every wikilink across the
+    # post-move tree, so a failed rename can never leave links rewritten for a
+    # move that did not happen. Plan mode counts the same rewrites without writing
+    # (file content is identical before and after the rename), so the plan
+    # predicts the apply.
     if apply:
         was_dir = src_abs.is_dir()
         dst_abs = root / dst_rel
@@ -265,8 +263,20 @@ def do_move(root: Path, src: str, dst: str, *, apply: bool, reporter: ResultRepo
                     old_hub.rename(dst_abs / f"{dst_name}.md")
         for old, new in sorted(move.items()):
             reporter.mutation("move", path=new, detail=f"{old} -> {new}")
-        for rel, n in rewrites:
-            reporter.mutation("repair", path=rel, detail=f"{n} wikilink(s) retargeted")
+
+    rewrites: list[tuple[str, int]] = []
+    for path in iter_markdown(root):
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        new_text, n = rewrite_links_in_text(text, remap)
+        if n:
+            rewrites.append((rel_posix(path, root), n))
+            if apply:
+                path.write_text(new_text, encoding="utf-8", newline="\n")
+                reporter.mutation("repair", path=rel_posix(path, root),
+                                  detail=f"{n} wikilink(s) retargeted")
 
     total_rewrites = sum(n for _, n in rewrites)
     if human:

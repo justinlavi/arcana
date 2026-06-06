@@ -93,7 +93,7 @@ from [command_surface.json](../rites/data/command_surface.json).
 | [`/arc-clean`](../skills/arc/clean/SKILL.md) | [`clean.md`](../invocations/arc/clean.md) | `rite` | `plan_apply` | [`clean_artifacts.py`](../rites/clean_artifacts.py) | `none` | `python rites/clean_artifacts.py --dry-run` |
 | [`/arc-help`](../skills/arc/help/SKILL.md) | [`help.md`](../invocations/arc/help.md) | `judgment` | `read_only` | `none` | `none` | `python rites/sync_docs.py --apply when Arcana skill frontmatter or command-surface metadata changes.` |
 | [`/arc-improve`](../skills/arc/improve/SKILL.md) | [`improve_arcana.md`](../invocations/arc/improve_arcana.md) | `judgment` | `judgment_gated` | `none` | `none` | `python rites/validate.py --parallel; python -m pytest; python rites/sync_docs.py --apply when generated docs change.` |
-| [`/arc-sync`](../skills/arc/sync/SKILL.md) | [`sync.md`](../invocations/arc/sync.md) | `hybrid` | `judgment_gated` | `none` | `none` | `skills: python rites/sync_skills.py --dry-run. library: python rites/sync_library.py. agentfile: re-read touched files and confirm exactly one canonical Grimoire routing block per file.` |
+| [`/arc-sync`](../skills/arc/sync/SKILL.md) | [`sync.md`](../invocations/arc/sync.md) | `hybrid` | `judgment_gated` | `none` | `none` | `skills: python rites/sync_skills.py --dry-run. library: python rites/sync_library.py. agentfile: python rites/inject_agent_file.py, then confirm exactly one canonical Grimoire routing block per touched file.` |
 | [`/arc-update`](../skills/arc/update/SKILL.md) | [`update.md`](../invocations/arc/update.md) | `hybrid` | `judgment_gated` | `none` | `none` | `python rites/validate.py --summary` |
 
 ### Arcana validation

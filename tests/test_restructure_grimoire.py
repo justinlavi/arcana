@@ -117,6 +117,36 @@ def test_move_refuses_lone_hub(tmp_path):
     assert (root / "chapters/guide/guide.md").is_file()
 
 
+def test_move_refuses_into_own_subpath_without_writing(tmp_path):
+    root = _grimoire(tmp_path)
+    before = (root / "chapters/guide/guide.md").read_text()
+    rc = R.do_move(root, "chapters/guide", "chapters/guide/sub",
+                   apply=True, reporter=_reporter(root, True), human=False, fmt="json")
+    assert rc == 1
+    assert (root / "chapters/guide").is_dir()
+    # No links rewritten and no half-move: content is byte-identical.
+    assert (root / "chapters/guide/guide.md").read_text() == before
+
+
+def test_move_refuses_when_destination_parent_is_a_file(tmp_path):
+    root = _grimoire(tmp_path)
+    before = (root / "chapters/guide/guide.md").read_text()
+    rc = R.do_move(root, "chapters/other/other.md", "chapters/guide/intro.md/x.md",
+                   apply=True, reporter=_reporter(root, True), human=False, fmt="json")
+    assert rc == 1
+    assert (root / "chapters/other/other.md").is_file()
+    assert (root / "chapters/guide/guide.md").read_text() == before
+
+
+def test_move_plan_and_apply_agree_on_refusal(tmp_path):
+    root = _grimoire(tmp_path)
+    plan_rc = R.do_move(root, "chapters/guide", "chapters/guide/sub",
+                        apply=False, reporter=_reporter(root, False), human=False, fmt="json")
+    apply_rc = R.do_move(root, "chapters/guide", "chapters/guide/sub",
+                         apply=True, reporter=_reporter(root, True), human=False, fmt="json")
+    assert plan_rc == 1 and apply_rc == 1
+
+
 # ---------------------------------------------------------------------------
 # remove
 # ---------------------------------------------------------------------------

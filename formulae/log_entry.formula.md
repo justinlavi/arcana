@@ -44,7 +44,7 @@ Every entry begins with a level-2 heading in this exact shape:
 ## [YYYY-MM-DD HH:MM] <op> | <title>
 ```
 
-- `<op>` is one of: `import`, `query`, `health-check`, `improve`, `rebuild-index`, `create`, `manual`. These name grimoire-content operations, not git operations - there is no `merge`, `rebase`, or `push` op (see Scope above).
+- `<op>` is one of: `import`, `query`, `health-check`, `improve`, `rebuild-index`, `create`, `move`, `remove`, `manual`. These name grimoire-content operations, not git operations - there is no `merge`, `rebase`, or `push` op (see Scope above).
 - `<title>` is a short human-readable label (source name, query summary, etc.).
 
 This shape lets you scan recent activity with `grep '^## \[' log.md | tail -20`.

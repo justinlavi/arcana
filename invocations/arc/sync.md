@@ -89,9 +89,8 @@ Supported `--agent` values come from `ARCANA_HOME/rites/data/agent_targets.json`
 see `ARCANA_HOME/docs/agent_targets.md` for the human-readable matrix.
 
 Add `--format json` (or `jsonl`) for the shared `ResultReporter` outcome envelope -
-registered/cleaned mutations, collisions and preserved-unowned dirs as messages,
-and summary counts - so an orchestrator can verify the result instead of parsing
-prose.
+registered/cleaned mutations and collisions as messages, and summary counts - so an
+orchestrator can verify the result instead of parsing prose.
 
 ---
 
@@ -195,7 +194,6 @@ appear in slash-command pickers, run `/arc-sync skills` separately.
 ## Related
 
 - User mirror (active-grimoire skills plus library and agent files for the user's own setup): [[invocations/grm/sync|sync]]
-- Reconcile stale/renamed skill orphans: [[invocations/meta/skill_orphan_reconcile|skill orphan reconcile]]
 - Adopt an unmanaged directory: [[invocations/arc/adopt|adopt]]
 - Agent targets: [[docs/agent_targets|agent targets]]
 - Agent configuration: [[docs/agent_configuration|agent configuration]]

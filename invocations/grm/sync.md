@@ -123,6 +123,5 @@ End with one line per scope, for example: `Skills: registered 23. Library: in sy
 
 - Maintainer mirror (every installed grimoire, plus library and agent files at platform scope): [[invocations/arc/sync|sync]]
 - Bring Arcana and every grimoire fully current: [[invocations/grm/update|update]]
-- Reconcile stale/renamed skill orphans: [[invocations/meta/skill_orphan_reconcile|skill orphan reconcile]]
 - Agent targets: [[docs/agent_targets|agent targets]]
 - Agent configuration: [[docs/agent_configuration|agent configuration]]

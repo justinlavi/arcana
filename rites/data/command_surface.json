@@ -276,9 +276,9 @@
         "One positional sub-target: skills, library, or agentfile"
       ],
       "mutation_profile": "judgment_gated",
-      "mutation_behavior": "Routes a single positional sub-target. skills: registers Arcana-shipped and installed grimoire skills into supported agent skill directories via rites/sync_skills.py. library: reconciles ~/grimoires/library.json against disk via rites/sync_library.py. agentfile: refreshes the marked Grimoire routing block in user agent instruction files as a judgment edit. A bare invocation with no sub-target refuses and lists the sub-targets; it never defaults to all because agentfile rewrites user agent files.",
+      "mutation_behavior": "Routes a single positional sub-target. skills: registers Arcana-shipped and installed grimoire skills into supported agent skill directories via rites/sync_skills.py. library: reconciles ~/grimoires/library.json against disk via rites/sync_library.py. agentfile: creates or refreshes the marked Grimoire routing block via rites/inject_agent_file.py, falling to a judgment edit for the review cases (a file with no block, a pre-marker block, or malformed markers). A bare invocation with no sub-target refuses and lists the sub-targets; it never defaults to all because the agentfile judgment edit touches user agent files.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
-      "validation_profile": "skills: python rites/sync_skills.py --dry-run. library: python rites/sync_library.py. agentfile: re-read touched files and confirm exactly one canonical Grimoire routing block per file."
+      "validation_profile": "skills: python rites/sync_skills.py --dry-run. library: python rites/sync_library.py. agentfile: python rites/inject_agent_file.py, then confirm exactly one canonical Grimoire routing block per touched file."
     },
     {
       "command": "/arc-adopt",

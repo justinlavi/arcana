@@ -58,8 +58,10 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 - A `read_only` rite may refresh named transient artifacts, but it must not
   change durable source, grimoire, agent, library, or install state.
 - `rites/sync_skills.py` stamps generated `SKILL.md` files with
-  `ARCANA_SKILL_OWNERSHIP`; cleanup and overwrites are allowed only when that
-  marker or generated provenance proves Arcana ownership.
+  `ARCANA_SKILL_OWNERSHIP` as provenance metadata only. Cleanup and overwrite
+  decisions are made purely by managed-prefix membership (`arc-`, `grm-`, or a
+  grimoire's `skill_prefix`); the marker is never read to decide writes, and
+  directories outside every managed prefix are never touched.
 
 ## Related
 

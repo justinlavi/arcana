@@ -19,11 +19,14 @@ Design rules (mirrors the deferred-fragility and autonomy boundaries):
   `agent_targets`, which reads `Path.home()` at call time, so they are passed
   in as a seam too.
 * `--check` is read-only apart from the owned cache transcript it writes.
-* `--reconcile --apply` repairs the library (additively) and re-syncs
-  skills. It refuses on a base that fails `validate.py` (no repair on a broken
-  tree), never deletes a library entry unless `--prune` is given, and never
-  rewrites agent routing blocks (the BEGIN/END vs heading sentinel
-  mismatch makes that non-deterministic - it is reported, not performed).
+* `--reconcile --apply` repairs the library (additively), re-syncs skills, and
+  reconciles the marked Grimoire routing block in each agent instruction file -
+  creating an absent file, inserting into a block-less file, or refreshing one
+  clean BEGIN..END region in place. A file that is block-like but not one clean
+  region (a stray or duplicate marker, or a pre-marker heading-only block) is
+  left untouched and reported for the `/grm-sync agentfile` judgment edit. It
+  refuses on a base that fails `validate.py` (no repair on a broken tree) and
+  never deletes a library entry unless `--prune` is given.
 * `--check` and `--reconcile` stay offline; the network-aware `--update` (in
   `update_grimoires.py`) pulls every library grimoire before healing. Pulling
   Arcana itself stays the human/RED step from `UPDATE.md`.
@@ -267,7 +270,7 @@ def next_actions(state: dict[str, Any], arcana_root: Path) -> list[dict[str, Any
             "kind": "agent_block_update",
             "tier": "amber",
             "command": "/grm-sync agentfile",
-            "reason": f"agent routing block absent for: {', '.join(missing_blocks)}",
+            "reason": f"agent routing block missing or not one clean region for: {', '.join(missing_blocks)}",
         })
     if _skills_absent(state):
         actions.append({
