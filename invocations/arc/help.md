@@ -23,7 +23,7 @@ Show the user the Arcana skill catalog plus any skills shipped by grimoires regi
 
 ### 1. Show Arcana skills
 
-Read [[docs/skills|skills]] and present its tables to the user as-is. It is the canonical, sync-generated list. Do not re-derive it by scanning `skills/<family>/<slug>/SKILL.md` unless `docs/skills.md` is missing - in that case fall back to the scan and warn the user it should be regenerated with `python3 rites/sync_docs.py --apply`.
+Read [[docs/skills|skills]] and present its catalog tables (Command / What it does, grouped by section). Skip the maintainer-facing "Command contract" section at the end - that is engineering metadata, not user help. It is the canonical, sync-generated list. Do not re-derive it by scanning `skills/<family>/<slug>/SKILL.md` unless `docs/skills.md` is missing - in that case fall back to the scan and warn the user it should be regenerated with `python3 rites/sync_docs.py --apply`.
 
 ### 2. Enumerate grimoire skills
 

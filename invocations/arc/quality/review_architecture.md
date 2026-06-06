@@ -125,7 +125,7 @@ List the facts Arcana repeats most often and name their canonical homes:
 - Skill catalog: generated `docs/skills.md`, sourced from `skills/*/*/SKILL.md`
 - Public command surface: `rites/data/command_surface.json`, explained by
   `docs/command_surface.md`
-- Agent instruction block: `rites/templates/grimoire_block.md`
+- Agent routing block: `rites/templates/grimoire_block.md`
 - Grimoire scaffold contracts: `formulae/grimoire/`
 - Release process: `docs/release.md` and `docs/governance.md`
 - Release history and snapshots: `CHANGELOG.md` (not the live canonical
@@ -178,7 +178,7 @@ For each common task, ask how many files an agent must read before it can act:
 - Improve a grimoire.
 - Update Arcana from a grimoire.
 - Sync skills.
-- Sync an agent instruction block.
+- Sync an agent routing block.
 - Diagnose a validator failure.
 
 Prefer workflows where the agent reads one hub, one invocation, and only the

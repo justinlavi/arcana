@@ -11,7 +11,7 @@ last_verified: 2026-06-02
 
 ## Purpose
 
-Bring an Arcana install — engine source, library, agent skills, agent instruction block — and every grimoire that references it back to a current, validated, synchronized state. This is the Arcana-prefix mirror of `/grm-update`; both run the one canonical Update procedure.
+Bring an Arcana install — engine source, library, agent skills, agent routing block — and every grimoire that references it back to a current, validated, synchronized state. This is the Arcana-prefix mirror of `/grm-update`; both run the one canonical Update procedure.
 
 ## Invocation
 

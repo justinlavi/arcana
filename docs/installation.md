@@ -21,6 +21,17 @@ contract, see [summoning contract](summoning_contract.md).
 
 ---
 
+## Before you start
+
+Arcana runs inside an AI coding agent. Its `/grm-*` (grimoire) and `/arc-*` (maintainer) commands are typed into that agent — they do nothing in a plain terminal. Before installing, make sure you have:
+
+- **A terminal with `git`** — to run the one-line installer. If you do not have or do not want to use a terminal, skip to [Install without a terminal](#install-without-a-terminal).
+- **One supported AI agent, installed and signed in** — see [agent targets](agent_targets.md). The automatically configured agents are [Claude Code](https://docs.claude.com/en/docs/claude-code) and [Codex / ChatGPT CLI](https://developers.openai.com/codex/cli). This is the program where you will run `/grm-create`, `/grm-update`, and the rest.
+
+The installer (the *summoning rite*) writes only into `~/grimoires/` and asks before installing any optional dependency; nothing runs as root (on Arch-based systems an accepted dependency prompt may use `sudo pacman` to install `python-pip` first).
+
+---
+
 ## Summoning Rite
 
 ```bash
@@ -55,7 +66,7 @@ release step fails. The full release/source selection rules and the
 7. Clones or updates selected grimoires in `~/grimoires/`
 8. Creates/updates the local library at `~/grimoires/library.json`
 
-After summoning, open a new Claude Code or Codex/ChatGPT session and try `/arc-help`. To create your first grimoire from scratch, run `/grm-create`.
+After summoning, open a new Claude Code or Codex/ChatGPT session and run `/grm-create` to build your first grimoire. (Maintainers can run `/arc-help` for the full platform catalog.)
 
 Dear PyGui is bundled into release binaries. In source mode, Dear PyGui is imported from the system Python or from a Grimoire-managed Python dependency cache, not from the Arcana repository. If pip or Dear PyGui is missing, the bootstrap asks before installing anything; only an explicit `y` proceeds. On Arch-based systems, accepting the pip prompt may install `python-pip` with `pacman` first if the system Python does not include pip.
 
@@ -159,15 +170,37 @@ The `{{GRIMOIRE_REPO_URL}}` placeholder in the formula is the hook that `/grm-cr
 
 ---
 
-## Manual Setup
+## Install without a terminal
+
+You do not need to be comfortable in a terminal to install Arcana. If you have a Git GUI client and an AI agent, the agent runs the rites for you.
+
+1. **Clone Arcana with a Git GUI client you trust** — SmartGit, GitHub Desktop, Sourcetree, and GitKraken all work. Clone `https://github.com/justinlavi/arcana` into `~/grimoires/arcana` (the layout matters: Arcana must live at `~/grimoires/arcana/`).
+2. **Open a fresh session in your AI agent** ([Claude Code](https://docs.claude.com/en/docs/claude-code) or [Codex / ChatGPT CLI](https://developers.openai.com/codex/cli)).
+3. **Tell the agent, in plain language:**
+
+   ```text
+   Read ~/grimoires/arcana/UPDATE.md and follow the AI Update Playbook.
+   This is a fresh install, so set up the library, agent files, and skills from scratch.
+   ```
+
+   The agent runs the deterministic rites from [UPDATE.md](../UPDATE.md) — reconciling the library, configuring your agent files, and registering the `/grm-*` and `/arc-*` skills — and reports each rite's own output. You never touch a command line.
+4. **Open one more fresh agent session** (agents cache skill listings), then run `/grm-create` to build your first grimoire.
+
+This routes through the same deterministic rites the one-line installer uses; only the clone step changes.
+
+---
+
+## Manual Setup (terminal, step-by-step)
+
+For a no-terminal path, see [Install without a terminal](#install-without-a-terminal) above. The steps below are the explicit terminal alternative.
 
 If you can't run the summoning rite (no network, restricted environment, etc.):
 
 1. Clone Arcana to `~/grimoires/arcana/`.
 2. Clone each grimoire to `~/grimoires/<grimoire-name>/`.
 3. Create `~/grimoires/library.json` with one entry per grimoire (see [reference](reference.md#local-library)).
-4. Add the Grimoire instruction block to the instruction targets listed in [agent targets](agent_targets.md) — the canonical block lives at [grimoire block](../rites/templates/grimoire_block.md). To refresh automatic targets after Arcana changes, use `/arc-sync agentfile`.
-5. Run `python3 ~/grimoires/arcana/rites/sync_skills.py` to install skills into registered agent skill directories.
+4. Add the Grimoire routing block to the instruction targets listed in [agent targets](agent_targets.md) — the canonical block lives at [grimoire block](../rites/templates/grimoire_block.md). The simplest way to (re)apply it is to ask your agent to run `/grm-sync agentfile`, which creates a missing instruction file and refreshes a stale block. If you have no agent session yet, run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`. (Maintainer equivalent: `/arc-sync agentfile`.)
+5. Register skills: the easy path is to ask your agent to run `/grm-sync skills`. If you have no agent session yet, run it directly: `python3 ~/grimoires/arcana/rites/sync_skills.py`.
 
 If an existing installation is far behind and its registered slash commands no
 longer match current Arcana, pull Arcana first, then follow
@@ -196,10 +229,10 @@ If any of these are missing, jump to the [Troubleshooting](#troubleshooting) sec
 Open a new Claude Code (or Codex) session and run:
 
 ```
-/arc-help
+/grm-create
 ```
 
-The skill should enumerate every installed `arc-*` and grimoire-prefixed skill. If you see a populated list, the agent has loaded the library and skill directory correctly.
+The skill should start the new-grimoire flow, confirming the agent loaded the skill set and the routing block. (Maintainers verifying the full catalog can run `/arc-help` instead, which enumerates every installed `arc-*` and grimoire-prefixed skill.)
 
 ### 3. Smoke-test a grimoire
 
@@ -207,7 +240,7 @@ Pick any grimoire from your library and ask the agent:
 
 > "Read the {grimoire-name} root hub and tell me what chapters it routes to."
 
-The agent should resolve `local_path` from `~/grimoires/library.json`, read `<grimoire>/<grimoire>.md`, and report the chapter list — exactly what's in the file, no invention. If it makes things up or can't find the file, your agent's instruction block is missing the routing rules.
+The agent should resolve `local_path` from `~/grimoires/library.json`, read `<grimoire>/<grimoire>.md`, and report the chapter list — exactly what's in the file, no invention. If it makes things up or can't find the file, your agent's routing block is missing the routing rules.
 
 ### 4. (Optional) Walk a full route
 
@@ -224,7 +257,7 @@ The agent should follow hubs depth-first (root hub -> chapter hub -> ... -> leaf
 **Agent can't find a grimoire**
 - Check that the grimoire key exists in `~/grimoires/library.json`
 - Verify `local_path` resolves correctly on the filesystem
-- Run `/arc-sync library` to detect and reconcile drift
+- Ask your agent to run `/grm-sync library` to reconcile `~/grimoires/library.json` against disk (the fix after you move or rename a grimoire folder), or `/grm-update` to bring everything current. (Maintainers can target the whole platform library with `/arc-sync library`.)
 
 **Summoning fails to clone**
 - Ensure network access to your git host (VPN if required)
@@ -238,11 +271,11 @@ The agent should follow hubs depth-first (root hub -> chapter hub -> ... -> leaf
 - On Arch-based systems, install Mesa and XWayland if needed: `sudo pacman -S --needed mesa xorg-xwayland`
 
 **Skills not appearing after install**
-- Run `/arc-sync skills` to re-register all skills
+- Ask your agent to run `/grm-sync skills` to register skills (or `/grm-update` to bring everything current). (Maintainers can re-register every installed grimoire's skills with `/arc-sync skills`.)
 - Open a new agent session (Claude Code / Codex caches skill listings)
 
 **Skill names appear as `{{SKILL_PREFIX}}-...`**
 - The grimoire is missing its `grimoire.json` manifest. Add one per [reference](reference.md#grimoire-manifest), then re-register.
 
 **Agent guesses instead of reading files**
-- The Grimoire instruction block is missing from the relevant target in [agent targets](agent_targets.md), or it is stale. See [agent configuration](agent_configuration.md#agent-instruction-files), then run `/arc-sync agentfile`.
+- The Grimoire routing block is missing or stale in the relevant target from [agent targets](agent_targets.md) — for example after you deleted `~/.codex/` or `~/.claude/`, or moved to a new machine. Ask your agent to run `/grm-sync agentfile`, which creates a missing instruction file and refreshes a stale routing block. See [agent configuration](agent_configuration.md#agent-instruction-files). (Maintainer equivalent: `/arc-sync agentfile`.)

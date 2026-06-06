@@ -19,10 +19,14 @@ and user agent files) stay distinct from the active-grimoire surface:
   into supported agent skill directories. Rite: `rites/sync_skills.py`.
 - `library` — reconcile `~/grimoires/library.json` against the actual state of
   `~/grimoires/`. Rite: `rites/sync_library.py`.
-- `agentfile` — refresh the marked Grimoire instruction block inside user agent
-  instruction files. AI-guided judgment edit; no rite.
+- `agentfile` — create or refresh the marked Grimoire routing block inside user
+  agent instruction files. Rite: `rites/inject_agent_file.py` for the deterministic
+  cases (create a missing file, refresh one clean marked region); judgment edit for
+  the review cases (a file with no block, a pre-marker block, or malformed markers)
+  and project-level files.
 
-For active-grimoire-only skill registration, use `/grm-sync` instead.
+For the everyday user mirror of this command — active-grimoire skills plus the
+library and agent files for the user's own setup — use `/grm-sync` instead.
 
 ## Invocation
 
@@ -48,15 +52,15 @@ Read the positional sub-target and run only that section below.
 
 Mutation profile: `plan_apply` via `rites/sync_skills.py`. Apply directly when the
 user asks to sync skills; use `--dry-run` for a preview or when reviewing target
-changes. The plan reports creates, updates, owned stale cleanups, unowned
-preserves, and collisions. Apply mode refuses to overwrite unowned skill
-directories. Generated pointer skills without ownership metadata are rewritten when
-their provenance points back to an Arcana or grimoire skill source.
+changes. The plan reports creates, updates, stale cleanups, and collisions. The
+`arc-`, `grm-`, and grimoire prefixes are Arcana-owned namespaces: any directory
+under one of them that is not in the current catalog is a stale Arcana skill and is
+removed or overwritten - no ownership marker required. Directories outside every
+managed prefix are never touched, so a re-register never leaves a deprecated
+`/arc-*` or `/grm-*` skill behind while leaving the user's own skills alone.
 
-For major Arcana command-family changes, use `--reset-managed` to replace the
-registered Arcana and grimoire skill namespaces from current source. This is the
-supported version of manually deleting old `/arc-*`, `/grm-*`, and domain-prefixed
-skill directories before re-registering.
+For major Arcana command-family changes, use `--reset-managed` to clear the managed
+namespaces entirely and write the current catalog fresh.
 
 ### 1. Run the sync rite
 
@@ -68,21 +72,10 @@ On Windows, use `python` instead of `python3`.
 
 ### 2. Report the result
 
-Tell the user how many skills were registered, how many owned stale registrations
-were cleaned, how many unowned directories were preserved, any collisions, and
-which agent targets were written.
+Tell the user how many skills were registered, how many stale skills were cleaned,
+any collisions, and which agent targets were written.
 
-### 3. Reconcile orphaned skill directories (optional)
-
-If the rite reported `Preserve unowned` entries or `without Arcana ownership
-marker` collisions under a managed prefix, some may be stale Arcana artifacts the
-rite could not prove it owns - most often a skill whose source was renamed or
-removed, leaving the old registration behind. Apply the propose-then-confirm
-judgment in [[invocations/meta/skill_orphan_reconcile|skill orphan reconcile]] to
-classify and, on one confirmation, remove them - then re-register. Skip this when
-the rite reported no preserved or collided managed-prefix directories.
-
-### 4. Optional flags
+### 3. Optional flags
 
 ```bash
 python3 ARCANA_HOME/rites/sync_skills.py --dry-run                  # preview, no writes
@@ -96,9 +89,8 @@ Supported `--agent` values come from `ARCANA_HOME/rites/data/agent_targets.json`
 see `ARCANA_HOME/docs/agent_targets.md` for the human-readable matrix.
 
 Add `--format json` (or `jsonl`) for the shared `ResultReporter` outcome envelope -
-registered/cleaned mutations, collisions and preserved-unowned dirs as messages,
-and summary counts - so an orchestrator can verify the result instead of parsing
-prose.
+registered/cleaned mutations and collisions as messages, and summary counts - so an
+orchestrator can verify the result instead of parsing prose.
 
 ---
 
@@ -148,88 +140,60 @@ any newly registered grimoires.
 
 ## Sub-target: `agentfile`
 
-Refresh the Grimoire instruction block inside user agent instruction files,
-preserving all non-Grimoire content. This is AI-guided judgment work, not a pure
-mechanical rewrite: users often keep unrelated project, style, safety, or personal
-instructions in the same files. There is no rite for this sub-target.
+Mutation profile: `plan_apply` via `rites/inject_agent_file.py` for the automatic
+instruction targets, with a judgment edit for the cases a rite cannot safely
+decide. Create or refresh the marked Grimoire routing block, preserving all
+non-Grimoire content. Canonical block: `ARCANA_HOME/rites/templates/grimoire_block.md`.
 
-Canonical block: `ARCANA_HOME/rites/templates/grimoire_block.md`.
+### 1. Run the rite on the automatic targets
 
-Optional user text may name explicit files to update.
+```bash
+python3 ARCANA_HOME/rites/inject_agent_file.py            # plan: classify each target
+python3 ARCANA_HOME/rites/inject_agent_file.py --apply    # create / refresh
+```
 
-### Default targets
+The routing block is defined solely by its `<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->`
+and `<!-- END GRIMOIRE KNOWLEDGE BASE -->` markers. The rite reads the
+`instruction_mode: auto` targets from `ARCANA_HOME/rites/data/agent_targets.json`
+and classifies each from those markers: a missing file is **created** with
+`# <title>` and the block; a single clean marked region is **refreshed** in place
+(idempotent — a block already matching the template is left unchanged); anything
+else — a file with no block, a pre-marker block, or duplicate/malformed markers —
+is reported for **review** and left untouched. Creating a missing automatic target
+is deterministic and is the desired recovery for a deleted agent file. Target one
+agent with `--agent claude|codex`; add `--format json` for the structured envelope.
 
-Inspect existing files only unless the user explicitly asks to create missing ones.
-Default automatic targets come from `ARCANA_HOME/rites/data/agent_targets.json`
-entries with `instruction_mode: auto`; see `ARCANA_HOME/docs/agent_targets.md` for
-the current matrix.
+### 2. Resolve review and out-of-registry files by judgment
 
-If the user provides paths, inspect those too. If the current repository contains
-`AGENTS.md`, `CLAUDE.md`, `.github/copilot_instructions.md`, or similarly named
-agent instruction files, mention them as candidates but ask before modifying
-project-level files unless the user explicitly included them.
+The rite hands two kinds of file to judgment. Handle them by hand:
 
-Do not scan all of `$HOME` by default. If the user asks for "everything on this
-machine", ask before running a bounded search and explain the scope.
+- **Review automatic targets** the rite reported — a file with no block, a
+  pre-marker `## Grimoire Knowledge Base` section, or duplicate/malformed markers.
+- **User-specified or project-level files** not in the automatic registry — for
+  example a repository `AGENTS.md`, `CLAUDE.md`, or
+  `.github/copilot_instructions.md`. Mention these as candidates but do not edit a
+  project-level file without explicit user confirmation.
 
-### 1. Load the canonical block
+For each such file, care only about the marked region: if there is a routing block
+in any form (a malformed marked region, or a pre-marker `## Grimoire Knowledge Base`
+section), replace it with the canonical block; if there is none, insert the block
+after the first top-level heading or append it; if the file's intent is unclear,
+stop and ask. Never rewrite, sort, reflow, or deduplicate the content outside the
+markers — the user's own instructions live there. Do not scan all of `$HOME`; if
+the user asks for "everything on this machine", confirm a bounded search first.
 
-Read `ARCANA_HOME/rites/templates/grimoire_block.md`. This is the source of truth.
-Preserve it exactly when inserting or replacing, aside from surrounding blank lines
-needed to fit the target document.
+### 3. Review
 
-### 2. Inspect each target
-
-For each candidate file:
-
-1. If the file does not exist, skip it by default and report that it was absent.
-2. Read the full file before editing.
-3. Determine whether it contains a Grimoire block:
-  - Preferred: text between `<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->` and
-    `<!-- END GRIMOIRE KNOWLEDGE BASE -->`.
-  - Ambiguous: multiple Grimoire sections, malformed markers, or surrounding text
-    that looks user-authored. Stop and ask before editing that file.
-
-### 3. Patch conservatively
-
-Apply the smallest safe edit:
-
-- Existing marked block: replace only the marked region with the canonical block.
-- No existing block in an existing default target: insert the canonical block after
-  the first top-level heading if there is one, otherwise append it to the end. If
-  the file is project-level or user-specified but not a default target, ask before
-  inserting.
-
-Never rewrite, sort, reflow, or deduplicate non-Grimoire content. Preserve
-frontmatter, comments, headings, personal instructions, project rules, and
-unrelated agent configuration exactly.
-
-### 4. Review after editing
-
-After editing each file:
-
-- Re-read the file.
-- Confirm exactly one Grimoire block is present.
-- Confirm the canonical block text appears exactly once.
-- Summarize whether the operation was `updated`, `inserted`, `skipped`, or
-  `needs user decision`.
-
-### Safety rules
-
-1. Preserve all non-Grimoire content.
-2. Do not create missing instruction files unless the user explicitly asks.
-3. Do not edit project-level instruction files without explicit user confirmation.
-4. Do not replace a whole file when a block-level edit is possible.
-5. Ask before editing when the Grimoire block boundaries are ambiguous.
-6. Report every file touched.
+Re-read each file the rite or the judgment edit touched, confirm exactly one
+Grimoire routing block is present and the canonical text appears once, and summarize each
+file as `created`, `inserted`, `refreshed`, `skipped`, or `needs user decision`.
 
 This sub-target updates instruction files only. If newly added skills also need to
 appear in slash-command pickers, run `/arc-sync skills` separately.
 
 ## Related
 
-- Active-grimoire skill sync: [[invocations/grm/sync|sync]]
-- Reconcile stale/renamed skill orphans: [[invocations/meta/skill_orphan_reconcile|skill orphan reconcile]]
+- User mirror (active-grimoire skills plus library and agent files for the user's own setup): [[invocations/grm/sync|sync]]
 - Adopt an unmanaged directory: [[invocations/arc/adopt|adopt]]
 - Agent targets: [[docs/agent_targets|agent targets]]
 - Agent configuration: [[docs/agent_configuration|agent configuration]]

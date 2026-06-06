@@ -4,6 +4,23 @@
   "description": "Authoritative contract linking each public Arcana-shipped slash command to its skill source, invocation home, workflow owner, safety posture, and validation profile.",
   "commands": [
     {
+      "command": "/grm-adopt",
+      "family": "grm",
+      "skill_source": "skills/grm/adopt/SKILL.md",
+      "invocation": "invocations/grm/adopt.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "rite",
+      "rite_owner": "rites/adopt_grimoire.py",
+      "preconditions": [
+        "Unmanaged directory under the grimoire home",
+        "Unique grimoire skill prefix"
+      ],
+      "mutation_profile": "apply_only",
+      "mutation_behavior": "Writes a new grimoire.json manifest into an existing unmanaged folder and refuses to overwrite an existing manifest. User mirror of /arc-adopt.",
+      "log_behavior": "Does not append grimoire logs.",
+      "validation_profile": "python rites/adopt_grimoire.py TARGET --skill-prefix PREFIX --description DESC; python rites/sync_library.py --apply"
+    },
+    {
       "command": "/grm-create",
       "family": "grm",
       "skill_source": "skills/grm/create/SKILL.md",
@@ -57,21 +74,57 @@
       "validation_profile": "python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_provenance.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT"
     },
     {
+      "command": "/grm-move",
+      "family": "grm",
+      "skill_source": "skills/grm/move/SKILL.md",
+      "invocation": "invocations/grm/move.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "hybrid",
+      "rite_owner": "rites/restructure_grimoire.py",
+      "preconditions": [
+        "Registered active grimoire",
+        "Source path under chapters/ that exists",
+        "Destination path under chapters/ that does not exist"
+      ],
+      "mutation_profile": "judgment_gated",
+      "mutation_behavior": "Renames or moves a page or chapter under chapters/ via restructure_grimoire.py, retargeting every full-path wikilink that pointed at the moved file(s) and renaming a moved chapter's folder-named hub; the invocation then wires the source and destination hubs, fixes display labels, and logs the move.",
+      "log_behavior": "Appends one move entry to the active grimoire log.md.",
+      "validation_profile": "python rites/restructure_grimoire.py --grimoire GRIMOIRE_ROOT --move SRC DST; python rites/validate.py --grimoire GRIMOIRE_ROOT links orphans structure"
+    },
+    {
+      "command": "/grm-remove",
+      "family": "grm",
+      "skill_source": "skills/grm/remove/SKILL.md",
+      "invocation": "invocations/grm/remove.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "hybrid",
+      "rite_owner": "rites/restructure_grimoire.py",
+      "preconditions": [
+        "Registered active grimoire",
+        "Target path under chapters/ that exists",
+        "Explicit user confirmation (destructive)"
+      ],
+      "mutation_profile": "judgment_gated",
+      "mutation_behavior": "Deletes a page or chapter under chapters/ via restructure_grimoire.py and reports every inbound wikilink that would break; the invocation confirms the deletion, drops the parent hub pointer, repairs or removes the broken inbound links, and logs the removal. Refuses to delete a chapter hub on its own.",
+      "log_behavior": "Appends one remove entry to the active grimoire log.md.",
+      "validation_profile": "python rites/restructure_grimoire.py --grimoire GRIMOIRE_ROOT --remove PATH; python rites/validate.py --grimoire GRIMOIRE_ROOT links orphans structure"
+    },
+    {
       "command": "/grm-sync",
       "family": "grm",
       "skill_source": "skills/grm/sync/SKILL.md",
       "invocation": "invocations/grm/sync.md",
       "guard": "invocations/meta/grimoire_directory_guard.md",
-      "owner_type": "rite",
-      "rite_owner": "rites/sync_skills.py",
+      "owner_type": "hybrid",
+      "rite_owner": null,
       "preconditions": [
-        "Registered active grimoire",
-        "Supported agent target or all supported targets"
+        "Registered active grimoire (for the skills sub-target)",
+        "One of the sub-targets skills, library, or agentfile, or bare to run all three"
       ],
-      "mutation_profile": "plan_apply",
-      "mutation_behavior": "Plans and writes Arcana-shipped skills and active-grimoire skills into supported agent skill directories; generated SKILL.md files carry Arcana ownership metadata, generated provenance can prove ownership, unowned collisions block apply, stale cleanup touches only owned generated skills, and --reset-managed replaces current managed namespace directories before re-registering.",
+      "mutation_profile": "judgment_gated",
+      "mutation_behavior": "Routes an optional positional sub-target (bare runs all three). skills: registers Arcana-shipped and active-grimoire skills via sync_skills.py. library: reconciles ~/grimoires/library.json against disk via sync_library.py. agentfile: creates or refreshes the marked Grimoire routing block via inject_agent_file.py, falling to a judgment edit for the review cases (a file with no block, a pre-marker block, or malformed markers). A bare invocation reconciles all three scopes and reports every scope, including those it leaves unchanged. User mirror of /arc-sync.",
       "log_behavior": "Does not append grimoire logs.",
-      "validation_profile": "python rites/sync_skills.py --grimoire GRIMOIRE_ROOT --dry-run; temp-target tests for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions."
+      "validation_profile": "python rites/sync_skills.py --grimoire GRIMOIRE_ROOT --dry-run; python rites/sync_library.py; python rites/inject_agent_file.py"
     },
     {
       "command": "/grm-validate",
@@ -223,9 +276,9 @@
         "One positional sub-target: skills, library, or agentfile"
       ],
       "mutation_profile": "judgment_gated",
-      "mutation_behavior": "Routes a single positional sub-target. skills: registers Arcana-shipped and installed grimoire skills into supported agent skill directories via rites/sync_skills.py. library: reconciles ~/grimoires/library.json against disk via rites/sync_library.py. agentfile: refreshes the marked Grimoire instruction block in user agent instruction files as a judgment edit. A bare invocation with no sub-target refuses and lists the sub-targets; it never defaults to all because agentfile rewrites user agent files.",
+      "mutation_behavior": "Routes a single positional sub-target. skills: registers Arcana-shipped and installed grimoire skills into supported agent skill directories via rites/sync_skills.py. library: reconciles ~/grimoires/library.json against disk via rites/sync_library.py. agentfile: creates or refreshes the marked Grimoire routing block via rites/inject_agent_file.py, falling to a judgment edit for the review cases (a file with no block, a pre-marker block, or malformed markers). A bare invocation with no sub-target refuses and lists the sub-targets; it never defaults to all because the agentfile judgment edit touches user agent files.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
-      "validation_profile": "skills: python rites/sync_skills.py --dry-run. library: python rites/sync_library.py. agentfile: re-read touched files and confirm exactly one canonical Grimoire block per file."
+      "validation_profile": "skills: python rites/sync_skills.py --dry-run. library: python rites/sync_library.py. agentfile: python rites/inject_agent_file.py, then confirm exactly one canonical Grimoire routing block per touched file."
     },
     {
       "command": "/arc-adopt",

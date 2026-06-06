@@ -87,7 +87,11 @@ This is the deterministic core. In one pass it:
 
 **Quote the envelope** in your report: the `grimoire_summary` counts, each
 grimoire's `status`, and the `sync_skills` `registered`/`reset`/`cleaned`
-counts. If a grimoire appears under `needs_manual_pull`, it could **not** be
+counts. Then, for the human, render a plain one-line-per-grimoire summary keyed
+off those machine fields — for example "HR: up to date; Recipes: pulled new
+changes; Project Alpha: NOT updated, needs your login" — humanizing the quoted
+counts, never a number you counted yourself. If a grimoire appears under
+`needs_manual_pull`, it could **not** be
 brought current (a private host's auth, offline, a dirty or diverged tree). The
 update **did not touch it** — healing a stale tree would re-derive upstream work
 and cause divergence. List each such grimoire verbatim as:
@@ -99,23 +103,24 @@ A per-grimoire failure never aborts the run; the rest are still brought current.
 If the dry run helps first, run `--update` without `--apply` to see the
 per-grimoire classification before writing.
 
-### 4. Refresh the agent routing block
+### 4. Confirm the agent routing block
 
-The marked Grimoire block is the one step the rite leaves to judgment, because
-the BEGIN/END-vs-heading sentinels make injection non-deterministic. Read
-`rites/templates/grimoire_block.md`, `rites/data/agent_targets.json`, and
-`invocations/arc/sync.md`, then replace only the marked block in
-each automatic instruction target:
+Step 3's `summon.py --update --apply` already reconciles the marked Grimoire
+routing block in every automatic instruction target through
+`rites/inject_agent_file.py`. The block is the region between
+`<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->` and `<!-- END GRIMOIRE KNOWLEDGE BASE -->`,
+and those markers are the whole contract: it creates a missing file with the block
+and refreshes one clean marked region in place — both deterministic. Confirm from
+the envelope's `agent_blocks` step which targets were created or refreshed.
 
-```text
-<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->
-...
-<!-- END GRIMOIRE KNOWLEDGE BASE -->
-```
-
-Preserve all non-Grimoire content exactly. If block boundaries are ambiguous,
-stop and ask the user. (`/arc-sync agentfile` does this once skills are
-registered.)
+The rite reports a target for **review** (and writes nothing) when there is no
+clean marked region: a file with no block, a pre-marker block, or duplicate or
+malformed markers. For each one, read `rites/templates/grimoire_block.md` and place
+the canonical block caring only about the marked region — replace an existing
+routing block in any form, or insert one after the first heading — preserving every
+line outside the markers; if the file's intent is unclear, stop and ask the user.
+(`/grm-sync agentfile`, or the maintainer's `/arc-sync agentfile`, runs this same
+rite plus the judgment step.)
 
 ### 5. Final gate
 
@@ -126,16 +131,6 @@ python3 "$ARCANA/rites/summon.py" --check --format json
 It must report no drift for the grimoires that were brought current. Report the
 exit status. Ask the user to open a fresh agent session, because agents cache
 skill listings.
-
-### Skill-orphan judgment (only if reported)
-
-If skill re-registration reports `Preserve unowned` entries or `without Arcana
-ownership marker` collisions under a managed prefix, those are directories the
-rite could not prove it owns — often a skill whose source was renamed or removed.
-Apply the propose-then-confirm judgment in
-[Reconcile skill orphans](invocations/meta/skill_orphan_reconcile.md): classify
-each as a stale Arcana artifact or user-authored, remove the stale ones on one
-confirmation, then re-run step 3.
 
 ### If the one command cannot run
 
@@ -157,5 +152,4 @@ current.
 - [Agent configuration](docs/agent_configuration.md)
 - [Summoning contract](docs/summoning_contract.md)
 - [Sync skills, library, and the agent file](invocations/arc/sync.md)
-- [Reconcile skill orphans](invocations/meta/skill_orphan_reconcile.md)
 - [Update from a grimoire](invocations/grm/update.md)

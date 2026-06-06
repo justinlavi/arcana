@@ -211,7 +211,7 @@ python3 ARCANA_HOME/rites/validate_links.py --grimoire .
 
 Or invoke `/grm-validate` for the full mechanical pass.
 
-If the relevant agent instruction file already includes the Grimoire block, also test routing by asking the agent: `"What chapters exist in {{grimoire_name}}?"`
+If the relevant agent instruction file already includes the Grimoire routing block, also test routing by asking the agent: `"What chapters exist in {{grimoire_name}}?"`
 
 ---
 

@@ -44,7 +44,7 @@ export GITLAB_TOKEN=<your token>     # GitLab
 export GITHUB_TOKEN=<your token>     # GitHub
 ```
 
-Open a new agent session and try `/arc-help` to confirm the new skills are available. Full reference for scope shapes, auth, and troubleshooting: [github.com/justinlavi/arcana - docs/installation.md](https://github.com/justinlavi/arcana/blob/main/docs/installation.md).
+Open a new agent session and try `/grm-help` from inside this grimoire to confirm its skills are available. Full reference for scope shapes, auth, and troubleshooting: [github.com/justinlavi/arcana - docs/installation.md](https://github.com/justinlavi/arcana/blob/main/docs/installation.md).
 
 ### Manual install
 
@@ -62,7 +62,7 @@ python3 ~/grimoires/arcana/rites/sync_library.py --apply
 python3 ~/grimoires/arcana/rites/sync_skills.py
 ```
 
-Add the canonical Grimoire instruction block to your agent file using `/arc-sync agentfile` once skills are registered, or paste it manually from [`rites/templates/grimoire_block.md`](https://github.com/justinlavi/arcana/blob/main/rites/templates/grimoire_block.md).
+Add the canonical Grimoire routing block to your agent file by asking your agent to run `/grm-sync agentfile` (it creates a missing instruction file and refreshes a stale block), or run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`.
 
 ## Layout
 
@@ -93,7 +93,7 @@ Add the canonical Grimoire instruction block to your agent file using `/arc-sync
 | Add a page or chapter (fresh, or capturing a chat answer) | `/grm-add` |
 | Import a new source into `sources/` and update affected pages | `/grm-import` |
 | Health-check the grimoire (orphans, stale, ghost refs) | `/grm-health-check` |
-| Audit naming and structure | `/grm-health-check` |
+| Review naming and find-ability (advanced) | `/grm-audit-semantics` |
 
 ## Layers (the LLM-wiki model)
 
@@ -143,6 +143,6 @@ The summoning rite (`ARCANA_HOME/rites/summon.sh`) handles this automatically.
 
 ## Help
 
-- Skill catalog: `/arc-help`
+- This grimoire's commands: `/grm-help` (every installed grimoire: `/arc-help`)
 - Arcana docs: `ARCANA_HOME/README.md` and `ARCANA_HOME/docs/`
 - About this grimoire's content: see the maintainer.

@@ -52,7 +52,7 @@ SETTINGS_DEFAULTS = {
 
 
 def _load_grimoire_block():
-    """Load the canonical Grimoire instruction block from the markdown template."""
+    """Load the canonical Grimoire routing block from the markdown template."""
     candidates = []
     meipass = getattr(sys, "_MEIPASS", None)
     if meipass:
@@ -77,22 +77,57 @@ def _load_grimoire_block():
 
     checked = ", ".join(str(path) for path in candidates)
     raise FileNotFoundError(
-        "Could not find canonical Grimoire block template. "
+        "Could not find canonical Grimoire routing block template. "
         f"Checked: {checked}"
     )
 
 
 GRIMOIRE_BLOCK = _load_grimoire_block()
 
-# Idempotency sentinels for the injected Grimoire block. The canonical template
-# wraps the block in BEGIN/END markers with the heading inside; older injections
-# carried only the heading. A block written by any path - this injector, the
-# template, /arc-sync agentfile, or UPDATE.md - counts as present when EITHER
-# sentinel is found, so a re-run never double-injects regardless of which form is
-# on disk. summon_state imports these so the detector and injector cannot drift.
+# The Grimoire routing block is defined solely by its BEGIN/END markers. They
+# are the single durable contract: everything between them is Arcana-owned and
+# the user never edits it; everything outside is the user's. Detection and
+# idempotency key on these markers only - summon_state and inject_agent_file
+# import them so the detector and the injectors cannot drift.
 BEGIN_SENTINEL = "<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->"
 END_SENTINEL = "<!-- END GRIMOIRE KNOWLEDGE BASE -->"
-HEADING_SENTINEL = "## Grimoire Knowledge Base"
+
+# The block's own title line. Used ONLY as a "is there already a block here?"
+# safety signal so a mechanical pass never appends a second block over a
+# malformed or pre-marker one - never to mechanically treat a heading as a valid
+# block. A file carrying this with no clean markers is handed to judgment.
+BLOCK_HEADING = "## Grimoire Knowledge Base"
+
+
+def canonical_routing_block():
+    """The canonical BEGIN..END routing block, no surrounding blank lines."""
+    return GRIMOIRE_BLOCK.strip()
+
+
+def classify_routing_block(content):
+    """Classify a file's routing-block state from its markers alone.
+
+    Shared by the install injector and inject_agent_file.py so they cannot
+    diverge. Returns:
+      create  - no file (write a fresh heading + block)
+      present - exactly one clean BEGIN..END region, already current (noop)
+      refresh - exactly one clean region, but stale (replace it)
+      insert  - no block signature at all, safe to add one mechanically
+      review  - block-like but not one clean region (duplicate or malformed
+                markers, or a pre-marker heading-only block) -> judgment, never
+                a mechanical write, so a second block is never appended
+    """
+    if content is None:
+        return "create"
+    if content.count(BEGIN_SENTINEL) == 1 and content.count(END_SENTINEL) == 1:
+        begin = content.find(BEGIN_SENTINEL)
+        end = content.find(END_SENTINEL)
+        if begin < end:
+            region = content[begin:end + len(END_SENTINEL)]
+            return "present" if region == canonical_routing_block() else "refresh"
+    if BEGIN_SENTINEL not in content and END_SENTINEL not in content and BLOCK_HEADING not in content:
+        return "insert"
+    return "review"
 
 
 # ---------------------------------------------------------------------------
@@ -700,28 +735,45 @@ def update_local_library(installed_keys, library, log):
 
 
 def inject_agent_file(log, target_path, title):
-    """Inject Grimoire routing block into an agent instruction file."""
+    """Bootstrap the Grimoire routing block into an agent instruction file.
+
+    Install-time injector. Shares one classifier with inject_agent_file.py, so it
+    only ever does the unambiguous mechanical work and never appends a second
+    block: create an absent file, refresh one clean stale block, insert into a
+    file with no block at all, skip a current block. A block-like file that is
+    not one clean BEGIN..END region (duplicate or malformed markers, or a
+    pre-marker heading-only block) is left untouched for `/grm-sync agentfile`.
+    """
     log.info(f"Configuring {target_path.name}...")
     target_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if not target_path.is_file():
-        target_path.write_text(f"# {title}\n", encoding="utf-8", newline="\n")
-        log.info(f"Created {target_path}")
+    content = target_path.read_text(encoding="utf-8") if target_path.is_file() else None
+    action = classify_routing_block(content)
 
-    content = target_path.read_text(encoding="utf-8")
-
-    if BEGIN_SENTINEL in content or HEADING_SENTINEL in content:
-        log.ok(f"Grimoire block already present in {target_path.name} (skipping)")
-        return
-
-    if content.startswith(f"# {title}"):
-        first_line_end = content.index("\n") if "\n" in content else len(content)
-        content = content[:first_line_end + 1] + GRIMOIRE_BLOCK + content[first_line_end + 1:]
-    else:
-        content += GRIMOIRE_BLOCK
-
-    target_path.write_text(content, encoding="utf-8", newline="\n")
-    log.ok(f"Grimoire block injected into {target_path}")
+    if action == "create":
+        target_path.write_text(f"# {title}\n" + GRIMOIRE_BLOCK, encoding="utf-8", newline="\n")
+        log.ok(f"Grimoire routing block written to new {target_path.name}")
+    elif action == "present":
+        log.ok(f"Grimoire routing block already current in {target_path.name} (skipping)")
+    elif action == "refresh":
+        begin = content.find(BEGIN_SENTINEL)
+        end = content.find(END_SENTINEL) + len(END_SENTINEL)
+        new = content[:begin] + canonical_routing_block() + content[end:]
+        target_path.write_text(new, encoding="utf-8", newline="\n")
+        log.ok(f"Grimoire routing block refreshed in {target_path.name}")
+    elif action == "insert":
+        if content.startswith(f"# {title}"):
+            first_line_end = content.index("\n") if "\n" in content else len(content)
+            new = content[:first_line_end + 1] + GRIMOIRE_BLOCK + content[first_line_end + 1:]
+        else:
+            new = content + GRIMOIRE_BLOCK
+        target_path.write_text(new, encoding="utf-8", newline="\n")
+        log.ok(f"Grimoire routing block injected into {target_path.name}")
+    else:  # review
+        log.warn(
+            f"{target_path.name} has a routing block that is not one clean BEGIN/END region; "
+            "left unchanged - run /grm-sync agentfile to fix it"
+        )
 
 
 def inject_agent_configs(log):
@@ -925,7 +977,7 @@ def _print_cli_summary(mode, installed_keys, skills_ok):
     print("  Next steps:")
     agent_labels = ", ".join(target["label"] for target in automatic_instruction_targets(REPO_ROOT))
     print(f"    1. Open a new {agent_labels} session")
-    print("    2. Try: /arc-help")
+    print("    2. Try: /grm-create  (maintainers: /arc-help lists the full platform catalog)")
     print()
 
 

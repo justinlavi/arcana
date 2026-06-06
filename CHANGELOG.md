@@ -1,5 +1,70 @@
 # Changelog
 
+## [1.5.0] - 2026-06-06
+
+MINOR. Existing grimoire content stays valid. This release makes the `/grm-*`
+surface self-sufficient for non-engineers, adds content-reorganization commands,
+and removes both remaining backward-compat format recognizers. It requires skill
+re-registration so agents see the new commands: run `/grm-update`, or
+`/arc-sync skills --reset-managed` (skill-less:
+`python3 rites/sync_skills.py --reset-managed --agent all`), then open a fresh
+agent session.
+
+### Added
+
+- **`/grm-move` and `/grm-remove`** — rename, move, or delete a page or chapter
+  under `chapters/`. The deterministic `rites/restructure_grimoire.py` moves the
+  files and retargets every full-path wikilink (a moved chapter folder also keeps
+  the folder-named hub convention); the invocations wire the hubs, repair inbound
+  references, and log the change.
+- **`/grm-adopt`** — register an existing folder under `~/grimoires/` as a
+  grimoire (the user mirror of `/arc-adopt`).
+- **`/grm-sync` is the user mirror of `/arc-sync`** — an optional sub-target
+  `skills | library | agentfile` (bare runs all three and reports every scope).
+  A new deterministic `rites/inject_agent_file.py` creates or refreshes the agent
+  routing block, so a deleted or missing agent instruction file is recreated
+  without manual steps.
+- **Onboarding for non-engineers** — README and `docs/installation.md` gain a
+  "Before you start" prerequisites block and an "Install without a terminal"
+  path; `docs/reference.md` opens with a plain-language glossary.
+- New activity-log operations `move` and `remove`.
+
+### Changed
+
+- **The `/grm-*` surface is self-sufficient.** Docs, troubleshooting, installer
+  output, the in-agent-file cheat-sheet, and help now lead with `/grm-*`
+  commands; `/arc-*` appears only as a maintainer parenthetical. `/grm-help` is
+  the everyday help command (install surfaces lead with `/grm-create`, which has
+  no active-grimoire precondition).
+- **Clearer command descriptions.** The picker text for add/import/create and
+  health-check/validate/audit-\* now states each command's distinct job up front.
+- **The skill catalog is two views.** `docs/skills.md` leads with a user catalog
+  (Command / What it does / Input); the engineering matrix moves to a separate
+  "Command contract" maintainer section.
+- **Settled terminology.** The Arcana-owned block is the "Grimoire routing
+  block" everywhere; the file it lives in is the "agent instruction file".
+- **Agent routing block is marker-defined.** Detection and idempotency key
+  solely on the `BEGIN`/`END` markers via one shared classifier. A mechanical
+  pass only creates an absent file, refreshes one clean region, or inserts when
+  there is no block at all; a block-like file that is not one clean region is
+  left untouched and handed to the `/grm-sync agentfile` judgment edit, so a
+  second block is never appended.
+- **Skill namespaces are prefix-owned.** The `arc-`, `grm-`, and grimoire
+  prefixes are Arcana-owned: prefix membership is ownership, so re-registering
+  removes or overwrites any directory under a managed prefix that is not in the
+  current catalog, and never touches a directory outside every managed prefix
+  (your own skills).
+
+### Removed
+
+- **Both backward-compat format recognizers.** The heading-only agent-block
+  detector and the generated-provenance skill-ownership fallback are gone,
+  replaced by the marker-only block model and prefix-ownership skill model. No
+  compatibility aliases or shims remain.
+- **The skill-orphan reconcile step.** Its trigger (the rite reporting a
+  preserved-unowned managed directory) can no longer occur, so the judgment
+  fragment and its references are removed.
+
 ## [1.4.0] - 2026-06-05
 
 MINOR. Existing grimoire content stays valid. This release consolidates and

@@ -1,7 +1,7 @@
 ---
 name: {{SKILL_PREFIX}}-help
 description: Display the Arcana skill catalog and installed grimoire skill guide
-when_to_use: User asks what Arcana skills exist, what commands are available, or how to discover the system. Run this before suggesting any specific skill if the user is new or unfamiliar. Also good when user asks "what can Arcana do", "what can Grimoire do", or "list grimoire commands".
+when_to_use: Maintainer or power user wants the complete platform catalog - every /arc-* and /grm-* command plus every installed grimoire's own skills. Use when the user explicitly asks for the full Arcana platform catalog or all installed grimoires. For everyday grimoire-user help, use /grm-help.
 user-invocable: true
 allowed-tools: Bash Read
 ---

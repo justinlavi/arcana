@@ -1,6 +1,6 @@
 ---
 name: {{SKILL_PREFIX}}-validate
-description: Run mechanical validators against the active grimoire, optionally narrowed by selector
+description: Quick automated pass/fail for broken links and malformed page headers (a fast subset of /grm-health-check; run that for the full checkup)
 when_to_use: Before committing grimoire changes; after editing pages, sources, links, or scaffold files; user asks whether a grimoire validates, whether links/frontmatter/format are clean, or wants a targeted mechanical check.
 argument-hint: "[all|smart|auto|summary|parallel|links|frontmatter|format|...]"
 arguments: selector

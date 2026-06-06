@@ -1,7 +1,7 @@
 ---
 name: {{SKILL_PREFIX}}-sync
-description: Sync the local environment to current Arcana by sub-target - skills (agent skill directories), library (~/grimoires/library.json), or agentfile (the Grimoire instruction block)
-when_to_use: A skill isn't appearing in the slash-command picker, or skills were added, edited, or installed (skills); a grimoire was cloned, moved, or removed by hand and the library drifted from disk (library); the Grimoire instruction block in an agent file needs refreshing after Arcana changes (agentfile). Run with exactly one positional sub-target - skills, library, or agentfile. For active-grimoire-only skill sync, use /grm-sync.
+description: Sync the local environment to current Arcana by sub-target - skills (agent skill directories), library (~/grimoires/library.json), or agentfile (the Grimoire routing block)
+when_to_use: A skill isn't appearing in the slash-command picker, or skills were added, edited, or installed (skills); a grimoire was cloned, moved, or removed by hand and the library drifted from disk (library); the Grimoire routing block in an agent file needs refreshing after Arcana changes (agentfile). Run with exactly one positional sub-target - skills, library, or agentfile. For active-grimoire-only skill sync, use /grm-sync.
 argument-hint: skills|library|agentfile
 arguments: target
 user-invocable: true

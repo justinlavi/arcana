@@ -7,13 +7,26 @@ import sync_docs
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
+def test_skill_catalog_leads_with_user_facing_table():
+    skills = sync_docs.collect_skills()
+    metadata = sync_docs.load_command_metadata()
+    content = sync_docs.render_skills_doc(skills, metadata)
+
+    # The user catalog leads; the engineering matrix lives under the contract.
+    assert "| Command | What it does | Input |" in content
+    assert "## Command contract" in content
+    catalog_pos = content.index("| Command | What it does | Input |")
+    contract_pos = content.index("## Command contract")
+    assert catalog_pos < contract_pos, "user catalog must precede the command contract"
+
+
 def test_skill_catalog_renders_command_surface_metadata():
     skills = sync_docs.collect_skills()
     metadata = sync_docs.load_command_metadata()
     content = sync_docs.render_skills_doc(skills, metadata)
 
     assert (
-        "| Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |"
+        "| Command | Workflow | Owner | Mutation | Rite | Guard | Validation |"
         in content
     )
     assert "[`/grm-validate`](../skills/grm/validate/SKILL.md)" in content

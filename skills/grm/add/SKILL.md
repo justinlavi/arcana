@@ -1,6 +1,6 @@
 ---
 name: {{SKILL_PREFIX}}-add
-description: Add a single page or a new chapter to an existing grimoire - written fresh or captured from the current chat session
+description: Write up new knowledge or save a chat answer as a page or chapter (text you author, not a file on disk) - for a file on disk use /grm-import
 when_to_use: User wants to add knowledge to an existing grimoire - "add a chapter for X", "document Y", "where should I put info about Z", "file this", "save this answer", "promote this to the wiki". The command sizes the material into a page or a chapter. To create a whole new grimoire use /grm-create; for external files or source artifacts use /grm-import. Operates on the resolved active grimoire.
 argument-hint: [topic or material]
 arguments: topic

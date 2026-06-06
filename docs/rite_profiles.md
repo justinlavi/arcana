@@ -31,9 +31,11 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 | `rites/append_log.py` | `append_only` | none | `python rites/append_log.py --grimoire <path> --op <op> --title "<title>"` | `<grimoire>/log.md` |
 | `rites/build_summon_binary.py` | `apply_only` | none | `python rites/build_summon_binary.py` | build artifacts, release archives, checksum files |
 | `rites/clean_artifacts.py` | `plan_apply` | `python rites/clean_artifacts.py --dry-run` | `python rites/clean_artifacts.py` | `rites/.artifacts` directories |
+| `rites/inject_agent_file.py` | `plan_apply` | `python rites/inject_agent_file.py` | `python rites/inject_agent_file.py --apply` | supported agent instruction files under the user's home directory |
 | `rites/new_page.py` | `plan_apply` | `python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title "<title>"` | `python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title "<title>" --apply` | a new `<grimoire>/chapters/<chapter>/<slug>.md` page |
 | `rites/sync_skills.py` | `plan_apply` | `python rites/sync_skills.py --dry-run` | `python rites/sync_skills.py` | supported agent skill directories |
 | `rites/repair_links.py` | `plan_apply` | `python rites/repair_links.py --grimoire <path>` | `python rites/repair_links.py --grimoire <path> --apply` | active-grimoire Markdown files |
+| `rites/restructure_grimoire.py` | `plan_apply` | `python rites/restructure_grimoire.py --grimoire <path> --move <src> <dst>` | `python rites/restructure_grimoire.py --grimoire <path> --move <src> <dst> --apply` | active-grimoire chapter pages/folders and the wikilinks that target them |
 | `rites/summon.sh` | `apply_only` | none | `bash rites/summon.sh` | install tree, selected grimoires, library, agent files |
 | `rites/summon_core.py` | `apply_only` | none | `python rites/summon.py` | install tree, selected grimoires, library, agent files |
 | `rites/summon_gui.py` | `apply_only` | none | `python rites/summon.py --gui` | GUI settings, install tree, selected grimoires, library, agent files |
@@ -56,8 +58,10 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 - A `read_only` rite may refresh named transient artifacts, but it must not
   change durable source, grimoire, agent, library, or install state.
 - `rites/sync_skills.py` stamps generated `SKILL.md` files with
-  `ARCANA_SKILL_OWNERSHIP`; cleanup and overwrites are allowed only when that
-  marker or generated provenance proves Arcana ownership.
+  `ARCANA_SKILL_OWNERSHIP` as provenance metadata only. Cleanup and overwrite
+  decisions are made purely by managed-prefix membership (`arc-`, `grm-`, or a
+  grimoire's `skill_prefix`); the marker is never read to decide writes, and
+  directories outside every managed prefix are never touched.
 
 ## Related
 

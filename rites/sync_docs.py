@@ -62,10 +62,17 @@ def collect_skills():
                 SKILL_PREFIX_PLACEHOLDER, family["skill_prefix"]
             )
             description = fm.get("description", "")
+            argument_hint = fm.get("argument-hint", "")
+            # Unquoted bracket hints (e.g. `argument-hint: [topic]`) parse as a
+            # YAML flow sequence; render them back to a bracketed hint string.
+            if isinstance(argument_hint, list):
+                argument_hint = "[" + ", ".join(str(item) for item in argument_hint) + "]"
+            argument_hint = str(argument_hint).strip()
             source = skill_file.relative_to(ARCANA_PATH).as_posix()
             skills.append({
                 "name": registered_name,
                 "description": description,
+                "argument_hint": argument_hint,
                 "source": source,
             })
     return skills
@@ -155,13 +162,23 @@ def path_link(path, label=None):
     return f"[`{escape_table_cell(display)}`](../{path})"
 
 
-def render_skill_row(skill, metadata):
-    """Render one operational skill catalog row."""
+def render_catalog_row(skill):
+    """Render one user-facing catalog row: command, what it does, and input."""
+    hint = skill.get("argument_hint") or ""
+    input_cell = code_cell(hint) if hint else "none"
+    return (
+        f"| [`/{skill['name']}`](../{skill['source']}) "
+        f"| {escape_table_cell(skill['description'])} "
+        f"| {input_cell} |"
+    )
+
+
+def render_contract_row(skill, metadata):
+    """Render one maintainer-facing command-contract row."""
     name = skill["name"]
     entry = metadata[name]
     return (
         f"| [`/{name}`](../{skill['source']}) "
-        f"| {escape_table_cell(skill['description'])} "
         f"| {path_link(entry['invocation'])} "
         f"| {code_cell(entry['owner_type'])} "
         f"| {code_cell(entry['mutation_profile'])} "
@@ -201,23 +218,20 @@ def render_skills_doc(skills, command_metadata):
         "",
         "# Arcana Skill Catalog",
         "",
-        "Skills shipped by Arcana use command-family prefixes:",
-        "`arc-*` for Arcana platform operations and `grm-*` for universal",
-        "grimoire operations. See [skill_schema.md](skill_schema.md).",
-        "Each entry links to the source `SKILL.md` and its operational",
-        "command-surface metadata. The source files are canonical.",
+        "Every command Arcana ships, grouped by what it does. `grm-*` commands",
+        "operate on your grimoires; `arc-*` commands maintain the Arcana platform",
+        "itself (most people never need them). Each command links to its source",
+        "`SKILL.md`.",
         "",
-        "Metadata columns come from",
-        "[command_surface.json](../rites/data/command_surface.json): workflow",
-        "home, owner type, mutation profile, rite owner, guard, and validation",
-        "profile.",
+        "Grimoire skills (e.g. `cook-*` for a cooking grimoire, `hr-*` for an HR",
+        "grimoire) are declared in each grimoire's own `skills/` directory and are",
+        "not listed here. Run `/arc-help` to enumerate every skill installed for an",
+        "agent (Arcana + every grimoire).",
         "",
-        "Grimoire skills (e.g. `cook-*` for a cooking grimoire,",
-        "`hr-*` for an HR grimoire) are not listed here - they're declared",
-        "in each grimoire's own `skills/` directory and use the `skill_prefix`",
-        "from that grimoire's `grimoire.json`. To enumerate every skill",
-        "currently installed for an agent (Arcana + every grimoire),",
-        "invoke `/arc-help`.",
+        "The [Command contract](#command-contract) at the end carries the",
+        "engineering metadata (workflow home, owner, mutation profile, rite, guard,",
+        "validation) for maintainers, generated from",
+        "[command_surface.json](../rites/data/command_surface.json).",
         "",
         "---",
         "",
@@ -227,12 +241,32 @@ def render_skills_doc(skills, command_metadata):
         header = GROUP_HEADERS.get(group, group.title())
         lines.append(f"## {header}")
         lines.append("")
-        lines.append(
-            "| Skill | Description | Workflow | Owner | Mutation | Rite | Guard | Validation |"
-        )
-        lines.append("|---|---|---|---|---|---|---|---|")
+        lines.append("| Command | What it does | Input |")
+        lines.append("|---|---|---|")
         for skill in members:
-            lines.append(render_skill_row(skill, command_metadata))
+            lines.append(render_catalog_row(skill))
+        lines.append("")
+
+    lines.extend([
+        "---",
+        "",
+        "## Command contract",
+        "",
+        "Maintainer reference: the workflow home, owner type, mutation profile,",
+        "rite owner, guard, and validation profile for each command, generated",
+        "from [command_surface.json](../rites/data/command_surface.json).",
+        "",
+    ])
+    for group, members in group_skills(skills):
+        header = GROUP_HEADERS.get(group, group.title())
+        lines.append(f"### {header}")
+        lines.append("")
+        lines.append(
+            "| Command | Workflow | Owner | Mutation | Rite | Guard | Validation |"
+        )
+        lines.append("|---|---|---|---|---|---|---|")
+        for skill in members:
+            lines.append(render_contract_row(skill, command_metadata))
         lines.append("")
 
     lines.extend([

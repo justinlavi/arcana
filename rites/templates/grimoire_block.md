@@ -43,6 +43,6 @@ Pages with `authority: external` or `hybrid` cite their `sources:` (paths under 
 | Sort a folder of mixed content (zip extract, drafts, etc.) | `/grm-import <folder>` (or drop into `inbox/` and run `/grm-import`) |
 | Add a page or chapter (or capture a chat answer) | `/grm-add` |
 | Health-check the grimoire | `/grm-health-check` |
-| Audit naming and structure | `/grm-health-check` |
-| List every skill installed | `/arc-help` |
+| Review naming and find-ability (advanced) | `/grm-audit-semantics` |
+| See the grimoire commands you can run | `/grm-help` |
 <!-- END GRIMOIRE KNOWLEDGE BASE -->

@@ -111,8 +111,11 @@ Reversible but judgment-bearing, or writing outside the repo:
 
 ### In every tier
 
-- **Never auto-delete unowned content.** Skill cleanup removes only Arcana-owned,
-  generated-provenance directories; everything else is preserved.
+- **Never auto-delete content outside a managed namespace.** Skill cleanup only
+  touches directories under an Arcana-managed prefix (`arc-`, `grm-`, or a
+  grimoire's `skill_prefix`) - inside those namespaces prefix membership is the
+  ownership signal, so any directory not in the current catalog is removed or
+  overwritten; directories outside every managed prefix are never touched.
 - **Leave the tree green.** An unattended pass that cannot return
   `python3 rites/validate.py` to exit 0 reverts its change and surfaces the
   problem instead.

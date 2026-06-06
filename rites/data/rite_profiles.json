@@ -48,6 +48,17 @@
       "tests": ["tests/test_rite_profiles.py"]
     },
     {
+      "path": "rites/inject_agent_file.py",
+      "profile": "plan_apply",
+      "default_mode": "plan",
+      "plan_command": "python rites/inject_agent_file.py",
+      "apply_command": "python rites/inject_agent_file.py --apply",
+      "writes": ["supported agent instruction files under the user's home directory"],
+      "idempotency": "After apply, rerun reports every target present: an absent file is created with the canonical block, a block-less file gets one inserted, a single clean marked region is refreshed in place, and a block already matching the template is left unchanged. Files with duplicate or malformed markers are left untouched and reported for the agentfile judgment edit.",
+      "validation_profile": "python rites/inject_agent_file.py; python -m pytest tests/test_inject_agent_file.py",
+      "tests": ["tests/test_inject_agent_file.py", "tests/test_rite_profiles.py"]
+    },
+    {
       "path": "rites/new_page.py",
       "profile": "plan_apply",
       "default_mode": "plan",
@@ -65,9 +76,20 @@
       "plan_command": "python rites/sync_skills.py --dry-run",
       "apply_command": "python rites/sync_skills.py",
       "writes": ["supported agent skill directories under the user's home directory"],
-      "idempotency": "Rerunning with the same inputs produces the same rendered skill files; stale cleanup removes only skill directories with Arcana ownership metadata or generated provenance. With --reset-managed, current managed namespace directories are replaced before re-registration.",
-      "validation_profile": "python rites/sync_skills.py --dry-run; temp-target pytest coverage for dry-run, repeated apply, generated-provenance update, owned cleanup, unowned preservation, managed-namespace reset, and prefix collisions.",
+      "idempotency": "Rerunning with the same inputs produces the same rendered skill files; stale cleanup removes any directory in a managed prefix (arc, grm, or a grimoire prefix) that is not in the current catalog. With --reset-managed, all managed namespace directories are removed before re-registration. Directories outside every managed prefix are never touched.",
+      "validation_profile": "python rites/sync_skills.py --dry-run; temp-target pytest coverage for dry-run, repeated apply, overwrite of an unmarked managed dir, stale cleanup, managed-namespace reset, outside-namespace preservation, and prefix collisions.",
       "tests": ["tests/test_sync_skills.py", "tests/test_rite_profiles.py"]
+    },
+    {
+      "path": "rites/restructure_grimoire.py",
+      "profile": "plan_apply",
+      "default_mode": "plan",
+      "plan_command": "python rites/restructure_grimoire.py --grimoire <path> --move <src> <dst>",
+      "apply_command": "python rites/restructure_grimoire.py --grimoire <path> --move <src> <dst> --apply",
+      "writes": ["active-grimoire chapter pages and folders (moves, renames, removals) and the wikilinks that target them"],
+      "idempotency": "Refuses a move whose destination exists and a remove of a missing path; after a move, rerunning the same move refuses (source no longer present). Link rewrites are exact-target replacements, so a re-run finds nothing left to retarget.",
+      "validation_profile": "python rites/validate_links.py --grimoire <path>; python rites/validate_orphans.py --grimoire <path>; python rites/validate_grimoire_structure.py --grimoire <path>",
+      "tests": ["tests/test_restructure_grimoire.py", "tests/test_rite_profiles.py"]
     },
     {
       "path": "rites/repair_links.py",

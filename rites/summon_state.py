@@ -19,11 +19,14 @@ Design rules (mirrors the deferred-fragility and autonomy boundaries):
   `agent_targets`, which reads `Path.home()` at call time, so they are passed
   in as a seam too.
 * `--check` is read-only apart from the owned cache transcript it writes.
-* `--reconcile --apply` repairs the library (additively) and re-syncs
-  skills. It refuses on a base that fails `validate.py` (no repair on a broken
-  tree), never deletes a library entry unless `--prune` is given, and never
-  rewrites agent instruction blocks (the BEGIN/END vs heading sentinel
-  mismatch makes that non-deterministic - it is reported, not performed).
+* `--reconcile --apply` repairs the library (additively), re-syncs skills, and
+  reconciles the marked Grimoire routing block in each agent instruction file -
+  creating an absent file, inserting into a block-less file, or refreshing one
+  clean BEGIN..END region in place. A file that is block-like but not one clean
+  region (a stray or duplicate marker, or a pre-marker heading-only block) is
+  left untouched and reported for the `/grm-sync agentfile` judgment edit. It
+  refuses on a base that fails `validate.py` (no repair on a broken tree) and
+  never deletes a library entry unless `--prune` is given.
 * `--check` and `--reconcile` stay offline; the network-aware `--update` (in
   `update_grimoires.py`) pulls every library grimoire before healing. Pulling
   Arcana itself stays the human/RED step from `UPDATE.md`.
@@ -46,12 +49,9 @@ from diagnostics import ResultReporter, add_output_format_arg
 
 SCHEMA_VERSION = 1
 
-# Idempotency sentinels for the injected Grimoire block. A block written by any
-# path - the injector, the template, UPDATE.md, or /arc-sync agentfile - counts
-# as present when EITHER sentinel is found; reporting only one would mislabel the
-# other as drift and invite a double-injection. Single-sourced from summon_core
-# (the injector) so the detector and the injector can never disagree.
-from summon_core import BEGIN_SENTINEL, HEADING_SENTINEL
+# The Grimoire routing block is defined solely by its BEGIN/END markers, single-
+# sourced from summon_core so the detector and the injector cannot disagree.
+from summon_core import BEGIN_SENTINEL, END_SENTINEL, BLOCK_HEADING
 
 NETWORK_PULL_NOTE = "skipped (human-gated; see UPDATE.md step 2)"
 
@@ -76,16 +76,20 @@ def default_transcript_path() -> Path:
 
 
 def _detect_block_marker(content: str) -> str:
-    """Classify how an agent instruction file carries the Grimoire block."""
-    has_heading = HEADING_SENTINEL in content
-    has_markers = BEGIN_SENTINEL in content
-    if has_heading and has_markers:
-        return "both"
-    if has_heading:
-        return "heading"
-    if has_markers:
-        return "markers"
-    return "none"
+    """Classify how an agent instruction file carries the Grimoire routing block.
+
+    "present" is exactly one well-formed BEGIN..END region; "none" is no block at
+    all (not even the heading); "review" is anything block-like that is not one
+    clean region (a stray/duplicate marker, or a pre-marker heading-only block)
+    and must be resolved by the agentfile judgment edit.
+    """
+    n_begin = content.count(BEGIN_SENTINEL)
+    n_end = content.count(END_SENTINEL)
+    if n_begin == 1 and n_end == 1 and content.find(BEGIN_SENTINEL) < content.find(END_SENTINEL):
+        return "present"
+    if n_begin == 0 and n_end == 0 and BLOCK_HEADING not in content:
+        return "none"
+    return "review"
 
 
 def _instruction_targets(arcana_root: Path, override: Any) -> list[dict[str, Any]]:
@@ -156,7 +160,7 @@ def inspect_install(
         "warnings": list(scan["warnings"]),
     }
 
-    # Agent instruction blocks
+    # Agent routing blocks
     agent_state = []
     for target in _instruction_targets(arcana_root, instruction_targets):
         path = Path(target["path"])
@@ -172,8 +176,9 @@ def inspect_install(
             "id": target.get("id"),
             "label": target.get("label"),
             "path": str(path),
+            "title": target.get("title") or path.name,
             "instruction_file_exists": exists,
-            "block_present": marker != "none",
+            "block_present": marker == "present",
             "block_marker": marker,
         })
 
@@ -215,7 +220,8 @@ def _skills_absent(state: dict[str, Any]) -> bool:
 
 
 def _missing_block_ids(state: dict[str, Any]) -> list[str]:
-    return [a["id"] for a in state["agent_targets"] if a["block_marker"] == "none"]
+    """Ids whose routing block is not cleanly present (absent, or needs review)."""
+    return [a["id"] for a in state["agent_targets"] if a["block_marker"] != "present"]
 
 
 def drift_detected(state: dict[str, Any]) -> bool:
@@ -263,8 +269,8 @@ def next_actions(state: dict[str, Any], arcana_root: Path) -> list[dict[str, Any
         actions.append({
             "kind": "agent_block_update",
             "tier": "amber",
-            "command": "/arc-sync agentfile",
-            "reason": f"agent instruction block absent for: {', '.join(missing_blocks)}",
+            "command": "/grm-sync agentfile",
+            "reason": f"agent routing block missing or not one clean region for: {', '.join(missing_blocks)}",
         })
     if _skills_absent(state):
         actions.append({
@@ -301,7 +307,7 @@ def residual(state: dict[str, Any], *, prune: bool) -> list[dict[str, Any]]:
         items.append({
             "kind": "agent_block",
             "tier": "amber",
-            "reason": f"agent instruction block must be refreshed via /arc-sync agentfile for: {', '.join(missing_blocks)}",
+            "reason": f"agent routing block must be refreshed via /grm-sync agentfile for: {', '.join(missing_blocks)}",
         })
     if not state["arcana"]["working_tree_populated"]:
         items.append({
@@ -329,6 +335,19 @@ def _default_skill_runner(register_script: Path) -> tuple[int, str]:
         env=summon_core._subprocess_env(),
     )
     return result.returncode, (result.stdout or "") + (result.stderr or "")
+
+
+def _default_agent_injector(path: Path, title: str, *, apply: bool) -> dict[str, Any]:
+    """Create / insert / refresh the marked Grimoire routing block in one agent file.
+
+    Lazy import keeps summon_state importable without pulling the injector at
+    module load, and avoids any import-time cycle. The injector is deterministic
+    for the create/insert/refresh cases and reports ambiguous files (duplicate or
+    malformed markers) without writing, so they fall to the judgment edit.
+    """
+    import inject_agent_file
+
+    return inject_agent_file.apply_block(Path(path), title, apply=apply)
 
 
 def _default_validate_runner(arcana_root: Path) -> tuple[bool, str]:
@@ -496,18 +515,58 @@ def _grimoire_step(grimoire_result: dict[str, Any], *, reporter: ResultReporter)
     return step
 
 
-def _reconcile_agent_blocks(state: dict[str, Any], *, reporter: ResultReporter) -> dict[str, Any]:
-    """Report-only: the BEGIN/END vs heading sentinel mismatch makes auto-write unsafe."""
-    step = {"id": "agent_blocks", "label": "Agent instruction blocks", "status": "noop",
+def _reconcile_agent_blocks(
+    state: dict[str, Any],
+    *,
+    apply: bool,
+    reporter: ResultReporter,
+    injector: Callable | None = None,
+) -> dict[str, Any]:
+    """Create, insert, or refresh the marked Grimoire routing block in each agent file.
+
+    Deterministic for the common cases - an absent file is created with the
+    canonical block, a block-less file gets one inserted, and a single clean
+    marked region is refreshed in place. A file with duplicate or malformed
+    markers is left untouched and reported for the `/grm-sync agentfile` (or
+    `/arc-sync agentfile`) judgment edit, since its boundaries are ambiguous.
+    Plan mode writes nothing and reports what `--apply` would do.
+    """
+    injector = injector or _default_agent_injector
+    step = {"id": "agent_blocks", "label": "Agent routing blocks", "status": "noop",
             "mutations": [], "messages": []}
-    missing = _missing_block_ids(state)
-    if missing:
-        text = (
-            f"agent_blocks: absent for {', '.join(missing)} - refresh with /arc-sync agentfile "
-            "(not auto-written: BEGIN/END vs heading sentinels make injection non-deterministic)"
-        )
-        reporter.message("warning", text)
-        step["messages"].append({"severity": "warning", "message": text})
+
+    wrote = False
+    drift = False
+    for target in state["agent_targets"]:
+        path = target["path"]
+        title = target.get("title") or Path(path).name
+        result = injector(Path(path), title, apply=apply)
+        action = result["action"]
+        tid = target["id"]
+        if action in ("create", "insert", "refresh"):
+            if apply:
+                reporter.mutation("write", path=path, detail=f"{action} routing block {tid}")
+                step["mutations"].append({"action": "write", "path": path,
+                                          "detail": f"{action} {tid}"})
+                wrote = True
+            else:
+                text = f"agent_blocks: would {action} routing block for {tid}"
+                reporter.message("info", text)
+                step["messages"].append({"severity": "info", "message": text})
+                drift = True
+        elif action == "review":
+            text = (
+                f"agent_blocks: {tid} - {result.get('reason', 'needs review')}; resolve with "
+                "/grm-sync agentfile (or /arc-sync agentfile). Not auto-written: there is no "
+                "clean routing block to create or refresh mechanically."
+            )
+            reporter.message("warning", text)
+            step["messages"].append({"severity": "warning", "message": text})
+            drift = True
+
+    if wrote:
+        step["status"] = "ok"
+    elif drift:
         step["status"] = "drift"
     return step
 
@@ -526,6 +585,7 @@ def reconcile(
     skill_runner: Callable | None = None,
     validate_runner: Callable | None = None,
     grimoire_processor: Callable | None = None,
+    agent_injector: Callable | None = None,
 ) -> dict[str, Any]:
     """Run the reconciliation and return reporter + steps + before/after state.
 
@@ -577,7 +637,8 @@ def reconcile(
 
     steps.append(_reconcile_skills(arcana_root, state_before, apply=apply,
                                    reporter=reporter, skill_runner=skill_runner))
-    steps.append(_reconcile_agent_blocks(state_before, reporter=reporter))
+    steps.append(_reconcile_agent_blocks(state_before, apply=apply, reporter=reporter,
+                                         injector=agent_injector))
 
     # Verify against post-write reality so the transcript reflects convergence.
     state_after = inspect_install(
@@ -737,10 +798,10 @@ def _print_human(operation: str, state: dict[str, Any], result_steps, drift, tra
             f"~{len(lib['mismatched'])} mismatched, !{len(lib['stale'])} stale"
         )
     for a in state["agent_targets"]:
-        if a["block_marker"] == "none":
-            log.warn(f"Agent block absent: {a['id']} ({a['path']})")
+        if a["block_marker"] == "present":
+            log.ok(f"Routing block present: {a['id']}")
         else:
-            log.ok(f"Agent block present ({a['block_marker']}): {a['id']}")
+            log.warn(f"Routing block {a['block_marker']}: {a['id']} ({a['path']})")
     total_skills = sum(s["arcana_managed_count"] for s in state["skills"])
     (log.ok if total_skills else log.warn)(f"Synced skills: {total_skills}")
     if grimoires is not None:
@@ -803,6 +864,7 @@ def run_state_command(
     git_fn: Callable | None = None,
     skill_runner: Callable | None = None,
     validate_runner: Callable | None = None,
+    agent_injector: Callable | None = None,
     now: Callable | None = None,
     run_id: str | None = None,
 ) -> int:
@@ -832,6 +894,7 @@ def run_state_command(
         pull_grimoires=pull_grimoires, grimoire_fetch=grimoire_fetch,
         instruction_targets=instruction_targets, skill_targets=skill_targets,
         git_fn=git_fn, skill_runner=skill_runner, validate_runner=validate_runner,
+        agent_injector=agent_injector,
     )
     reporter = outcome["reporter"]
     state = outcome["state_after"]

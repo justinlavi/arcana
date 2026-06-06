@@ -1,7 +1,7 @@
 ---
 name: {{SKILL_PREFIX}}-import
-description: Import files, folders, or inbox content into the active grimoire
-when_to_use: User wants to bring material into a grimoire. Triggers include "import this", "process the inbox", "sort the dump", "absorb this folder", "add this article", or dropping content into the grimoire's `inbox/` folder for processing. Polymorphic - works on a single file, a folder of mixed content, or (no argument) the grimoire's inbox/.
+description: Bring an existing file or folder (PDF, article, export) into this grimoire and file it as a cited source - for knowledge you write or capture from chat, use /grm-add
+when_to_use: User wants to bring an existing file or folder into a grimoire and file it as a cited source. Triggers include "import this", "process the inbox", "sort the dump", "absorb this folder", "file this PDF/article into sources", or dropping content into the grimoire's `inbox/` folder for processing. Polymorphic - works on a single file, a folder of mixed content, or (no argument) the grimoire's inbox/.
 argument-hint: [path-or-folder-or-empty]
 arguments: source
 user-invocable: true

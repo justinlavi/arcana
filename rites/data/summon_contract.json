@@ -17,7 +17,7 @@
       "required_behaviors": [
         "Find or install Python 3 only with explicit user consent.",
         "Prefer release binaries for public piped installs on every platform (Linux, macOS, Windows).",
-        "Download summon.py, summon_core.py, the Grimoire block template, and summon_gui.py when GUI mode is possible.",
+        "Download summon.py, summon_core.py, the Grimoire routing block template, and summon_gui.py when GUI mode is possible.",
         "Verify release checksums before running binaries.",
         "Fall back to Python source when release download, checksum, extraction, or execution fails.",
         "Pass command-line arguments through to the Python dispatcher."
@@ -60,7 +60,7 @@
         "Optionally discover GitHub/GitLab grimoires from a scope URL.",
         "Optionally clone selected grimoires.",
         "Update the local library for installed grimoires.",
-        "Inject supported agent instruction blocks.",
+        "Inject supported agent routing blocks.",
         "Register Arcana and grimoire skills.",
         "Report completion, warnings, and update instructions."
       ]
@@ -100,7 +100,7 @@
       ],
       "required_behaviors": [
         "Build grimoire-summon with PyInstaller.",
-        "Bundle resources and the canonical Grimoire block template.",
+        "Bundle resources and the canonical Grimoire routing block template.",
         "Produce platform-specific archives under dist/summon.",
         "Produce a sha256 checksum beside every archive."
       ]
@@ -142,7 +142,7 @@
         "Reconcile the local library additively under --reconcile --apply, preserving stale entries unless --prune is given.",
         "Sync skills under --reconcile/--update --apply via sync_skills.py --reset-managed.",
         "Refuse to reconcile when the Arcana base fails validate.py.",
-        "Detect agent instruction blocks via both the heading and BEGIN/END sentinels, and report rather than rewrite them.",
+        "Detect agent routing blocks by their BEGIN/END markers only; under --reconcile/--update --apply, create an absent file, insert into a block-less file, and refresh one clean marked region in place, leaving any block-like-but-not-clean file (duplicate or malformed markers, or a pre-marker heading-only block) for the /grm-sync agentfile judgment edit.",
         "Exclude network pull of Arcana itself as a human-gated update step.",
         "Under --update, pull every library grimoire branch-aware (fetch, then fast-forward only a clean branch that is behind), heal only the grimoires confirmed current, collect unreachable/dirty/diverged grimoires into needs_manual_pull, and never abort the run on a per-grimoire auth or offline failure."
       ]
@@ -181,7 +181,7 @@
     },
     {
       "id": "inject_agent_blocks",
-      "label": "Inject supported agent instruction blocks",
+      "label": "Inject supported agent routing blocks",
       "owner": "summon_core.inject_agent_file",
       "required_for": ["python_cli", "python_gui"]
     },
