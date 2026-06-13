@@ -21,7 +21,7 @@ Bring an Arcana install — engine source, library, agent skills, agent routing 
 
 ## Procedure
 
-The canonical, skill-less procedure is **[[UPDATE|UPDATE]]** at the Arcana root. Read it and follow the AI Update Playbook — it resolves and pulls Arcana, validates the source, then runs `summon.py --update --apply`, which reconciles the library, pulls every grimoire (branch-aware, with a manual-pull fallback for private hosts), re-registers skills, and heals only the grimoires it confirmed current.
+The canonical, skill-less procedure is **[[UPDATE|UPDATE]]** at the Arcana root. Read it and follow the AI Update Playbook exactly — it resolves and pulls Arcana, validates the source, then runs `summon.py --update --apply`, which reconciles the library, pulls every grimoire (branch-aware, with a manual-pull fallback for private hosts), re-registers skills, and heals only the grimoires it confirmed current.
 
 ```bash
 cat ARCANA_HOME/UPDATE.md

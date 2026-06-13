@@ -127,9 +127,9 @@ Open a new session inside your AI agent (not a plain terminal) and run `/grm-cre
 1. **Run the skill:** `/grm-update` (or `/arc-update` when maintaining Arcana directly).
 2. **Or tell your AI agent:**
 
-   > Pull the latest Arcana, then follow its update process.
+   > Pull the latest Arcana, then read `arcana/UPDATE.md` from that checkout and follow its instructions exactly.
 
-Both follow [UPDATE.md](UPDATE.md).
+Both paths use [UPDATE.md](UPDATE.md) as the canonical source of truth.
 
 **If something stops working** — skills vanished, the agent can't find a grimoire, or it's guessing instead of reading files — open a new session in your agent and run `/grm-update`.
 

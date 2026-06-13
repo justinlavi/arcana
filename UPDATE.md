@@ -18,7 +18,7 @@ by following the Human Quick Start below.
 3. Tell the agent:
 
 ```text
-Read ~/grimoires/arcana/UPDATE.md and follow the AI Update Playbook.
+Read ~/grimoires/arcana/UPDATE.md and follow its AI Update Playbook exactly.
 Do not rely on installed slash commands until the update re-registers skills.
 ```
 

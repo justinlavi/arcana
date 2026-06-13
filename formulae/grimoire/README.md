@@ -12,7 +12,7 @@ If anything here seems wrong, broken, or behind the current Arcana, bring this g
 1. **Run the skill:** `/grm-update`.
 2. **Or tell your AI agent:**
 
-   > Pull the latest Arcana, then follow its update process.
+   > Pull the latest Arcana, then read `arcana/UPDATE.md` from that checkout and follow its instructions exactly.
 <!-- END ARCANA UPDATE -->
 
 ## Installation

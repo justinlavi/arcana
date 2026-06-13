@@ -137,7 +137,7 @@ To register new or updated skills in the active grimoire, run `/grm-sync`. To re
 - Run `/grm-sync skills` from the active grimoire. Then open a new agent session (Claude Code / Codex caches skill listings). (Maintainers can refresh every installed grimoire at once with `/arc-sync skills`.)
 
 **Agent skills are badly stale or have old prefixes**
-- Pull Arcana, then follow [Arcana Update](../UPDATE.md). It is the stable path for cases where the installed slash-command layer cannot repair itself.
+- Pull Arcana, then read [`arcana/UPDATE.md`](../UPDATE.md) from that checkout and follow its instructions exactly. It is the stable path for cases where the installed slash-command layer cannot repair itself.
 
 **Arcana may be stale**
 - Run `/grm-update`. It updates Arcana and every grimoire in `~/grimoires/library.json`; the current directory does not need to be a grimoire.
