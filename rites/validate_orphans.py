@@ -9,7 +9,7 @@ Pages that are themselves entry points are excluded from the orphan check:
   * the grimoire root hub (`<grimoire>/<grimoire>.md`)
   * folder hubs (`<folder>/<folder>.md`)  they appear in their parent hub's tree
   * `log.md`, `README.md`, `CHANGELOG.md`
-  * everything under `sources/`
+  * source wrappers under chapter-local `sources/` folders
 
 Usage:
     python3 rites/validate_orphans.py [--grimoire <path>]
@@ -26,6 +26,7 @@ from _lib import (
     LINK_RE,
     WIKILINK_RE,
     add_grimoire_arg,
+    is_inside_colocated_source_dir,
     is_skipped,
     public_document,
     resolve_grimoire_arg,
@@ -46,7 +47,8 @@ def is_hub(path):
 def collect_pages(root):
     pages = []
     for path in sorted(root.rglob("*.md")):
-        if is_skipped(path.relative_to(root), SKIP_DIRS):
+        rel = path.relative_to(root)
+        if is_skipped(rel, SKIP_DIRS) or is_inside_colocated_source_dir(rel):
             continue
         pages.append(path)
     return pages

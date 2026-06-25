@@ -13,7 +13,7 @@ last_verified: 2026-05-25
 
 Validate active-grimoire page frontmatter against
 `ARCANA_HOME/docs/page_schema.md`, including the rule that `type: source` is
-reserved for source wrappers under `sources/`.
+reserved for source wrappers under `chapters/**/sources/`.
 
 ## Invocation
 

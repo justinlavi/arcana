@@ -46,7 +46,7 @@ python3 rites/validate_structure.py
 - ✅ All required directories found (docs, invocations/*, formulae, rites, resources, skills, formulae/grimoire)
 - ✅ All required files exist (the root hub, README.md, CHANGELOG.md, docs/*.md)
 - ✅ All invocation family directories have a hub file (arcana, grimoire, agent, library, workspace, help, meta)
-- ✅ Grimoire layers (`chapters/`, `sources/`, `inbox/`, `log.md`) exist in `formulae/grimoire/`, not at Arcana root
+- ✅ Grimoire scaffold layers (`chapters/`, `inbox/`, `log.md`) exist in `formulae/grimoire/`, not at Arcana root
 
 ### Step 3: Handle Errors
 

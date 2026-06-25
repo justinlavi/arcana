@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.6.0] - 2026-06-25
+
+MINOR. Grimoire source artifacts are chapter-local: raw sources and
+`type: source` wrappers live in `chapters/**/sources/` beside the material they
+support. This keeps chapter packages self-contained and makes source locality a
+validator-enforced structural rule.
+
+### Changed
+
+- **Chapter-local sources are canonical.** The page schema, operating model,
+  grimoire scaffold, import workflow, agent routing block, and validator
+  invocation docs now describe `chapters/**/sources/` as the source layer.
+- **Grimoire structure validation enforces source locality.**
+  `validate_grimoire_structure.py` requires the current scaffold shape and
+  treats a grimoire-root `sources/` directory as structurally invalid.
+- **Frontmatter and provenance validation share one source-location contract.**
+  `validate_frontmatter.py` and `validate_provenance.py` use shared source-path
+  helpers, validate local refs under `chapters/**/sources/`, validate colocated
+  source wrappers, reject root source refs, and keep wrapper self-reference
+  checks intact.
+- **Page scanners understand source folders.** Format, link, orphan, smart
+  validation, and doc generation behavior now treat chapter-local `sources/`
+  folders as source records rather than wiki routing surfaces.
+- **The grimoire template matches the contract.** New grimoires scaffold
+  `chapters/`, `inbox/`, managed Obsidian/editor files, and `log.md`; source
+  folders are created where supporting material lives.
+- **Update enforces source locality.** `/grm-update` and `/arc-update` relocate
+  cited source artifacts into a chapter-local `sources/` folder when citations
+  identify one clear chapter package, then validate the result.
+
+### Added
+
+- Focused tests for colocated raw source refs, colocated source wrappers,
+  missing source refs, root source refs, source wrapper self-reference,
+  source-folder hub exemptions, smart validator selection, and scaffold
+  contract expansion.
+- Update-rite tests for deterministic source relocation and ambiguous source
+  review.
+
 ## [1.5.1] - 2026-06-13
 
 PATCH. Existing grimoire content stays valid. This release hardens the update

@@ -17,12 +17,6 @@
       "required": true
     },
     {
-      "path": "sources",
-      "source": "sources",
-      "create": true,
-      "required": true
-    },
-    {
       "path": "inbox",
       "source": "inbox",
       "create": true,
@@ -109,24 +103,8 @@
       "role": "managed_layer_readme"
     },
     {
-      "source": "sources/README.md",
-      "target": "sources/README.md",
-      "create": true,
-      "required": true,
-      "managed": true,
-      "role": "managed_layer_readme"
-    },
-    {
       "source": "chapters/.gitkeep",
       "target": "chapters/.gitkeep",
-      "create": true,
-      "required": false,
-      "managed": false,
-      "role": "empty_directory_marker"
-    },
-    {
-      "source": "sources/.gitkeep",
-      "target": "sources/.gitkeep",
       "create": true,
       "required": false,
       "managed": false,

@@ -54,7 +54,8 @@ python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROO
 
 - Parse `grimoire.json`
 - Confirm `README.md`, `log.md`, and `<grimoire-name>.md`
-- Confirm `sources/`, `chapters/`, and `inbox/`
+- Confirm `chapters/` and `inbox/`
+- Confirm source artifacts live in chapter-local `sources/` folders
 
 ### Phase 2: Managed Scaffold Drift
 
@@ -65,13 +66,12 @@ The following files are operational support files, not grimoire-specific authore
 - `.obsidian/app.json`
 - `.obsidian/graph.json`
 - `inbox/README.md`
-- `sources/README.md`
 
 If any are missing or stale, copy the current version from Arcana unless the user explicitly wants a custom local variant. Custom local variants should be rare because they create cross-platform and agent-behavior drift.
 
 ### Phase 3: Hub Convention
 
-For every folder under `chapters/` that contains Markdown content, confirm the hub file is `F/<basename(F)>.md`. Asset folders such as `templates/`, `snippets/`, `scripts/`, `configs/`, `assets/`, and `media/` are exempt.
+For every folder under `chapters/` that contains Markdown content, confirm the hub file is `F/<basename(F)>.md`. Asset folders such as `templates/`, `snippets/`, `scripts/`, `configs/`, `assets/`, `media/`, and chapter-local `sources/` folders are exempt.
 
 ### Phase 4: Obsidian Configuration
 

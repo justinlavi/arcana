@@ -72,9 +72,8 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 ├── README.md                     # This file (human-facing project README)
 ├── grimoire.json                 # Manifest: name, skill prefix, description
 ├── log.md                        # Append-only content-change history (not a VCS log)
-├── sources/                      # Immutable source artifacts and wrappers
 ├── inbox/                        # Transient drop zone (mixed content awaiting classification)
-├── chapters/                     # LLM-authored knowledge pages
+├── chapters/                     # Knowledge pages with chapter-local sources folders
 {{CHAPTER_TREE}}
 └── skills/                       # Grimoire skills (slash commands)
 ```
@@ -91,15 +90,16 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 | Goal | Skill |
 |---|---|
 | Add a page or chapter (fresh, or capturing a chat answer) | `/grm-add` |
-| Import a new source into `sources/` and update affected pages | `/grm-import` |
+| Import a new source beside the chapter material it supports and update affected pages | `/grm-import` |
 | Health-check the grimoire (orphans, stale, ghost refs) | `/grm-health-check` |
 | Review naming and find-ability (advanced) | `/grm-audit-semantics` |
 
 ## Layers (the LLM-wiki model)
 
-- **Sources** (`sources/`) - Immutable source artifacts and source wrappers.
-  Articles, transcripts, papers, screenshots, and datasets land here during
-  import; wiki pages cite these stable paths.
+- **Sources** (`chapters/**/sources/`) - Immutable source artifacts and source
+  wrappers live beside the chapter, sub-chapter, project, or package they
+  support. Articles, transcripts, papers, screenshots, and datasets land there
+  during import; wiki pages cite those stable paths.
 - **Wiki** (`chapters/`) - LLM-authored markdown synthesis. Hubs, concept pages, entity pages, playbooks, references. Updated incrementally as new sources arrive.
 - **Schema** - `grimoire.json` plus the Arcana-injected block in `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`. Tells agents how to operate this grimoire.
 

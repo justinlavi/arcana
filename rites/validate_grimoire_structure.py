@@ -6,7 +6,6 @@ Required at the grimoire root:
     README.md
     grimoire.json
     log.md
-    sources/                  (immutable sources layer; may contain only .gitkeep)
     chapters/             (LLM-authored knowledge)
 
 For each chapter folder F, the hub file F/F.md must exist (folder-name
@@ -29,7 +28,7 @@ import json
 import sys
 from pathlib import Path
 
-from _lib import default_arcana_root, load_manifest, parse_frontmatter
+from _lib import default_arcana_root, is_inside_colocated_source_dir, load_manifest, parse_frontmatter
 from diagnostics import DiagnosticReporter, add_output_format_arg
 from scaffold_contract import (
     ScaffoldContractError,
@@ -155,13 +154,23 @@ def main():
                 print(f"  OK       {d}/")
 
     # 5. Hub files inside chapters/ (folder-name convention, recursive).
-    # Asset folders (templates/, snippets/, scripts/, configs/, examples/, tasks/)
-    # and any folder whose name contains a `<placeholder>` token are not
-    # required to have a hub - they hold demonstrative or asset content.
-    ASSET_FOLDERS = {"templates", "snippets", "scripts", "configs", "assets", "media"}
+    # Asset folders and chapter-local sources/ folders are not routers and do
+    # not need hubs. Any folder whose name contains a `<placeholder>` token is
+    # likewise exempt.
+    ASSET_FOLDERS = {
+        "templates",
+        "snippets",
+        "scripts",
+        "configs",
+        "assets",
+        "media",
+    }
 
     def is_asset_folder(folder, root):
-        for part in folder.relative_to(root).parts:
+        rel = folder.relative_to(root)
+        if is_inside_colocated_source_dir(rel):
+            return True
+        for part in rel.parts:
             if part in ASSET_FOLDERS:
                 return True
             if "<" in part or ">" in part:
@@ -224,19 +233,17 @@ def main():
                 if human:
                     print(f"  WARN     {rel} declares type: hub but is not a folder-named hub")
 
-    # 6. sources/ must not contain any wiki content (sanity).
+    # 6. Source artifacts belong beside the chapter material they support.
     sources_dir = root / "sources"
     if sources_dir.is_dir():
-        # A non-immutable artifact would be a `chapters/` folder under sources/
-        forbidden = list(sources_dir.glob("chapters"))
-        if forbidden:
-            reporter.error(
-                "GRIMOIRE_STRUCTURE_SOURCES_CHAPTERS",
-                "sources/chapters exists; sources/ is for immutable artifacts",
-                path="sources/chapters",
-            )
-            if human:
-                print(f"  WARN     sources/chapters exists - sources/ is for immutable artifacts, not wiki content")
+        reporter.error(
+            "GRIMOIRE_STRUCTURE_ROOT_SOURCES",
+            "root sources/ is not a grimoire scaffold layer; source artifacts belong under chapters/**/sources/",
+            path="sources",
+            docs_reference="docs/operating_model.md",
+        )
+        if human:
+            print("  WARN     root sources/ exists - source artifacts belong under chapters/**/sources/")
 
     # 7. Managed scaffold files should match the current Arcana formulae.
     # These files are operational support files, not grimoire-specific content.

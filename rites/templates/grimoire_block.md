@@ -13,7 +13,7 @@ For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. Th
 
 ### Storage layers
 
-- **`sources/`** - Immutable source artifacts and source wrappers (articles, transcripts, papers, screenshots). File during import, then read. Citation-stable: pages with `authority: external` cite paths under here.
+- **`chapters/**/sources/`** - Immutable source artifacts and source wrappers (articles, transcripts, papers, screenshots) colocated with the chapter material they support. File during import, then read. Citation-stable: pages with `authority: external` cite paths under here.
 - **`inbox/`** - Optional transient drop zone for mixed content awaiting classification. Cleared by `/grm-import`. Pages must NOT cite `inbox/` paths (contents disappear once processed).
 - **`chapters/`** - LLM-authored knowledge pages. Every page carries YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`); see `ARCANA_HOME/docs/page_schema.md`.
 - **`log.md`** - Append-only activity log. Each entry begins `## [YYYY-MM-DD HH:MM] <op> | <title>`.
@@ -33,7 +33,7 @@ Arcana and grimoires use UTF-8 without BOM and LF line endings. Unicode is allow
 
 ### Provenance
 
-Pages with `authority: external` or `hybrid` cite their `sources:` (paths under `sources/` or external URLs). The `validate_provenance` rite enforces this. Do not author external pages without filing the source first via `/grm-import`.
+Pages with `authority: external` or `hybrid` cite their `sources:` (paths under `chapters/**/sources/` or external URLs). The `validate_provenance` rite enforces this. Do not author external pages without filing the source first via `/grm-import`.
 
 ### Operations vocabulary
 

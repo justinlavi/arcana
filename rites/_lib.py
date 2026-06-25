@@ -33,6 +33,88 @@ DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 # ---------------------------------------------------------------------------
+# Source-layer paths
+# ---------------------------------------------------------------------------
+
+SOURCE_DIRNAME = "sources"
+
+
+def _path_parts(rel) -> tuple[str, ...]:
+    if isinstance(rel, Path):
+        return rel.parts
+    return tuple(p for p in str(rel).replace("\\", "/").split("/") if p)
+
+
+def is_colocated_source_path(rel) -> bool:
+    """Return True for canonical local source paths.
+
+    Source artifacts and wrappers live beside the chapter material they support:
+    ``chapters/<chapter>/.../sources/<artifact>``. The first chapter segment is
+    required so ``chapters/sources/...`` is not mistaken for a chapter-local
+    source folder.
+    """
+    parts = _path_parts(rel)
+    if len(parts) < 4 or parts[0] != "chapters":
+        return False
+    try:
+        source_index = parts.index(SOURCE_DIRNAME, 2)
+    except ValueError:
+        return False
+    return source_index < len(parts) - 1
+
+
+def is_inside_colocated_source_dir(rel) -> bool:
+    """Return True for any path inside a chapter-local ``sources`` directory."""
+    parts = _path_parts(rel)
+    if len(parts) < 3 or parts[0] != "chapters":
+        return False
+    try:
+        parts.index(SOURCE_DIRNAME, 2)
+    except ValueError:
+        return False
+    return True
+
+
+def is_root_source_path(rel) -> bool:
+    """Return True for paths inside a non-canonical grimoire-root source layer."""
+    parts = _path_parts(rel)
+    return bool(parts and parts[0] == SOURCE_DIRNAME)
+
+
+def is_local_source_ref(ref: str) -> bool:
+    """Return True when a frontmatter source string names a local source path."""
+    return is_colocated_source_path(ref) or is_root_source_path(ref)
+
+
+def resolve_local_source_path(root: Path, ref: str) -> Optional[Path]:
+    """Resolve a canonical local source ref under ``root`` without escaping it."""
+    if not is_colocated_source_path(ref):
+        return None
+    candidate = Path(ref)
+    if candidate.is_absolute():
+        return None
+    try:
+        resolved = (root / candidate).resolve()
+        resolved.relative_to(root)
+    except (OSError, ValueError):
+        return None
+    return resolved
+
+
+def iter_colocated_source_markdown(root: Path) -> Iterable[Path]:
+    """Yield Markdown source-wrapper candidates under chapter-local sources dirs."""
+    chapters = root / "chapters"
+    if not chapters.is_dir():
+        return
+    for path in sorted(chapters.rglob("*.md")):
+        if path.name == "README.md":
+            continue
+        rel = path.relative_to(root)
+        if is_colocated_source_path(rel):
+            yield path
+
+
+# ---------------------------------------------------------------------------
 # Logging - uniform `[LEVEL]` prefix in 2-space indent
 # ---------------------------------------------------------------------------
 

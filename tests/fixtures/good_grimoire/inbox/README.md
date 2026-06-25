@@ -6,7 +6,7 @@ This directory is the place to drop **mixed content that needs to be sorted**: z
 
 - **Transient.** `inbox/` is meant to be emptied. After absorption, only items that need human judgment remain.
 - **Mixed content allowed.** Drop binaries, markdown, partial files, whole folders.
-- **Not citation-stable.** Wiki pages should never set a `sources:` entry pointing at `inbox/`. Items with citation value get moved to `sources/` first; items without get promoted to `chapters/` and the original is removed.
+- **Not citation-stable.** Wiki pages should never set a `sources:` entry pointing at `inbox/`. Items with citation value get moved to the relevant `chapters/**/sources/` folder first; items without get promoted to `chapters/` and the original is removed.
 - **No structure required.** No frontmatter, no naming convention, no folder discipline. The AI will sort it.
 
 ## How content lands here
@@ -20,14 +20,14 @@ Run `/grm-import` (no argument sweeps `inbox/`). The skill walks the folder and,
 
 | Classification | Destination | Notes |
 |---|---|---|
-| **External source artifact** | `sources/<slug>` (+ sibling `sources/<slug>.md` wrapper when useful) | Becomes immutable, citation-worthy. Pages with `authority: external` cite this. |
-| **Wiki content / draft** | `chapters/<chapter>/<page>.md` with proper frontmatter | Promoted; original removed (its value is now in the wiki). Authority defaults to `grimoire` unless the draft synthesized a `sources/` source. |
+| **External source artifact** | `chapters/<chapter>/sources/<slug>` (+ sibling `chapters/<chapter>/sources/<slug>.md` wrapper when useful) | Becomes immutable, citation-worthy. Pages with `authority: external` cite this. |
+| **Wiki content / draft** | `chapters/<chapter>/<page>.md` with proper frontmatter | Promoted; original removed (its value is now in the wiki). Authority defaults to `grimoire` unless the draft synthesized a chapter-local source. |
 | **Junk / superseded / unclear** | Stays in `inbox/`, flagged in chat | User decides whether to delete or revisit. |
 
 After absorption the `import` skill appends a single log entry to `log.md` summarizing what was filed where.
 
 ## What does NOT belong here
 
-- Files you want to keep around as immutable references -> `sources/` directly.
+- Files you want to keep around as immutable references -> the relevant `chapters/**/sources/` folder directly.
 - Authored wiki content you've already written -> `chapters/` directly (use `/grm-add` if you want scaffolding).
 - Operating state from another tool (caches, indexes, build artifacts).

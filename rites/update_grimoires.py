@@ -32,6 +32,7 @@ from urllib.parse import urlparse
 import summon_core
 import sync_library
 from diagnostics import ResultReporter, add_output_format_arg
+from _lib import parse_frontmatter
 from sync_skills import resolve_grimoire_path
 from scaffold_contract import load_scaffold_contract, managed_scaffold_files
 
@@ -45,6 +46,7 @@ NEEDS_MANUAL_PULL = frozenset({"auth_failed", "offline", "fetch_error", "behind_
 # README update-block markers.
 UPDATE_BEGIN = "<!-- BEGIN ARCANA UPDATE -->"
 UPDATE_END = "<!-- END ARCANA UPDATE -->"
+ROOT_SOURCE_SCAFFOLD_FILES = {"README.md", ".gitkeep"}
 
 _AUTH_MARKERS = (
     "403", "insufficient_scope", "authentication failed", "could not read username",
@@ -229,6 +231,86 @@ def inject_update_readme_block(readme_path: Path, block: str) -> bool:
     return False
 
 
+def relocate_root_sources(local_path: Path) -> dict[str, Any]:
+    """Move cited root source artifacts into the chapter package that cites them.
+
+    The move is intentionally conservative: a source is relocated only when at
+    least one authored chapter page cites it and all citing pages live in the
+    same folder. Ambiguous or uncited artifacts stay in place for validation and
+    human review.
+    """
+    sources = local_path / "sources"
+    if not sources.exists():
+        return {"status": "absent", "moved": [], "left_for_review": []}
+    if not sources.is_dir():
+        return {"status": "left_for_review", "moved": [], "left_for_review": ["sources"]}
+
+    chapter_pages = [
+        p for p in sorted((local_path / "chapters").rglob("*.md"))
+        if p.is_file() and "sources" not in p.relative_to(local_path).parts
+    ] if (local_path / "chapters").is_dir() else []
+
+    moved: list[dict[str, str]] = []
+    left_for_review: list[str] = []
+
+    for source_file in sorted(p for p in sources.rglob("*") if p.is_file()):
+        source_rel_under_root = source_file.relative_to(sources).as_posix()
+        if source_rel_under_root in ROOT_SOURCE_SCAFFOLD_FILES:
+            continue
+
+        old_ref = f"sources/{source_rel_under_root}"
+        citing_pages = []
+        for page in chapter_pages:
+            try:
+                text = page.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            fm = parse_frontmatter(text)
+            srcs = fm.get("sources") or []
+            if isinstance(srcs, list) and old_ref in srcs:
+                citing_pages.append(page)
+
+        citing_dirs = {p.parent for p in citing_pages}
+        if len(citing_dirs) != 1:
+            left_for_review.append(old_ref)
+            continue
+
+        destination_dir = next(iter(citing_dirs)) / "sources"
+        destination = destination_dir / source_rel_under_root
+        if destination.exists():
+            left_for_review.append(old_ref)
+            continue
+
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(source_file), str(destination))
+        new_ref = destination.relative_to(local_path).as_posix()
+
+        for page in citing_pages:
+            text = page.read_text(encoding="utf-8")
+            page.write_text(text.replace(old_ref, new_ref), encoding="utf-8")
+
+        moved.append({"from": old_ref, "to": new_ref})
+
+    for scaffold_name in ROOT_SOURCE_SCAFFOLD_FILES:
+        scaffold_file = sources / scaffold_name
+        if scaffold_file.is_file():
+            scaffold_file.unlink()
+
+    for directory in sorted((p for p in sources.rglob("*") if p.is_dir()), reverse=True):
+        try:
+            directory.rmdir()
+        except OSError:
+            pass
+
+    try:
+        sources.rmdir()
+        status = "removed"
+    except OSError:
+        status = "left_for_review" if left_for_review else "partially_relocated"
+
+    return {"status": status, "moved": moved, "left_for_review": left_for_review}
+
+
 def default_heal(local_path: Path, arcana_root: Path) -> dict[str, Any]:
     """Mechanical, idempotent grimoire heal: managed scaffold, README block, links.
 
@@ -236,8 +318,14 @@ def default_heal(local_path: Path, arcana_root: Path) -> dict[str, Any]:
     scaffold (never the customized README/hub/manifest/log), refresh the README
     update block, then promote wikilinks. Re-validation is left to the caller.
     """
-    result: dict[str, Any] = {"scaffold_synced": [], "readme_block": "unchanged",
-                              "links_repaired": None, "status": "ok", "messages": []}
+    result: dict[str, Any] = {
+        "scaffold_synced": [],
+        "root_sources": "unchanged",
+        "readme_block": "unchanged",
+        "links_repaired": None,
+        "status": "ok",
+        "messages": [],
+    }
 
     # 1. Managed scaffold: copy Arcana formula over the grimoire's copy (safe -
     #    managed_scaffold_files excludes README/hub/grimoire.json/log.md).
@@ -257,7 +345,15 @@ def default_heal(local_path: Path, arcana_root: Path) -> dict[str, Any]:
         result["status"] = "error"
         result["messages"].append(f"scaffold sync failed: {exc}")
 
-    # 2. Ensure the README carries the current update block from the formula.
+    # 2. Relocate root source artifacts only when citations identify one clear
+    #    chapter package; leave ambiguous artifacts for validation and review.
+    try:
+        result["root_sources"] = relocate_root_sources(local_path)
+    except OSError as exc:
+        result["status"] = "error"
+        result["messages"].append(f"root sources relocation failed: {exc}")
+
+    # 3. Ensure the README carries the current update block from the formula.
     block = _formula_update_block(arcana_root)
     readme = local_path / "README.md"
     if block and readme.is_file():
@@ -268,7 +364,7 @@ def default_heal(local_path: Path, arcana_root: Path) -> dict[str, Any]:
             result["status"] = "error"
             result["messages"].append(f"README block injection failed: {exc}")
 
-    # 3. Promote/repair wikilinks a structural change may have broken.
+    # 4. Promote/repair wikilinks a structural change may have broken.
     repair = _run_repair_links(arcana_root, local_path)
     result["links_repaired"] = repair.get("repaired")
     if repair.get("status") == "error":

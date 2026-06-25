@@ -82,8 +82,9 @@ This is the deterministic core. In one pass it:
 - re-registers Arcana and grimoire skills with `--reset-managed` (the path that
   removes stale namespaces, not a best-effort register), and
 - **heals only the grimoires it confirmed current** (re-syncs Arcana-owned
-  managed scaffold, refreshes each grimoire README's update block, repairs
-  wikilinks, re-validates).
+  managed scaffold, refreshes each grimoire README's update block, enforces
+  chapter-local source locality when citations identify one clear chapter
+  package, repairs wikilinks, re-validates).
 
 **Quote the envelope** in your report: the `grimoire_summary` counts, each
 grimoire's `status`, and the `sync_skills` `registered`/`reset`/`cleaned`
@@ -140,10 +141,11 @@ same work runs as individual rites: `sync_library.py --apply`, then per grimoire
 `GRIMOIRE_STRUCTURE_STALE_MANAGED` / `_MISSING_MANAGED` formula file over the
 grimoire's copy (managed scaffold only — never the customized README, root hub,
 `grimoire.json`, or `log.md`), ensure the README's update block matches
-`formulae/grimoire/README.md`, `repair_links.py --grimoire <root> --apply`,
-re-validate, then `sync_skills.py --reset-managed`. Pull each grimoire first
-(`git -C <root> pull --ff-only`); never heal a grimoire you could not bring
-current.
+`formulae/grimoire/README.md`, place cited source artifacts under the
+`chapters/**/sources/` folder for the chapter package that cites them,
+`repair_links.py --grimoire <root> --apply`, re-validate, then
+`sync_skills.py --reset-managed`. Pull each grimoire first (`git -C <root> pull
+--ff-only`); never heal a grimoire you could not bring current.
 
 ## Related Current Source
 

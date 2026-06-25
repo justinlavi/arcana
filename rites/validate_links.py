@@ -27,6 +27,7 @@ from _lib import (
     LINK_RE,
     WIKILINK_RE,
     add_grimoire_arg,
+    is_inside_colocated_source_dir,
     is_skipped,
     public_document,
     resolve_grimoire_arg,
@@ -136,7 +137,7 @@ def main():
 
         if path.name in SKIP_FILES:
             continue
-        if is_skipped(rel, SKIP_DIRS):
+        if is_skipped(rel, SKIP_DIRS) or is_inside_colocated_source_dir(rel):
             continue
 
         try:

@@ -217,6 +217,43 @@ def test_is_skipped_normalizes_backslashes():
 
 
 # ---------------------------------------------------------------------------
+# source-layer helpers
+# ---------------------------------------------------------------------------
+
+
+def test_colocated_source_path_requires_chapter_context():
+    assert _lib.is_colocated_source_path("chapters/recipes/sources/example.md")
+    assert _lib.is_colocated_source_path("chapters/trips/2026/sources/map.png")
+    assert not _lib.is_colocated_source_path("sources/example.md")
+    assert not _lib.is_colocated_source_path("chapters/sources/example.md")
+
+
+def test_inside_colocated_source_dir_matches_descendants():
+    assert _lib.is_inside_colocated_source_dir("chapters/recipes/sources")
+    assert _lib.is_inside_colocated_source_dir("chapters/recipes/sources/raw/file.pdf")
+    assert not _lib.is_inside_colocated_source_dir("chapters/sources")
+
+
+def test_root_source_path_is_distinct_from_colocated_sources():
+    assert _lib.is_root_source_path("sources/example.md")
+    assert not _lib.is_root_source_path("chapters/recipes/sources/example.md")
+
+
+def test_resolve_local_source_path_stays_under_root(tmp_path):
+    target = tmp_path / "chapters" / "recipes" / "sources" / "example.md"
+    target.parent.mkdir(parents=True)
+    target.write_text("source\n", encoding="utf-8")
+
+    resolved = _lib.resolve_local_source_path(
+        tmp_path, "chapters/recipes/sources/example.md"
+    )
+
+    assert resolved == target.resolve()
+    assert _lib.resolve_local_source_path(tmp_path, "sources/example.md") is None
+    assert _lib.resolve_local_source_path(tmp_path, "../outside.md") is None
+
+
+# ---------------------------------------------------------------------------
 # public_document
 # ---------------------------------------------------------------------------
 

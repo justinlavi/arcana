@@ -43,7 +43,7 @@ Exit code: 0 if no violations, 1 if any violation is found.
 - `validate_naming.md` (documents naming-violation examples)
 - `script_vs_ai.md` (demos validator behavior)
 - `invocations/arc/quality/` (quality docs may discuss historical terms)
-- `sources/` (imported source artifacts may have hyphens in their original names)
+- chapter-local `sources/` folders (imported source artifacts may have hyphens in their original names)
 
 ## Fixing Violations
 

@@ -10,8 +10,9 @@ last_verified: 2026-05-12
 # Page Schema
 
 Every authored Markdown page in a Grimoire (Arcana itself, or any grimoire)
-carries YAML frontmatter. Raw artifacts under `sources/` may be copied exactly
-as received; source wrapper Markdown under `sources/` uses this schema.
+carries YAML frontmatter. Raw artifacts under `chapters/**/sources/` may be
+copied exactly as received; source wrapper Markdown under
+`chapters/**/sources/` uses this schema.
 
 This document is the canonical specification: what's required, what's
 optional, and what each field means.
@@ -29,7 +30,7 @@ A page declares its `type` so the agent knows how to treat it and so validators 
 | `hub` | Folder router. Lists pointers to children; never holds knowledge. | `<folder>/<folder>.md` |
 | `concept` | A standing topic, idea, or technique. | `chapters/<chapter>/<topic>.md` |
 | `entity` | A specific person, place, organization, product, project. | `chapters/<chapter>/<entity>.md` |
-| `source` | A source wrapper: capture metadata plus source body or pointer for one immutable artifact. | `sources/<slug>.md` |
+| `source` | A source wrapper: capture metadata plus source body or pointer for one immutable artifact. | `chapters/<chapter>/sources/<slug>.md` |
 | `playbook` | A procedural runbook the user follows. | `chapters/<chapter>/<procedure>.md` |
 | `reference` | Glossary-style or schema-style definition page. | `chapters/<chapter>/<term>.md` or `docs/*.md` |
 | `log-entry` | A single entry in `log.md`. Reserved for tooling that splits the log per entry; `log.md` itself is not annotated. | tooling output only |
@@ -44,7 +45,7 @@ Every page (except `hub` and `log-entry`) declares where its truth lives:
 
 | Authority | Meaning | Source citation |
 |---|---|---|
-| `external` | Source of truth lives elsewhere (a code repo, an article, a paper, a service). The page summarizes and routes. | Required: list `sources:` (paths under `sources/`, repo paths, or external URLs). |
+| `external` | Source of truth lives elsewhere (a code repo, an article, a paper, a service). The page summarizes and routes. | Required: list `sources:` (paths under `chapters/**/sources/`, repo paths, or external URLs). |
 | `grimoire` | This page IS the source of truth. Editing it is how truth changes. | `sources:` may be empty; provide change-control notes in body. |
 | `hybrid` | Grimoire owns the synthesis, external systems own implementation details. | Required: list `sources:`. |
 
@@ -54,7 +55,10 @@ Every page (except `hub` and `log-entry`) declares where its truth lives:
 
 ## Source Layer Boundary
 
-The `sources/` layer is citation-stable storage. It may contain raw artifacts,
+Each chapter package carries its own `sources/` layer. A source folder lives
+next to the chapter, sub-chapter, project, trip, or other material it supports,
+for example `chapters/<chapter>/sources/` or
+`chapters/<chapter>/<subchapter>/sources/`. It may contain raw artifacts,
 source wrapper Markdown, or both:
 
 - **Raw artifact**: a copied PDF, article export, transcript, image, dataset,
@@ -63,9 +67,11 @@ source wrapper Markdown, or both:
 - **Source wrapper**: a Markdown file created from
   `formulae/source.formula.md`. It declares `type: source`,
   `authority: external`, and `sources:` pointing to the original URL, capture
-  origin, or a sibling raw artifact such as `sources/<slug>/<file>.pdf`.
-- **Both together**: use `sources/<slug>.md` as the wrapper and store bulky or
-  binary originals under `sources/<slug>/`.
+  origin, or a sibling raw artifact such as
+  `chapters/<chapter>/sources/<slug>/<file>.pdf`.
+- **Both together**: use `chapters/<chapter>/sources/<slug>.md` as the wrapper
+  and store bulky or binary originals under
+  `chapters/<chapter>/sources/<slug>/`.
 
 Authored wiki pages live under `chapters/` and are not source wrappers. A page
 that synthesizes a source should use `type: concept`, `entity`, `playbook`, or
@@ -74,7 +80,7 @@ in `sources:`.
 
 External URLs may appear directly in `sources:` when the URL itself is the
 stable source pointer. When content has been filed locally, cite the local
-`sources/` path so provenance survives link rot and inbox cleanup.
+`chapters/**/sources/` path so provenance survives link rot and inbox cleanup.
 
 ---
 
@@ -86,7 +92,7 @@ type: hub | concept | entity | source | playbook | reference | log-entry
 title: "Human-readable title"
 aliases: ["alt name", "abbreviation"]
 tags: [chapter/<chapter>, type/<type>, custom/<...>]
-sources: ["sources/<artifact>.md", "https://...", "<repo>/<path>"]
+sources: ["chapters/<chapter>/sources/<artifact>.md", "https://...", "<repo>/<path>"]
 authority: external | grimoire | hybrid
 last_verified: 2026-05-12
 ---
@@ -100,7 +106,7 @@ last_verified: 2026-05-12
 | `title` | every page | Free text; what Obsidian shows as the document title. |
 | `aliases` | optional | List of alternate names for search, Dataview, and human metadata. Aliases are metadata only; wikilinks never resolve through aliases. |
 | `tags` | every page | Use `/`-separated namespaces: `chapter/<name>`, `type/<type>`, `domain/<...>`. Drives Dataview and Obsidian tag panes. |
-| `sources` | required for `authority: external`, `authority: hybrid`, and `type: source` | Paths or URLs. At least one entry must resolve. Validator checks `sources/...` paths exist on disk. |
+| `sources` | required for `authority: external`, `authority: hybrid`, and `type: source` | Paths or URLs. At least one entry must resolve. Validator checks `chapters/**/sources/...` paths exist on disk. |
 | `authority` | every page except `hub` / `log-entry` | One of the three values above. |
 | `last_verified` | every page except `hub` / `log-entry` | ISO date (`YYYY-MM-DD`) the page was last hand-verified or auto-checked. Must be a real verification date, not an implausibly early sentinel: `validate_frontmatter` rejects any date before a fixed static floor (`2020-01-01`), which catches epoch-style placeholders like `1970-01-01`. `/grm-health-check` flags pages older than the stale window (default: 90 days). |
 
@@ -169,7 +175,7 @@ type: concept
 title: "Lamination"
 aliases: ["laminating dough", "book folds"]
 tags: [chapter/techniques, technique/dough, type/concept]
-sources: ["sources/example_recipe_method.md"]
+sources: ["chapters/techniques/sources/example_recipe_method.md"]
 authority: external
 last_verified: 2026-05-12
 ---
@@ -201,8 +207,9 @@ last_verified: 2026-05-12
 ---
 ```
 
-This file lives at `sources/example_recipe_method.md`. Derived chapter pages
-cite it with `sources: ["sources/example_recipe_method.md"]`.
+This file lives at `chapters/techniques/sources/example_recipe_method.md`.
+Derived chapter pages cite it with
+`sources: ["chapters/techniques/sources/example_recipe_method.md"]`.
 
 ---
 
@@ -214,8 +221,8 @@ cite it with `sources: ["sources/example_recipe_method.md"]`.
 2. `type:` is present and matches one of the seven values.
 3. The required-fields matrix above holds for the declared `type`.
 4. `authority` (when present) is one of `external`, `grimoire`, `hybrid`.
-5. `type: source` pages are reserved for source wrappers under `sources/`.
-6. `sources` paths under `sources/` resolve on disk; URLs are not network-checked.
+5. `type: source` pages are reserved for source wrappers under `chapters/**/sources/`.
+6. `sources` paths under `chapters/**/sources/` resolve on disk; URLs are not network-checked.
 7. `last_verified` is a parseable `YYYY-MM-DD` date and is not an implausibly early sentinel (rejected below a fixed static floor of `2020-01-01`; the check never compares against the current date, so validation stays reproducible).
 8. `tags` and `aliases` are YAML lists of plain strings.
 
@@ -224,7 +231,7 @@ cite it with `sources: ["sources/example_recipe_method.md"]`.
 1. Every `authority: external` or `authority: hybrid` page cites at least one
    source.
 2. Pages never cite transient `inbox/` paths.
-3. Source wrapper Markdown under `sources/` declares `type: source`,
+3. Source wrapper Markdown under `chapters/**/sources/` declares `type: source`,
    `authority: external`, and non-empty `sources:`.
 4. Source wrappers do not cite themselves.
 

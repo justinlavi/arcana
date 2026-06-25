@@ -12,5 +12,5 @@ grep '^## \[' log.md | tail -20
 
 ## [{{CREATION_DATE}} 00:00] create | {{GRIMOIRE_NAME}}
 - skill: /grm-create
-- pages: {{GRIMOIRE_DIRECTORY}}.md, log.md, sources/.gitkeep
+- pages: {{GRIMOIRE_DIRECTORY}}.md, log.md
 - note: Initial grimoire scaffold.

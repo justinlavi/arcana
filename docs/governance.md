@@ -151,7 +151,7 @@ Do **not** include in Arcana:
 - Skills specific to one domain (those live under `<grimoire>/skills/`, prefixed by the grimoire's manifest).
 - Custom rites only one grimoire uses.
 - Real-world data: company names, project names, employee data, customer data, credentials.
-- Grimoire storage layers at Arcana root (`chapters/`, `sources/`, `inbox/`, `log.md`). Arcana keeps their templates under `formulae/grimoire/`.
+- Grimoire storage layers (`chapters/`, chapter-local `sources/`, `inbox/`, `log.md`). Arcana keeps their templates under `formulae/grimoire/`.
 
 **Where these belong**: in the relevant `<grimoire>-grimoire/chapters/` or `<grimoire>-grimoire/skills/`.
 

@@ -26,7 +26,7 @@ For the public command workflow, see [[invocations/arc/validators/validate|valid
 | [[invocations/arc/validators/validate_semantics|validate semantics]] | `/arc-validate semantics` | Hyphenated path examples in markdown prose |
 | [[invocations/arc/validators/validate_links|validate links]] | `/arc-validate links` | Internal references resolve and hub routes use wikilinks |
 | [[invocations/arc/validators/validate_orphans|validate orphans]] | `/arc-validate orphans` | Every page is reachable from at least one other page |
-| [[invocations/arc/validators/validate_provenance|validate provenance]] | `/arc-validate provenance` | Every external/hybrid page cites real sources under `sources/` |
+| [[invocations/arc/validators/validate_provenance|validate provenance]] | `/arc-validate provenance` | Every external/hybrid page cites real chapter-local sources |
 | [[invocations/arc/validators/validate_security|validate security]] | `/arc-validate security` | Credential patterns and unsafe Python constructs in rites |
 | [[invocations/arc/validators/validate_skill_refs|validate skill refs]] | `/arc-validate skill-refs` | Slash-command references and command-surface entries resolve |
 | [[invocations/arc/validators/validate_doc_trees|validate doc trees]] | `/arc-validate doc-trees` | ASCII directory diagrams match the filesystem |

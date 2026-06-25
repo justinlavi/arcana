@@ -32,9 +32,14 @@ cooking-grimoire.md -> techniques.md -> lamination.md -> windowpane_test.md
 
 Both paths are deterministic. The structure stays only as deep as the topic warrants. Full rules in [operating model](docs/operating_model.md).
 
-### Storage layers
+### Storage Layers
 
-A grimoire keeps four kinds of content side-by-side: **`sources/`** holds immutable artifacts the wiki cites; **`chapters/`** holds the LLM-authored wiki; **`inbox/`** is a transient drop zone for things waiting to be classified; **`log.md`** is an append-only record of every mutation. See [operating model](docs/operating_model.md) for ownership rules and the validator-enforced contracts.
+A grimoire keeps its wiki and evidence together. **`chapters/`** holds the
+LLM-authored wiki; chapter-local **`sources/`** folders hold immutable artifacts
+and wrappers beside the material they support; **`inbox/`** is a transient drop
+zone for things waiting to be classified; **`log.md`** is an append-only record
+of every mutation. See [operating model](docs/operating_model.md) for ownership
+rules and the validator-enforced contracts.
 
 ### Skills
 
@@ -55,7 +60,7 @@ Knowledge and skills compound: the better your documentation, the smarter your s
 
 Arcana ships universal operations every grimoire inherits:
 
-- **`/grm-import <source>`** — file a source under `sources/`, scan existing chapters, propose page updates, apply them, append to `log.md`.
+- **`/grm-import <source>`** — file a source beside the chapter material it supports, scan existing chapters, propose page updates, apply them, append to `log.md`.
 - **`/grm-add`** — add knowledge to the grimoire as a page or a chapter, written fresh or distilled from the current chat session (so a good answer doesn't evaporate into chat history).
 - **`/grm-health-check`** — health-check the wiki: orphans, stale claims (>90 days unverified), ghost references (entities mentioned often but lacking a page), contradictions, missing cross-references.
 - **`/grm-validate [selector]`** — run the full deterministic validator profile for the active grimoire, or a targeted mechanical check.
@@ -82,7 +87,7 @@ Arcana is the engine that powers all your grimoires. You install it once; your g
 - Framework documentation and governance
 
 **Your grimoires contribute**:
-- Their `chapters/` (LLM-authored content) and `sources/` (immutable sources)
+- Their `chapters/` (LLM-authored content plus colocated immutable sources)
 - Their own `/<skill prefix>-*` skills — actionable, domain-specific commands
 - Their `grimoire.json` manifest declaring their identity and skill prefix
 - Their `log.md` — the append-only activity record
@@ -155,24 +160,24 @@ Both paths use [UPDATE.md](UPDATE.md) as the canonical source of truth.
 |   |-- cooking-grimoire.md       # Root hub
 |   |-- grimoire.json             # skill_prefix: cook -> /cook-* skills
 |   |-- log.md                    # Activity log
-|   |-- sources/                  # Articles, transcripts, recipe screenshots
 |   |-- inbox/                    # Drop zone for content awaiting classification
 |   |-- chapters/                 # recipes/, techniques/, equipment/, ...
 |   |   |-- recipes/recipes.md    # Chapter hub (folder-name convention)
 |   |   |-- recipes/sourdough.md  # Leaf
+|   |   |-- recipes/sources/      # Recipe source artifacts and wrappers
 |   |   |-- techniques/
 |   |       |-- techniques.md     # Chapter hub
 |   |       |-- lamination/       # Sub-chapter (nests as deep as needed)
 |   |           |-- lamination.md # Sub-chapter hub (same convention)
 |   |           |-- book_folds.md # Leaf
 |   |           |-- windowpane_test.md
+|   |           |-- sources/       # Lamination-specific source artifacts
 |   |-- skills/                   # Grimoire skills
 |
 |-- hr-grimoire/                  # A workplace grimoire
 |   |-- hr-grimoire.md            # Root hub
 |   |-- grimoire.json             # skill_prefix: hr -> /hr-* skills
 |   |-- log.md
-|   |-- sources/
 |   |-- inbox/
 |   |-- chapters/                 # onboarding/, policies/, benefits/, ...
 |   |-- skills/

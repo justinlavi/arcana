@@ -57,7 +57,7 @@ validation) for maintainers, generated from
 | [`/grm-create`](../skills/grm/create/SKILL.md) | Start a brand-new knowledge base from scratch, with full scaffolding and registration - to add to an existing grimoire use /grm-add instead | `[grimoire-name]` |
 | [`/grm-health-check`](../skills/grm/health-check/SKILL.md) | Full checkup of the active grimoire - start here to find broken links, orphans, stale or contradictory pages, and structure problems. The all-in-one health pass | none |
 | [`/grm-help`](../skills/grm/help/SKILL.md) | Display the grimoire command catalog (/grm-*) and the active grimoire's own skills | none |
-| [`/grm-import`](../skills/grm/import/SKILL.md) | Bring an existing file or folder (PDF, article, export) into this grimoire and file it as a cited source - for knowledge you write or capture from chat, use /grm-add | `[path-or-folder-or-empty]` |
+| [`/grm-import`](../skills/grm/import/SKILL.md) | Bring an existing file or folder (PDF, article, export) into this grimoire and file it as a cited source beside the material it supports - for knowledge you write or capture from chat, use /grm-add | `[path-or-folder-or-empty]` |
 | [`/grm-move`](../skills/grm/move/SKILL.md) | Rename or move a page or chapter and automatically fix every link that pointed to it - for deleting content use /grm-remove | `[from-path] [to-path]` |
 | [`/grm-remove`](../skills/grm/remove/SKILL.md) | Delete a page or chapter and flag every link that pointed to it so nothing breaks silently - for renaming or moving use /grm-move | `[path]` |
 | [`/grm-repair-links`](../skills/grm/repair-links/SKILL.md) | Promote filename-only wikilinks to canonical full-path form across the active grimoire | none |

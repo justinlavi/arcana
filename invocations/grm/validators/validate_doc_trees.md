@@ -36,7 +36,7 @@ reality.
 ## What it checks
 
 For every fenced code block in every grimoire markdown file (excluding
-`sources/`, `inbox/`, `log.md`, `CHANGELOG.md`), the validator looks for
+chapter-local `sources/`, `inbox/`, `log.md`, `CHANGELOG.md`), the validator looks for
 trees that use the box-drawing characters `├──`, `└──`, `│`. It parses the
 diagram, resolves the root line to a real directory inside the grimoire when
 possible, and emits:
@@ -56,7 +56,7 @@ apply, because diffing illustration against reality would emit noise:
   exhaustive (only the `UNLISTED_ENTRY` warning is suppressed; missing-entry
   errors still fire)
 - The doc lives under a `templates/`, `snippets/`, `scripts/`, `examples/`,
-  `sources/`, or `inbox/` folder
+  chapter-local `sources/`, or `inbox/` folder
 - The doc's path contains a placeholder segment (`{app_name}`, `<plugin>`,
   etc.)
 - No filesystem anchor can be resolved for the diagram's root

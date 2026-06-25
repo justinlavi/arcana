@@ -89,6 +89,7 @@
       "FRONTMATTER_MISSING_REQUIRED",
       "FRONTMATTER_MISSING_SOURCES",
       "FRONTMATTER_MISSING_TYPE",
+      "FRONTMATTER_ROOT_SOURCE_PATH",
       "FRONTMATTER_SOURCE_MISSING",
       "FRONTMATTER_SOURCE_OUTSIDE_SOURCES"
     ],
@@ -104,7 +105,8 @@
       "chapters/recipes/p_notype.md": "LS0tCnRpdGxlOiAiTm9UeXBlIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQotLS0KCiMgUAoKVGV4dC4K",
       "chapters/recipes/p_reqmissing.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJSZXFNaXNzIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQotLS0KCiMgUAoKVGV4dC4K",
       "chapters/recipes/p_sentinel.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJFcG9jaFNlbnRpbmVsIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGdyaW1vaXJlCmxhc3RfdmVyaWZpZWQ6IDE5NzAtMDEtMDEKLS0tCgojIFAKClRleHQuCg==",
-      "chapters/recipes/p_srcmiss.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTcmNNaXNzIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsic291cmNlcy9ub3BlLm1kIl0KbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgUAoKVGV4dC4K",
+      "chapters/recipes/p_rootsrc.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJSb290U3JjIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsic291cmNlcy9ub3BlLm1kIl0KbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgUAoKVGV4dC4K",
+      "chapters/recipes/p_srcmiss.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTcmNNaXNzIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsiY2hhcHRlcnMvcmVjaXBlcy9zb3VyY2VzL25vcGUubWQiXQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo=",
       "chapters/recipes/p_srcoutside.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlNyYyIKYWxpYXNlczogW10KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvY29uY2VwdF0KLS0tCgojIFAKClRleHQuCg==",
       "chapters/recipes/recipes.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIlJlY2lwZXMiCmFsaWFzZXM6IFsicmVjaXBlcy1odWIiXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9odWIsIGh1Yi9jaGFwdGVyXQotLS0KCiMgUmVjaXBlcwoKLSBTb3VyZG91Z2ggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQo=",
       "chapters/recipes/sourdough.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTb3VyZG91Z2giCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgU291cmRvdWdoCgpUZXh0Lgo=",
@@ -137,7 +139,7 @@
       "GRIMOIRE_STRUCTURE_MISSING_FILE",
       "GRIMOIRE_STRUCTURE_MISSING_MANAGED",
       "GRIMOIRE_STRUCTURE_MISSING_ROOT_HUB",
-      "GRIMOIRE_STRUCTURE_SOURCES_CHAPTERS"
+      "GRIMOIRE_STRUCTURE_ROOT_SOURCES"
     ],
     "files": {
       "chapters/bar/bar.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJCYXIiCi0tLQoKIyBCYXIK",
@@ -226,6 +228,7 @@
     "expected_codes": [
       "PROVENANCE_INBOX_SOURCE",
       "PROVENANCE_MISSING_SOURCES",
+      "PROVENANCE_ROOT_SOURCE_PATH",
       "PROVENANCE_SOURCES_LIST_REQUIRED",
       "PROVENANCE_SOURCE_MISSING",
       "PROVENANCE_SOURCE_WRAPPER_AUTHORITY",
@@ -237,7 +240,8 @@
       "chapters/recipes/pp_inbox.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJJbmJveCIKYWxpYXNlczogW10KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvY29uY2VwdF0KYXV0aG9yaXR5OiBleHRlcm5hbApzb3VyY2VzOiBbImluYm94L3gubWQiXQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo=",
       "chapters/recipes/pp_listreq.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJMaXN0UmVxIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6ICJzb3VyY2VzL3gubWQiCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIFAKClRleHQuCg==",
       "chapters/recipes/pp_nosrc.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJOb1NyYyIKYWxpYXNlczogW10KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvY29uY2VwdF0KYXV0aG9yaXR5OiBleHRlcm5hbApsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo=",
-      "chapters/recipes/pp_srcmiss.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTcmNNaXNzIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsic291cmNlcy9ub3BlLm1kIl0KbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgUAoKVGV4dC4K",
+      "chapters/recipes/pp_rootsrc.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJSb290U3JjIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsic291cmNlcy9ub3BlLm1kIl0KbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgUAoKVGV4dC4K",
+      "chapters/recipes/pp_srcmiss.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTcmNNaXNzIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsiY2hhcHRlcnMvcmVjaXBlcy9zb3VyY2VzL25vcGUubWQiXQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo=",
       "chapters/recipes/recipes.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIlJlY2lwZXMiCmFsaWFzZXM6IFsicmVjaXBlcy1odWIiXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9odWIsIGh1Yi9jaGFwdGVyXQotLS0KCiMgUmVjaXBlcwoKLSBTb3VyZG91Z2ggLT4gW1tjaGFwdGVycy9yZWNpcGVzL3NvdXJkb3VnaHxzb3VyZG91Z2hdXQo=",
       "chapters/recipes/sourdough.md": "LS0tCnR5cGU6IGNvbmNlcHQKdGl0bGU6ICJTb3VyZG91Z2giCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKbGFzdF92ZXJpZmllZDogMjAyNi0wNS0xNQotLS0KCiMgU291cmRvdWdoCgpUZXh0Lgo=",
       "g.md": "LS0tCnR5cGU6IGh1Ygp0aXRsZTogIkciCmFsaWFzZXM6IFsiZy1yb290Il0KdGFnczogW2dyaW1vaXJlL2csIHR5cGUvaHViLCBodWIvcm9vdF0KLS0tCgojIEcKCi0gUmVjaXBlcyAtPiBbW2NoYXB0ZXJzL3JlY2lwZXMvcmVjaXBlc3xyZWNpcGVzXV0K",
@@ -245,9 +249,9 @@
       "inbox/README.md": "IyBpbmJveAo=",
       "log.md": "IyBBY3Rpdml0eSBMb2cKCi0tLQo=",
       "sources/README.md": "IyBzb3VyY2VzCg==",
-      "sources/w_auth.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlciCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKc291cmNlczogWyJodHRwczovL3giXQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo=",
-      "sources/w_nosrc.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlcyIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIFAKClRleHQuCg==",
-      "sources/w_self.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlczIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsic291cmNlcy93X3NlbGYubWQiXQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo="
+      "chapters/recipes/sources/w_auth.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlciCmFsaWFzZXM6IFtdCnRhZ3M6IFtncmltb2lyZS9nLCB0eXBlL2NvbmNlcHRdCmF1dGhvcml0eTogZ3JpbW9pcmUKc291cmNlczogWyJodHRwczovL3giXQpsYXN0X3ZlcmlmaWVkOiAyMDI2LTA1LTE1Ci0tLQoKIyBQCgpUZXh0Lgo=",
+      "chapters/recipes/sources/w_nosrc.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlcyIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIFAKClRleHQuCg==",
+      "chapters/recipes/sources/w_self.md": "LS0tCnR5cGU6IHNvdXJjZQp0aXRsZTogIlczIgphbGlhc2VzOiBbXQp0YWdzOiBbZ3JpbW9pcmUvZywgdHlwZS9jb25jZXB0XQphdXRob3JpdHk6IGV4dGVybmFsCnNvdXJjZXM6IFsiY2hhcHRlcnMvcmVjaXBlcy9zb3VyY2VzL3dfc2VsZi5tZCJdCmxhc3RfdmVyaWZpZWQ6IDIwMjYtMDUtMTUKLS0tCgojIFAKClRleHQuCg=="
     },
     "run_mode": "grimoire"
   },

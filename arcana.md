@@ -16,7 +16,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Routing: hub-per-folder, open-ended depth -> [[docs/operating_model|operating model]]
 - Frontmatter: type / authority / sources / last_verified -> [[docs/page_schema|page schema]]
 - Engine layers: `docs/`, `invocations/`, `formulae/`, `rites/`, `skills/`, and `resources/`
-- Grimoire scaffold layers (`chapters/`, `sources/`, `inbox/`, `log.md`) -> [[formulae/grimoire/README|README]]
+- Grimoire scaffold layers (`chapters/`, chapter-local `sources/`, `inbox/`, `log.md`) -> [[formulae/grimoire/README|README]]
 
 ## Documentation
 

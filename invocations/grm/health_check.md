@@ -30,7 +30,7 @@ Flags:
 ## Preconditions
 
 1. Resolve `GRIMOIRE_ROOT` with the shared grimoire directory guard. Refuse for Arcana itself.
-2. The grimoire must have `sources/`, `log.md`, and a root hub.
+2. The grimoire must have `chapters/`, `log.md`, and a root hub.
 
 ## Workflow
 

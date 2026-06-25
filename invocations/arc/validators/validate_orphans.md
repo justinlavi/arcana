@@ -31,7 +31,7 @@ For an active grimoire, use `/grm-validate orphans`.
 
 - The Arcana root hub (`arcana.md`).
 - `README.md`, `CHANGELOG.md`, `log.md`, `VERSION`.
-- Everything under `sources/`.
+- Source wrappers under chapter-local `sources/` folders.
 
 Folder hubs are checked: an unreachable folder hub means the parent hub is missing a pointer.
 

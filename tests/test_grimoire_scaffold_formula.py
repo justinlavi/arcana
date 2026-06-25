@@ -80,7 +80,6 @@ def test_grimoire_scaffold_contract_covers_formula_sources():
         ".obsidian/app.json",
         ".obsidian/graph.json",
         "inbox/README.md",
-        "sources/README.md",
     }
 
 
@@ -98,7 +97,7 @@ def test_grimoire_scaffold_formula_expands_to_valid_grimoire(tmp_path):
         "{{SKILL_PREFIX}}": "cook",
         "{{CHAPTER_ROUTES}}": "- Recipes -> [[chapters/recipes/recipes|recipes]]",
         "{{CHAPTER_LIST}}": "- **recipes** - documented recipes and techniques",
-        "{{CHAPTER_TREE}}": "|-- chapters/\n|   |-- recipes/\n|       |-- recipes.md",
+        "{{CHAPTER_TREE}}": "|-- chapters/\n|   |-- recipes/\n|       |-- recipes.md\n|       |-- sources/",
         "{{EXAMPLE_CHAPTER}}": "recipes",
         "{{OWNER_DOMAIN}}": "Personal",
         "{{CREATION_DATE}}": "2026-05-25",

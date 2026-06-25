@@ -12,13 +12,13 @@ last_verified: 2026-05-12
 ## Purpose
 
 Confirm every page declaring `authority: external` or `authority: hybrid`
-lists at least one source in `sources:`, and that any source path beginning
-with `sources/` resolves to an existing artifact. URLs and out-of-grimoire
-paths are not network-checked.
+lists at least one source in `sources:`, and that any local source path under
+`chapters/**/sources/` resolves to an existing artifact. URLs and
+out-of-grimoire paths are not network-checked.
 
-The same rite validates source wrapper Markdown under `sources/`: wrappers
-must declare `type: source`, use `authority: external`, list their original
-URL, capture origin, or sibling raw artifact in `sources:`, and avoid
+The same rite validates source wrapper Markdown under `chapters/**/sources/`:
+wrappers must declare `type: source`, use `authority: external`, list their
+original URL, capture origin, or sibling raw artifact in `sources:`, and avoid
 self-citation.
 
 ## Invocation
@@ -38,14 +38,14 @@ For an active grimoire, use `/grm-validate provenance`.
 ## When to run
 
 - After adding Arcana pages with external/hybrid authority.
-- After moving or renaming files in `sources/`.
+- After moving or renaming files in `chapters/**/sources/`.
 - As a pre-release gate.
 
 ## Common failures
 
 - **`sources:` empty on external page** -> either downgrade authority to `grimoire` (the page IS the source of truth), or add a real source.
-- **`sources/<path>` does not resolve** -> either the artifact was renamed (provenance broke - rename it back or fix the page) or the path is a typo.
-- **`sources:` not a YAML list** -> fix to `sources: ["sources/...", "..."]` or multi-line list.
+- **`chapters/.../sources/<path>` does not resolve** -> either the artifact was renamed (provenance broke - rename it back or fix the page) or the path is a typo.
+- **`sources:` not a YAML list** -> fix to `sources: ["chapters/<chapter>/sources/...", "..."]` or multi-line list.
 - **Source wrapper authority is not external** -> source wrappers capture external material; authored synthesis belongs under `chapters/`.
 - **Source wrapper cites itself** -> cite the original URL, capture origin, or sibling raw artifact instead.
 

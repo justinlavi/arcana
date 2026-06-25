@@ -50,6 +50,32 @@ def test_smart_grimoire_deletion_selects_structure_and_refs(monkeypatch):
     assert "validate_links.py" in rites
 
 
+def test_smart_grimoire_colocated_source_selects_provenance(monkeypatch, tmp_path):
+    source = tmp_path / "chapters/recipes/sources/recipe_scan.pdf"
+    source.parent.mkdir(parents=True)
+    source.write_bytes(b"%PDF-1.4\n")
+    monkeypatch.setattr(
+        validate,
+        "git_changed_files",
+        lambda root: [("M", "chapters/recipes/sources/recipe_scan.pdf")],
+    )
+    rites = validate.determine_smart_rites("grimoire", tmp_path)
+    assert "validate_grimoire_structure.py" in rites
+    assert "validate_provenance.py" in rites
+
+
+def test_smart_grimoire_deleted_colocated_source_selects_provenance(monkeypatch):
+    monkeypatch.setattr(
+        validate,
+        "git_changed_files",
+        lambda root: [("D", "chapters/recipes/sources/recipe_scan.pdf")],
+    )
+
+    rites = validate.determine_smart_rites("grimoire", validate.ARCANA_ROOT)
+
+    assert "validate_provenance.py" in rites
+
+
 def test_smart_deletion_never_selects_empty(monkeypatch):
     # The bug: a deletion-only change used to select zero validators, so --auto
     # could green-light a deleted required file.

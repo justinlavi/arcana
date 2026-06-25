@@ -17,7 +17,7 @@ import re
 import sys
 from pathlib import Path
 
-from _lib import add_grimoire_arg, ok, resolve_grimoire_arg, warn
+from _lib import add_grimoire_arg, is_inside_colocated_source_dir, ok, resolve_grimoire_arg, warn
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ROOT = None
@@ -46,7 +46,7 @@ SKIP_DIRS = {"sources"}
 
 def under_skip_dir(path):
     rel = path.relative_to(ROOT)
-    return rel.parts and rel.parts[0] in SKIP_DIRS
+    return (rel.parts and rel.parts[0] in SKIP_DIRS) or is_inside_colocated_source_dir(rel)
 
 
 def markdown_files(root):

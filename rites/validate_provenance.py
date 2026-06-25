@@ -5,12 +5,11 @@ Walks every page in a grimoire (skipping templates and exempt files) and
 checks each page whose `authority:` is `external` or `hybrid`:
 
   1. Has at least one entry in `sources:`.
-  2. Each source path that begins with `sources/` resolves to an existing file
-     under the grimoire's `sources/` directory. (URLs and out-of-grimoire paths
-     are not network-checked.)
+  2. Each local source path under `chapters/**/sources/` resolves to an
+     existing file. (URLs and out-of-grimoire paths are not network-checked.)
   3. No page cites transient `inbox/` paths.
 
-Also checks Markdown source wrappers under `sources/`:
+Also checks Markdown source wrappers under `chapters/**/sources/`:
 
   1. A wrapper declaring `type: source` must use `authority: external`.
   2. It must have non-empty `sources:`.
@@ -28,17 +27,20 @@ from pathlib import Path
 
 from _lib import (
     add_grimoire_arg,
+    is_colocated_source_path,
+    is_root_source_path,
     iter_pages,
+    iter_colocated_source_markdown,
     parse_frontmatter,
     resolve_grimoire_arg,
+    resolve_local_source_path,
     warn,
 )
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 SCAN_DIRS = ["chapters", "docs", "invocations"]
 EXEMPT_FILENAMES = {"README.md", "CHANGELOG.md", "log.md", "VERSION"}
-SKIP_DIRS = {"sources", "formulae", ".git"}
-SOURCE_EXEMPT_FILENAMES = {"README.md"}
+SKIP_DIRS = {"formulae", ".git"}
 
 
 def check_source_reference(src, rel, root, reporter, human):
@@ -50,37 +52,37 @@ def check_source_reference(src, rel, root, reporter, human):
             "PROVENANCE_INBOX_SOURCE",
             f"source '{src}' points at inbox/",
             path=rel,
-            hint="Pages must cite sources/ or external URLs.",
+            hint="Pages must cite chapter-local source artifacts or external URLs.",
             docs_reference="docs/operating_model.md",
         )
         if human:
             warn(
                 f"{rel}: source '{src}' points at inbox/ "
-                "(transient - pages must cite sources/ instead)"
+                "(transient - pages must cite chapter-local source artifacts instead)"
             )
         return
-    if src.startswith("sources/"):
-        target = root / src
-        if not target.exists():
+    if is_root_source_path(src):
+        reporter.error(
+            "PROVENANCE_ROOT_SOURCE_PATH",
+            f"source '{src}' points at root sources/",
+            path=rel,
+            hint="Use a chapter-local path such as chapters/<chapter>/sources/<artifact>.",
+            docs_reference="docs/page_schema.md",
+        )
+        if human:
+            warn(f"{rel}: source '{src}' points at root sources/")
+        return
+    if is_colocated_source_path(src):
+        target = resolve_local_source_path(root, src)
+        if target is None or not target.exists():
             reporter.error(
                 "PROVENANCE_SOURCE_MISSING",
-                f"source '{src}' does not resolve under sources/",
+                f"source '{src}' does not resolve under chapters/**/sources/",
                 path=rel,
                 docs_reference="docs/page_schema.md",
             )
             if human:
-                warn(f"{rel}: source '{src}' does not resolve under sources/")
-
-
-def iter_source_markdown(root):
-    """Yield Markdown files under sources/ that may be source wrappers."""
-    sources_dir = root / "sources"
-    if not sources_dir.is_dir():
-        return
-    for path in sorted(sources_dir.rglob("*.md")):
-        if path.name in SOURCE_EXEMPT_FILENAMES:
-            continue
-        yield path
+                warn(f"{rel}: source '{src}' does not resolve under chapters/**/sources/")
 
 
 def main():
@@ -108,11 +110,13 @@ def main():
         except OSError:
             continue
         fm = parse_frontmatter(content)
+        rel = path.relative_to(root).as_posix()
+        if is_colocated_source_path(rel):
+            continue
         authority = fm.get("authority", "")
         if authority not in ("external", "hybrid"):
             continue
         pages_checked += 1
-        rel = path.relative_to(root).as_posix()
         sources = fm.get("sources") or []
         if not isinstance(sources, list):
             reporter.error(
@@ -137,7 +141,7 @@ def main():
         for src in sources:
             check_source_reference(src, rel, root, reporter, human)
 
-    for path in iter_source_markdown(root):
+    for path in iter_colocated_source_markdown(root):
         try:
             content = path.read_text(encoding="utf-8", errors="replace")
         except OSError:

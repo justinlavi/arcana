@@ -11,8 +11,8 @@ checks:
   2. `type:` is present and one of the seven canonical values.
   3. The required-fields matrix in docs/page_schema.md holds for the type.
   4. `authority:` (when present) is one of `external | grimoire | hybrid`.
-  5. `type: source` is reserved for source wrappers under `sources/`.
-  6. `sources:` paths under `sources/` resolve on disk; URLs are not network-checked.
+  5. `type: source` is reserved for source wrappers under `chapters/**/sources/`.
+  6. Local `sources:` paths under `chapters/**/sources/` resolve on disk; URLs are not network-checked.
   7. `last_verified:` parses as YYYY-MM-DD and is not an implausibly early
      sentinel (a date before a fixed static floor; never compared to "today").
   8. `tags:` and `aliases:` are YAML lists of plain strings.
@@ -32,9 +32,12 @@ from _lib import (
     DATE_RE,
     FRONTMATTER_RE,
     add_grimoire_arg,
+    is_colocated_source_path,
+    is_root_source_path,
     iter_pages,
     parse_frontmatter,
     resolve_grimoire_arg,
+    resolve_local_source_path,
 )
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
@@ -130,12 +133,12 @@ def check_file(path, grimoire_root, reporter):
         return
 
     template = is_template(rel)
-    if type_ == "source" and not template and not rel.startswith("sources/"):
+    if type_ == "source" and not template and not is_colocated_source_path(rel):
         reporter.error(
             "FRONTMATTER_SOURCE_OUTSIDE_SOURCES",
-            "`type: source` is reserved for source wrappers under sources/",
+            "`type: source` is reserved for source wrappers under chapters/**/sources/",
             path=rel,
-            hint="Use concept/entity/playbook/reference for authored chapter synthesis.",
+            hint="Place source wrappers beside their supporting material in a chapter-local sources/ folder.",
             docs_reference="docs/page_schema.md",
         )
     required, _optional = required_fields_for(type_)
@@ -176,12 +179,21 @@ def check_file(path, grimoire_root, reporter):
 
     if "sources" in fields and isinstance(fields["sources"], list):
         for src in fields["sources"]:
-            if isinstance(src, str) and src.startswith("sources/"):
-                src_path = grimoire_root / src
-                if not src_path.exists() and not template:
+            if isinstance(src, str) and is_root_source_path(src) and not template:
+                reporter.error(
+                    "FRONTMATTER_ROOT_SOURCE_PATH",
+                    f"sources entry '{src}' points at root sources/",
+                    path=rel,
+                    hint="Use a chapter-local path such as chapters/<chapter>/sources/<artifact>.",
+                    docs_reference="docs/page_schema.md",
+                )
+                continue
+            if isinstance(src, str) and is_colocated_source_path(src):
+                src_path = resolve_local_source_path(grimoire_root, src)
+                if (src_path is None or not src_path.exists()) and not template:
                     reporter.error(
                         "FRONTMATTER_SOURCE_MISSING",
-                        f"sources entry '{src}' does not resolve under sources/",
+                        f"sources entry '{src}' does not resolve under chapters/**/sources/",
                         path=rel,
                         hint="Create the source artifact or update the source pointer.",
                         docs_reference="docs/page_schema.md",

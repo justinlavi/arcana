@@ -151,10 +151,162 @@ last_verified: 2026-05-25
     assert "FRONTMATTER_SOURCE_OUTSIDE_SOURCES" in codes
 
 
-def test_provenance_validates_source_wrappers(tmp_path):
+def test_frontmatter_accepts_colocated_raw_source(tmp_path):
     grimoire = tmp_path / "good_grimoire"
     shutil.copytree(GOOD, grimoire)
-    (grimoire / "sources/example_source.md").write_text(
+    source_dir = grimoire / "chapters/recipes/sources"
+    source_dir.mkdir()
+    (source_dir / "recipe_scan.pdf").write_bytes(b"%PDF-1.4\n")
+    (grimoire / "chapters/recipes/source_backed.md").write_text(
+        """---
+type: concept
+title: "Source Backed"
+tags: [type/concept]
+sources: ["chapters/recipes/sources/recipe_scan.pdf"]
+authority: external
+last_verified: 2026-05-25
+---
+
+# Source Backed
+""",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_frontmatter.py", grimoire, "--format", "json")
+
+    assert result.returncode == 0, result.stdout
+
+
+def test_provenance_accepts_colocated_raw_source(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    source_dir = grimoire / "chapters/recipes/sources"
+    source_dir.mkdir()
+    (source_dir / "recipe_scan.pdf").write_bytes(b"%PDF-1.4\n")
+    (grimoire / "chapters/recipes/source_backed.md").write_text(
+        """---
+type: concept
+title: "Source Backed"
+tags: [type/concept]
+sources: ["chapters/recipes/sources/recipe_scan.pdf"]
+authority: external
+last_verified: 2026-05-25
+---
+
+# Source Backed
+""",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_provenance.py", grimoire, "--format", "json")
+
+    assert result.returncode == 0, result.stdout
+
+
+def test_frontmatter_rejects_root_source_reference(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    root_sources = grimoire / "sources"
+    root_sources.mkdir()
+    (root_sources / "recipe_scan.pdf").write_bytes(b"%PDF-1.4\n")
+    (grimoire / "chapters/recipes/root_source_backed.md").write_text(
+        """---
+type: concept
+title: "Root Source Backed"
+tags: [type/concept]
+sources: ["sources/recipe_scan.pdf"]
+authority: external
+last_verified: 2026-05-25
+---
+
+# Root Source Backed
+""",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_frontmatter.py", grimoire, "--format", "json")
+
+    assert result.returncode != 0
+    report = json.loads(result.stdout)
+    codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+    assert "FRONTMATTER_ROOT_SOURCE_PATH" in codes
+
+
+def test_structure_rejects_root_sources_layer(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    (grimoire / "sources").mkdir()
+
+    result = _run("validate_grimoire_structure.py", grimoire, "--format", "json")
+
+    assert result.returncode != 0
+    report = json.loads(result.stdout)
+    codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+    assert "GRIMOIRE_STRUCTURE_ROOT_SOURCES" in codes
+
+
+def test_structure_does_not_require_hubs_in_colocated_sources(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    source_dir = grimoire / "chapters/recipes/sources/raw"
+    source_dir.mkdir(parents=True)
+    (source_dir / "capture.md").write_text(
+        """---
+type: source
+title: "Capture"
+tags: [type/source]
+sources: ["https://example.com/source"]
+authority: external
+last_verified: 2026-05-25
+---
+
+# Capture
+""",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_grimoire_structure.py", grimoire, "--format", "json")
+
+    assert result.returncode == 0, result.stdout
+
+
+def test_provenance_rejects_missing_colocated_source(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    (grimoire / "chapters/recipes/missing_source_backed.md").write_text(
+        """---
+type: concept
+title: "Missing Source Backed"
+tags: [type/concept]
+sources: ["chapters/recipes/sources/missing.pdf"]
+authority: external
+last_verified: 2026-05-25
+---
+
+# Missing Source Backed
+""",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    result = _run("validate_provenance.py", grimoire, "--format", "json")
+
+    assert result.returncode != 0
+    report = json.loads(result.stdout)
+    codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+    assert "PROVENANCE_SOURCE_MISSING" in codes
+
+
+def test_provenance_validates_colocated_source_wrappers(tmp_path):
+    grimoire = tmp_path / "good_grimoire"
+    shutil.copytree(GOOD, grimoire)
+    source_dir = grimoire / "chapters/recipes/sources"
+    source_dir.mkdir()
+    (source_dir / "example_source.md").write_text(
         """---
 type: source
 title: "Example Source"
@@ -176,12 +328,12 @@ last_verified: 2026-05-25
     report = json.loads(result.stdout)
     assert report["checked"]["source_wrappers"] == 1
 
-    (grimoire / "sources/bad_source.md").write_text(
+    (source_dir / "bad_source.md").write_text(
         """---
 type: source
 title: "Bad Source"
 tags: [type/source]
-sources: ["sources/bad_source.md"]
+sources: ["chapters/recipes/sources/bad_source.md"]
 authority: grimoire
 last_verified: 2026-05-25
 ---

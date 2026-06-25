@@ -10,9 +10,9 @@ last_verified: 1970-01-01
 
 <!--
 Choose `type:` from: concept | entity | playbook | reference.
-Use source.formula.md under `sources/` for `type: source` wrappers.
+Use source.formula.md under `chapters/<chapter>/sources/` for `type: source` wrappers.
 Choose `authority:` from: external | grimoire | hybrid (see docs/page_schema.md)
-`sources:` is required when authority is external or hybrid (paths under sources/).
+`sources:` is required when authority is external or hybrid (paths under chapters/**/sources/).
 `aliases:` are optional metadata for search and alternate names; wikilinks never resolve through aliases.
 `tags:` use `/`-separated namespaces, e.g. [chapter/build_system, technique/cmake].
 -->
@@ -30,7 +30,7 @@ Choose `authority:` from: external | grimoire | hybrid (see docs/page_schema.md)
 
 ## Primary Sources
 
-[Required for authority=external|hybrid. List the files under `sources/` or external systems this page synthesizes.]
+[Required for authority=external|hybrid. List chapter-local source files or external systems this page synthesizes.]
 
 - [path/url/system]
 

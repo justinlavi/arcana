@@ -45,7 +45,7 @@ Use this four-phase template when:
 
 - **Scope** — Decide between *shared* (cross-scope rules: kitchen-wide techniques, company-wide policies) and *scope-specific* (single project, client, team, recipe family). Scope-specific work routes through whatever scope-folder hub the grimoire defines (commonly `chapters/projects/projects.md` in engineering grimoires, `chapters/teams/teams.md` in workplace grimoires, etc.).
 - **Outputs** — Produce or update exactly one canonical leaf page. Update affected hubs with wikilinks. Add at most one supporting asset (template OR snippet) only if explicitly needed.
-- **Authority** — Default to `authority: grimoire` for synthesized procedures and policies the wiki owns; use `authority: external` (with `sources:` listing artifacts under `sources/`) when distilling external material; use `hybrid` when both apply.
+- **Authority** — Default to `authority: grimoire` for synthesized procedures and policies the wiki owns; use `authority: external` (with `sources:` listing artifacts under `chapters/**/sources/`) when distilling external material; use `hybrid` when both apply.
 - **Success criteria** — Minimal-read invariant: hubs route depth-first to the answering leaf with no exploratory wording. No scope leakage. No absolute paths inside grimoire content.
 
 ---
@@ -63,7 +63,7 @@ Use this four-phase template when:
  - [ ] One canonical leaf page (default)
  - [ ] Hub updates (almost always required when content is created/moved)
  - [ ] One supporting asset (template OR snippet)
- - [ ] Source filed under `sources/` (only if synthesizing an external artifact)
+ - [ ] Source filed under `chapters/**/sources/` (only if synthesizing an external artifact)
 
 - **Scope**:
  - [ ] Shared (cross-scope)
@@ -126,7 +126,7 @@ type: concept | entity | source | playbook | reference
 title: "..."
 aliases: [...]
 tags: [chapter/<chapter>, type/<type>, ...]
-sources: ["sources/<slug>.md", ...]   # required when authority is external/hybrid
+sources: ["chapters/<chapter>/sources/<slug>.md", ...]   # required when authority is external/hybrid
 authority: external | grimoire | hybrid
 last_verified: YYYY-MM-DD
 ---
@@ -137,7 +137,7 @@ last_verified: YYYY-MM-DD
 1. `# [Title]` — page heading.
 2. `## Purpose` — one or two sentences: what this page covers.
 3. `## When to Use` — scenarios that route here.
-4. `## Primary Sources` — required when `authority` is `external` or `hybrid`. List artifacts under `sources/` and external systems the page synthesizes. Omit entirely for `authority: grimoire` pages that are themselves the source of truth.
+4. `## Primary Sources` — required when `authority` is `external` or `hybrid`. List artifacts under `chapters/**/sources/` and external systems the page synthesizes. Omit entirely for `authority: grimoire` pages that are themselves the source of truth.
 5. **Author-named content sections** — page formula intentionally does not enforce a fixed list here. Pick what the page actually needs. Common choices by `type`:
   - `concept` / `entity`: `## Invariants`, `## Standard Patterns`, `## Architecture`, `## Comparison Table`
   - `playbook`: `## Workflow`, `## Inputs`, `## Outputs`, `## Validation`
@@ -189,6 +189,6 @@ python3 ARCANA_HOME/rites/append_log.py \
 - [ ] Sources read (exact file list)
 - [ ] Hubs updated (paths and wikilinks added)
 - [ ] Page frontmatter complete and validator-clean
-- [ ] Provenance closed: external/hybrid pages cite real `sources/` artifacts
+- [ ] Provenance closed: external/hybrid pages cite real `chapters/**/sources/` artifacts
 - [ ] Log entry appended
 - [ ] Open TODOs (if any) with source pointers

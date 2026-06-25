@@ -69,7 +69,7 @@
         "Source file, source folder, or inbox sweep"
       ],
       "mutation_profile": "judgment_gated",
-      "mutation_behavior": "Imports classified inputs into sources or chapters, then updates derived pages and hubs.",
+      "mutation_behavior": "Imports classified inputs into chapter-local sources folders or chapters, then updates derived pages and hubs.",
       "log_behavior": "Appends one import entry to the active grimoire log.md per operation.",
       "validation_profile": "python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_provenance.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT"
     },
@@ -154,7 +154,7 @@
       "preconditions": [
         "Registered active grimoire",
         "Root hub",
-        "sources directory",
+        "chapters directory",
         "log.md"
       ],
       "mutation_profile": "judgment_gated",

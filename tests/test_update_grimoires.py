@@ -215,6 +215,68 @@ def test_behind_is_pulled_then_healed(tmp_path):
     assert heal.calls == [rec["local_path"]]
 
 
+def test_relocate_root_sources_moves_single_package_citations(tmp_path):
+    grimoire = tmp_path / "g"
+    page = grimoire / "chapters/recipes/sourdough.md"
+    source = grimoire / "sources/article.pdf"
+    page.parent.mkdir(parents=True)
+    source.parent.mkdir(parents=True)
+    page.write_text(
+        "---\n"
+        "type: concept\n"
+        'title: "Sourdough"\n'
+        "tags: [type/concept]\n"
+        "authority: external\n"
+        'sources: ["sources/article.pdf"]\n'
+        "last_verified: 2026-05-25\n"
+        "---\n\n"
+        "# Sourdough\n",
+        encoding="utf-8",
+    )
+    source.write_bytes(b"%PDF-1.4\n")
+    (grimoire / "sources/.gitkeep").write_text("", encoding="utf-8")
+
+    result = U.relocate_root_sources(grimoire)
+
+    new_source = grimoire / "chapters/recipes/sources/article.pdf"
+    assert result["status"] == "removed"
+    assert result["moved"] == [
+        {"from": "sources/article.pdf", "to": "chapters/recipes/sources/article.pdf"}
+    ]
+    assert new_source.is_file()
+    assert not (grimoire / "sources").exists()
+    assert 'sources: ["chapters/recipes/sources/article.pdf"]' in page.read_text(encoding="utf-8")
+
+
+def test_relocate_root_sources_leaves_ambiguous_citations(tmp_path):
+    grimoire = tmp_path / "g"
+    source = grimoire / "sources/article.pdf"
+    source.parent.mkdir(parents=True)
+    source.write_bytes(b"%PDF-1.4\n")
+    for rel in ("chapters/recipes/sourdough.md", "chapters/techniques/lamination.md"):
+        page = grimoire / rel
+        page.parent.mkdir(parents=True, exist_ok=True)
+        page.write_text(
+            "---\n"
+            "type: concept\n"
+            'title: "Page"\n'
+            "tags: [type/concept]\n"
+            "authority: external\n"
+            'sources: ["sources/article.pdf"]\n'
+            "last_verified: 2026-05-25\n"
+            "---\n\n"
+            "# Page\n",
+            encoding="utf-8",
+        )
+
+    result = U.relocate_root_sources(grimoire)
+
+    assert result["status"] == "left_for_review"
+    assert result["moved"] == []
+    assert result["left_for_review"] == ["sources/article.pdf"]
+    assert source.is_file()
+
+
 # ---------------------------------------------------------------------------
 # Library-wide processing + manual-pull fallback
 # ---------------------------------------------------------------------------
@@ -284,6 +346,29 @@ def test_injector_replaces_block_in_place(tmp_path):
     out = p.read_text(encoding="utf-8")
     assert out.count(U.UPDATE_BEGIN) == 1
     assert "stale body" not in out
+
+
+def test_relocate_root_sources_removes_only_scaffold_files(tmp_path):
+    root_sources = tmp_path / "sources"
+    root_sources.mkdir()
+    (root_sources / "README.md").write_text("# Sources\n", encoding="utf-8")
+    (root_sources / ".gitkeep").write_text("", encoding="utf-8")
+
+    result = U.relocate_root_sources(tmp_path)
+    assert result["status"] == "removed"
+    assert result["moved"] == []
+    assert not root_sources.exists()
+
+
+def test_relocate_root_sources_leaves_uncited_artifacts_for_review(tmp_path):
+    root_sources = tmp_path / "sources"
+    root_sources.mkdir()
+    (root_sources / "artifact.pdf").write_bytes(b"%PDF-1.4\n")
+
+    result = U.relocate_root_sources(tmp_path)
+    assert result["status"] == "left_for_review"
+    assert result["left_for_review"] == ["sources/artifact.pdf"]
+    assert (root_sources / "artifact.pdf").is_file()
 
 
 # ---------------------------------------------------------------------------

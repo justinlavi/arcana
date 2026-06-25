@@ -55,14 +55,14 @@ Free-form bullet list, but include at minimum:
 
 - `- skill: /<skill prefix>-<verb>` (or `manual` if hand-edited)
 - `- pages: ` comma-separated relative paths touched
-- For `import` (and `create` entries capturing a chat answer): `- source: sources/<filename>` or `- source: chat`
+- For `import` (and `create` entries capturing a chat answer): `- source: chapters/<chapter>/sources/<filename>` or `- source: chat`
 
 ## Example entries
 
 ```markdown
 ## [2026-05-12 14:32] import | Tartine bread method article
 - skill: /grm-import
-- source: sources/article-tartine-method.md
+- source: chapters/recipes/sources/article_tartine_method.md
 - pages: chapters/techniques/lamination.md, chapters/recipes/sourdough.md, chapters/techniques/techniques.md
 
 ## [2026-05-12 15:01] health-check | quarterly health check

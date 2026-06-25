@@ -11,7 +11,7 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-AI-guided conversational setup that scaffolds a complete grimoire from the scaffold contract, registers it in the local library, and validates the result. Output is a working grimoire directory with customized root hub, README, manifest, `sources/`, `log.md`, and initial chapter skeletons (each with its own folder-named hub and frontmatter).
+AI-guided conversational setup that scaffolds a complete grimoire from the scaffold contract, registers it in the local library, and validates the result. Output is a working grimoire directory with customized root hub, README, manifest, `log.md`, `inbox/`, and initial chapter skeletons (each with its own folder-named hub and frontmatter). Source artifacts live in chapter-local `sources/` folders as chapters absorb external material.
 
 ## Invocation
 
@@ -82,7 +82,7 @@ Create the grimoire by applying the contract:
    substituting scaffold placeholders in target paths.
 5. Replace placeholders in copied file contents during Step 4.
 
-The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, skill prefix, description). `sources/` is the immutable sources layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `.obsidian/app.json` and `.obsidian/graph.json` are managed scaffold files that preserve safe full-path wikilink behavior and Arcana's graph-view color groups; `log.md` is the append-only activity log.
+The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, skill prefix, description). Chapter-local `sources/` folders are the immutable source layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `.obsidian/app.json` and `.obsidian/graph.json` are managed scaffold files that preserve safe full-path wikilink behavior and Arcana's graph-view color groups; `log.md` is the append-only activity log.
 
 ---
 
