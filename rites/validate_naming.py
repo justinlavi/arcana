@@ -20,7 +20,7 @@ UPPERCASE_EXCEPTIONS = {"README.md", "UPDATE.md", "CHANGELOG.md", "CONTRIBUTING.
                         "IMPLEMENTATION_PLAN.md", "VERSION"}
 
 
-SKIP_DIRS = {"sources", ".git", "tests"}
+SKIP_DIRS = {".git", "tests"}
 ARCANA_MANIFEST = ARCANA_ROOT / "arcana.json"
 
 

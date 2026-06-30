@@ -29,7 +29,7 @@ If the user passed `$directory`, use it. Otherwise run `/arc-sync library` to en
 
 ### 2. Gather the skill prefix
 
-Ask for a 2-4 letter lowercase slug that matches `^[a-z][a-z0-9]*$`. Suggest one based on the directory name, such as `lus-grimoire` -> `lus`.
+Ask for a 2-4 letter lowercase slug that matches `^[a-z][a-z0-9]*$`. Suggest one based on the directory name, such as `dnd-grimoire` -> `dnd`.
 
 Explain that every skill the grimoire ships will be prefixed `<skill prefix>-`, and that the prefix must be unique across installed grimoires if the directory has a `skills/` folder.
 

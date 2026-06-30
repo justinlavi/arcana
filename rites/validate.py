@@ -25,7 +25,7 @@ import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
-from _lib import is_colocated_source_path, is_root_source_path
+from _lib import is_colocated_source_path
 from diagnostics import add_output_format_arg, human_label, human_location
 
 RITE_DIR = Path(__file__).resolve().parent
@@ -292,7 +292,7 @@ def determine_smart_grimoire_rites(changes, target_root):
             if f.endswith(".md"):
                 needed.add("validate_links.py")
                 needed.add("validate_orphans.py")
-            if is_root_source_path(f) or is_colocated_source_path(f):
+            if is_colocated_source_path(f):
                 needed.add("validate_provenance.py")
             continue
 
@@ -302,7 +302,7 @@ def determine_smart_grimoire_rites(changes, target_root):
 
         if (
             f in {"grimoire.json", "README.md", "log.md"}
-            or f.startswith((".obsidian/", "chapters/", "sources/", "inbox/"))
+            or f.startswith((".obsidian/", "chapters/", "inbox/"))
         ):
             needed.add("validate_grimoire_structure.py")
 
@@ -313,7 +313,7 @@ def determine_smart_grimoire_rites(changes, target_root):
             needed.add("validate_orphans.py")
             needed.add("validate_provenance.py")
 
-        if is_root_source_path(f) or is_colocated_source_path(f):
+        if is_colocated_source_path(f):
             needed.add("validate_provenance.py")
 
     return [r for r in GRIMOIRE_RITES if r in needed] if needed else list(GRIMOIRE_RITES)

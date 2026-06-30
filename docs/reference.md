@@ -47,7 +47,7 @@ When **using** Arcana or talking about the framework layer:
 When **creating knowledge** inside chapters:
 - Use natural, subject-specific terminology
 - Personal / hobby: `recipes/`, `techniques/`, `equipment/`, `notes/`
-- Operations / HR: `policies/`, `guides/`, `checklists/`, `forms/`
+- Operations: `policies/`, `guides/`, `checklists/`, `runbooks/`
 - Engineering: `templates/`, `scripts/`, `snippets/`, `configs/`
 - **Never** create `invocations/`, `formulae/`, or `rites/` in grimoires
 
@@ -109,9 +109,9 @@ Arcana uses one local library: `~/grimoires/library.json`. It is a **pure regist
       "local_path": "$HOME/grimoires/cooking-grimoire",
       "online_path": "https://git.example.com/you/cooking-grimoire.git"
     },
-    "hr-grimoire": {
-      "local_path": "$HOME/grimoires/hr-grimoire",
-      "online_path": "https://git.example.com/your-team/hr-grimoire.git"
+    "dnd-grimoire": {
+      "local_path": "$HOME/grimoires/dnd-grimoire",
+      "online_path": "https://git.example.com/you/dnd-grimoire.git"
     }
   }
 }
@@ -191,14 +191,14 @@ When creating new grimoires, use these placeholders in formula templates:
 
 | Placeholder | Description | Example value |
 |------------|------------|--------------|
-| `{{GRIMOIRE_NAME}}` | Display name; brand only - used in the root-hub H1 | `Cooking`, `HR`, `Project Alpha` |
-| `{{GRIMOIRE_NAME_LOWER}}` | Lowercase display name for aliases and prose | `cooking`, `hr`, `project alpha` |
-| `{{GRIMOIRE_DOMAIN}}` | Subject area / category | `cooking`, `human resources` |
-| `{{GRIMOIRE_PURPOSE}}` | Short tagline, 2–5 words; used in the manifest `description` and as an italic subtitle in the root hub | `personal cooking knowledge`, `HR runbooks and policies`, `Project Alpha knowledge` |
+| `{{GRIMOIRE_NAME}}` | Display name; brand only - used in the root-hub H1 | `Cooking`, `D&D`, `Project Alpha` |
+| `{{GRIMOIRE_NAME_LOWER}}` | Lowercase display name for aliases and prose | `cooking`, `dnd`, `project alpha` |
+| `{{GRIMOIRE_DOMAIN}}` | Subject area / category | `cooking`, `tabletop gaming` |
+| `{{GRIMOIRE_PURPOSE}}` | Short tagline, 2–5 words; used in the manifest `description` and as an italic subtitle in the root hub | `personal cooking knowledge`, `a D&D campaign's lore`, `Project Alpha knowledge` |
 | `{{GRIMOIRE_PURPOSE_DETAILED}}` | Long-form description; lives **only** in `README.md`; never duplicated to manifest or hub | `recipes, techniques, equipment, and ingredient inventories — the full personal cooking reference` |
-| `{{GRIMOIRE_DIRECTORY}}` | Filesystem name | `cooking-grimoire`, `hr-grimoire` |
+| `{{GRIMOIRE_DIRECTORY}}` | Filesystem name | `cooking-grimoire`, `dnd-grimoire` |
 | `{{GRIMOIRE_REPO_URL}}` | Canonical git URL for installing this grimoire | `https://git.example.com/you/cooking-grimoire.git` |
-| `{{SKILL_PREFIX}}` | Short slug for skill prefix | `cook`, `hr` |
+| `{{SKILL_PREFIX}}` | Short slug for skill prefix | `cook`, `dnd` |
 | `{{CHAPTER_ROUTES}}` | Generated routing pointers (filled by create_grimoire) | - |
 | `{{CHAPTER_LIST}}` | List of chapters with descriptions | - |
 | `{{CHAPTER_TREE}}` | Directory tree of chapters | - |

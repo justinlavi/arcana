@@ -102,7 +102,7 @@ def test_bad_frontmatter_structured_diagnostics_have_codes():
 def test_validator_scans_sibling_of_skip_dir(tmp_path):
     grimoire = tmp_path / "good_grimoire"
     shutil.copytree(GOOD, grimoire)
-    extra = grimoire / "sources_extra"
+    extra = grimoire / "publish_extra"
     extra.mkdir()
     (extra / "broken.md").write_text(
         "---\n"
@@ -118,10 +118,10 @@ def test_validator_scans_sibling_of_skip_dir(tmp_path):
 
     result = _run("validate_links.py", grimoire)
 
-    # `sources_extra` shares a prefix with the skipped `sources` dir; it must
+    # `publish_extra` shares a prefix with the skipped `publish` dir; it must
     # still be scanned, so the broken wikilink inside it is caught.
     assert result.returncode != 0
-    assert "sources_extra" in result.stdout
+    assert "publish_extra" in result.stdout
 
 
 def test_source_type_is_reserved_for_sources_layer(tmp_path):
@@ -203,49 +203,6 @@ last_verified: 2026-05-25
     result = _run("validate_provenance.py", grimoire, "--format", "json")
 
     assert result.returncode == 0, result.stdout
-
-
-def test_frontmatter_rejects_root_source_reference(tmp_path):
-    grimoire = tmp_path / "good_grimoire"
-    shutil.copytree(GOOD, grimoire)
-    root_sources = grimoire / "sources"
-    root_sources.mkdir()
-    (root_sources / "recipe_scan.pdf").write_bytes(b"%PDF-1.4\n")
-    (grimoire / "chapters/recipes/root_source_backed.md").write_text(
-        """---
-type: concept
-title: "Root Source Backed"
-tags: [type/concept]
-sources: ["sources/recipe_scan.pdf"]
-authority: external
-last_verified: 2026-05-25
----
-
-# Root Source Backed
-""",
-        encoding="utf-8",
-        newline="\n",
-    )
-
-    result = _run("validate_frontmatter.py", grimoire, "--format", "json")
-
-    assert result.returncode != 0
-    report = json.loads(result.stdout)
-    codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
-    assert "FRONTMATTER_ROOT_SOURCE_PATH" in codes
-
-
-def test_structure_rejects_root_sources_layer(tmp_path):
-    grimoire = tmp_path / "good_grimoire"
-    shutil.copytree(GOOD, grimoire)
-    (grimoire / "sources").mkdir()
-
-    result = _run("validate_grimoire_structure.py", grimoire, "--format", "json")
-
-    assert result.returncode != 0
-    report = json.loads(result.stdout)
-    codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
-    assert "GRIMOIRE_STRUCTURE_ROOT_SOURCES" in codes
 
 
 def test_structure_does_not_require_hubs_in_colocated_sources(tmp_path):

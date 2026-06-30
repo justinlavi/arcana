@@ -24,7 +24,7 @@ The families are declared in `arcana.json`.
 | `grm` | `grm` | Universal operations from the active grimoire context | `/grm-validate links` |
 | `arc` | `arc` | Arcana platform and maintainer operations: the engine, the home library, agent files, and agent skill directories | `/arc-validate links` |
 
-Each family maps to one source directory (`skills/grm/`, `skills/arc/`) and one slash-command prefix. Normal grimoires still declare exactly one `skill_prefix` in `grimoire.json`, such as `jpn` or `oly`. Arcana is special because it ships both platform commands (`arc`) and universal grimoire-context commands (`grm`).
+Each family maps to one source directory (`skills/grm/`, `skills/arc/`) and one slash-command prefix. Normal grimoires still declare exactly one `skill_prefix` in `grimoire.json`, such as `cook` or `dnd`. Arcana is special because it ships both platform commands (`arc`) and universal grimoire-context commands (`grm`).
 
 ## Source Names
 

@@ -33,7 +33,6 @@ from _lib import (
     FRONTMATTER_RE,
     add_grimoire_arg,
     is_colocated_source_path,
-    is_root_source_path,
     iter_pages,
     parse_frontmatter,
     resolve_grimoire_arg,
@@ -179,15 +178,6 @@ def check_file(path, grimoire_root, reporter):
 
     if "sources" in fields and isinstance(fields["sources"], list):
         for src in fields["sources"]:
-            if isinstance(src, str) and is_root_source_path(src) and not template:
-                reporter.error(
-                    "FRONTMATTER_ROOT_SOURCE_PATH",
-                    f"sources entry '{src}' points at root sources/",
-                    path=rel,
-                    hint="Use a chapter-local path such as chapters/<chapter>/sources/<artifact>.",
-                    docs_reference="docs/page_schema.md",
-                )
-                continue
             if isinstance(src, str) and is_colocated_source_path(src):
                 src_path = resolve_local_source_path(grimoire_root, src)
                 if (src_path is None or not src_path.exists()) and not template:

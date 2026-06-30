@@ -82,6 +82,12 @@ External URLs may appear directly in `sources:` when the URL itself is the
 stable source pointer. When content has been filed locally, cite the local
 `chapters/**/sources/` path so provenance survives link rot and inbox cleanup.
 
+The `publish/` directory holds build or publishing output (a rendered site, an
+exported bundle, generated artifacts). It is present in every grimoire and is not
+a content layer: pages are never authored there and never cite `publish/` paths. The frontmatter,
+provenance, link, orphan, format, portability, and encoding validators all skip
+`publish/`, and it is excluded from the knowledge graph.
+
 ---
 
 ## Frontmatter Fields

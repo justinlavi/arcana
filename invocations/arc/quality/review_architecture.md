@@ -159,7 +159,7 @@ Judge whether names help users and agents predict where things live:
   operations.
 - Arcana-only vocabulary (`invocations`, `formulae`, `rites`) does not leak
   into grimoire content examples except when explaining the boundary.
-- Examples stay generic and reusable (`cooking-grimoire`, `hr-grimoire`,
+- Examples stay generic and reusable (`cooking-grimoire`, `dnd-grimoire`,
   `Alice/Bob`, `Project Alpha`, `{your-grimoire}`).
 
 Flag names that are mechanically valid but semantically awkward. Mechanical

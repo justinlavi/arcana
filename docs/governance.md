@@ -147,11 +147,11 @@ Include in Arcana if it applies to **every** grimoire that references it:
 
 Do **not** include in Arcana:
 
-- Chapters specific to one subject area (recipes, HR policies, codebase structure, ...).
+- Chapters specific to one subject area (recipes, campaign lore, codebase structure, ...).
 - Skills specific to one domain (those live under `<grimoire>/skills/`, prefixed by the grimoire's manifest).
 - Custom rites only one grimoire uses.
 - Real-world data: company names, project names, employee data, customer data, credentials.
-- Grimoire storage layers (`chapters/`, chapter-local `sources/`, `inbox/`, `log.md`). Arcana keeps their templates under `formulae/grimoire/`.
+- Grimoire storage layers (`chapters/`, chapter-local `sources/`, `inbox/`, `log.md`, and the `publish/` build-output layer present in every grimoire, excluded from validation and the knowledge graph). Arcana keeps their templates under `formulae/grimoire/`.
 
 **Where these belong**: in the relevant `<grimoire>-grimoire/chapters/` or `<grimoire>-grimoire/skills/`.
 
@@ -268,7 +268,7 @@ When removing or replacing Arcana content:
 Arcana files must:
 
 - ✅ Apply universally — no domain-specific content (see [What Belongs in Arcana](#what-belongs-in-arcana)).
-- ✅ Use generic example names (`cooking-grimoire`, `hr-grimoire`, `Domain A`, `Project Alpha`, `Alice/Bob`). Real product/company/person names appear only when documenting an actual integration.
+- ✅ Use generic example names (`cooking-grimoire`, `dnd-grimoire`, `Domain A`, `Project Alpha`, `Alice/Bob`). Real product/company/person names appear only when documenting an actual integration.
 - ✅ Use relative paths inside the repo. Use `{{ARCANA_PATH}}` / `{{GRIMOIRE_PATH}}` placeholders in skill files; the registration rite resolves them.
 - ✅ Preserve the text file standard: UTF-8 without BOM, LF line endings, and no mojibake or repair artifacts. Unicode is allowed when it improves readability.
 - ✅ Pass the full validator suite (`/arc-validate`) before commit.

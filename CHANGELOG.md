@@ -1,5 +1,51 @@
 # Changelog
 
+## [1.7.0] - 2026-06-29
+
+MINOR. `publish/` is a first-class grimoire scaffold layer: an optional home for
+turning a grimoire into a website (static-site generator config, build scripts,
+and build output). Making it a defined layer turns the validators' `publish/`
+exclusion from an ad-hoc skip into a principled rule, and gives every grimoire a
+dedicated, documented place for publishing.
+
+### Added
+
+- **`publish/` scaffold layer.** New grimoires scaffold a `publish/` directory
+  with a managed `publish/README.md` that explains the layer, documents
+  publishing methods (Quartz as the default, plus MkDocs Material, Hugo,
+  Docusaurus, and Obsidian Publish), the stage-then-build pattern, and the
+  private-content caveat. The scaffold contract gains the `publish/` directory
+  and managed-README entries.
+- **Full validator exclusion for `publish/`.** Every grimoire validator that
+  walks the tree now skips `publish/`: link, orphan, encoding, format,
+  portability, and doc-tree checks. Build artifacts, generator config, and
+  vendored dependencies under `publish/` never trip `/grm-validate` or
+  `/grm-health-check`, and `publish/` is outside the knowledge graph (pages
+  never cite it).
+
+### Changed
+
+- **`publish/` is documented as a storage layer** across the operating model,
+  page schema, the injected agent routing block, and the create / import /
+  validate-structure invocations.
+- **Existing grimoires gain `publish/` on update.** Because `publish/` is a
+  managed required layer, `/grm-update --apply` (or `/arc-update`) heals it into
+  already-installed grimoires; a clean grimoire is brought current automatically.
+  Until then, an already-installed grimoire reports a structure-validation
+  failure (missing `publish/` and `publish/README.md`); this is expected and is
+  resolved by running the update.
+- **Removed redundant README boilerplate.** The grimoire README scaffold no
+  longer carries the "this README is the canonical home for the long-form
+  description" sentence; the long-form description still lives in the README.
+- **Validators no longer special-case a grimoire-root `sources/`.** Chapter-local
+  `chapters/**/sources/` is the only source model, so the structure, provenance,
+  and frontmatter rites drop their root-`sources/` checks and the leftover
+  top-level `sources` skip-list entries; a grimoire's structure is judged solely
+  against the default scaffold. (`/grm-update` still relocates a legacy root
+  `sources/` into chapter-local folders during heal.)
+- Documentation examples are standardized on two canonical example grimoires,
+  `cooking-grimoire` (`cook`) and `dnd-grimoire` (`dnd`).
+
 ## [1.6.0] - 2026-06-25
 
 MINOR. Grimoire source artifacts are chapter-local: raw sources and

@@ -14,7 +14,7 @@ Usage:
                                           [--format human|json|jsonl]
 
 Args:
-    <directory>   - directory name under ~/grimoires/ (e.g. "lus-grimoire")
+    <directory>   - directory name under ~/grimoires/ (e.g. "dnd-grimoire")
                     or absolute path
     --skill-prefix   - short lowercase slug for the skill prefix (^[a-z][a-z0-9]*$)
     --description - one-line description (defaults to a placeholder)
@@ -57,7 +57,7 @@ def find_existing_skill_prefixes(home):
 
 def main():
     parser = argparse.ArgumentParser(description="Adopt an unmanaged grimoire")
-    parser.add_argument("directory", help="Directory name under home (e.g. lus-grimoire) or absolute path")
+    parser.add_argument("directory", help="Directory name under home (e.g. dnd-grimoire) or absolute path")
     parser.add_argument(
         "--skill-prefix",
         dest="skill_prefix",

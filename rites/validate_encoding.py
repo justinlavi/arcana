@@ -46,7 +46,7 @@ TEXT_NAMES = {
     "LICENSE",
     "VERSION",
 }
-SKIP_DIRS = {".git", ".mypy_cache", ".pytest_cache", "__pycache__", ".artifacts"}
+SKIP_DIRS = {".git", ".mypy_cache", ".pytest_cache", "__pycache__", ".artifacts", "publish"}
 MOJIBAKE_MARKERS = ("\u00c3", "\u00c2", "\u00e2", "\ufffd")
 ASCII_ARTIFACTS = ("A" + "a" + ",a", "A" + ",a", " a" + "' ")
 ASCII_ARTIFACT_PATTERNS = (

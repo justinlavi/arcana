@@ -89,7 +89,7 @@ This is the deterministic core. In one pass it:
 **Quote the envelope** in your report: the `grimoire_summary` counts, each
 grimoire's `status`, and the `sync_skills` `registered`/`reset`/`cleaned`
 counts. Then, for the human, render a plain one-line-per-grimoire summary keyed
-off those machine fields — for example "HR: up to date; Recipes: pulled new
+off those machine fields — for example "Cooking: up to date; D&D: pulled new
 changes; Project Alpha: NOT updated, needs your login" — humanizing the quoted
 counts, never a number you counted yourself. If a grimoire appears under
 `needs_manual_pull`, it could **not** be

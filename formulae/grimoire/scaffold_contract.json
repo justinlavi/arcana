@@ -23,6 +23,12 @@
       "required": true
     },
     {
+      "path": "publish",
+      "source": "publish",
+      "create": true,
+      "required": true
+    },
+    {
       "path": "skills",
       "create": true,
       "required": false
@@ -97,6 +103,14 @@
     {
       "source": "inbox/README.md",
       "target": "inbox/README.md",
+      "create": true,
+      "required": true,
+      "managed": true,
+      "role": "managed_layer_readme"
+    },
+    {
+      "source": "publish/README.md",
+      "target": "publish/README.md",
       "create": true,
       "required": true,
       "managed": true,

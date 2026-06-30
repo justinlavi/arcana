@@ -35,7 +35,7 @@ If the user passed `$directory`, use it. Otherwise run `/grm-sync library` to li
 
 ### 2. Gather the skill prefix
 
-Ask for a short lowercase slug (2-4 letters) matching `^[a-z][a-z0-9]*$` — the prefix for every command this grimoire ships (for example `lus-grimoire` -> `lus`). It must be unique across installed grimoires if the folder has a `skills/` directory.
+Ask for a short lowercase slug (2-4 letters) matching `^[a-z][a-z0-9]*$` — the prefix for every command this grimoire ships (for example `dnd-grimoire` -> `dnd`). It must be unique across installed grimoires if the folder has a `skills/` directory.
 
 ### 3. Gather a description
 

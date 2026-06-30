@@ -117,7 +117,7 @@ Arcana declares command families in `arcana.json`:
 - `arc-*` for Arcana platform and maintainer operations: the engine, the home library, agent files, and agent skill directories (validate, sync, adopt, clean, update, improve, help).
 - `grm-*` for universal grimoire operations that act on the active grimoire.
 
-Normal grimoires declare one skill prefix in their own `grimoire.json`, such as `jpn-*` or `oly-*`.
+Normal grimoires declare one skill prefix in their own `grimoire.json`, such as `cook-*` or `dnd-*`.
 
 Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` in their frontmatter. The registration rite substitutes `{{SKILL_PREFIX}}` with the declaring command family's prefix for Arcana, or with the grimoire's `skill_prefix` for grimoire-owned skills. See [skill schema](skill_schema.md) and [reference](reference.md#grimoire-manifest) for manifest details.
 

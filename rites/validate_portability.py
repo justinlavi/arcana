@@ -32,7 +32,7 @@ RESERVED_BASENAMES = frozenset({
 })
 
 # Top-level directories to skip - not part of the working-tree distribution.
-SKIP_TOP_LEVEL = {".git"}
+SKIP_TOP_LEVEL = {".git", "publish"}
 
 
 def check_segments(rel_parts):

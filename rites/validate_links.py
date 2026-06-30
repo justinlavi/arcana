@@ -40,6 +40,7 @@ from diagnostics import DiagnosticReporter, add_output_format_arg
 SKIP_DIRS = {
     "sources",
     "inbox",
+    "publish",
     "tests",
 }
 

@@ -233,19 +233,7 @@ def main():
                 if human:
                     print(f"  WARN     {rel} declares type: hub but is not a folder-named hub")
 
-    # 6. Source artifacts belong beside the chapter material they support.
-    sources_dir = root / "sources"
-    if sources_dir.is_dir():
-        reporter.error(
-            "GRIMOIRE_STRUCTURE_ROOT_SOURCES",
-            "root sources/ is not a grimoire scaffold layer; source artifacts belong under chapters/**/sources/",
-            path="sources",
-            docs_reference="docs/operating_model.md",
-        )
-        if human:
-            print("  WARN     root sources/ exists - source artifacts belong under chapters/**/sources/")
-
-    # 7. Managed scaffold files should match the current Arcana formulae.
+    # 6. Managed scaffold files should match the current Arcana formulae.
     # These files are operational support files, not grimoire-specific content.
     # Root README, root hub, grimoire.json, and log.md are intentionally not
     # compared because they are customized during grimoire creation.
@@ -285,7 +273,7 @@ def main():
         if human:
             print(f"  WARN     Arcana formula root missing: {formula_root}")
 
-    # 8. JSON requirements from the scaffold contract.
+    # 7. JSON requirements from the scaffold contract.
     for requirement in json_requirements(scaffold_contract):
         rel = requirement["path"]
         actual = root / rel

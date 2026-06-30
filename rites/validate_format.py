@@ -41,7 +41,7 @@ def is_hub(path):
     return path.stem == path.parent.name
 
 
-SKIP_DIRS = {"sources"}
+SKIP_DIRS = {"publish"}
 
 
 def under_skip_dir(path):

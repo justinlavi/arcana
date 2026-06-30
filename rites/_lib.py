@@ -75,17 +75,6 @@ def is_inside_colocated_source_dir(rel) -> bool:
     return True
 
 
-def is_root_source_path(rel) -> bool:
-    """Return True for paths inside a non-canonical grimoire-root source layer."""
-    parts = _path_parts(rel)
-    return bool(parts and parts[0] == SOURCE_DIRNAME)
-
-
-def is_local_source_ref(ref: str) -> bool:
-    """Return True when a frontmatter source string names a local source path."""
-    return is_colocated_source_path(ref) or is_root_source_path(ref)
-
-
 def resolve_local_source_path(root: Path, ref: str) -> Optional[Path]:
     """Resolve a canonical local source ref under ``root`` without escaping it."""
     if not is_colocated_source_path(ref):

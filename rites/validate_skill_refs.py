@@ -8,7 +8,7 @@ ensures each reference resolves to a source `SKILL.md`. Catches drift like:
  - A doc mentioning `/grm-foo` after the skill was deleted/renamed.
  - A new skill mentioned in prose before its `skills/` folder is created.
 
-Grimoire skill references (e.g. `/jpn-...`) are NOT validated here;
+Grimoire skill references (e.g. `/dnd-...`) are NOT validated here;
 they live in their own grimoire repos. This is an Arcana-internal check.
 
 Also validates `rites/data/command_surface.json`, the public contract that

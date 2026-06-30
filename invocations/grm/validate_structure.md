@@ -54,7 +54,7 @@ python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROO
 
 - Parse `grimoire.json`
 - Confirm `README.md`, `log.md`, and `<grimoire-name>.md`
-- Confirm `chapters/` and `inbox/`
+- Confirm `chapters/`, `inbox/`, and `publish/` (the build/publishing-output layer; its contents are excluded from validation and the knowledge graph, and pages never cite it)
 - Confirm source artifacts live in chapter-local `sources/` folders
 
 ### Phase 2: Managed Scaffold Drift
@@ -66,6 +66,7 @@ The following files are operational support files, not grimoire-specific authore
 - `.obsidian/app.json`
 - `.obsidian/graph.json`
 - `inbox/README.md`
+- `publish/README.md`
 
 If any are missing or stale, copy the current version from Arcana unless the user explicitly wants a custom local variant. Custom local variants should be rare because they create cross-platform and agent-behavior drift.
 

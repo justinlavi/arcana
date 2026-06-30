@@ -28,7 +28,6 @@ from pathlib import Path
 from _lib import (
     add_grimoire_arg,
     is_colocated_source_path,
-    is_root_source_path,
     iter_pages,
     iter_colocated_source_markdown,
     parse_frontmatter,
@@ -60,17 +59,6 @@ def check_source_reference(src, rel, root, reporter, human):
                 f"{rel}: source '{src}' points at inbox/ "
                 "(transient - pages must cite chapter-local source artifacts instead)"
             )
-        return
-    if is_root_source_path(src):
-        reporter.error(
-            "PROVENANCE_ROOT_SOURCE_PATH",
-            f"source '{src}' points at root sources/",
-            path=rel,
-            hint="Use a chapter-local path such as chapters/<chapter>/sources/<artifact>.",
-            docs_reference="docs/page_schema.md",
-        )
-        if human:
-            warn(f"{rel}: source '{src}' points at root sources/")
         return
     if is_colocated_source_path(src):
         target = resolve_local_source_path(root, src)

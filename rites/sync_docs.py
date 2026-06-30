@@ -223,7 +223,7 @@ def render_skills_doc(skills, command_metadata):
         "itself (most people never need them). Each command links to its source",
         "`SKILL.md`.",
         "",
-        "Grimoire skills (e.g. `cook-*` for a cooking grimoire, `hr-*` for an HR",
+        "Grimoire skills (e.g. `cook-*` for a cooking grimoire, `dnd-*` for a D&D",
         "grimoire) are declared in each grimoire's own `skills/` directory and are",
         "not listed here. Run `/arc-help` to enumerate every skill installed for an",
         "agent (Arcana + every grimoire).",

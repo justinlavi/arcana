@@ -234,11 +234,6 @@ def test_inside_colocated_source_dir_matches_descendants():
     assert not _lib.is_inside_colocated_source_dir("chapters/sources")
 
 
-def test_root_source_path_is_distinct_from_colocated_sources():
-    assert _lib.is_root_source_path("sources/example.md")
-    assert not _lib.is_root_source_path("chapters/recipes/sources/example.md")
-
-
 def test_resolve_local_source_path_stays_under_root(tmp_path):
     target = tmp_path / "chapters" / "recipes" / "sources" / "example.md"
     target.parent.mkdir(parents=True)

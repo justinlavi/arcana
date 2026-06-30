@@ -170,7 +170,7 @@ If the pass produced user-visible changes:
 
 1. **Universal only** - no domain-specific content in Arcana.
 2. **Backward compatible by default** - don't break existing grimoires; a deliberate break requires a MAJOR bump and a deprecation cycle (see [[docs/governance|governance]] §Versioning / Deprecation Policy).
-3. **Canonical examples only** - `cooking-grimoire` (personal), `hr-grimoire` (workplace); plus `Alice/Bob`, `Project Alpha`, `{your-grimoire}` for sub-examples. No real product/company names, no industry-narrowing assumptions.
+3. **Canonical examples only** - `cooking-grimoire` and `dnd-grimoire`; plus `Alice/Bob`, `Project Alpha`, `{your-grimoire}` for sub-examples. No real product/company names, no industry-narrowing assumptions.
 4. **Magical boundary** - invocations, formulae, rites live ONLY in Arcana.
 5. **Semantic versioning** - the bump is decided by the Compatibility Rule (compatibility, not change size); see [[docs/governance|governance]] §Versioning. Reflected in `CHANGELOG.md`.
 6. **Path conventions** - cross-grimoire references use root placeholders (`ARCANA_HOME/`) and library-key paths such as `cooking-grimoire/...`, never `../`.

@@ -40,7 +40,7 @@ Have a conversation, not a form. Ask one question at a time and probe for specif
 - What questions should the grimoire answer?
 - What documents, processes, or knowledge does it cover?
 - Who are the primary users — just you, a team, public?
-- What 2-4 letter slug should prefix this grimoire's skills? Must match `^[a-z][a-z0-9]*$` (e.g. `cook` for a cooking grimoire yields `/cook-recipe-add`; `hr` for an HR grimoire yields `/hr-onboarding-checklist`).
+- What 2-4 letter slug should prefix this grimoire's skills? Must match `^[a-z][a-z0-9]*$` (e.g. `cook` for a cooking grimoire yields `/cook-recipe-add`; `dnd` for a D&D grimoire yields `/dnd-session-log`).
 
 Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `token` (all-caps), `skill_prefix`, `purpose` (one sentence), `purpose_detailed`, `owner` (whoever maintains it — a person, team, or "personal"), `creation_date` (today as `YYYY-MM-DD`), `repo_url` (the canonical git URL you intend to push this grimoire to — public GitHub, private GitLab, internal Gitea, etc. If you don't know it yet, accept the placeholder `<set this when you push to a git host>` and fix it later).
 
@@ -57,7 +57,7 @@ Chapter naming:
 
 Examples by grimoire flavor:
 - Cooking grimoire: `recipes`, `techniques`, `equipment`, `ingredients`, `meal_plans`
-- HR grimoire: `onboarding`, `policies`, `benefits`, `performance_reviews`, `offboarding`
+- D&D grimoire: `campaigns`, `characters`, `lore`, `rules`, `sessions`
 - Engineering grimoire: `repo_structure`, `build_system`, `runbooks`, `code_standards`
 
 Let the user select, rename, drop, or add chapters and provide a one-line description for each.
@@ -82,7 +82,7 @@ Create the grimoire by applying the contract:
    substituting scaffold placeholders in target paths.
 5. Replace placeholders in copied file contents during Step 4.
 
-The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, skill prefix, description). Chapter-local `sources/` folders are the immutable source layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `.obsidian/app.json` and `.obsidian/graph.json` are managed scaffold files that preserve safe full-path wikilink behavior and Arcana's graph-view color groups; `log.md` is the append-only activity log.
+The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, skill prefix, description). Chapter-local `sources/` folders are the immutable source layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `publish/` (with a managed `publish/README.md`) is the build/publishing-output layer present in every grimoire, excluded from validation and the knowledge graph; it stays idle until you publish, and build output under it is disposable; `.obsidian/app.json` and `.obsidian/graph.json` are managed scaffold files that preserve safe full-path wikilink behavior and Arcana's graph-view color groups; `log.md` is the append-only activity log.
 
 ---
 
@@ -94,8 +94,8 @@ Replace placeholders. Confirm `skill_prefix` with the user before writing — it
 
 | Field | Length | Where it lives | Example |
 |---|---|---|---|
-| `{{GRIMOIRE_NAME}}` | brand only (one word usually) | H1 of root hub, `name` field of manifest | `Cooking`, `HR`, `Project Alpha` |
-| `{{GRIMOIRE_PURPOSE}}` | short tagline (2-5 words) | manifest `description`, italic subtitle in root hub | `personal cooking knowledge`, `HR runbooks and policies`, `Project Alpha knowledge` |
+| `{{GRIMOIRE_NAME}}` | brand only (one word usually) | H1 of root hub, `name` field of manifest | `Cooking`, `D&D`, `Project Alpha` |
+| `{{GRIMOIRE_PURPOSE}}` | short tagline (2-5 words) | manifest `description`, italic subtitle in root hub | `personal cooking knowledge`, `a D&D campaign's lore`, `Project Alpha knowledge` |
 | `{{GRIMOIRE_PURPOSE_DETAILED}}` | long-form paragraph | **only** `README.md` | full multi-sentence description |
 
 Do not re-paste the long form into the manifest, the root hub, the log, or any skill file. If another page needs the description, link to README — don't copy it.

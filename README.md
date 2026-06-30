@@ -16,7 +16,7 @@ Most knowledge lives in scattered files that AI has to search through, interpola
 
 ## What's a Grimoire?
 
-A grimoire is a structured knowledge base built around a single subject — personal recipes, team runbooks, HR policies, research notes, a campaign's lore.
+A grimoire is a structured knowledge base built around a single subject — personal recipes, a tabletop campaign's lore, research notes, project runbooks.
 
 ### Deterministic routing through hubs
 
@@ -38,8 +38,11 @@ A grimoire keeps its wiki and evidence together. **`chapters/`** holds the
 LLM-authored wiki; chapter-local **`sources/`** folders hold immutable artifacts
 and wrappers beside the material they support; **`inbox/`** is a transient drop
 zone for things waiting to be classified; **`log.md`** is an append-only record
-of every mutation. See [operating model](docs/operating_model.md) for ownership
-rules and the validator-enforced contracts.
+of every mutation. A **`publish/`** layer (present in every grimoire) holds build or publishing
+output (a rendered site or exported bundle); it is excluded from grimoire
+validation and from the knowledge graph, and pages never cite it. See
+[operating model](docs/operating_model.md) for ownership rules and the
+validator-enforced contracts.
 
 ### Skills
 
@@ -49,8 +52,8 @@ Every grimoire ships its own slash-command skills — commands prefixed by that 
 |---|---|---|
 | `cooking-grimoire` | `/cook-recipe-add` | Creates a new recipe from the grimoire's own template |
 | `cooking-grimoire` | `/cook-meal-plan` | Builds a plan from your documented ingredient inventory |
-| `hr-grimoire` | `/hr-onboarding-checklist` | Walks through the onboarding process step by step |
-| `hr-grimoire` | `/hr-policy-lookup` | Routes to the right policy document for a situation |
+| `dnd-grimoire` | `/dnd-session-recap` | Writes up the latest session from your notes |
+| `dnd-grimoire` | `/dnd-npc-lookup` | Routes to the right NPC or location entry for a scene |
 
 Knowledge and skills compound: the better your documentation, the smarter your skills.
 
@@ -172,14 +175,16 @@ Both paths use [UPDATE.md](UPDATE.md) as the canonical source of truth.
 |   |           |-- book_folds.md # Leaf
 |   |           |-- windowpane_test.md
 |   |           |-- sources/       # Lamination-specific source artifacts
+|   |-- publish/                  # Build/publishing output (idle until you publish)
 |   |-- skills/                   # Grimoire skills
 |
-|-- hr-grimoire/                  # A workplace grimoire
-|   |-- hr-grimoire.md            # Root hub
-|   |-- grimoire.json             # skill_prefix: hr -> /hr-* skills
+|-- dnd-grimoire/                 # A tabletop-campaign grimoire
+|   |-- dnd-grimoire.md           # Root hub
+|   |-- grimoire.json             # skill_prefix: dnd -> /dnd-* skills
 |   |-- log.md
 |   |-- inbox/
-|   |-- chapters/                 # onboarding/, policies/, benefits/, ...
+|   |-- chapters/                 # campaigns/, characters/, lore/, rules/, ...
+|   |-- publish/
 |   |-- skills/
 |
 |-- library.json                  # Local registry of installed grimoires and their paths

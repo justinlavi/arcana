@@ -20,10 +20,10 @@ def _adopt(home: Path, directory: str, *args: str) -> subprocess.CompletedProces
 
 def test_adopt_grimoire_json_envelope(tmp_path):
     home = tmp_path / "grimoires"
-    target = home / "lus-grimoire"
+    target = home / "dnd-grimoire"
     target.mkdir(parents=True)
 
-    result = _adopt(home, "lus-grimoire", "--skill-prefix", "lus", "--format", "json")
+    result = _adopt(home, "dnd-grimoire", "--skill-prefix", "dnd", "--format", "json")
 
     assert result.returncode == 0
     report = json.loads(result.stdout)
@@ -31,23 +31,23 @@ def test_adopt_grimoire_json_envelope(tmp_path):
     assert report["status"] == "ok"
     assert report["mode"] == "apply"
     assert report["mutations"][0]["action"] == "write"
-    assert report["mutations"][0]["path"] == "lus-grimoire/grimoire.json"
+    assert report["mutations"][0]["path"] == "dnd-grimoire/grimoire.json"
 
     manifest_path = target / "grimoire.json"
     assert manifest_path.is_file()
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    assert manifest["skill_prefix"] == "lus"
-    assert manifest["name"] == "lus-grimoire"
+    assert manifest["skill_prefix"] == "dnd"
+    assert manifest["name"] == "dnd-grimoire"
 
 
 def test_adopt_grimoire_json_collision_is_clean(tmp_path):
     home = tmp_path / "grimoires"
 
-    # First grimoire claims the "lus" skill prefix.
-    first = home / "lus-grimoire"
+    # First grimoire claims the "dnd" skill prefix.
+    first = home / "dnd-grimoire"
     first.mkdir(parents=True)
     (first / "grimoire.json").write_text(
-        json.dumps({"name": "lus-grimoire", "skill_prefix": "lus", "description": "x"}) + "\n",
+        json.dumps({"name": "dnd-grimoire", "skill_prefix": "dnd", "description": "x"}) + "\n",
         encoding="utf-8",
     )
 
@@ -55,7 +55,7 @@ def test_adopt_grimoire_json_collision_is_clean(tmp_path):
     second = home / "other-grimoire"
     second.mkdir(parents=True)
 
-    result = _adopt(home, "other-grimoire", "--skill-prefix", "lus", "--format", "json")
+    result = _adopt(home, "other-grimoire", "--skill-prefix", "dnd", "--format", "json")
 
     assert result.returncode == 2
     report = json.loads(result.stdout)
@@ -70,14 +70,14 @@ def test_adopt_grimoire_json_collision_is_clean(tmp_path):
 
 def test_adopt_grimoire_human_mode_writes_manifest(tmp_path):
     home = tmp_path / "grimoires"
-    target = home / "lus-grimoire"
+    target = home / "dnd-grimoire"
     target.mkdir(parents=True)
 
-    result = _adopt(home, "lus-grimoire", "--skill-prefix", "lus")
+    result = _adopt(home, "dnd-grimoire", "--skill-prefix", "dnd")
 
     assert result.returncode == 0
     assert "Wrote" in result.stdout
     manifest_path = target / "grimoire.json"
     assert manifest_path.is_file()
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    assert manifest["skill_prefix"] == "lus"
+    assert manifest["skill_prefix"] == "dnd"

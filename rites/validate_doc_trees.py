@@ -433,7 +433,7 @@ def collect_markdown_files(root: Path) -> Iterable[Path]:
             rel_parts = path.relative_to(root).parts
         except ValueError:
             continue
-        if rel_parts and rel_parts[0] in {"sources", "inbox", ".git", "node_modules"}:
+        if rel_parts and rel_parts[0] in {"inbox", ".git", "node_modules", "publish"}:
             continue
         # Skip the activity log — historical tree references are preserved.
         if path.name in {"log.md", "CHANGELOG.md"}:

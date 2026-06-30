@@ -18,7 +18,10 @@ Bring external content into a grimoire. The skill is polymorphic - it accepts a 
 - **Junk / unclear** -> stays where it is, flagged for human review
 
 Chapter-local `sources/` folders and `chapters/` pages are the destinations.
-`inbox/` is the optional staging area.
+`inbox/` is the optional staging area. Import never writes to `publish/`: that is
+the build/publishing-output layer (present in every grimoire, excluded from
+validation and the knowledge graph), and no imported source or page is ever
+filed or cited there.
 
 For a one-off chat answer with no source artifact, use `/grm-add` instead.
 

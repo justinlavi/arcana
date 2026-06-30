@@ -1,7 +1,5 @@
 # {{GRIMOIRE_NAME}} Grimoire
 
-This README is the canonical home for the long-form description. Other surfaces (the manifest in `grimoire.json`, the root hub `{{GRIMOIRE_DIRECTORY}}.md`) intentionally just say *"{{GRIMOIRE_NAME}} Grimoire"* - keep the description here so it lives in exactly one place.
-
 {{GRIMOIRE_PURPOSE_DETAILED}}
 
 <!-- BEGIN ARCANA UPDATE -->
@@ -75,6 +73,7 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 ├── inbox/                        # Transient drop zone (mixed content awaiting classification)
 ├── chapters/                     # Knowledge pages with chapter-local sources folders
 {{CHAPTER_TREE}}
+├── publish/                      # Build/publishing-output layer (idle until you publish; excluded from validation)
 └── skills/                       # Grimoire skills (slash commands)
 ```
 
@@ -102,6 +101,7 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
   during import; wiki pages cite those stable paths.
 - **Wiki** (`chapters/`) - LLM-authored markdown synthesis. Hubs, concept pages, entity pages, playbooks, references. Updated incrementally as new sources arrive.
 - **Schema** - `grimoire.json` plus the Arcana-injected block in `~/.claude/CLAUDE.md` / `~/.codex/AGENTS.md`. Tells agents how to operate this grimoire.
+- **Publish** (`publish/`) - Build/publishing output (rendered site, exported bundle, generated artifacts); present in every grimoire, idle until you publish. Not a content layer: never authored as wiki, never cited in `sources:`. Excluded from grimoire validation and the knowledge graph; build output under it is disposable and regenerable.
 
 ## Maintenance Principles
 
@@ -124,7 +124,7 @@ Manifest at `grimoire.json`:
 }
 ```
 
-(The manifest description is a short tagline - a few words like "personal cooking knowledge" or "HR runbooks and policies". The long-form description lives in this README; do not paste the long form into the manifest or hub.)
+(The manifest description is a short tagline - a few words like "personal cooking knowledge" or "a D&D campaign's lore". The long-form description lives in this README; do not paste the long form into the manifest or hub.)
 
 Skills under `skills/<area>-<verb>-<object>/` register as `/{{SKILL_PREFIX}}-<area>-<verb>-<object>`.
 

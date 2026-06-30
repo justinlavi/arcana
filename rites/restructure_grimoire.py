@@ -56,7 +56,7 @@ INLINE_CODE_RE = re.compile(r"`[^`]*`")
 
 # Directories whose Markdown is not part of the routable chapter graph; their
 # wikilinks are left untouched and they are never move/remove targets.
-SKIP_DIRS = {"sources", "inbox", "tests", ".git", ".obsidian"}
+SKIP_DIRS = {"inbox", "tests", ".git", ".obsidian"}
 
 
 def rel_posix(path: Path, root: Path) -> str:

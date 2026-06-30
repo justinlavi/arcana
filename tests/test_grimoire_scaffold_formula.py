@@ -80,6 +80,7 @@ def test_grimoire_scaffold_contract_covers_formula_sources():
         ".obsidian/app.json",
         ".obsidian/graph.json",
         "inbox/README.md",
+        "publish/README.md",
     }
 
 

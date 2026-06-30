@@ -23,8 +23,13 @@ A grimoire's content is organized into layers that work together:
 | Inbox | `inbox/` | LLM and user both write | Transient drop zone for mixed content awaiting classification. Cleared on `/grm-import`. |
 | Wiki | `chapters/`, root hub | LLM authors and maintains | Synthesized knowledge with frontmatter (`type`, `authority`, `sources`, `last_verified`) |
 | Schema | `grimoire.json` + injected agent block | User co-evolves | Tells the agent how to operate this grimoire |
+| Publish | `publish/` | Build tooling writes; LLM never authors | Build/publishing-output layer (rendered site, exported bundle, generated artifacts); present in every grimoire, idle until you publish. Excluded from validation and the knowledge graph; never cited by pages. Build output under it is disposable and regenerable. |
 
-Plus the per-grimoire `log.md` (append-only activity record).
+Plus the per-grimoire `log.md` (append-only activity record). The `publish/`
+build/publishing-output layer (see the table above) is present in every grimoire
+and is excluded from all grimoire validation and from the knowledge graph
+(orphan, link, frontmatter, provenance, format, portability, and encoding rites
+skip it) and is never cited by pages.
 
 Chapter-local `sources/` folders and `inbox/` are distinct on purpose:
 `chapters/**/sources/` is permanent and citation-worthy (pages with
@@ -106,7 +111,7 @@ Two structural choices are deliberate and mechanically enforced, not incidental:
 7) When adding knowledge, update the relevant hub with an explicit full-path wikilink pointer; no exploratory wording. If the new content needs its own grouping, add a sub-folder with its own hub - the convention recurses.
 
 ## Scope Rules
-- **Shared chapters** store rules that apply across all scopes the grimoire covers (e.g. company-wide policies in an HR grimoire, kitchen-wide techniques in a cooking grimoire).
+- **Shared chapters** store rules that apply across all scopes the grimoire covers (e.g. campaign-wide house rules in a D&D grimoire, kitchen-wide techniques in a cooking grimoire).
 - **Scope-specific chapters** (often under a `projects/`, `clients/`, `teams/`, or similar folder) store overrides and values that only apply to one scope.
 - Never place scope-specific values in shared chapters.
 - Never duplicate shared invariants in scope-specific docs — link to the shared canonical page instead.
