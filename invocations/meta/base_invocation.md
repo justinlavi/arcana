@@ -170,19 +170,6 @@ Confirm:
 - No absolute paths.
 - No `invocations/`, `formulae/`, or `rites/` folders created in the grimoire.
 
-### Phase 6 — Append a log entry
-
-```bash
-python3 ARCANA_HOME/rites/append_log.py \
-  --grimoire . \
-  --op create \
-  --title "<short description of what was authored>" \
-  --skill /<skill prefix>-<skill> \
-  --field pages=<comma-separated paths>
-```
-
----
-
 ## Output checklist
 
 - [ ] Files created/edited (with relative paths)

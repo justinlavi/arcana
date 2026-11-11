@@ -16,7 +16,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Routing: hub-per-folder, open-ended depth -> [[docs/operating_model|operating model]]
 - Frontmatter: type / authority / sources / last_verified -> [[docs/page_schema|page schema]]
 - Engine layers: `docs/`, `invocations/`, `formulae/`, `rites/`, `skills/`, and `resources/`
-- Grimoire scaffold layers (`chapters/`, chapter-local `sources/`, `inbox/`, `log.md`; `publish/` build-output layer present in every grimoire, excluded from validation and the graph) -> [[formulae/grimoire/README|README]]
+- Grimoire scaffold layers (`chapters/`, chapter-local `sources/`, `inbox/`; `publish/` build-output layer present in every grimoire, excluded from validation and the graph) -> [[formulae/grimoire/README|README]]
 
 ## Documentation
 
@@ -82,7 +82,6 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Chapter hub template -> [[formulae/chapter_hub.formula|chapter hub.formula]]
 - Knowledge page template -> [[formulae/page.formula|page.formula]]
 - Custom invocation template -> [[formulae/invocation.formula|invocation.formula]]
-- Log entry shape -> [[formulae/log_entry.formula|log entry.formula]]
 - Source artifact template -> [[formulae/source.formula|source.formula]]
 - Scaffold contract: `formulae/grimoire/scaffold_contract.json`
 
@@ -100,7 +99,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Library reconciliation: `rites/sync_library.py`
 - Generated docs sync: `rites/sync_docs.py`
 - Manifest writer for unmanaged dirs: `rites/adopt_grimoire.py`
-- Grimoire log appender: `rites/append_log.py`
+- Recent content history from git: `rites/recent_changes.py`
 - Full validator orchestrator: `rites/validate.py`
 - Validators: `rites/validate_<aspect>.py`
 

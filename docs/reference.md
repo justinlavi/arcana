@@ -208,7 +208,6 @@ When creating new grimoires, use these placeholders in formula templates:
 | `{{CHAPTER_TITLE}}` | Chapter hub display title (H1 and frontmatter title) | `Recipes`, `Onboarding` |
 | `{{CHAPTER_NAME}}` | Chapter folder slug used in tags and routing paths | `recipes`, `onboarding` |
 | `{{EXAMPLE_CHAPTER}}` | One example chapter name | `recipes`, `onboarding` |
-| `{{CREATION_DATE}}` | ISO date the grimoire was created | `2026-05-13` |
 
 **Description-duplication policy.** Three description-shaped placeholders, each with a single canonical home:
 

@@ -50,8 +50,8 @@ maintenance safe.
 
 "Autonomous" means *no prior approval is needed*, never *invisible*: every
 unattended action is recorded (an Arcana-visible change in `CHANGELOG.md` under
-`[Unreleased]`; a grimoire operation in `log.md`), and the rite envelopes leave a
-machine-readable trail.
+`[Unreleased]`; a grimoire operation in the grimoire's git history), and the rite
+envelopes leave a machine-readable trail.
 
 ### The unattended-safe gate
 
@@ -83,7 +83,6 @@ human maintainer.
 | Regenerate generated indexes | `python3 rites/sync_docs.py --apply` | drift gate clean afterward |
 | Correct prose-wrong contract drift | the contract-coherence audit | the originating probe plus a validator pass |
 | Append the changelog | edit `CHANGELOG.md` under `[Unreleased]` | — |
-| Append a grimoire log entry | `append_log` | envelope: one `append` mutation |
 
 ### Propose, then apply on one confirmation
 
@@ -151,7 +150,7 @@ Do **not** include in Arcana:
 - Skills specific to one domain (those live under `<grimoire>/skills/`, prefixed by the grimoire's manifest).
 - Custom rites only one grimoire uses.
 - Real-world data: company names, project names, employee data, customer data, credentials.
-- Grimoire storage layers (`chapters/`, chapter-local `sources/`, `inbox/`, `log.md`, and the `publish/` build-output layer present in every grimoire, excluded from validation and the knowledge graph). Arcana keeps their templates under `formulae/grimoire/`.
+- Grimoire storage layers (`chapters/`, chapter-local `sources/`, `inbox/`, and the `publish/` build-output layer present in every grimoire, excluded from validation and the knowledge graph). Arcana keeps their templates under `formulae/grimoire/`.
 
 **Where these belong**: in the relevant `<grimoire>-grimoire/chapters/` or `<grimoire>-grimoire/skills/`.
 

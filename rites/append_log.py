@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Append a parseable entry to a grimoire's log.md.
+"""DEPRECATED (1.8.0): append a parseable entry to a grimoire's log.md.
+
+log.md is retired. A grimoire's history is its git history; use
+``rites/recent_changes.py`` to render it. No invocation calls this rite any
+more; it remains for one minor so existing automation keeps working, and is
+removed in the next minor release.
 
 Format documented in formulae/log_entry.formula.md:
 

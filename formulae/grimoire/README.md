@@ -69,7 +69,6 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 ├── {{GRIMOIRE_DIRECTORY}}.md     # Root hub (start here for routing)
 ├── README.md                     # This file (human-facing project README)
 ├── grimoire.json                 # Manifest: name, skill prefix, description
-├── log.md                        # Append-only content-change history (not a VCS log)
 ├── inbox/                        # Transient drop zone (mixed content awaiting classification)
 ├── chapters/                     # Knowledge pages with chapter-local sources folders
 {{CHAPTER_TREE}}
@@ -109,7 +108,7 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 - Pages declare their authority (`external` / `grimoire` / `hybrid`) and cite sources.
 - Stale claims (older than the stale window, default 90 days) are flagged by `/grm-health-check` and revisited.
 - Names follow the convention recorded in `grimoire.json` (`naming`, default `snake_case`). Any casing is valid; consistency within the grimoire is the goal, and links must match on-disk spelling exactly.
-- The activity log is append-only and records content changes (pages/sources added, removed, changed), not version-control mechanics; never delete entries.
+- History lives in git. There is no hand-maintained activity log; `git log -- chapters/` (or `ARCANA_HOME/rites/recent_changes.py`) answers "what changed recently".
 - All paths are relative inside this grimoire; cross-grimoire references use `ARCANA_HOME/`-style placeholders.
 - Text files use UTF-8 without BOM and LF line endings. Unicode is allowed; mojibake and repair artifacts are not.
 

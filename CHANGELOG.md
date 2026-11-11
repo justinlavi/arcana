@@ -35,6 +35,17 @@
 
 ### Changed
 
+- **`log.md` is retired.** No invocation reads the grimoire activity log;
+  every mutating command only appended to it, and an append-only file at the
+  grimoire root guarantees merge conflicts the moment two people share a
+  grimoire. A grimoire's history is its git history. New grimoires are
+  scaffolded without `log.md`; an existing file stays valid and untouched
+  (validators keep their exemptions), and no command appends to it any more.
+  The new read-only `rites/recent_changes.py` renders recent content commits
+  (`--since 90d`, JSON envelope) and `/grm-health-check` uses it for its
+  activity phase. `append_log.py` and the `log-entry` page type are
+  deprecated; the rite is removed in the next minor. The routing block drops
+  the log line; `/grm-sync agentfile` refreshes it.
 - **Codex skills register in `~/.agents/skills`.** Codex documents
   `~/.agents/skills` as its personal skill root and treats `~/.codex/skills`
   as deprecated. The agent target registry gains `deprecated_skill_targets`,

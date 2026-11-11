@@ -88,9 +88,9 @@ python3 ARCANA_HOME/rites/validate_orphans.py --grimoire GRIMOIRE_ROOT
 
 Orphan count should drop significantly - every reconnected page joins the routing graph.
 
-### Phase 6: Log
+### Phase 6: Report
 
-Append an entry to `log.md` recording:
+Report in chat:
 - Skill used
 - Files touched (count is fine; full list available via `git diff --name-only`)
 - Number of mechanical repairs, ambiguities resolved manually, any unresolvable misses left

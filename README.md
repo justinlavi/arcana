@@ -37,8 +37,8 @@ Both paths are deterministic. The structure stays only as deep as the topic warr
 A grimoire keeps its wiki and evidence together. **`chapters/`** holds the
 LLM-authored wiki; chapter-local **`sources/`** folders hold immutable artifacts
 and wrappers beside the material they support; **`inbox/`** is a transient drop
-zone for things waiting to be classified; **`log.md`** is an append-only record
-of every mutation. A **`publish/`** layer (present in every grimoire) holds build or publishing
+zone for things waiting to be classified; the change history is the git history.
+A **`publish/`** layer (present in every grimoire) holds build or publishing
 output (a rendered site or exported bundle); it is excluded from grimoire
 validation and from the knowledge graph, and pages never cite it. See
 [operating model](docs/operating_model.md) for ownership rules and the
@@ -93,7 +93,6 @@ Arcana is the engine that powers all your grimoires. You install it once; your g
 - Their `chapters/` (LLM-authored content plus colocated immutable sources)
 - Their own `/<skill prefix>-*` skills — actionable, domain-specific commands
 - Their `grimoire.json` manifest declaring their identity and skill prefix
-- Their `log.md` — the append-only activity record
 
 When you update Arcana, all your grimoires benefit — because they reference it rather than copy from it.
 
@@ -162,7 +161,6 @@ Both paths use [UPDATE.md](UPDATE.md) as the canonical source of truth.
 |-- cooking-grimoire/             # A personal grimoire
 |   |-- cooking-grimoire.md       # Root hub
 |   |-- grimoire.json             # skill_prefix: cook -> /cook-* skills
-|   |-- log.md                    # Activity log
 |   |-- inbox/                    # Drop zone for content awaiting classification
 |   |-- chapters/                 # recipes/, techniques/, equipment/, ...
 |   |   |-- recipes/recipes.md    # Chapter hub (folder-name convention)
@@ -181,7 +179,6 @@ Both paths use [UPDATE.md](UPDATE.md) as the canonical source of truth.
 |-- dnd-grimoire/                 # A tabletop-campaign grimoire
 |   |-- dnd-grimoire.md           # Root hub
 |   |-- grimoire.json             # skill_prefix: dnd -> /dnd-* skills
-|   |-- log.md
 |   |-- inbox/
 |   |-- chapters/                 # campaigns/, characters/, lore/, rules/, ...
 |   |-- publish/

@@ -25,7 +25,9 @@ A grimoire's content is organized into layers that work together:
 | Schema | `grimoire.json` + injected agent block | User co-evolves | Tells the agent how to operate this grimoire |
 | Publish | `publish/` | Build tooling writes; LLM never authors | Build/publishing-output layer (rendered site, exported bundle, generated artifacts); present in every grimoire, idle until you publish. Excluded from validation and the knowledge graph; never cited by pages. Build output under it is disposable and regenerable. |
 
-Plus the per-grimoire `log.md` (append-only activity record). The `publish/`
+A grimoire's change history is its git history; `rites/recent_changes.py`
+renders the recent content commits for agents and health checks, so there is no
+hand-maintained activity log. The `publish/`
 build/publishing-output layer (see the table above) is present in every grimoire
 and is excluded from all grimoire validation and from the knowledge graph
 (orphan, link, frontmatter, provenance, format, portability, and encoding rites

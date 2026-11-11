@@ -60,15 +60,6 @@
       "placeholder_required": true
     },
     {
-      "source": "log.md",
-      "target": "log.md",
-      "create": true,
-      "required": true,
-      "managed": false,
-      "role": "customized",
-      "placeholder_required": true
-    },
-    {
       "source": "gitignore",
       "target": ".gitignore",
       "create": true,

@@ -30,7 +30,7 @@ Flags:
 ## Preconditions
 
 1. Resolve `GRIMOIRE_ROOT` with the shared grimoire directory guard. Refuse for Arcana itself.
-2. The grimoire must have `chapters/`, `log.md`, and a root hub.
+2. The grimoire must have `chapters/` and a root hub.
 
 ## Workflow
 
@@ -97,20 +97,15 @@ Group findings by category. For each group ask the user:
 - **Confirm-then-apply**: orphan wiring (which hub should own this orphan?), terminology standardization, page promotions.
 - **Surface only**: contradictions, stale claims, ghost references -> list them; do not act without explicit approval.
 
-### Phase 7: Append to log.md
+### Phase 7: Recent activity
+
+Render what changed recently from git so the report can relate findings to recent edits:
 
 ```bash
-python3 ARCANA_HOME/rites/append_log.py \
-  --grimoire GRIMOIRE_ROOT \
-  --op health-check \
-  --title "<short summary>" \
-  --skill /grm-health-check \
-  --field orphans=<n> \
-  --field stale=<n> \
-  --field ghost-refs=<n> \
-  --field contradictions=<n> \
-  --field fixes-applied=<n>
+python3 ARCANA_HOME/rites/recent_changes.py --grimoire GRIMOIRE_ROOT --since 90d
 ```
+
+If the grimoire is not a git repository the rite says `no history`; report that plainly rather than inventing a timeline.
 
 ### Phase 8: Re-validate
 
@@ -120,7 +115,7 @@ Re-run Phase 1 rites. They must all pass before declaring the health check compl
 
 1. Mechanical rites' output is the source of truth for orphan/provenance/frontmatter findings. Don't override.
 2. Contradictions and stale claims are surfaced, not silently fixed.
-3. Every page touched by Phase 6 is reflected in the log entry.
+3. Every page touched by Phase 6 is listed in the report.
 4. The health check operates on the active grimoire only. Never reach into other grimoires.
 
 ## Report

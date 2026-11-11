@@ -52,10 +52,9 @@ For each inbound link the rite reported:
 - Drop the pointer from the **parent chapter hub**.
 - For other inbound links, either repoint them to a sensible replacement page or remove the reference - never leave a wikilink targeting deleted content.
 
-### 5. Log and validate
+### 5. Validate
 
 ```bash
-python3 ARCANA_HOME/rites/append_log.py --grimoire GRIMOIRE_ROOT --op remove --title "removed PATH" --skill /grm-remove
 python3 ARCANA_HOME/rites/validate.py --grimoire GRIMOIRE_ROOT links orphans structure
 ```
 

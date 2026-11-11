@@ -42,7 +42,7 @@ Or with a topic or material:
 4. Every page (hub + leaves) carries v2 frontmatter (`type`, `title`, `tags`, …). See `ARCANA_HOME/docs/page_schema.md`.
 5. Authored knowledge is `authority: grimoire`. If the content directly summarizes one external source, file the source with `/grm-import` instead.
 6. Link to sources of truth; don't duplicate their content.
-7. New content must be wired into a hub (a chapter's `## Routes`, or the root hub) before the operation is complete. One `log.md` entry per addition. Don't file trivial one-liners — add what compounds.
+7. New content must be wired into a hub (a chapter's `## Routes`, or the root hub) before the operation is complete. Don't file trivial one-liners — add what compounds.
 
 ---
 
@@ -157,18 +157,6 @@ the material clearly opens a new routable area.
 
 ---
 
-## Step 4: Append to log.md
-
-```bash
-python3 ARCANA_HOME/rites/append_log.py \
-  --grimoire GRIMOIRE_ROOT \
-  --op create \
-  --title "<page or chapter title>" \
-  --skill /grm-add \
-  --field pages=chapters/<chapter>/<slug-or-hub>.md
-```
-
----
 
 ## Step 5: Validate
 

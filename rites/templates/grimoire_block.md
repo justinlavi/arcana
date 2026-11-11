@@ -16,7 +16,6 @@ For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. Th
 - **`chapters/**/sources/`** - Immutable source artifacts and source wrappers (articles, transcripts, papers, screenshots) colocated with the chapter material they support. File during import, then read. Citation-stable: pages with `authority: external` cite paths under here.
 - **`inbox/`** - Optional transient drop zone for mixed content awaiting classification. Cleared by `/grm-import`. Pages must NOT cite `inbox/` paths (contents disappear once processed).
 - **`chapters/`** - LLM-authored knowledge pages. Every page carries YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`); see `ARCANA_HOME/docs/page_schema.md`.
-- **`log.md`** - Append-only activity log. Each entry begins `## [YYYY-MM-DD HH:MM] <op> | <title>`.
 - **`publish/`** - Build/publishing-output layer (rendered site, exported bundle, generated artifacts); present in every grimoire, idle until you publish. Excluded from grimoire validation and from the knowledge graph; pages must NOT cite `publish/` paths. Build output under it is disposable and regenerable.
 
 ### Routing rules

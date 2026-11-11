@@ -33,7 +33,6 @@ A page declares its `type` so the agent knows how to treat it and so validators 
 | `source` | A source wrapper: capture metadata plus source body or pointer for one immutable artifact. | `chapters/<chapter>/sources/<slug>.md` |
 | `playbook` | A procedural runbook the user follows. | `chapters/<chapter>/<procedure>.md` |
 | `reference` | Glossary-style or schema-style definition page. | `chapters/<chapter>/<term>.md` or `docs/*.md` |
-| `log-entry` | A single entry in `log.md`. Reserved for tooling that splits the log per entry; `log.md` itself is not annotated. | tooling output only |
 
 If a page genuinely doesn't fit, prefer `concept` and add a precise `tags:` entry instead of inventing a new type.
 
@@ -41,7 +40,7 @@ If a page genuinely doesn't fit, prefer `concept` and add a precise `tags:` entr
 
 ## Authority Models
 
-Every page (except `hub` and `log-entry`) declares where its truth lives:
+Every page (except `hub`) declares where its truth lives:
 
 | Authority | Meaning | Source citation |
 |---|---|---|
@@ -49,7 +48,7 @@ Every page (except `hub` and `log-entry`) declares where its truth lives:
 | `grimoire` | This page IS the source of truth. Editing it is how truth changes. | `sources:` may be empty; provide change-control notes in body. |
 | `hybrid` | Grimoire owns the synthesis, external systems own implementation details. | Required: list `sources:`. |
 
-`hub` and `log-entry` pages omit `authority`.
+`hub` pages omit `authority`.
 
 ---
 
@@ -94,7 +93,7 @@ provenance, link, orphan, format, portability, and encoding validators all skip
 
 ```yaml
 ---
-type: hub | concept | entity | source | playbook | reference | log-entry
+type: hub | concept | entity | source | playbook | reference
 title: "Human-readable title"
 aliases: ["alt name", "abbreviation"]
 tags: [chapter/<chapter>, type/<type>, custom/<...>]
@@ -113,8 +112,8 @@ last_verified: 2026-05-12
 | `aliases` | optional | List of alternate names for search, Dataview, and human metadata. Aliases are metadata only; wikilinks never resolve through aliases. |
 | `tags` | every page | Use `/`-separated namespaces: `chapter/<name>`, `type/<type>`, `domain/<...>`. Drives Dataview and Obsidian tag panes. |
 | `sources` | required for `authority: external`, `authority: hybrid`, and `type: source` | Paths or URLs. At least one entry must resolve. Validator checks `chapters/**/sources/...` paths exist on disk. |
-| `authority` | every page except `hub` / `log-entry` | One of the three values above. |
-| `last_verified` | every page except `hub` / `log-entry` | ISO date (`YYYY-MM-DD`) the page was last hand-verified or auto-checked. Must be a real verification date, not an implausibly early sentinel: `validate_frontmatter` rejects any date before a fixed static floor (`2020-01-01`), which catches epoch-style placeholders like `1970-01-01`. `/grm-health-check` flags pages older than the stale window (default: 90 days). |
+| `authority` | every page except `hub` | One of the three values above. |
+| `last_verified` | every page except `hub` | ISO date (`YYYY-MM-DD`) the page was last hand-verified or auto-checked. Must be a real verification date, not an implausibly early sentinel: `validate_frontmatter` rejects any date before a fixed static floor (`2020-01-01`), which catches epoch-style placeholders like `1970-01-01`. `/grm-health-check` flags pages older than the stale window (default: 90 days). |
 
 ### Required-fields matrix
 
@@ -126,7 +125,6 @@ last_verified: 2026-05-12
 | `source` | required | required | required | required, always external | required | required |
 | `playbook` | required | required | required | required | required if external/hybrid | required |
 | `reference` | required | required | required | required | required if external/hybrid | required |
-| `log-entry` | required | required | - | - | - | - |
 
 `aliases` is optional everywhere. Use it for alternate names and discovery, not for routing.
 

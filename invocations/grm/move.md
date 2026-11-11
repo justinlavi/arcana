@@ -53,10 +53,9 @@ The rite retargets link paths but does not edit hubs or display labels. After th
 
 ### 5. Log and validate
 
-Append one entry to the grimoire log, then re-validate:
+Re-validate:
 
 ```bash
-python3 ARCANA_HOME/rites/append_log.py --grimoire GRIMOIRE_ROOT --op move --title "moved SRC to DST" --skill /grm-move
 python3 ARCANA_HOME/rites/validate.py --grimoire GRIMOIRE_ROOT links orphans structure
 ```
 

@@ -83,7 +83,7 @@ Create the grimoire by applying the contract:
    substituting scaffold placeholders in target paths.
 5. Replace placeholders in copied file contents during Step 4.
 
-The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, skill prefix, description). Chapter-local `sources/` folders are the immutable source layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `publish/` (with a managed `publish/README.md`) is the build/publishing-output layer present in every grimoire, excluded from validation and the knowledge graph; it stays idle until you publish, and build output under it is disposable; `.obsidian/app.json` and `.obsidian/graph.json` are managed scaffold files that preserve safe full-path wikilink behavior and Arcana's graph-view color groups; `log.md` is the append-only activity log.
+The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, skill prefix, description). Chapter-local `sources/` folders are the immutable source layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `publish/` (with a managed `publish/README.md`) is the build/publishing-output layer present in every grimoire, excluded from validation and the knowledge graph; it stays idle until you publish, and build output under it is disposable; `.obsidian/app.json` and `.obsidian/graph.json` are managed scaffold files that preserve safe full-path wikilink behavior and Arcana's graph-view color groups.
 
 ---
 
@@ -122,13 +122,10 @@ Do not re-paste the long form into the manifest, the root hub, the log, or any s
 - `{{CHAPTER_LIST}}` — bulleted `**name** - description` per chapter
 - `{{CHAPTER_TREE}}` — ASCII tree of `chapters/<name>/<name>.md`
 
-**`log.md`**:
-- `{{GRIMOIRE_NAME}}`, `{{CREATION_DATE}}`, `{{GRIMOIRE_DIRECTORY}}`
-
 Verify no `{{` placeholders remain:
 
 ```bash
-grep -r "{{" {{grimoire_directory}}/{{grimoire_directory}}.md {{grimoire_directory}}/README.md {{grimoire_directory}}/grimoire.json {{grimoire_directory}}/log.md
+grep -r "{{" {{grimoire_directory}}/{{grimoire_directory}}.md {{grimoire_directory}}/README.md {{grimoire_directory}}/grimoire.json
 ```
 
 Remove any leftover `.gitkeep` files in chapter folders that get populated:

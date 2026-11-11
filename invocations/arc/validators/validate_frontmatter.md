@@ -36,7 +36,7 @@ See [[docs/page_schema|page schema]] for the full required-fields matrix per `ty
 In short:
 
 1. YAML frontmatter delimited by `---` exists.
-2. `type:` is one of `hub | concept | entity | source | playbook | reference | log-entry`.
+2. `type:` is one of `hub | concept | entity | source | playbook | reference`.
 3. The required-fields matrix holds for the declared `type`.
 4. `authority:` (when present) is one of `external | grimoire | hybrid`.
 5. `type: source` is reserved for source wrappers under `chapters/**/sources/`.

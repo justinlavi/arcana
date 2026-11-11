@@ -53,7 +53,7 @@ python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROO
 ### Phase 1: Root Structure
 
 - Parse `grimoire.json`
-- Confirm `README.md`, `log.md`, and `<grimoire-name>.md`
+- Confirm `README.md` and `<grimoire-name>.md`
 - Confirm `chapters/`, `inbox/`, and `publish/` (the build/publishing-output layer; its contents are excluded from validation and the knowledge graph, and pages never cite it)
 - Confirm source artifacts live in chapter-local `sources/` folders
 

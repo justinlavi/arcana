@@ -140,7 +140,7 @@ same work runs as individual rites: `sync_library.py --apply`, then per grimoire
 `validate.py --grimoire <root> --summary`, copy each
 `GRIMOIRE_STRUCTURE_STALE_MANAGED` / `_MISSING_MANAGED` formula file over the
 grimoire's copy (managed scaffold only — never the customized README, root hub,
-`grimoire.json`, or `log.md`), ensure the README's update block matches
+or `grimoire.json`), ensure the README's update block matches
 `formulae/grimoire/README.md`, place cited source artifacts under the
 `chapters/**/sources/` folder for the chapter package that cites them,
 `repair_links.py --grimoire <root> --apply`, re-validate, then

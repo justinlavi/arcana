@@ -61,7 +61,7 @@ EXEMPT_FILENAMES = {
 # `YYYY-MM-DD` would otherwise fail.
 FORMULA_TEMPLATE_DIRS = {"formulae"}
 
-VALID_TYPES = {"hub", "concept", "entity", "source", "playbook", "reference", "log-entry"}
+VALID_TYPES = {"hub", "concept", "entity", "source", "playbook", "reference"}
 VALID_AUTHORITIES = {"external", "grimoire", "hybrid"}
 
 # Static floor for `last_verified`. A well-formed date earlier than this is an
@@ -77,8 +77,6 @@ def required_fields_for(type_):
     """Return (required_set, optional_set) for a type."""
     if type_ == "hub":
         return {"type", "title", "tags"}, {"aliases"}
-    if type_ == "log-entry":
-        return {"type", "title"}, set()
     # All other types share the same baseline.
     return (
         {"type", "title", "tags", "authority", "last_verified"},

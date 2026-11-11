@@ -38,7 +38,7 @@ If the user provides only a description, ask for a source location (or instruct 
 ## Preconditions
 
 1. Resolve `GRIMOIRE_ROOT` with the shared grimoire directory guard. Refuse for Arcana itself.
-2. `log.md` and `chapters/` must exist at the grimoire root. If missing, instruct the user to re-scaffold or run `/grm-validate structure`.
+2. `chapters/` must exist at the grimoire root. If missing, instruct the user to re-scaffold or run `/grm-validate structure`.
 3. `inbox/` is optional. If the user invokes with no argument and no `inbox/` exists, ask whether to create one or to point at a specific path.
 
 ## Modes
@@ -115,24 +115,7 @@ source wrapper or raw artifact under `sources:`. Do not append backlinks or
 derived-page lists to files under `chapters/**/sources/`; source wrappers are
 capture records, and wiki pages carry the provenance pointers.
 
-#### 6. Append a single log entry
-
-```bash
-python3 ARCANA_HOME/rites/append_log.py \
-  --grimoire GRIMOIRE_ROOT \
-  --op import \
-  --title "<short description>" \
-  --skill /grm-import \
-  --field source="<inbox or path or single-file>" \
-  --field pages-created=<n> \
-  --field pages-updated=<n> \
-  --field sources-added=<n> \
-  --field inbox-remaining=<n>
-```
-
-One entry covers the whole sweep. Don't append per-file.
-
-#### 7. Validate
+#### 6. Validate
 
 ```bash
 python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT
