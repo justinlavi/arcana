@@ -4,6 +4,12 @@
 
 ### Added
 
+- **Seeded scaffold `.gitignore`.** New grimoires get a `.gitignore` that
+  keeps Obsidian per-user state and OS files out of git. It is seeded, not
+  managed: `/grm-update` copies it in when absent and never overwrites a
+  customised one; the structure validator reports its absence as a warning
+  (`GRIMOIRE_STRUCTURE_MISSING_SEEDED`). The scaffold contract gains the
+  `seed_if_absent` flag.
 - **Per-grimoire naming convention.** `grimoire.json` gains an optional
   `naming` field (`snake_case` when absent, `preserve` for material that keeps
   its own casing, or another named style). Any casing is valid in page and
@@ -26,6 +32,14 @@
   or macOS.
 - **Windows in CI.** The fast gate runs on `windows-latest` as well as
   `ubuntu-latest`, so Windows-only failures surface before release.
+
+### Changed
+
+- **Codex skills register in `~/.agents/skills`.** Codex documents
+  `~/.agents/skills` as its personal skill root and treats `~/.codex/skills`
+  as deprecated. The agent target registry gains `deprecated_skill_targets`,
+  and `sync_skills.py` removes managed-prefix skills from the former
+  location so no stale copy shadows the current one.
 
 ### Fixed
 

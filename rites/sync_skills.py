@@ -720,6 +720,41 @@ def apply_registration_plan(
     return registered, cleaned
 
 
+def clean_deprecated_targets(
+    config: dict[str, Any],
+    specs: list[SkillSpec],
+    dry_run: bool,
+    reporter: ResultReporter | None = None,
+    label: str = "",
+) -> int:
+    """Remove managed-namespace skills from a target's former skill directories.
+
+    An agent that moved its skill root (Codex: ~/.codex/skills -> ~/.agents/skills)
+    still reads the old location for a while, so a copy left there would shadow
+    or duplicate the current one. Only managed prefixes are touched; a user's
+    own skills in the old directory are never removed.
+    """
+    prefixes = tuple(f"{prefix}-" for prefix in sorted({spec.skill_prefix for spec in specs}))
+    cleaned = 0
+    for old_root in config.get("deprecated_paths", []) or []:
+        if not prefixes or not old_root.is_dir():
+            continue
+        for skill_dir in sorted(old_root.iterdir()):
+            if not skill_dir.is_dir() or not skill_dir.name.startswith(prefixes):
+                continue
+            if dry_run:
+                info(f"Would clean deprecated location: {skill_dir}")
+                if reporter is not None:
+                    reporter.message("info", f"would clean deprecated /{skill_dir.name} ({label})", path=skill_dir)
+                cleaned += 1
+            elif remove_managed_skill_dir(skill_dir, old_root):
+                info(f"Cleaned deprecated location: {skill_dir}")
+                if reporter is not None:
+                    reporter.mutation("remove", path=skill_dir, detail=f"/{skill_dir.name} ({label}, deprecated location)")
+                cleaned += 1
+    return cleaned
+
+
 def selected_targets(agent: str):
     """Return target configurations for the requested agent."""
     if agent == "all":
@@ -786,8 +821,12 @@ def register_target(
             label=label,
         )
 
+    deprecated_cleaned = 0
+    if not blocked:
+        deprecated_cleaned = clean_deprecated_targets(config, specs, dry_run, reporter=reporter, label=label)
+
     registered = planned_registered if dry_run else applied_registered
-    cleaned = planned_cleaned if dry_run else applied_cleaned
+    cleaned = (planned_cleaned if dry_run else applied_cleaned) + deprecated_cleaned
     action = "would register" if dry_run else "registered"
     cleanup_action = "would clean" if dry_run else "cleaned"
 

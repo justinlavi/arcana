@@ -82,10 +82,16 @@ def skill_registration_targets(root: Path) -> dict[str, dict[str, Any]]:
         skill_path = resolve_user_path(entry.get("skill_target"))
         if skill_path is None:
             continue
+        deprecated = [
+            resolve_user_path(item)
+            for item in entry.get("deprecated_skill_targets", [])
+            if isinstance(item, str) and item
+        ]
         targets[entry["id"]] = {
             "label": entry["label"],
             "path": skill_path,
             "pointer_only": entry["skill_mode"] == "pointer",
+            "deprecated_paths": [path for path in deprecated if path is not None],
         }
     return targets
 
@@ -236,6 +242,17 @@ def validate_agent_targets(root: Path) -> tuple[dict[str, Any] | None, list[dict
                 f"{target_id} uses unsupported skill_mode {skill_mode}",
                 path,
                 f"Use one of: {', '.join(sorted(SKILL_MODES))}.",
+            ))
+
+        deprecated_targets = entry.get("deprecated_skill_targets", [])
+        if not isinstance(deprecated_targets, list) or not all(
+            isinstance(item, str) and item.startswith("~/") for item in deprecated_targets
+        ):
+            errors.append(_error(
+                "AGENT_TARGETS_FIELD",
+                f"{target_id} deprecated_skill_targets must be a list of ~/... paths",
+                path,
+                "List former skill directories as user-relative paths, or omit the field.",
             ))
 
         skill_target = entry.get("skill_target")

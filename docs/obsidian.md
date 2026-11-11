@@ -131,7 +131,7 @@ Stay opinionated about how many colors you ship - past ~8 groups the graph becom
 
 ## What is *not* Arcana's job
 
-- **Per-user UI state** - pane layout, recently opened files, plugin enablement choices. These live in `.obsidian/workspace.json` and friends, which are gitignored by default.
+- **Per-user UI state** - pane layout, recently opened files, plugin enablement choices. These live in `.obsidian/workspace.json` and friends, which the seeded scaffold `.gitignore` ignores by default (Arcana copies that file in when absent and never overwrites it).
 - **Graph node positioning** - Obsidian computes layout dynamically; we don't pin positions.
 - **Plugin recommendations beyond the schema** - Dataview and Folder Notes are useful but optional. Arcana doesn't depend on either.
 

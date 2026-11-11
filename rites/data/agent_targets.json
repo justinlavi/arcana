@@ -20,13 +20,16 @@
       "label": "Codex / ChatGPT CLI",
       "instruction_target": "~/.codex/AGENTS.md",
       "instruction_mode": "auto",
-      "skill_target": "~/.codex/skills",
+      "skill_target": "~/.agents/skills",
       "skill_mode": "pointer",
       "auto_configured": true,
       "supports_model_invocation": false,
-      "summary": "Arcana injects the Grimoire routing block and registers pointer-only SKILL.md folders.",
+      "summary": "Arcana injects the Grimoire routing block and registers pointer-only SKILL.md folders in ~/.agents/skills, the cross-agent skill root Codex now documents (~/.codex/skills is deprecated and is cleaned of managed skills).",
       "limitations": [
         "Registered skill directories contain SKILL.md only."
+      ],
+      "deprecated_skill_targets": [
+        "~/.codex/skills"
       ]
     },
     {

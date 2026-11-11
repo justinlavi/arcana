@@ -220,7 +220,7 @@ A short end-to-end check that everything wired up correctly.
 ls ~/grimoires/                  # arcana/ + at least one *-grimoire/ if you cloned any
 cat ~/grimoires/library.json     # lists each grimoire and its local_path
 ls ~/.claude/skills/ | grep ^arc-     # Claude Code, current full-skill target
-ls ~/.codex/skills/  | grep ^arc-     # Codex / ChatGPT CLI, current pointer target
+ls ~/.agents/skills/ | grep ^arc-     # Codex / ChatGPT CLI, current pointer target
 ```
 
 If any of these are missing, jump to the [Troubleshooting](#troubleshooting) section below.

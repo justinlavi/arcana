@@ -69,6 +69,15 @@
       "placeholder_required": true
     },
     {
+      "source": "gitignore",
+      "target": ".gitignore",
+      "create": true,
+      "required": false,
+      "managed": false,
+      "seed_if_absent": true,
+      "role": "seeded_support"
+    },
+    {
       "source": ".editorconfig",
       "target": ".editorconfig",
       "create": true,

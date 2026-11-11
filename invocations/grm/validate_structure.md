@@ -68,6 +68,8 @@ The following files are operational support files, not grimoire-specific authore
 - `inbox/README.md`
 - `publish/README.md`
 
+One scaffold file is **seeded, not managed**: `.gitignore`. Arcana copies it in when it is absent (at create and at every heal) and never overwrites it, so a grimoire may customise it freely. Its absence is a warning (`GRIMOIRE_STRUCTURE_MISSING_SEEDED`), never an error.
+
 If any are missing or stale, copy the current version from Arcana unless the user explicitly wants a custom local variant. Custom local variants should be rare because they create cross-platform and agent-behavior drift.
 
 ### Phase 3: Hub Convention

@@ -70,6 +70,15 @@ def managed_scaffold_files(contract: dict) -> list[str]:
     return [entry["target"] for entry in file_entries(contract) if entry.get("managed")]
 
 
+def seeded_scaffold_files(contract: dict) -> list[str]:
+    """Files Arcana copies in when absent and never overwrites (user-owned after that)."""
+    return [
+        entry["target"]
+        for entry in file_entries(contract)
+        if entry.get("seed_if_absent") and not entry.get("managed")
+    ]
+
+
 def json_requirements(contract: dict) -> list[dict]:
     """JSON value requirements enforced during grimoire structure audits."""
     return [
