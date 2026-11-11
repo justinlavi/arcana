@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.8.0] - Unreleased
+
+### Fixed
+
+- **`repair_links.py` now writes POSIX wikilinks on every platform.** The
+  promoted link was built from a `Path`, so on Windows the rite wrote
+  `[[chapters\path\page|label]]` with backslashes. Those links validate on
+  Windows but break on Linux, in Obsidian, and in Quartz. The replacement (and
+  the ambiguity report's candidate list) now use forward slashes, matching
+  `restructure_grimoire.py`.
+- **Windows-stable `compare_and_swap_write` test.** The test seeded the
+  library with `write_text`, which translates newlines on Windows and made the
+  byte snapshot mismatch. It now seeds the exact bytes.
+
 ## [1.7.0] - 2026-06-29
 
 MINOR. `publish/` is a first-class grimoire scaffold layer: an optional home for

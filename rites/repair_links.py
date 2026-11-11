@@ -223,7 +223,7 @@ def repair_line(
                     path=source_path,
                 )
             else:
-                cand_rels = [str(c.relative_to(grimoire_root)) for c in candidates]
+                cand_rels = [c.relative_to(grimoire_root).as_posix() for c in candidates]
                 ambis.append(
                     f"  [AMBI] {rel}:{line_no}: [[{target}]] - {len(candidates)} candidates: {', '.join(cand_rels)}{fallback_note}"
                 )
@@ -235,7 +235,7 @@ def repair_line(
                 )
             continue
 
-        rel_target = chosen.relative_to(grimoire_root).with_suffix("")
+        rel_target = chosen.relative_to(grimoire_root).with_suffix("").as_posix()
         display = wikilink_display(target) or basename
         new_wikilink = f"[[{rel_target}|{display}]]"
 
