@@ -108,6 +108,7 @@ that depend on it.
 
 | ID | Priority | Item | Primary owner | Why deferred |
 |---|---|---|---|---|
+| AB-17 | P0 | Skills fail to load outside the grimoires directory: render invocations into generated skills at registration | `rites/sync_skills.py`, every `skills/**/SKILL.md`, `docs/skill_schema.md`, `docs/agent_configuration.md` | Verified 2026-11-10; changes the generated skill contract and the plugin build. Absorbs AB-14. |
 | AB-01 | P0 | Case-exact wikilinks and case-collision portability checks | `rites/validate_links.py`, `rites/validate_portability.py`, `rites/_lib.py` | Needs D3; changes validator contracts. |
 | AB-02 | P0 | Windows in the CI matrix | `.github/workflows/ci.yml` | Release-process change. |
 | AB-03 | P1 | Casing freedom across invocations, docs, routing block, and rites | `invocations/grm/*`, `docs/operating_model.md`, `rites/templates/grimoire_block.md`, `rites/new_page.py`, `rites/restructure_grimoire.py` | Needs D3; touches many public surfaces. |
@@ -121,11 +122,49 @@ that depend on it.
 | AB-11 | P1 | Generic publishing: stage and audit as rites, generator templates, CI templates for GitLab Pages, GitHub Pages, Cloudflare | new `rites/stage_publish.py`, `rites/audit_publish.py`, new `formulae/publish/`, new `invocations/grm/publish.md` | New contract; japan-grimoire migration proves it. |
 | AB-12 | P2 | One Python launcher for every platform | new `bin/arcana` (sh) and `bin/arcana.cmd`, every `SKILL.md` and invocation that says `python3` | Touches every skill; sequence after AB-07 so plugin `bin/` can carry it. |
 | AB-13 | P2 | Scaffold `.gitignore` as a managed file | `formulae/grimoire/scaffold_contract.json`, new `formulae/grimoire/gitignore` | Scaffold contract change with heal. |
-| AB-14 | P2 | Skill portability: Agent Skills conformance and a no-shell fallback for `!cat` | every `skills/**/SKILL.md`, `docs/skill_schema.md`, `rites/sync_skills.py` | Depends on D1 for the final skill layout. |
 | AB-15 | P2 | Layperson documentation and product naming | `README.md`, `docs/installation.md`, new `docs/getting_started.md`, `formulae/grimoire/README.md` | Write after AB-05, AB-07, AB-09 settle the real flow. |
 | AB-16 | P3 | Grimoire skills auto-load by path | grimoire `skills/**/SKILL.md` via `paths:` frontmatter | Claude-only convenience; after AB-07. |
 
 ### Item details
+
+#### AB-17 Skills fail to load outside the grimoires directory (P0)
+
+Why: every Arcana skill inlines its invocation at runtime with
+`` !`cat <ARCANA_PATH>/invocations/...` ``. Claude Code only lets that
+directive read files inside the session's allowed working directories. Spike
+evidence from 2026-11-10 on Claude Code 2.1.322, headless sessions on this
+machine:
+
+- Working directory `~/grimoires` (Arcana inside it): `/grm-help` loads.
+- Working directory `~/grimoires/japan-grimoire`: the skill fails to load and
+  the model improvises a catalog from whatever it can see. A forward-slash
+  probe gives the explicit reason: `cat ... was blocked. For security, Claude
+  Code may only concatenate files from the allowed working directories`.
+- Same directory with `--add-dir ~/grimoires/arcana`: loads.
+- A plugin skill reading from its own plugin root is blocked the same way,
+  because the plugin cache is outside the working directories too.
+
+Every engineer who opens a project repository rather than the grimoires
+folder has therefore been running `/grm-*` commands without their playbooks.
+This is the likeliest mechanical cause of the "ups and downs" the 1.8 brief
+describes, and it would carry straight into plugin packaging.
+
+Fix: stop runtime inlining. `sync_skills.py` (and the plugin build) render
+the invocation text into the generated `SKILL.md` body at registration, so a
+registered skill is self-contained: no shell runs when it loads, no working
+directory matters, and an admin `disableSkillShellExecution` setting changes
+nothing. Source skills keep a single `{{INVOCATION: invocations/grm/add.md}}`
+marker that the rite expands; the invocation files stay the single source.
+Generated skills stay under the 500-line guidance of the Agent Skills
+standard (the longest invocation today is well under that). Rite commands
+inside the rendered text use the absolute engine path as now. Also move the
+provenance comment into `metadata:` and add `compatibility:` where a skill
+needs git or Python, so the generated files conform to the standard.
+
+Validation profile: `tests/test_sync_skills.py` renders a fixture skill and
+asserts no `!` directive survives; `validate_skill_refs` learns the marker.
+Compatibility: MINOR (generated artifacts change; sources and grimoires do
+not).
 
 #### AB-01 Case-exact wikilinks and case-collision portability checks (P0)
 
@@ -306,13 +345,14 @@ Shape:
   whose session-start hook clones the engine if absent and fast-forwards it
   when clean, pinned to the plugin's version tag. The engine never lives in an
   agent's plugin cache, so Claude and Codex always run the same rites.
-- A generated `~/grimoires/.claude-plugin/marketplace.json` lists every library
-  grimoire as a local plugin (`./<directory>`), and each grimoire gains a
-  managed `.claude-plugin/plugin.json` whose `name` is its `skill_prefix`.
-  Claude Code loads local-marketplace plugins in place, so grimoire skills
-  update the moment the file changes with no sync step; Codex gets the same
-  through `~/.agents/plugins/marketplace.json`. `sync_library.py` owns both
-  marketplace files.
+- Grimoire skills are not packaged as plugins. Spike result 2026-11-10: a
+  directory marketplace over `~/grimoires` with japan-grimoire as a
+  relative-path plugin copied the entire grimoire (24 MB, 435 files, every
+  chapter) into the plugin cache under a directory named by its commit SHA,
+  so every commit would re-copy the content and each grimoire would exist
+  twice. Grimoire skills stay on flat registration; the Arcana plugin's
+  session-start hook runs `sync_skills.py` for the library so they are never
+  stale, and the same path serves Codex.
 - `ARCANA_HOME` resolution order becomes: `CLAUDE_PLUGIN_ROOT` of the `grm`
   plugin, then the library, then `~/grimoires/arcana`.
 - Rollout at a company: an administrator sets `extraKnownMarketplaces` and
@@ -322,7 +362,13 @@ Shape:
   GitLab host, which Git Credential Manager prompts for in a browser on first
   use, so no token export.
 
-Open questions to settle in the spike: whether `!cat` dynamic context expands
+Spike results 2026-11-10 (Claude Code 2.1.322, bundled extension binary,
+throwaway config directory): a private git-URL marketplace clones with the
+stored git credential and no token export; install lands in a versioned
+cache; `SessionStart` command hook output reaches the model as context,
+including a generated list of installed grimoires with descriptions and the
+plugin root; `!cat` inside a plugin skill is blocked (see AB-17), so plugin
+skills must be rendered self-contained. Remaining open questions: whether `!cat` dynamic context expands
 inside the Claude Code VS Code extension (plugins, hooks, and settings are
 documented as shared with the CLI; the extension bundles its own `claude`
 binary, so no separate CLI install is needed), which built-in commands the
@@ -442,20 +488,6 @@ Add a managed `.gitignore` to the scaffold (Obsidian per-user state, OS files,
 japan-grimoire did until 2026-11-10. Heal copies it in when absent and leaves a
 customised one alone (managed-if-absent, a new flag in the scaffold contract).
 
-#### AB-14 Skill portability (P2)
-
-Why: Arcana skills rely on Claude Code's `!cat` injection, which an admin can
-switch off and which Codex does not have. The Agent Skills standard is now the
-shared format across agents.
-
-First slice: every skill body states the invocation path in plain text ("Read
-and follow `${CLAUDE_PLUGIN_ROOT}/invocations/grm/add.md`") in addition to the
-`!cat` line, so the skill still works with shell injection disabled; move
-ownership provenance from the HTML comment into `metadata:`; add
-`compatibility:` where a skill needs git or Python; keep every `SKILL.md`
-under 500 lines (they are far under); validate with the `skills-ref` checker in
-CI if it is pure Python or stays optional.
-
 #### AB-15 Layperson documentation and product naming (P2)
 
 Why: every public document speaks to engineers and explains Arcana first.
@@ -477,14 +509,14 @@ under the grimoire directory. Convenience only; Claude-specific.
 ## Suggested Implementation Sequence
 
 Slice 1, foundations (MINOR, no decisions blocked except D2 and D3):
-AB-02, AB-01, AB-03, AB-13, AB-06, AB-04.
+AB-17, AB-02, AB-01, AB-03, AB-13, AB-06, AB-04.
 
 Slice 2, install and update (needs D1, D4, D5): AB-05, AB-09, AB-10, AB-07,
 AB-08, AB-12.
 
 Slice 3, publishing: AB-11, including the japan-grimoire migration.
 
-Slice 4, polish and docs: AB-14, AB-15, AB-16.
+Slice 4, polish and docs: AB-15, AB-16.
 
 Whether all four slices ship as 1.8.0 or slices 3 and 4 become 1.9.0 is a
 maintainer call; nothing in slice 3 or 4 blocks slice 1 or 2.
