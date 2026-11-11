@@ -45,5 +45,8 @@ Pages with `authority: external` or `hybrid` cite their `sources:` (paths under 
 | Add a page or chapter (or capture a chat answer) | `/grm-add` |
 | Health-check the grimoire | `/grm-health-check` |
 | Review naming and find-ability (advanced) | `/grm-audit-semantics` |
+| Share what you changed with your team (commit, pull, push) | `/grm-save` |
+| Pick up everyone else's changes and bring everything current | `/grm-update` |
+| Join a grimoire your team has, or start your first one | `/grm-setup` |
 | See the grimoire commands you can run | `/grm-help` |
 <!-- END GRIMOIRE KNOWLEDGE BASE -->

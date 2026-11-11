@@ -64,7 +64,7 @@ canonical in [summoning contract](summoning_contract.md#bootstrap-environment-co
 7. Clones or updates selected grimoires in `~/grimoires/`
 8. Creates/updates the local library at `~/grimoires/library.json`
 
-After summoning, open a new Claude Code or Codex/ChatGPT session and run `/grm-create` to build your first grimoire. (Maintainers can run `/arc-help` for the full platform catalog.)
+After summoning, open a new Claude Code or Codex/ChatGPT session and run `/grm-setup`: it joins a grimoire your team already has from its repository link, or hands you to `/grm-create` for a brand-new one. (Maintainers can run `/arc-help` for the full platform catalog.)
 
 The rite needs nothing beyond `git` and a stock Python; there is no GUI and nothing to pip-install. When the one-line installer is run through `curl | bash`, prompts read from the controlling terminal instead of the curl pipe.
 
@@ -76,7 +76,7 @@ When you choose "Install Arcana and clone grimoires" (option 2 in the terminal m
 
 Arcana and grimoires don't need to live in the same place. Arcana might be installed from the public GitHub repo while your grimoires live in a private company GitLab or a different GitHub org. The rite asks where to look.
 
-If you don't have existing grimoires to clone yet, skip this step entirely and use `/grm-create` to build your first grimoire from scratch after Arcana is installed.
+If you don't have existing grimoires to clone yet, skip this step entirely and run `/grm-setup` in your agent after Arcana is installed; it offers `/grm-create` for a brand-new grimoire. To join one grimoire by link without discovery, `/grm-setup <url>` does it in conversation.
 
 Discovery supports two URL shapes:
 - Direct repository URLs, such as `https://github.com/you/cooking-grimoire`, are trusted explicitly. The `-grimoire` slug is conventional but not required when the URL points to a single repository.
@@ -179,7 +179,7 @@ You do not need to be comfortable in a terminal to install Arcana. If you have a
    ```
 
    The agent runs the deterministic rites from [UPDATE.md](../UPDATE.md) — reconciling the library, configuring your agent files, and registering the `/grm-*` and `/arc-*` skills — and reports each rite's own output. You never touch a command line.
-4. **Open one more fresh agent session** (agents cache skill listings), then run `/grm-create` to build your first grimoire.
+4. **Open one more fresh agent session** (agents cache skill listings), then run `/grm-setup` to join your team's grimoire or start your first one.
 
 This routes through the same deterministic rites the one-line installer uses; only the clone step changes.
 

@@ -42,7 +42,7 @@ export GITLAB_TOKEN=<your token>     # GitLab
 export GITHUB_TOKEN=<your token>     # GitHub
 ```
 
-Open a new agent session and try `/grm-help` from inside this grimoire to confirm its skills are available. Full reference for scope shapes, auth, and troubleshooting: [github.com/justinlavi/arcana - docs/installation.md](https://github.com/justinlavi/arcana/blob/main/docs/installation.md).
+Prefer the conversational path: open your AI agent and run `/grm-setup` with this grimoire's repository link; it clones, registers, and explains the day-to-day verbs. Open a new agent session afterwards and try `/grm-help` from inside this grimoire to confirm its skills are available. Full reference for scope shapes, auth, and troubleshooting: [github.com/justinlavi/arcana - docs/installation.md](https://github.com/justinlavi/arcana/blob/main/docs/installation.md).
 
 ### Manual install
 
@@ -91,6 +91,8 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 | Import a new source beside the chapter material it supports and update affected pages | `/grm-import` |
 | Health-check the grimoire (orphans, stale, ghost refs) | `/grm-health-check` |
 | Review naming and find-ability (advanced) | `/grm-audit-semantics` |
+| Share what you changed with your team | `/grm-save` |
+| Pick up everyone else's changes and bring everything current | `/grm-update` |
 
 ## Layers (the LLM-wiki model)
 

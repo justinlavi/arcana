@@ -4,6 +4,21 @@
 
 ### Added
 
+- **`/grm-setup`: the onboarding conversation.** Replaces the installer's
+  menu. It reads `summon.py --check`, then joins a grimoire from a pasted
+  repository link, hands off to `/grm-create` for a new one, or to
+  `/grm-adopt` for a folder of notes, and ends by naming the day-to-day
+  verbs. The join path is the new rite `rites/install_grimoire.py`: clone or
+  fast-forward into `~/grimoires/<name>`, require `grimoire.json`, record
+  the library entry, sync skills. Credentials come from git's own helper;
+  nothing ever asks for a token.
+- **`/grm-save`: share what you changed.** The first grimoire verb that
+  commits and pushes, for people who never type git. The new rite
+  `rites/save_grimoire.py` plans the changes, refuses a grimoire that fails
+  validation, commits with the composed message, pulls with rebase, and
+  pushes; on conflict it aborts the rebase, keeps the local commit, and names
+  the files. It never force-pushes. The routing block's operations table
+  gains save, update, and setup rows.
 - **Seeded scaffold `.gitignore`.** New grimoires get a `.gitignore` that
   keeps Obsidian per-user state and OS files out of git. It is seeded, not
   managed: `/grm-update` copies it in when absent and never overwrites a

@@ -228,6 +228,40 @@
         "tests/test_rite_profiles.py",
         "tests/test_validators_against_fixtures.py"
       ]
+    },
+    {
+      "path": "rites/install_grimoire.py",
+      "profile": "apply_only",
+      "default_mode": "apply",
+      "plan_command": null,
+      "apply_command": "python rites/install_grimoire.py <git-url> [--name <directory>]",
+      "writes": [
+        "<grimoire home>/<directory> (clone or fast-forward)",
+        "library.json",
+        "agent skill directories"
+      ],
+      "idempotency": "Re-running fast-forwards an existing clone and rewrites the same library entry; never re-clones over a working tree.",
+      "validation_profile": "python rites/validate.py --grimoire <directory> --summary; python rites/summon.py --check",
+      "tests": [
+        "tests/test_rite_profiles.py",
+        "tests/test_install_grimoire.py"
+      ]
+    },
+    {
+      "path": "rites/save_grimoire.py",
+      "profile": "plan_apply",
+      "default_mode": "plan",
+      "plan_command": "python rites/save_grimoire.py --grimoire <path>",
+      "apply_command": "python rites/save_grimoire.py --grimoire <path> --apply --message \"<text>\"",
+      "writes": [
+        "<grimoire>/.git (commit, rebase, push to origin)"
+      ],
+      "idempotency": "A clean, up-to-date grimoire is a noop; a conflict aborts the rebase and keeps the local commit, so re-running after the conflict is resolved completes the save.",
+      "validation_profile": "The plan runs validate.py --grimoire <path> and refuses to commit a failing grimoire.",
+      "tests": [
+        "tests/test_rite_profiles.py",
+        "tests/test_save_grimoire.py"
+      ]
     }
   ]
 }

@@ -362,6 +362,42 @@
       "mutation_behavior": "Reads generated Arcana skill catalog and locally registered grimoire skill frontmatter.",
       "log_behavior": "Does not append grimoire or Arcana logs.",
       "validation_profile": "python rites/sync_docs.py --apply when Arcana skill frontmatter or command-surface metadata changes."
+    },
+    {
+      "command": "/grm-setup",
+      "family": "grm",
+      "skill_source": "skills/grm/setup/SKILL.md",
+      "invocation": "invocations/grm/setup.md",
+      "guard": null,
+      "owner_type": "hybrid",
+      "rite_owner": "rites/install_grimoire.py",
+      "preconditions": [
+        "Arcana installed",
+        "git on PATH",
+        "A repository URL for the join path (credentials come from git's own helper)"
+      ],
+      "mutation_profile": "apply_only",
+      "mutation_behavior": "Conversational onboarding. Reads summon.py --check, then either hands off to /grm-create or /grm-adopt, or runs install_grimoire.py to clone a grimoire into the home, register it in library.json, and sync skills.",
+      "log_behavior": "Does not append grimoire logs (log.md retired in 1.8.0; history comes from git, rendered by rites/recent_changes.py).",
+      "validation_profile": "python rites/summon.py --check --format json; python rites/validate.py --grimoire GRIMOIRE_ROOT --summary"
+    },
+    {
+      "command": "/grm-save",
+      "family": "grm",
+      "skill_source": "skills/grm/save/SKILL.md",
+      "invocation": "invocations/grm/save.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "hybrid",
+      "rite_owner": "rites/save_grimoire.py",
+      "preconditions": [
+        "Registered active grimoire that is a git repository",
+        "Grimoire validators pass",
+        "git identity configured"
+      ],
+      "mutation_profile": "plan_apply",
+      "mutation_behavior": "Plans the changes to share, then under --apply stages everything git tracks, commits with the composed message, pulls --rebase from the upstream, and pushes. Aborts the rebase and keeps the local commit on conflict; never force-pushes.",
+      "log_behavior": "Does not append grimoire logs (log.md retired in 1.8.0; history comes from git, rendered by rites/recent_changes.py).",
+      "validation_profile": "python rites/save_grimoire.py --grimoire GRIMOIRE_ROOT --format json (plan runs validate.py --grimoire GRIMOIRE_ROOT first)"
     }
   ]
 }
