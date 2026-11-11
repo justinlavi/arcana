@@ -29,6 +29,7 @@ import contextlib
 import io
 import json
 import os
+import re
 import shutil
 import sys
 from dataclasses import dataclass
@@ -364,20 +365,91 @@ def insert_ownership_comment(content: str, spec: SkillSpec) -> str:
     return f"{marker}\n{provenance}\n{content}"
 
 
+# A source skill pulls in its invocation (or a grimoire playbook) with a
+# dynamic-context line: !`cat <path>`. Agents only honour that directive for
+# files inside the session's working directories, so a skill registered in
+# ~/.claude/skills fails to load whenever the engine or grimoire is outside the
+# repository the user opened - which is every project-repo session. The rite
+# therefore inlines the file at registration: the generated skill is
+# self-contained, no shell runs when it loads, and no working directory matters.
+INLINE_DIRECTIVE_RE = re.compile(r'^!`cat\s+"?([^"`]+?)"?`\s*$', re.MULTILINE)
+INLINE_MAX_DEPTH = 3
+
+
+def strip_frontmatter(content: str) -> str:
+    """Return a Markdown document without its leading YAML frontmatter block."""
+    if content.startswith("---\n"):
+        end = content.find("\n---", 4)
+        if end != -1:
+            return content[end + len("\n---"):].lstrip("\n")
+    return content
+
+
+def inline_dynamic_context(
+    content: str,
+    origin: Path,
+    substitute,
+    depth: int = 0,
+    seen: set[str] | None = None,
+) -> str:
+    """Replace every !`cat <path>` line with the file it names.
+
+    ``substitute`` applies the skill's placeholder substitutions to inlined
+    text, because an invocation may itself carry a directive written with
+    ``{{ARCANA_PATH}}``. The inlined text is wrapped in BEGIN/END INLINED
+    comments naming the file so a reader can trace it to its source; its own
+    frontmatter is dropped. A directive whose file cannot be read is left in
+    place with a warning so the failure is visible at registration rather than
+    silent at load.
+    """
+    if seen is None:
+        seen = set()
+
+    def replace(match: re.Match[str]) -> str:
+        target = Path(match.group(1).strip())
+        label = target.as_posix()
+        if label in seen:
+            # A skill and its invocation may both pull in the same fragment
+            # (the grimoire directory guard); one copy is enough.
+            return f"<!-- INLINED ABOVE: {label} -->"
+        try:
+            text = target.read_text(encoding="utf-8")
+        except OSError as exc:
+            warn(f"{origin}: cannot inline {label} ({exc}); directive left in place")
+            return match.group(0)
+        seen.add(label)
+        text = substitute(strip_frontmatter(text)).rstrip("\n")
+        if depth + 1 < INLINE_MAX_DEPTH:
+            text = inline_dynamic_context(text, target, substitute, depth + 1, seen)
+        return f"<!-- BEGIN INLINED: {label} -->\n{text}\n<!-- END INLINED: {label} -->"
+
+    return INLINE_DIRECTIVE_RE.sub(replace, content)
+
+
 def render_skill_files(spec: SkillSpec, pointer_only: bool) -> dict[str, str]:
     """Render files for one installed skill."""
+    arcana_path = ARCANA_PATH.as_posix()
+
+    def substitute(text: str) -> str:
+        text = text.replace(SKILL_PREFIX_PLACEHOLDER, spec.skill_prefix)
+        text = text.replace("{{ARCANA_PATH}}", arcana_path)
+        # Invocations address the engine as ARCANA_HOME/...; make the generated
+        # skill concrete so the agent needs no lookup and nested directives
+        # written that way resolve at registration.
+        text = text.replace("ARCANA_HOME/", f"{arcana_path}/")
+        if spec.grimoire_path:
+            text = text.replace("{{GRIMOIRE_PATH}}", Path(spec.grimoire_path).as_posix())
+        return text
+
     rendered: dict[str, str] = {}
     for source in sorted(spec.source_dir.iterdir()):
         if not source.is_file():
             continue
         if pointer_only and source.name != "SKILL.md":
             continue
-        content = source.read_text(encoding="utf-8")
-        content = content.replace(SKILL_PREFIX_PLACEHOLDER, spec.skill_prefix)
-        content = content.replace("{{ARCANA_PATH}}", str(ARCANA_PATH))
-        if spec.grimoire_path:
-            content = content.replace("{{GRIMOIRE_PATH}}", spec.grimoire_path)
+        content = substitute(source.read_text(encoding="utf-8"))
         if source.name == "SKILL.md":
+            content = inline_dynamic_context(content, source, substitute)
             content = insert_ownership_comment(content, spec)
         rendered[source.name] = content
     return rendered

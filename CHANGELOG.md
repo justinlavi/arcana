@@ -4,6 +4,15 @@
 
 ### Fixed
 
+- **Skills now load from any working directory.** Generated skills used to
+  pull their invocation in at load time with a `cat` directive, which agents
+  only honour for files inside the session's working directories. Every
+  session opened in a grimoire or a project repository therefore ran `/grm-*`
+  and `/arc-*` commands without their playbooks. `sync_skills.py` now inlines
+  the invocation (and any nested include) into the generated `SKILL.md` at
+  registration, substitutes `ARCANA_HOME/` with the concrete engine path, and
+  writes forward-slash paths on every platform. Re-run `/grm-sync skills` (or
+  `/grm-update`) to regenerate installed skills.
 - **`repair_links.py` now writes POSIX wikilinks on every platform.** The
   promoted link was built from a `Path`, so on Windows the rite wrote
   `[[chapters\path\page|label]]` with backslashes. Those links validate on

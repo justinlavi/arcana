@@ -86,7 +86,7 @@ def main():
 
 ## Adding a new skill
 
-Skills are pointer files. The skill itself contains no logic - it dispatches to an invocation or rite.
+Skills are pointer files. The skill source contains no logic - it dispatches to an invocation or rite. Registration inlines the invocation into the generated copy, so a source `!`cat ...`` line is a build-time include, not a runtime read.
 
 1. Choose the command family first: `arcana`, `grimoire`, `library`, `agent`, `workspace`, or `help`. See [skill schema](docs/skill_schema.md).
 2. Create `skills/<family>/<slug>/SKILL.md`. The folder name is the command suffix after that family's prefix.

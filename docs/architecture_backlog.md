@@ -108,7 +108,7 @@ that depend on it.
 
 | ID | Priority | Item | Primary owner | Why deferred |
 |---|---|---|---|---|
-| AB-17 | P0 | Skills fail to load outside the grimoires directory: render invocations into generated skills at registration | `rites/sync_skills.py`, every `skills/**/SKILL.md`, `docs/skill_schema.md`, `docs/agent_configuration.md` | Verified 2026-11-10; changes the generated skill contract and the plugin build. Absorbs AB-14. |
+| AB-17 | P0 | Resolved on `release/1.8` (2026-11-10): skills fail to load outside the grimoires directory; invocations are now rendered into generated skills at registration | `rites/sync_skills.py`, every `skills/**/SKILL.md`, `docs/skill_schema.md`, `docs/agent_configuration.md` | Verified 2026-11-10; changes the generated skill contract and the plugin build. Absorbs AB-14. |
 | AB-01 | P0 | Case-exact wikilinks and case-collision portability checks | `rites/validate_links.py`, `rites/validate_portability.py`, `rites/_lib.py` | Needs D3; changes validator contracts. |
 | AB-02 | P0 | Windows in the CI matrix | `.github/workflows/ci.yml` | Release-process change. |
 | AB-03 | P1 | Casing freedom across invocations, docs, routing block, and rites | `invocations/grm/*`, `docs/operating_model.md`, `rites/templates/grimoire_block.md`, `rites/new_page.py`, `rites/restructure_grimoire.py` | Needs D3; touches many public surfaces. |
@@ -149,7 +149,16 @@ folder has therefore been running `/grm-*` commands without their playbooks.
 This is the likeliest mechanical cause of the "ups and downs" the 1.8 brief
 describes, and it would carry straight into plugin packaging.
 
-Fix: stop runtime inlining. `sync_skills.py` (and the plugin build) render
+Resolved on `release/1.8`, 2026-11-10: `sync_skills.py` inlines the directive
+target at registration (nested includes and `ARCANA_HOME/` resolved, duplicate
+includes collapsed, missing files warned and left visible), with tests that
+render the whole shipped catalog and assert no directive survives and no skill
+exceeds 500 lines. Verified headless from a grimoire working directory. The
+plugin build (AB-07) reuses the same renderer. Remaining from this item:
+`metadata:` provenance and `compatibility:` fields on generated skills, folded
+into AB-07.
+
+Original fix description: stop runtime inlining. `sync_skills.py` (and the plugin build) render
 the invocation text into the generated `SKILL.md` body at registration, so a
 registered skill is self-contained: no shell runs when it loads, no working
 directory matters, and an admin `disableSkillShellExecution` setting changes

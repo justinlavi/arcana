@@ -58,13 +58,23 @@ The body either runs a rite or loads an invocation, following the same boundary
 that separates rites from invocations:
 
 - **Rite-backed**: the body runs `python3 {{ARCANA_PATH}}/rites/<name>.py` and reports the result.
-- **Invocation-backed**: the body inlines its invocation at runtime with a `!cat` directive so the agent reads and follows it:
+- **Invocation-backed**: the body names its invocation with a `cat` directive, and the registration rite inlines that file into the generated skill:
 
 ```text
 !`cat {{ARCANA_PATH}}/invocations/<area>/<name>.md`
 ```
 
-`{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` are resolved by the registration rite.
+The directive is a build-time instruction, not a runtime one. `sync_skills.py`
+replaces it with the invocation's body (frontmatter dropped, wrapped in
+`BEGIN INLINED` / `END INLINED` comments naming the file), substitutes
+`{{ARCANA_PATH}}`, `{{GRIMOIRE_PATH}}`, and `ARCANA_HOME/`, and repeats the
+expansion for directives inside the inlined text. A generated skill is therefore
+self-contained: no shell command runs when it loads, so it works from any
+working directory and under an agent policy that disables skill shell
+execution. Agents only honour a runtime `cat` for files inside the session's
+working directories, which the engine almost never is; that is why the rite
+inlines rather than defers. Keep each generated skill under 500 lines, the
+Agent Skills guidance; the rite's tests enforce it for the shipped catalog.
 
 ## Reusable Rites
 
