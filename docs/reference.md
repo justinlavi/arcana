@@ -133,7 +133,8 @@ Every grimoire declares its identity in a `grimoire.json` file at its repository
 {
   "name": "cooking-grimoire",
   "skill_prefix": "cook",
-  "description": "Personal cooking knowledge: recipes, techniques, equipment"
+  "description": "Personal cooking knowledge: recipes, techniques, equipment",
+  "naming": "snake_case"
 }
 ```
 
@@ -141,6 +142,7 @@ Fields:
 - `name` — canonical grimoire name; should match the library key.
 - `skill_prefix` — short lowercase slug (`^[a-z][a-z0-9]*$`) used as the skill prefix. Required if the grimoire has a `skills/` directory.
 - `description` — one-line description.
+- `naming` — optional; the file and folder naming convention agents apply to new material (`snake_case` when absent, `preserve` to keep imported material's own casing, or another named style such as `kebab-case`). Any casing is valid; see [operating model](operating_model.md#naming-and-depth-conventions).
 
 Arcana is not a grimoire and uses `arcana.json` instead:
 
@@ -199,6 +201,7 @@ When creating new grimoires, use these placeholders in formula templates:
 | `{{GRIMOIRE_DIRECTORY}}` | Filesystem name | `cooking-grimoire`, `dnd-grimoire` |
 | `{{GRIMOIRE_REPO_URL}}` | Canonical git URL for installing this grimoire | `https://git.example.com/you/cooking-grimoire.git` |
 | `{{SKILL_PREFIX}}` | Short slug for skill prefix | `cook`, `dnd` |
+| `{{NAMING}}` | File and folder naming convention recorded in the manifest | `snake_case` (default), `preserve`, `kebab-case` |
 | `{{CHAPTER_ROUTES}}` | Generated routing pointers (filled by create_grimoire) | - |
 | `{{CHAPTER_LIST}}` | List of chapters with descriptions | - |
 | `{{CHAPTER_TREE}}` | Directory tree of chapters | - |

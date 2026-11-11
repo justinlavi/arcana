@@ -171,7 +171,7 @@ def main():
         if is_inside_colocated_source_dir(rel):
             return True
         for part in rel.parts:
-            if part in ASSET_FOLDERS:
+            if part.casefold() in ASSET_FOLDERS:
                 return True
             if "<" in part or ">" in part:
                 return True

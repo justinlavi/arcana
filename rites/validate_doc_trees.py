@@ -292,9 +292,9 @@ def doc_is_illustrative(path: Path, root: Path) -> bool:
     except ValueError:
         return False
     for part in rel_parts:
-        if part in ILLUSTRATIVE_PARENT_DIRS:
+        if part.casefold() in ILLUSTRATIVE_PARENT_DIRS:
             return True
-        if part in {"sources", "inbox"}:
+        if part.casefold() in {"sources", "inbox"}:
             return True
         if "<" in part or "{" in part or "[" in part:
             return True

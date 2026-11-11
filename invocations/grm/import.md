@@ -49,8 +49,10 @@ The classic provenance-careful flow. The argument is a single immutable artifact
 
 1. Identify the chapter, sub-chapter, project, trip, or package the source
    supports. Use that package's `sources/` folder, creating it if needed.
-2. Pick a short snake_case-or-kebab-case slug and decide whether the source
-   should be filed as a raw artifact, a source wrapper, or both.
+2. Pick a short slug in the grimoire's naming convention (`naming` in
+   `grimoire.json`; `snake_case` when absent) and decide whether the source
+   should be filed as a raw artifact, a source wrapper, or both. A raw
+   artifact keeps its original filename unless the user asks to rename it.
 3. For text sources, create `chapters/<path>/sources/<slug>.md` from
    `ARCANA_HOME/formulae/source.formula.md` and place the cleaned plain text
    body in `## Source Body`.
@@ -76,8 +78,9 @@ Curatorial flow. The folder contains mixed content; classify each file before do
    | **Wiki content** | Authored prose meant to be wiki-shaped (notes, drafts, half-finished chapters, AI-generated docs). Not citation-stable. | Promote to `chapters/<chapter>/<page>.md` with proper frontmatter (`authority: grimoire`, no `sources:` unless a chapter-local source artifact actually grounds it). **Remove the original** - its value now lives in the wiki. |
    | **Junk / unclear** | Duplicate, superseded, ambiguous, off-topic, or you can't tell yet. | Leave in place, flag for human review in the report. **Never auto-delete.** |
 
-3. Process classifications in order (sources first, then wiki content, junk last). For each batch, run **Common workflow** steps 3-6 below, then move to the next batch.
-4. After processing, the `inbox/` (or sweep folder) should be empty except for items the user needs to judge. Junk does NOT get auto-deleted.
+3. **Settle naming once.** If the swept material uses a casing other than the grimoire's recorded convention (or none is recorded), ask the user once: apply the grimoire's convention to the promoted pages (recommended, `snake_case` by default), keep the material's own casing (`preserve`), or decide case by case. Record a newly chosen convention in `grimoire.json` as `naming`. Never rename a file the user has not agreed to rename; any casing is valid, consistency is the goal.
+4. Process classifications in order (sources first, then wiki content, junk last). For each batch, run **Common workflow** steps 3-6 below, then move to the next batch.
+5. After processing, the `inbox/` (or sweep folder) should be empty except for items the user needs to judge. Junk does NOT get auto-deleted.
 
 ### Common workflow (both modes)
 

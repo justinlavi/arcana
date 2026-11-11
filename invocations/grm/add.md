@@ -36,7 +36,7 @@ Or with a topic or material:
 
 ## Non-Negotiable Rules
 
-1. Paths and chapter names are `snake_case`, lowercase, specific (`pto_policies`, not `hr_stuff`).
+1. Paths and chapter names follow the grimoire's recorded convention (`naming` in `grimoire.json`; `snake_case` when absent) and are specific (`pto_policies`, not `hr_stuff`). If the convention is not recorded and the material arrives in another casing, ask the user once which convention the grimoire follows, record the answer in `grimoire.json`, and move on. Never rename existing or imported files to fit without asking.
 2. A chapter hub follows the folder-name convention: `chapters/<chapter>/<chapter>.md`, `type: hub`.
 3. Practical folder names only inside chapters (`templates/`, `scripts/`, `snippets/`). Never `invocations/`, `formulae/`, or `rites/` — those live only in Arcana.
 4. Every page (hub + leaves) carries v2 frontmatter (`type`, `title`, `tags`, …). See `ARCANA_HOME/docs/page_schema.md`.
@@ -89,8 +89,8 @@ the material clearly opens a new routable area.
    - `playbook` — a procedure (most common for "how do I X" answers).
    - `reference` — a comparison table, glossary entry, or cheatsheet.
 
-   Pick a `snake_case` slug. If no chapter fits, that is the signal to make a
-   chapter instead (Step 3b).
+   Pick a slug in the grimoire's naming convention. If no chapter fits, that is
+   the signal to make a chapter instead (Step 3b).
 
 2. **Stamp the page** with `new_page.py` (it fills frontmatter and stamps today's
    `last_verified`, so a leaf never ships with a placeholder date):
@@ -119,7 +119,7 @@ the material clearly opens a new routable area.
 
 ## Step 3b: Add a chapter
 
-1. **Gather inputs** (one question at a time): chapter name (`snake_case`),
+1. **Gather inputs** (one question at a time): chapter name (in the grimoire's naming convention),
    one-line purpose, when-to-route-here, knowledge sources to point at, and 2–5
    sub-topics. Capture `chapter_name`, `chapter_title` (Title Case), `purpose`,
    `when_to_use`, `sources[]`, `sub_topics[]`.

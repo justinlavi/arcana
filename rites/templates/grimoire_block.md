@@ -27,6 +27,7 @@ For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. Th
 4. Cross-grimoire references use path placeholders (`ARCANA_HOME/...`, `<grimoire>/...`).
 5. For Grimoire meta-knowledge: read `ARCANA_HOME/arcana.md`.
 6. Do not modify Grimoire files unless a `/arc-*` skill, a grimoire skill, or explicit instruction asks for it.
+7. Name new files and folders in the grimoire's recorded convention (`naming` in `grimoire.json`, default `snake_case`). Any casing is valid, consistency is the goal, links must match on-disk spelling exactly, and imported material is never renamed without asking.
 
 ### Text file standard
 

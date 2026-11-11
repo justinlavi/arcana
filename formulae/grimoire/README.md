@@ -108,6 +108,7 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 - Routers are pointer lists - no prose narrative inside a hub.
 - Pages declare their authority (`external` / `grimoire` / `hybrid`) and cite sources.
 - Stale claims (older than the stale window, default 90 days) are flagged by `/grm-health-check` and revisited.
+- Names follow the convention recorded in `grimoire.json` (`naming`, default `snake_case`). Any casing is valid; consistency within the grimoire is the goal, and links must match on-disk spelling exactly.
 - The activity log is append-only and records content changes (pages/sources added, removed, changed), not version-control mechanics; never delete entries.
 - All paths are relative inside this grimoire; cross-grimoire references use `ARCANA_HOME/`-style placeholders.
 - Text files use UTF-8 without BOM and LF line endings. Unicode is allowed; mojibake and repair artifacts are not.
@@ -120,9 +121,12 @@ Manifest at `grimoire.json`:
 {
   "name": "{{GRIMOIRE_DIRECTORY}}",
   "skill_prefix": "{{SKILL_PREFIX}}",
-  "description": "{{GRIMOIRE_PURPOSE}}"
+  "description": "{{GRIMOIRE_PURPOSE}}",
+  "naming": "{{NAMING}}"
 }
 ```
+
+`naming` records the file and folder naming convention this grimoire follows (`snake_case` by default; `preserve` keeps imported material's own casing). Agents apply it to new pages and folders and ask before renaming anything imported.
 
 (The manifest description is a short tagline - a few words like "personal cooking knowledge" or "a D&D campaign's lore". The long-form description lives in this README; do not paste the long form into the manifest or hub.)
 

@@ -44,7 +44,7 @@ Verify the working directory is a registered grimoire (check `~/grimoires/librar
 
 ### 1. Load context
 
-Read hub, the chapter list, and `docs/reference.md` (if present) to learn the grimoire's canonical vocabulary. Note the dominant naming pattern (snake_case is standard).
+Read hub, the chapter list, and `docs/reference.md` (if present) to learn the grimoire's canonical vocabulary. Read `naming` from `grimoire.json` for the recorded naming convention (`snake_case` when absent); if none is recorded, note the dominant pattern in use and propose recording it.
 
 ### 2. Score each chapter and file name
 
@@ -72,7 +72,7 @@ Build a synonym map across chapter names, headings, and prose. Flag inconsistent
 - `config` vs `configuration` vs `cfg`
 - `repo` vs `repository`
 - `cmake` vs `CMake` vs `CMAKE`
-- Mixed case styles in filenames (snake_case is standard; flag camelCase or kebab-case)
+- Filenames that deviate from the grimoire's recorded naming convention (advisory, never an error: any casing is valid, consistency is the goal; a `preserve` convention means imported casing is intentional and is not a finding)
 
 If `docs/reference.md` exists, treat it as authoritative. Otherwise propose canonical terms.
 
@@ -131,7 +131,7 @@ Surface the report in the chat. Do not write files unless the user asks.
 - Use technical domain vocabulary, not casual paraphrases (`toolchain_config`, not `compiler_stuff`).
 - Avoid temporal or version-specific names (`cmake_overrides`, not `cmake_v3_28`).
 - Prefer clarity over brevity (`platform_operations`, not `plat_ops`).
-- snake_case for filesystem paths.
+- The grimoire's recorded naming convention for filesystem paths (`snake_case` by default).
 
 ## Related
 

@@ -4,6 +4,16 @@
 
 ### Added
 
+- **Per-grimoire naming convention.** `grimoire.json` gains an optional
+  `naming` field (`snake_case` when absent, `preserve` for material that keeps
+  its own casing, or another named style). Any casing is valid in page and
+  folder names; consistency within a grimoire is the goal. `/grm-create` asks
+  for the convention with snake_case preselected, `/grm-add` and `/grm-import`
+  apply it to new material and ask once before renaming anything imported,
+  and `/grm-audit-semantics` reports deviations as advisory findings. Folder
+  roles (`sources/`, `templates/`, and the other asset folders) are now
+  recognised case-insensitively, and `adopt_grimoire.py` takes `--naming`.
+  The routing block gains a naming rule; `/grm-sync agentfile` refreshes it.
 - **Case-exact link checks.** `validate_links` now reports a wikilink or
   Markdown link whose casing differs from the file on disk
   (`LINK_CASE_MISMATCH`, `LINK_MARKDOWN_CASE_MISMATCH`). Such links resolve

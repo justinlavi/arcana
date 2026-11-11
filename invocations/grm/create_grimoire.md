@@ -41,8 +41,9 @@ Have a conversation, not a form. Ask one question at a time and probe for specif
 - What documents, processes, or knowledge does it cover?
 - Who are the primary users — just you, a team, public?
 - What 2-4 letter slug should prefix this grimoire's skills? Must match `^[a-z][a-z0-9]*$` (e.g. `cook` for a cooking grimoire yields `/cook-recipe-add`; `dnd` for a D&D grimoire yields `/dnd-session-log`).
+- How should files and folders be named? Offer `snake_case` as the preselected default (greppable, stable in links). Accept another named style (`kebab-case`, `PascalCase`, `Title Case`) or `preserve` when the grimoire will absorb existing material that keeps its own casing. Any casing is valid; consistency within the grimoire is what matters.
 
-Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `token` (all-caps), `skill_prefix`, `purpose` (one sentence), `purpose_detailed`, `owner` (whoever maintains it — a person, team, or "personal"), `creation_date` (today as `YYYY-MM-DD`), `repo_url` (the canonical git URL you intend to push this grimoire to — public GitHub, private GitLab, internal Gitea, etc. If you don't know it yet, accept the placeholder `<set this when you push to a git host>` and fix it later).
+Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `token` (all-caps), `skill_prefix`, `naming` (the convention chosen above; `snake_case` by default), `purpose` (one sentence), `purpose_detailed`, `owner` (whoever maintains it — a person, team, or "personal"), `creation_date` (today as `YYYY-MM-DD`), `repo_url` (the canonical git URL you intend to push this grimoire to — public GitHub, private GitLab, internal Gitea, etc. If you don't know it yet, accept the placeholder `<set this when you push to a git host>` and fix it later).
 
 ---
 
@@ -51,7 +52,7 @@ Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `t
 Propose 5-10 chapters grounded in what the user described. Recommend they start with 3-5.
 
 Chapter naming:
-- `snake_case`, lowercase
+- In the grimoire's naming convention (`naming`; the examples below assume the `snake_case` default)
 - Specific (`sourdough` not `breads_stuff`; `pto_policies` not `hr_stuff`)
 - Topic or action — typically nouns
 
@@ -104,6 +105,7 @@ Do not re-paste the long form into the manifest, the root hub, the log, or any s
 - `{{GRIMOIRE_DIRECTORY}}`
 - `{{SKILL_PREFIX}}` (must match `^[a-z][a-z0-9]*$`)
 - `{{GRIMOIRE_PURPOSE}}` (used as the manifest's `description` — short tagline, a few words; e.g. "personal cooking knowledge")
+- `{{NAMING}}` (the naming convention captured in Step 1; `snake_case` unless the user chose otherwise)
 
 **`{{grimoire_directory}}.md`** (root hub):
 - `{{GRIMOIRE_NAME}}`, `{{GRIMOIRE_NAME_LOWER}}`, `{{GRIMOIRE_DIRECTORY}}`, `{{GRIMOIRE_PURPOSE}}` (italic subtitle), `{{GRIMOIRE_DOMAIN}}`, `{{SKILL_PREFIX}}`

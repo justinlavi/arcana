@@ -96,6 +96,7 @@ def test_grimoire_scaffold_formula_expands_to_valid_grimoire(tmp_path):
         "{{GRIMOIRE_PURPOSE_DETAILED}}": "Recipes, techniques, equipment, and ingredient inventories.",
         "{{GRIMOIRE_REPO_URL}}": "https://git.example.com/you/cooking-grimoire.git",
         "{{SKILL_PREFIX}}": "cook",
+        "{{NAMING}}": "snake_case",
         "{{CHAPTER_ROUTES}}": "- Recipes -> [[chapters/recipes/recipes|recipes]]",
         "{{CHAPTER_LIST}}": "- **recipes** - documented recipes and techniques",
         "{{CHAPTER_TREE}}": "|-- chapters/\n|   |-- recipes/\n|       |-- recipes.md\n|       |-- sources/",

@@ -38,6 +38,35 @@ DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 SOURCE_DIRNAME = "sources"
 
+# Naming convention a grimoire records in grimoire.json (`naming`). Any casing is
+# valid in page and folder names; the convention is what the AI applies to new
+# material and what /grm-audit-semantics reports deviations from. Absent means
+# the default.
+NAMING_DEFAULT = "snake_case"
+NAMING_MAX_LEN = 40
+
+
+def naming_convention(manifest) -> str:
+    """Return the grimoire's recorded naming convention, or the default."""
+    if isinstance(manifest, dict):
+        value = manifest.get("naming")
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return NAMING_DEFAULT
+
+
+def _source_index(parts, start: int):
+    """Index of the first chapter-local sources segment at or after ``start``.
+
+    The folder is recognised case-insensitively (``sources``, ``Sources``), so a
+    grimoire that keeps its own casing is still read correctly; new folders are
+    always created as ``sources``.
+    """
+    for index in range(start, len(parts)):
+        if parts[index].casefold() == SOURCE_DIRNAME:
+            return index
+    raise ValueError(SOURCE_DIRNAME)
+
 
 def _path_parts(rel) -> tuple[str, ...]:
     if isinstance(rel, Path):
@@ -57,7 +86,7 @@ def is_colocated_source_path(rel) -> bool:
     if len(parts) < 4 or parts[0] != "chapters":
         return False
     try:
-        source_index = parts.index(SOURCE_DIRNAME, 2)
+        source_index = _source_index(parts, 2)
     except ValueError:
         return False
     return source_index < len(parts) - 1
@@ -69,7 +98,7 @@ def is_inside_colocated_source_dir(rel) -> bool:
     if len(parts) < 3 or parts[0] != "chapters":
         return False
     try:
-        parts.index(SOURCE_DIRNAME, 2)
+        _source_index(parts, 2)
     except ValueError:
         return False
     return True
@@ -347,6 +376,12 @@ def load_manifest(directory: Path) -> tuple[Optional[dict], list]:
         errors.append(
             f"invalid skill_prefix '{skill_prefix}' (must match {SKILL_PREFIX_RE.pattern})"
         )
+    if "naming" in metadata:
+        naming = metadata.get("naming")
+        if not isinstance(naming, str) or not naming.strip():
+            errors.append("grimoire.json 'naming' must be a non-empty string (for example snake_case)")
+        elif len(naming.strip()) > NAMING_MAX_LEN:
+            errors.append(f"grimoire.json 'naming' must be at most {NAMING_MAX_LEN} characters")
 
     return metadata, errors
 
@@ -518,9 +553,10 @@ def is_skipped(rel, skip_dirs: Iterable[str]) -> bool:
         parts = rel.parts
     else:
         parts = tuple(p for p in str(rel).replace("\\", "/").split("/") if p)
+    folded = tuple(p.casefold() for p in parts)
     for sd in skip_dirs:
-        sd_parts = tuple(p for p in str(sd).replace("\\", "/").split("/") if p)
-        if sd_parts and parts[: len(sd_parts)] == sd_parts:
+        sd_parts = tuple(p.casefold() for p in str(sd).replace("\\", "/").split("/") if p)
+        if sd_parts and folded[: len(sd_parts)] == sd_parts:
             return True
     return False
 
