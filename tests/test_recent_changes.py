@@ -1,4 +1,4 @@
-"""recent_changes.py renders grimoire content history from git (AB-04)."""
+"""recent_changes.py renders grimoire content history from git."""
 
 import json
 import shutil

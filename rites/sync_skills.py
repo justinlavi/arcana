@@ -727,12 +727,11 @@ def clean_deprecated_targets(
     reporter: ResultReporter | None = None,
     label: str = "",
 ) -> int:
-    """Remove managed-namespace skills from a target's former skill directories.
+    """Remove managed-namespace skills from a target's secondary skill directories.
 
-    An agent that moved its skill root (Codex: ~/.codex/skills -> ~/.agents/skills)
-    still reads the old location for a while, so a copy left there would shadow
-    or duplicate the current one. Only managed prefixes are touched; a user's
-    own skills in the old directory are never removed.
+    Codex reads ~/.codex/skills as well as ~/.agents/skills, so a managed copy
+    left there would shadow or duplicate the registered one. Only managed
+    prefixes are touched; a user's own skills in that directory are never removed.
     """
     prefixes = tuple(f"{prefix}-" for prefix in sorted({spec.skill_prefix for spec in specs}))
     cleaned = 0

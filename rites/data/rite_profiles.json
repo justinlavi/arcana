@@ -19,21 +19,6 @@
       ]
     },
     {
-      "path": "rites/append_log.py",
-      "profile": "append_only",
-      "default_mode": "append",
-      "plan_command": null,
-      "apply_command": "python rites/append_log.py --grimoire <path> --op <op> --title \"<title>\"",
-      "writes": [
-        "<grimoire>/log.md"
-      ],
-      "idempotency": "DEPRECATED since 1.8.0 (log.md retired; history comes from git via rites/recent_changes.py; no invocation calls this rite; removed in the next minor). Append-only by design.",
-      "validation_profile": "Inspect the appended log entry; run relevant grimoire validators for the operation that produced the entry.",
-      "tests": [
-        "tests/test_rite_profiles.py"
-      ]
-    },
-    {
       "path": "rites/clean_artifacts.py",
       "profile": "plan_apply",
       "default_mode": "apply",

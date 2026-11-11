@@ -1,4 +1,4 @@
-"""Case-exact links and case-collision portability (AB-01).
+"""Case-exact links and case-collision portability.
 
 A link that differs from the on-disk spelling only by case resolves on Windows
 and macOS and breaks on Linux, in site builds, and in Obsidian on Linux. The

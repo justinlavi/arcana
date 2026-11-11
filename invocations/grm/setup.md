@@ -11,7 +11,7 @@ last_verified: 2026-11-11
 
 ## Purpose
 
-Hold the conversation the installer used to hold. A person who has just
+Hold the onboarding conversation. A person who has just
 installed Arcana, or who has been told "we keep that in the Kutta grimoire",
 should be able to say "set me up" and end with a grimoire on disk, registered,
 and usable, without learning git or Arcana. Engineers get the same flow with

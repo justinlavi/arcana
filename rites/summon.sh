@@ -5,8 +5,7 @@
 # Thin source bootstrap: find Python 3, fetch the dispatcher and its companion
 # files when run from the public one-liner (a local checkout uses its own
 # files), then hand off to rites/summon.py, which installs Arcana, configures
-# agents, and registers skills in the terminal. There is no GUI and no
-# release binary; everything runs from source on a stock Python.
+# agents, and registers skills in the terminal, from source on a stock Python.
 #
 # One-liner entry point:
 #   curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
@@ -245,7 +244,7 @@ echo "  [OK]    Using $($PYTHON --version 2>&1)"
 echo ""
 
 # ---------------------------------------------------------------------------
-# 3. Hand off to the dispatcher (terminal install; no GUI, no binary)
+# 3. Hand off to the dispatcher
 # ---------------------------------------------------------------------------
 
 # shellcheck disable=SC2086  # PYTHON may be "py -3"

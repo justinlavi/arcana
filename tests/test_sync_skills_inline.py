@@ -1,5 +1,5 @@
 """Registration inlines dynamic-context directives so generated skills are
-self-contained (AB-17): no !`cat` survives, no shell runs at load time, and the
+self-contained: no !`cat` survives, no shell runs at load time, and the
 working directory of the session no longer matters."""
 
 from pathlib import Path

@@ -58,9 +58,9 @@
   (validators keep their exemptions), and no command appends to it any more.
   The new read-only `rites/recent_changes.py` renders recent content commits
   (`--since 90d`, JSON envelope) and `/grm-health-check` uses it for its
-  activity phase. `append_log.py` and the `log-entry` page type are
-  deprecated; the rite is removed in the next minor. The routing block drops
-  the log line; `/grm-sync agentfile` refreshes it.
+  activity phase. `append_log.py`, the log-entry formula, and the `log-entry`
+  page type are removed. The routing block drops the log line; `/grm-sync
+  agentfile` refreshes it.
 - **Codex skills register in `~/.agents/skills`.** Codex documents
   `~/.agents/skills` as its personal skill root and treats `~/.codex/skills`
   as deprecated. The agent target registry gains `deprecated_skill_targets`,
@@ -75,10 +75,10 @@
   release-asset and binary-selection parts of the summoning contract are
   gone. The summoning rite is terminal-only and runs from source on a stock
   Python; the conversation the GUI held (install only, join a grimoire,
-  start one) moves to the agent. `summon.sh` is a thin bootstrap that finds
-  Python, fetches the dispatcher when piped, and hands off; `--cli` is still
-  accepted and ignored. Releases are tags, not artifacts (see
-  `docs/release.md`).
+  start one) moves to the agent (`/grm-setup`). `summon.sh` is a thin
+  bootstrap that finds Python, fetches the dispatcher when piped, and hands
+  off; the `--cli` and `--gui` flags are gone. Releases are tags, not
+  artifacts (see `docs/release.md`).
 
 ### Fixed
 

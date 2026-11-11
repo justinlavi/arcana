@@ -55,7 +55,7 @@ Runs as a phase of `/arc-improve`. There is no standalone slash command.
 |---|---|---|---|
 | `command_surface` | `mutation_behavior` | What on-disk changes the command makes (or that it is read-only / judgment-gated). | Trace to the owner: read the `rite_owner` rite, or the invocation leaf for judgment/hybrid owners. Behavioral probe for the four enveloped-rite-owned commands. |
 | `command_surface` | `mutation_profile` (as claim) | The declared safety posture is true of the command's real behavior. | The static `mutation_profile` <-> `rite_profiles.profile` agreement is already proven by `validate_skill_refs.py`; this adds only the runtime check that the declared profile matches the observed envelope `mode` for the four probeable commands. |
-| `command_surface` | `log_behavior` | Whether and how the command writes a log entry, quantified. | Probe the `append_log` path (one append to `log.md`); code-read invocation-orchestrated or "does not append" cases. |
+| `command_surface` | `log_behavior` | Whether and how the command writes a log entry, quantified. | Code-read: every command declares that it writes no log; a grimoire's history is its git history. |
 | `command_surface` | `validation_profile` | The listed validators exist, accept the named flags, and fit the effect. | Inline path + flag helper, then judgment on aptness. |
 | `rite_profiles` | `writes` | The declared paths are exactly what the rite touches - no broader, no narrower. | Probe + before/after disk diff for the five enveloped rites; code-read write call sites for the rest. |
 | `rite_profiles` | `idempotency` | The described re-run behavior holds. | Profile-specific probe for the five enveloped rites; code-read control flow for the rest. |
@@ -75,10 +75,10 @@ mutations, messages}`). Derive that set at runtime - never hard-code it:
 grep -rln "ResultReporter" rites/ | grep -v diagnostics.py
 ```
 
-Today that is five rites: `append_log`, `repair_links`, `sync_library`,
-`adopt_grimoire`, `clean_artifacts`. Of those, four back a public command
-(`/grm-repair-links`, `/arc-sync library`, `/arc-adopt`,
-`/arc-clean`); `append_log` is internal. The validator family also
+Today that is six rites: `repair_links`, `sync_library`, `adopt_grimoire`,
+`clean_artifacts`, `install_grimoire`, `save_grimoire`, each backing a public
+command (`/grm-repair-links`, `/arc-sync library`, `/arc-adopt`, `/arc-clean`,
+`/grm-setup`, `/grm-save`). The validator family also
 accepts `--format`, but it emits `DiagnosticReporter` (a findings envelope), not
 the mutation envelope - so `--format` alone does **not** make a rite probeable
 for `writes` / `idempotency` / `mode`. Treat everything else, including
@@ -170,10 +170,9 @@ right signal for idempotency.
 - **clean_artifacts** (temp tree with a seeded `rites/.artifacts`):
   `--dry-run --format json` -> `mode plan` / `mutations []`; without `--dry-run`
   -> `mode apply` / mutation `remove`; rerun -> `noop`.
-- **append_log** (temp grimoire): `--grimoire <tmp> --op <op> --title "x"
-  --format json` -> `mode append`, exactly one mutation `append` to
-  `<grimoire>/log.md`. Append-only: assert one append per call, **not**
-  noop-on-rerun.
+- **save_grimoire** (temp grimoire with a bare remote): `--grimoire <tmp>
+  --format json` -> `mode plan` / `mutations []`; `--apply --message x` ->
+  `mode apply` / mutations `commit` then `push`; rerun -> `noop`.
 
 For `writes`, add an independent before/after disk diff of the temp tree and
 fail the probe if any path outside the declared `writes` scope changed - the

@@ -1,4 +1,4 @@
-"""install_grimoire.py clones a grimoire into the home and registers it (AB-09)."""
+"""install_grimoire.py clones a grimoire into the home and registers it."""
 
 import json
 import shutil

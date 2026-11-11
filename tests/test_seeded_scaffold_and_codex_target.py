@@ -1,4 +1,4 @@
-"""Seeded scaffold files (AB-13) and the Codex skill-root move (AB-06)."""
+"""Seeded scaffold files and the Codex skill-root move."""
 
 import json
 import shutil

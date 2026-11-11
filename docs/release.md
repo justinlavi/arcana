@@ -12,8 +12,7 @@ last_verified: 2026-11-11
 How to cut an Arcana release. Arcana ships as source: a release is a tag on
 the repository, and every install path (the summoning rite, `/grm-update`,
 manual clone) reads that source directly. There are no built binaries and no
-packaged artifacts to publish; the PyInstaller release pipeline and its GitHub
-Actions workflow were removed in 1.8.0.
+packaged artifacts to publish.
 
 The canonical installer behavior contract lives in
 [summoning contract](summoning_contract.md), backed by

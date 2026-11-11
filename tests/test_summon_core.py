@@ -255,15 +255,13 @@ def test_inject_agent_file_never_duplicates_a_legacy_heading_block(tmp_path):
     assert after.count(summon_core.BEGIN_SENTINEL) == 0
 
 
-def test_dispatcher_is_terminal_only_and_accepts_cli_flag():
+def test_dispatcher_parses_install_flags():
     parser = summon.build_parser()
-    args = parser.parse_args(["--cli", "--scope", "https://example.com/org"])
-    assert args.cli is True
+    args = parser.parse_args(["--scope", "https://example.com/org"])
     assert args.scope == "https://example.com/org"
-    assert "--gui" not in parser.format_help()
-    assert not hasattr(summon, "_detect_gui_mode")
+    assert args.arcana_url is None
 
 
-def test_core_has_no_frozen_binary_special_cases():
+def test_core_spawns_sister_scripts_with_the_running_interpreter():
     assert summon_core._subprocess_env() is None
     assert summon_core.system_python() == sys.executable

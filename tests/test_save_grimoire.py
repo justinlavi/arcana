@@ -1,4 +1,4 @@
-"""save_grimoire.py validates, commits, rebases, and pushes a grimoire (AB-10)."""
+"""save_grimoire.py validates, commits, rebases, and pushes a grimoire."""
 
 import json
 import shutil

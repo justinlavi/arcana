@@ -1,4 +1,4 @@
-"""Per-grimoire naming convention and case-insensitive folder roles (AB-03).
+"""Per-grimoire naming convention and case-insensitive folder roles.
 
 Any casing is valid in a grimoire; the recorded convention (`naming` in
 grimoire.json, snake_case by default) is advisory for agents, and the folder

@@ -142,11 +142,7 @@ class Logger:
 
 
 def _subprocess_env():
-    """Environment for spawned subprocesses; None means inherit the current one.
-
-    Kept as a seam so callers have one place to adjust the environment of git
-    and sister-script subprocesses.
-    """
+    """Environment for spawned subprocesses; None inherits the current one."""
     return None
 
 

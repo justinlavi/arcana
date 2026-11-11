@@ -13,9 +13,8 @@ last_verified: 2026-11-11
 
 The Summoning Rite installs Arcana, optionally discovers and clones grimoires,
 updates local routing state, configures supported agents, and registers skills.
-It is terminal-only and runs from source on a stock Python: there is no GUI,
-no release binary, and no binary release workflow (all three were removed in
-1.8.0; the agent holds the conversation the GUI used to hold).
+It is terminal-only and runs from source on a stock Python; the agent holds
+the onboarding conversation through `/grm-setup`.
 
 The machine-readable source is
 [`rites/data/summon_contract.json`](../rites/data/summon_contract.json).
@@ -26,7 +25,7 @@ This page is the human reading path for that contract.
 | Surface | Role | Required behavior |
 |---|---|---|
 | `rites/summon.sh` | Shell bootstrap | Find Python 3.10+ (install only with consent), fetch the dispatcher and its companion files when run from the public one-liner, and pass arguments to Python. A local checkout uses its own files. |
-| `rites/summon.py` | Dispatcher | Run the terminal installer; route `--check`, `--reconcile`, and `--update` to the state surface when it is available. `--cli` is accepted for compatibility and ignored. |
+| `rites/summon.py` | Dispatcher | Run the terminal installer; route `--check`, `--reconcile`, and `--update` to the state surface when it is available. |
 | `rites/summon_core.py` | Install engine | Own git checks, discovery, Arcana install/update, grimoire install/update, library writes, agent block injection, skill registration, and the terminal summary. |
 | `rites/summon_state.py` | Agent-legible state surface | Own `--check`/`--reconcile`/`--update`, the install/check/reconcile transcript, and the offline reconciliation that backs [Update](../UPDATE.md). |
 

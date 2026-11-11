@@ -36,7 +36,7 @@
       ],
       "mutation_profile": "judgment_gated",
       "mutation_behavior": "Creates a new grimoire directory, scaffold files, starter chapters, git repository, and library entry.",
-      "log_behavior": "Does not append grimoire logs (log.md retired in 1.8.0; history comes from git, rendered by rites/recent_changes.py).",
+      "log_behavior": "Writes no log; a grimoire's history is its git history (rites/recent_changes.py renders it).",
       "validation_profile": "python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT"
     },
     {
@@ -53,7 +53,7 @@
       ],
       "mutation_profile": "judgment_gated",
       "mutation_behavior": "Adds knowledge to the active grimoire as a page or a chapter, sized to the material; stamps leaf pages via new_page.py, scaffolds a chapter hub from formula when warranted, and wires the addition into a hub. External sources go through /grm-import.",
-      "log_behavior": "Does not append grimoire logs (log.md retired in 1.8.0; history comes from git, rendered by rites/recent_changes.py).",
+      "log_behavior": "Writes no log; a grimoire's history is its git history (rites/recent_changes.py renders it).",
       "validation_profile": "python rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT; python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT"
     },
     {
@@ -70,7 +70,7 @@
       ],
       "mutation_profile": "judgment_gated",
       "mutation_behavior": "Imports classified inputs into chapter-local sources folders or chapters, then updates derived pages and hubs.",
-      "log_behavior": "Does not append grimoire logs (log.md retired in 1.8.0; history comes from git, rendered by rites/recent_changes.py).",
+      "log_behavior": "Writes no log; a grimoire's history is its git history (rites/recent_changes.py renders it).",
       "validation_profile": "python rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT; python rites/validate_provenance.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT"
     },
     {
@@ -88,7 +88,7 @@
       ],
       "mutation_profile": "judgment_gated",
       "mutation_behavior": "Renames or moves a page or chapter under chapters/ via restructure_grimoire.py, retargeting every full-path wikilink that pointed at the moved file(s) and renaming a moved chapter's folder-named hub; the invocation then wires the source and destination hubs, fixes display labels, and logs the move.",
-      "log_behavior": "Does not append grimoire logs (log.md retired in 1.8.0; history comes from git, rendered by rites/recent_changes.py).",
+      "log_behavior": "Writes no log; a grimoire's history is its git history (rites/recent_changes.py renders it).",
       "validation_profile": "python rites/restructure_grimoire.py --grimoire GRIMOIRE_ROOT --move SRC DST; python rites/validate.py --grimoire GRIMOIRE_ROOT links orphans structure"
     },
     {
@@ -106,7 +106,7 @@
       ],
       "mutation_profile": "judgment_gated",
       "mutation_behavior": "Deletes a page or chapter under chapters/ via restructure_grimoire.py and reports every inbound wikilink that would break; the invocation confirms the deletion, drops the parent hub pointer, repairs or removes the broken inbound links, and logs the removal. Refuses to delete a chapter hub on its own.",
-      "log_behavior": "Does not append grimoire logs (log.md retired in 1.8.0; history comes from git, rendered by rites/recent_changes.py).",
+      "log_behavior": "Writes no log; a grimoire's history is its git history (rites/recent_changes.py renders it).",
       "validation_profile": "python rites/restructure_grimoire.py --grimoire GRIMOIRE_ROOT --remove PATH; python rites/validate.py --grimoire GRIMOIRE_ROOT links orphans structure"
     },
     {
@@ -159,7 +159,7 @@
       ],
       "mutation_profile": "judgment_gated",
       "mutation_behavior": "Runs a grimoire health check with mechanical validators and judgment passes; applies only approved fixes.",
-      "log_behavior": "Does not append grimoire logs (log.md retired in 1.8.0; history comes from git, rendered by rites/recent_changes.py).",
+      "log_behavior": "Writes no log; a grimoire's history is its git history (rites/recent_changes.py renders it).",
       "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT"
     },
     {
@@ -209,7 +209,7 @@
       ],
       "mutation_profile": "plan_apply",
       "mutation_behavior": "Dry-run reports filename-only wikilink repairs; --apply rewrites unambiguous wikilinks in active-grimoire Markdown files.",
-      "log_behavior": "Does not append grimoire logs (log.md retired in 1.8.0; history comes from git, rendered by rites/recent_changes.py).",
+      "log_behavior": "Writes no log; a grimoire's history is its git history (rites/recent_changes.py renders it).",
       "validation_profile": "python rites/repair_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_links.py --grimoire GRIMOIRE_ROOT; python rites/validate_orphans.py --grimoire GRIMOIRE_ROOT"
     },
     {
@@ -378,7 +378,7 @@
       ],
       "mutation_profile": "apply_only",
       "mutation_behavior": "Conversational onboarding. Reads summon.py --check, then either hands off to /grm-create or /grm-adopt, or runs install_grimoire.py to clone a grimoire into the home, register it in library.json, and sync skills.",
-      "log_behavior": "Does not append grimoire logs (log.md retired in 1.8.0; history comes from git, rendered by rites/recent_changes.py).",
+      "log_behavior": "Writes no log; a grimoire's history is its git history (rites/recent_changes.py renders it).",
       "validation_profile": "python rites/summon.py --check --format json; python rites/validate.py --grimoire GRIMOIRE_ROOT --summary"
     },
     {
@@ -396,7 +396,7 @@
       ],
       "mutation_profile": "plan_apply",
       "mutation_behavior": "Plans the changes to share, then under --apply stages everything git tracks, commits with the composed message, pulls --rebase from the upstream, and pushes. Aborts the rebase and keeps the local commit on conflict; never force-pushes.",
-      "log_behavior": "Does not append grimoire logs (log.md retired in 1.8.0; history comes from git, rendered by rites/recent_changes.py).",
+      "log_behavior": "Writes no log; a grimoire's history is its git history (rites/recent_changes.py renders it).",
       "validation_profile": "python rites/save_grimoire.py --grimoire GRIMOIRE_ROOT --format json (plan runs validate.py --grimoire GRIMOIRE_ROOT first)"
     }
   ]

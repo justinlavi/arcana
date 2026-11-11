@@ -66,7 +66,7 @@ canonical in [summoning contract](summoning_contract.md#bootstrap-environment-co
 
 After summoning, open a new Claude Code or Codex/ChatGPT session and run `/grm-setup`: it joins a grimoire your team already has from its repository link, or hands you to `/grm-create` for a brand-new one. (Maintainers can run `/arc-help` for the full platform catalog.)
 
-The rite needs nothing beyond `git` and a stock Python; there is no GUI and nothing to pip-install. When the one-line installer is run through `curl | bash`, prompts read from the controlling terminal instead of the curl pipe.
+The rite needs nothing beyond `git` and a stock Python. When the one-line installer is run through `curl | bash`, prompts read from the controlling terminal instead of the curl pipe.
 
 ---
 

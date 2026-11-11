@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "title": "Summoning Rite Behavior Contract",
-  "description": "Authoritative contract for the shell bootstrap, Python dispatcher, shared install engine, and the agent-legible state surface. The installer is terminal-only: no GUI, no release binary.",
+  "description": "Authoritative contract for the shell bootstrap, Python dispatcher, shared install engine, and the agent-legible state surface.",
   "modes": [
     {
       "id": "shell_bootstrap",
@@ -24,16 +24,16 @@
       "id": "python_dispatcher",
       "label": "Python dispatcher",
       "surface": "rites/summon.py",
-      "entrypoint": "python rites/summon.py [--arcana-url URL] [--scope URL] [--cli]",
+      "entrypoint": "python rites/summon.py [--arcana-url URL] [--scope URL]",
       "owner": "mode_selection",
       "code_symbols": [
         "summon.build_parser",
         "summon.main"
       ],
       "required_behaviors": [
-        "Run the terminal installer; accept --cli for compatibility and ignore it.",
+        "Run the terminal installer.",
         "Route --check, --reconcile, and --update to the state surface when summon_state is available.",
-        "Degrade to the installer path when summon_state is absent (piped bootstrap)."
+        "Run the installer path when summon_state is absent (piped bootstrap)."
       ]
     },
     {

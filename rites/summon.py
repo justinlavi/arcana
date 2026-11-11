@@ -10,14 +10,11 @@ One-liner entry point:
 
 This file is the dispatcher. The install logic lives in `summon_core.py`
 (terminal install: git, discovery, library, agent files, skills; pure stdlib)
-and the agent-legible state surface lives in `summon_state.py`. Everything runs
-in the terminal; there is no GUI and no release binary.
+and the agent-legible state surface lives in `summon_state.py`.
 
 Options:
     --arcana-url URL   URL of the Arcana git repository to install
     --scope URL        URL of the group/org containing your grimoires
-    --cli              Accepted for compatibility with older instructions; the
-                       installer is terminal-only, so this is the default
     -h, --help         Show this help message
 
 Environment variables:
@@ -45,11 +42,6 @@ def build_parser():
     parser.add_argument(
         "--scope",
         help="URL of the group/org containing your grimoires (e.g., https://github.com/my-org)",
-    )
-    parser.add_argument(
-        "--cli",
-        action="store_true",
-        help="Accepted for compatibility; the installer is terminal-only",
     )
     return parser
 

@@ -24,7 +24,7 @@
       "skill_mode": "pointer",
       "auto_configured": true,
       "supports_model_invocation": false,
-      "summary": "Arcana injects the Grimoire routing block and registers pointer-only SKILL.md folders in ~/.agents/skills, the cross-agent skill root Codex now documents (~/.codex/skills is deprecated and is cleaned of managed skills).",
+      "summary": "Arcana injects the Grimoire routing block and registers pointer-only SKILL.md folders in ~/.agents/skills; Codex also reads ~/.codex/skills, so registration keeps managed skills out of it.",
       "limitations": [
         "Registered skill directories contain SKILL.md only."
       ],
