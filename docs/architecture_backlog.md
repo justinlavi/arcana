@@ -98,7 +98,7 @@ that depend on it.
 
 | ID | Decision | Recommendation |
 |---|---|---|
-| D1 | Package Arcana and grimoires as agent plugins (Claude Code and Codex), or keep the flat `sync_skills` registration as the only mechanism? Plugin skills are namespaced (`/grm:add` instead of `/grm-add`), which is a public command change. | Adopt plugins as the primary distribution for 1.8 with the `arc` and `grm` command families becoming two plugins, so names become `/grm:add` and `/arc:validate`; keep flat registration as the deprecated fallback for one minor. The family split already matches the plugin model one to one. |
+| D1 | Package Arcana and grimoires as agent plugins (Claude Code and Codex), or keep the flat `sync_skills` registration as the only mechanism? Plugin skills are namespaced (`/grm:add` instead of `/grm-add`), which is a public command change. | Adopt plugins as the primary distribution for Claude Code in 1.8, with the `arc` and `grm` command families becoming two plugins, so names become `/grm:add` and `/arc:validate`. Keep flat skill registration as a permanent first-class path, not a deprecated fallback: the Codex IDE extension does not support plugins at all (verified 2026-11-10 against the Codex plugin docs), and Cursor and Copilot have no plugin path either. Codex therefore gets skills in `~/.agents/skills` plus the file-injected routing block. Approved 2026-11-10. |
 | D2 | Retire `log.md` as a required scaffold file? | Yes. Make it optional, stop appending, derive "recent activity" from git on demand. Existing files stay valid, so this is MINOR. |
 | D3 | Casing policy: how to keep grimoires consistent without forcing a rename of imported material? | Any casing is valid; consistency within a grimoire is the goal; snake_case is the default. Each grimoire records its convention once (`naming` in `grimoire.json`, set by `/grm-create` or on the first import or add that raises the question). The AI applies the recorded convention to new material, asks before renaming anything imported, and may accept a case-by-case exception the user states. Validators enforce only what breaks machines: exact-case links and no case-insensitive collisions; the convention itself is advisory and reported by `/grm-audit-semantics`. |
 | D4 | Delete the GUI and release binaries outright in 1.8, or deprecate for one minor? | Delete in 1.8. The maintainer asked for removal; nothing in a grimoire depends on the GUI; the CLI path and the plugin path both replace it. |
@@ -295,10 +295,17 @@ Shape:
   skills) and `arc` (maintainer skills). Each plugin's `plugin.json` omits
   `version` so users track commits, or carries `VERSION` so releases are
   explicit (recommend the latter; `/grm-update` already pulls).
-- Skill sources stop using `{{SKILL_PREFIX}}` and `{{ARCANA_PATH}}` for the
-  plugin path: `${CLAUDE_PLUGIN_ROOT}` is Arcana's checkout in both agents.
-  `sync_skills.py` keeps producing the flat `/grm-*` copies for one minor as
-  the deprecated fallback (D1).
+- Skill sources keep `{{SKILL_PREFIX}}` and `{{ARCANA_PATH}}` as the
+  rendering seam; the plugin build renders them with `${CLAUDE_PLUGIN_ROOT}`
+  and the flat registration renders them with absolute paths, from one source.
+  `sync_skills.py` stays permanently for Codex (whose IDE extension has no
+  plugin support), Cursor, and Copilot (D1). Both renderings must be generated
+  by the same rite so they cannot drift.
+- Engine location: `~/grimoires/arcana` remains the single engine checkout for
+  every agent. The Claude plugin is a thin carrier (skills, hook, launcher)
+  whose session-start hook clones the engine if absent and fast-forwards it
+  when clean, pinned to the plugin's version tag. The engine never lives in an
+  agent's plugin cache, so Claude and Codex always run the same rites.
 - A generated `~/grimoires/.claude-plugin/marketplace.json` lists every library
   grimoire as a local plugin (`./<directory>`), and each grimoire gains a
   managed `.claude-plugin/plugin.json` whose `name` is its `skill_prefix`.
@@ -315,10 +322,14 @@ Shape:
   GitLab host, which Git Credential Manager prompts for in a browser on first
   use, so no token export.
 
-Open questions to settle in the first slice: whether the Codex plugin skill
-namespace matches Claude's (`/grm:add` vs `$grm-add`), whether Codex loads
-local-marketplace plugins in place or copies them, and how `disableSkillShellExecution`
-affects `!cat` (AB-14 covers the fallback).
+Open questions to settle in the spike: whether `!cat` dynamic context expands
+inside the Claude Code VS Code extension (plugins, hooks, and settings are
+documented as shared with the CLI; the extension bundles its own `claude`
+binary, so no separate CLI install is needed), which built-in commands the
+extension hides ("subset" per the docs), how `disableSkillShellExecution`
+affects `!cat` (AB-14 covers the fallback), and whether the Codex CLI plugin
+path is worth supporting at all given the IDE extension gap (recommendation:
+no; Codex uses skills only).
 
 Validation profile: `claude plugin validate .` and `codex plugin` checks in CI,
 `summon.py --check` recognising plugin-mode installs, full suite. Compatibility:
