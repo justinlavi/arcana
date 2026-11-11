@@ -49,9 +49,3 @@ def test_summon_source_bootstrap_downloads_agent_target_contract():
     assert "rites/data/agent_targets.json" in bootstrap
     assert '"$SCRIPT_DIR/data/agent_targets.json"' in bootstrap
 
-
-def test_summon_binary_bundles_agent_target_contract():
-    build_script = (REPO_ROOT / "rites" / "build_summon_binary.py").read_text(encoding="utf-8")
-
-    assert '"rites" / "data"' in build_script
-    assert "rites/data" in build_script

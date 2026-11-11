@@ -180,7 +180,7 @@ fail the probe if any path outside the declared `writes` scope changed - the
 envelope is self-reported, so the disk diff is the oracle that catches an
 undeclared write. If a flag is absent or a temp target cannot be built, emit
 `UNVERIFIABLE` - a setup failure is not a contract lie. Never execute
-`summon*` / `sync_skills` / `sync_docs` / `build_summon_binary`.
+`summon*` / `sync_skills` / `sync_docs`.
 
 ### 5. Code-read the rest and run the validation-profile helper
 

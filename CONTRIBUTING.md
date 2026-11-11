@@ -28,7 +28,7 @@ cd arcana
 python3 -m pip install -e '.[dev]'
 ```
 
-Arcana's runtime is pure Python stdlib - no install-time dependencies. The `[dev]` extra pulls in `pytest` for the test suite. The `[gui]` and `[build]` extras are only needed for the summoning rite's GUI launcher and PyInstaller release builds respectively.
+Arcana's runtime is pure Python stdlib - no install-time dependencies. The `[dev]` extra pulls in `pytest` for the test suite; there are no other extras. The installer is terminal-only and runs from source.
 
 ---
 

@@ -28,15 +28,7 @@ REQUIRED_FIELDS = {
 
 def contract_path_candidates(root: Path) -> list[Path]:
     """Return candidate locations for the agent target registry."""
-    candidates = [root / CONTRACT_PATH]
-    meipass = getattr(sys, "_MEIPASS", None)
-    if meipass:
-        bundle_root = Path(meipass)
-        candidates.extend([
-            bundle_root / CONTRACT_PATH,
-            bundle_root / "data" / "agent_targets.json",
-        ])
-    return candidates
+    return [root / CONTRACT_PATH]
 
 
 def load_agent_targets(root: Path) -> dict[str, Any]:

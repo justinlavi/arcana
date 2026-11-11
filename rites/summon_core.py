@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Core install logic for the Arcana Summoning Rite.
 
-Sister module to `summon.py` (the dispatcher) and `summon_gui.py` (the
-DearPyGui front end). This module is the install engine: constants, the
-Logger, git/HTTP helpers, GitHub/GitLab discovery, the install pipeline,
-and the interactive CLI flow.
+Sister module to `summon.py` (the dispatcher). This module is the install
+engine: constants, the Logger, git/HTTP helpers, GitHub/GitLab discovery, the
+install pipeline, and the interactive terminal flow.
 
-It depends only on the Python standard library so it stays usable in
-headless environments where DearPyGui isn't installable.
+It depends only on the Python standard library so it runs on a stock Python
+anywhere, including headless environments.
 """
 
 import json
@@ -53,23 +52,11 @@ SETTINGS_DEFAULTS = {
 
 def _load_grimoire_block():
     """Load the canonical Grimoire routing block from the markdown template."""
-    candidates = []
-    meipass = getattr(sys, "_MEIPASS", None)
-    if meipass:
-        bundle_root = Path(meipass)
-        candidates.extend(
-            [
-                bundle_root / "rites" / "templates" / "grimoire_block.md",
-                bundle_root / "templates" / "grimoire_block.md",
-            ]
-        )
-    candidates.extend(
-        [
-            RITE_DIR / "templates" / "grimoire_block.md",
-            REPO_ROOT / "rites" / "templates" / "grimoire_block.md",
-            ARCANA_DIR / "rites" / "templates" / "grimoire_block.md",
-        ]
-    )
+    candidates = [
+        RITE_DIR / "templates" / "grimoire_block.md",
+        REPO_ROOT / "rites" / "templates" / "grimoire_block.md",
+        ARCANA_DIR / "rites" / "templates" / "grimoire_block.md",
+    ]
 
     for template_path in candidates:
         if template_path.is_file():
@@ -138,9 +125,9 @@ def classify_routing_block(content):
 class Logger:
     """Terminal logger with prefixed output.
 
-    Both this terminal logger and the GUI's GuiLogger expose the same surface
-    info/ok/warn/err for tagged messages, plus `line()` for raw subprocess
-    output that should appear in the user-visible log without a tag prefix.
+    Exposes info/ok/warn/err for tagged messages, plus `line()` for raw
+    subprocess output that should appear in the user-visible log without a tag
+    prefix. Any object with the same surface can stand in (tests, orchestrators).
     """
     def info(self, msg):  print(f"  [INFO]  {msg}")
     def ok(self, msg):    print(f"  [OK]    {msg}")
@@ -155,46 +142,16 @@ class Logger:
 
 
 def _subprocess_env():
-    """Return a clean env dict for spawning subprocesses from a frozen binary.
+    """Environment for spawned subprocesses; None means inherit the current one.
 
-    PyInstaller sets LD_LIBRARY_PATH to its extracted temp dir so its bundled
-    C extensions can find their dependencies. When the binary spawns system
-    tools like git, those tools' helpers (git-remote-https, etc.) also search
-    LD_LIBRARY_PATH and pick up the bundled libssl / libcurl instead of the
-    system versions, causing symbol-version mismatches on distros with newer
-    OpenSSL (e.g. Arch / CachyOS). Stripping the key fixes this without
-    affecting the binary's own Python extension loading.
+    Kept as a seam so callers have one place to adjust the environment of git
+    and sister-script subprocesses.
     """
-    if not getattr(sys, "frozen", False):
-        return None
-    env = dict(os.environ)
-    env.pop("LD_LIBRARY_PATH", None)
-    return env
+    return None
 
 
 def system_python():
-    """Return a usable Python executable for spawning sister scripts.
-
-    In a frozen PyInstaller binary, `sys.executable` points at the binary
-    itself (e.g. `grimoire-summon`) - invoking it as a Python interpreter
-    just makes the binary's argparse choke on the script path. Probe the
-    PATH for a real `python3` / `python` interpreter and prefer that;
-    fall back to `sys.executable` only when not frozen.
-    """
-    if not getattr(sys, "frozen", False):
-        return sys.executable
-    for candidate in ("python3", "python"):
-        try:
-            r = subprocess.run(
-                [candidate, "--version"],
-                capture_output=True,
-                timeout=3,
-                env=_subprocess_env(),
-            )
-            if r.returncode == 0:
-                return candidate
-        except Exception:
-            pass
+    """Return the Python executable to use for spawning sister scripts."""
     return sys.executable
 
 
@@ -855,7 +812,7 @@ def sync_skills(log):
 
 
 def finalize_install(installed_keys, library, log):
-    """Run the post-Arcana install steps shared by both CLI and GUI modes."""
+    """Run the post-Arcana install steps: library, agent blocks, skills."""
     if installed_keys:
         update_local_library(installed_keys, library, log)
     inject_agent_configs(log)

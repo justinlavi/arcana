@@ -52,6 +52,19 @@
   and `sync_skills.py` removes managed-prefix skills from the former
   location so no stale copy shadows the current one.
 
+### Removed
+
+- **The installer GUI and the release binaries.** `rites/summon_gui.py`
+  (Dear PyGui), `rites/build_summon_binary.py` (PyInstaller), the
+  `summon-release.yml` workflow, the `[gui]` and `[build]` extras, and the
+  release-asset and binary-selection parts of the summoning contract are
+  gone. The summoning rite is terminal-only and runs from source on a stock
+  Python; the conversation the GUI held (install only, join a grimoire,
+  start one) moves to the agent. `summon.sh` is a thin bootstrap that finds
+  Python, fetches the dispatcher when piped, and hands off; `--cli` is still
+  accepted and ignored. Releases are tags, not artifacts (see
+  `docs/release.md`).
+
 ### Fixed
 
 - **Skills now load from any working directory.** Generated skills used to

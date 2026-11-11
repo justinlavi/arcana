@@ -1,9 +1,12 @@
 #!/bin/bash
 # rites/summon.sh
-# Grimoire Summoning Rite - Bootstrap (Linux/Mac)
+# Grimoire Summoning Rite - Bootstrap (Linux / macOS / Windows Git Bash)
 #
-# Prefers a GitHub Release binary when run from the public curl command,
-# then falls back to the Python source bootstrap when needed.
+# Thin source bootstrap: find Python 3, fetch the dispatcher and its companion
+# files when run from the public one-liner (a local checkout uses its own
+# files), then hand off to rites/summon.py, which installs Arcana, configures
+# agents, and registers skills in the terminal. There is no GUI and no
+# release binary; everything runs from source on a stock Python.
 #
 # One-liner entry point:
 #   curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
@@ -15,17 +18,10 @@ DEFAULT_ARCANA_REF="main"
 
 : "${ARCANA_URL:=$DEFAULT_ARCANA_URL}"
 : "${ARCANA_REF:=$DEFAULT_ARCANA_REF}"
-: "${GRIMOIRE_SUMMON_PY_DEPS:=${XDG_CACHE_HOME:-$HOME/.cache}/grimoire/summon-python}"
-: "${GRIMOIRE_SUMMON_BINARY:=auto}"
-: "${GRIMOIRE_SUMMON_RELEASE_TAG:=latest}"
 : "${GRIMOIRE_SUMMON_CONNECT_TIMEOUT:=20}"
-: "${GRIMOIRE_SUMMON_STALL_TIMEOUT:=120}"
-: "${GRIMOIRE_SUMMON_QUIET_STALL_TIMEOUT:=30}"
-: "${GRIMOIRE_SUMMON_MIN_SPEED:=1}"
 : "${GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS:=3}"
 : "${GRIMOIRE_SUMMON_RETRY_DELAY:=2}"
 export ARCANA_URL
-export GRIMOIRE_SUMMON_PY_DEPS
 
 TEMP_DIR=""
 SCRIPT_SOURCE="${BASH_SOURCE[0]:-$0}"
@@ -44,14 +40,6 @@ derive_raw_base() {
 }
 
 : "${ARCANA_RAW_BASE:=$(derive_raw_base "$ARCANA_URL" "$ARCANA_REF")}"
-
-download_file() {
-    local url="$1"
-    local dest="$2"
-    local label="${3:-$(basename "$dest")}"
-
-    download_with_retries "$url" "$dest" "$label" quiet
-}
 
 python_download_file() {
     local url="$1"
@@ -80,16 +68,10 @@ PY
 download_with_retries() {
     local url="$1"
     local dest="$2"
-    local label="$3"
-    local mode="${4:-quiet}"
+    local label="${3:-$(basename "$dest")}"
     local attempt=1
     local temp_dest="$dest.part"
     local output=""
-    local stall_timeout="$GRIMOIRE_SUMMON_STALL_TIMEOUT"
-
-    if [[ "$mode" == "quiet" ]]; then
-        stall_timeout="$GRIMOIRE_SUMMON_QUIET_STALL_TIMEOUT"
-    fi
 
     rm -f "$temp_dest"
     while (( attempt <= GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS )); do
@@ -97,45 +79,17 @@ download_with_retries() {
         echo "  [INFO]  Download attempt $attempt/$GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS: $label"
 
         if command -v curl &>/dev/null; then
-            if [[ "$mode" == "progress" ]]; then
-                if curl -fL \
-                    --connect-timeout "$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
-                    --speed-time "$stall_timeout" \
-                    --speed-limit "$GRIMOIRE_SUMMON_MIN_SPEED" \
-                    --progress-bar \
-                    "$url" -o "$temp_dest"; then
-                    mv "$temp_dest" "$dest"
-                    return 0
-                fi
-            else
-                output="$(curl -fsSL \
-                    --connect-timeout "$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
-                    --speed-time "$stall_timeout" \
-                    --speed-limit "$GRIMOIRE_SUMMON_MIN_SPEED" \
-                    "$url" -o "$temp_dest" 2>&1)" && {
-                    mv "$temp_dest" "$dest"
-                    return 0
-                }
-            fi
+            output="$(curl -fsSL --connect-timeout "$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
+                "$url" -o "$temp_dest" 2>&1)" && {
+                mv "$temp_dest" "$dest"
+                return 0
+            }
         elif command -v wget &>/dev/null; then
-            if [[ "$mode" == "progress" ]]; then
-                if wget \
-                    --timeout="$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
-                    --tries=1 \
-                    --show-progress \
-                    -O "$temp_dest" "$url"; then
-                    mv "$temp_dest" "$dest"
-                    return 0
-                fi
-            else
-                output="$(wget -q \
-                    --timeout="$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" \
-                    --tries=1 \
-                    -O "$temp_dest" "$url" 2>&1)" && {
-                    mv "$temp_dest" "$dest"
-                    return 0
-                }
-            fi
+            output="$(wget -q --timeout="$GRIMOIRE_SUMMON_CONNECT_TIMEOUT" --tries=1 \
+                -O "$temp_dest" "$url" 2>&1)" && {
+                mv "$temp_dest" "$dest"
+                return 0
+            }
         else
             echo "  [ERROR] curl or wget is required to download $label"
             return 1
@@ -166,268 +120,29 @@ download_with_retries() {
     return 1
 }
 
-download_release_file() {
-    local url="$1"
-    local dest="$2"
-    local label="$3"
-
-    echo "  [INFO]  Downloading $label..."
-    download_with_retries "$url" "$dest" "$label" progress
+download_file() {
+    download_with_retries "$1" "$2" "${3:-$(basename "$2")}"
 }
 
-file_size_bytes() {
-    wc -c < "$1" | tr -d '[:space:]'
-}
-
-repo_http_base() {
-    local repo_url="$1"
-
-    if [[ "$repo_url" =~ ^https://github.com/([^/]+)/([^/.]+)(\.git)?$ ]]; then
-        echo "https://github.com/${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
-    else
-        echo "https://github.com/justinlavi/arcana"
-    fi
-}
-
-summon_platform() {
-    local os
-    local arch
-
-    os="$(uname -s | tr '[:upper:]' '[:lower:]')"
-    arch="$(uname -m | tr '[:upper:]' '[:lower:]')"
-
-    case "$os" in
-        linux) os="linux" ;;
-        darwin) os="macos" ;;
-        mingw*|msys*|cygwin*) os="windows" ;;
-        *) return 1 ;;
-    esac
-
-    case "$arch" in
-        x86_64|amd64) arch="x86_64" ;;
-        aarch64|arm64) arch="arm64" ;;
-        *) return 1 ;;
-    esac
-
-    echo "$os-$arch"
-}
-
-release_download_base() {
-    local repo_base="$1"
-    local tag="$2"
-
-    if [[ "$tag" == "latest" ]]; then
-        echo "$repo_base/releases/latest/download"
-    else
-        echo "$repo_base/releases/download/$tag"
-    fi
-}
-
-arg_disables_gui() {
-    local arg
-    for arg in "$@"; do
-        case "$arg" in
-            --cli|-h|--help) return 0 ;;
-        esac
-    done
-    return 1
-}
-
-verify_checksum() {
-    local checksum="$1"
-    local normalized="$checksum.normalized"
-    local check_file="$checksum"
-
-    # Windows-built checksum assets may contain CRLF. GNU sha256sum under
-    # Git Bash can treat the carriage return as part of the filename, so
-    # normalize before verification. This keeps older published assets usable.
-    if command -v tr &>/dev/null; then
-        tr -d '\r' < "$checksum" > "$normalized"
-        check_file="$normalized"
-    fi
-
-    if command -v sha256sum &>/dev/null; then
-        sha256sum -c "$check_file"
-    elif command -v shasum &>/dev/null; then
-        shasum -a 256 -c "$check_file"
-    else
-        echo "  [WARN]  sha256sum/shasum not found - skipping checksum verification"
-        return 0
-    fi
-}
-
-extract_archive() {
-    local archive="$1"
-    local dest="$2"
-    local archive_win
-    local dest_win
-    local py
-
-    case "$archive" in
-        *.zip)
-            if command -v unzip &>/dev/null; then
-                unzip -q "$archive" -d "$dest"
-            elif command -v powershell.exe &>/dev/null && command -v cygpath &>/dev/null; then
-                archive_win="$(cygpath -w "$archive")"
-                dest_win="$(cygpath -w "$dest")"
-                powershell.exe -NoProfile -Command \
-                    "Expand-Archive -LiteralPath '$archive_win' -DestinationPath '$dest_win' -Force"
-            else
-                py="$(command -v python3 || command -v python || true)"
-                if [[ -z "$py" ]]; then
-                    return 1
-                fi
-                "$py" -c "import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$archive" "$dest"
-            fi
-            ;;
-        *.tar.gz)
-            tar -xzf "$archive" -C "$dest"
-            ;;
-        *)
-            return 1
-            ;;
-    esac
-}
-
-should_try_binary() {
-    if [[ "$GRIMOIRE_SUMMON_BINARY" == "never" ]]; then
-        return 1
-    fi
-    if [[ "$GRIMOIRE_SUMMON_BINARY" == "always" ]]; then
-        return 0
-    fi
-    # Public piped installs prefer the release binary on every platform (Linux,
-    # macOS, Windows alike); source download is the automatic fallback when the
-    # binary download, checksum, extraction, or execution fails. Local checkout
-    # runs use local source.
-    [[ ! -f "$SCRIPT_SOURCE" ]]
-}
-
-# Defined before the source-download branch because bash only knows functions
-# after their definitions have executed. Keep this tiny helper independent of
-# Python so the piped bootstrap can decide whether to fetch summon_gui.py.
-should_download_gui_source() {
-    arg_disables_gui "$@" && return 1
-    return 0
-}
-
-try_release_binary() {
-    local platform
-    local repo_base
-    local download_base
-    local asset
-    local checksum
-    local binary_temp
-    local bin_dir
-    local binary
-    local binary_name
-
-    if ! platform="$(summon_platform)"; then
-        echo "  [INFO]  No release binary available for this platform"
-        return 1
-    fi
-    echo "  [INFO]  Detected platform: $platform"
-
-    repo_base="$(repo_http_base "$ARCANA_URL")"
-    download_base="$(release_download_base "$repo_base" "$GRIMOIRE_SUMMON_RELEASE_TAG")"
-    if [[ "$platform" == windows-* ]]; then
-        asset="grimoire-summon-$platform.zip"
-        binary_name="grimoire-summon.exe"
-    else
-        asset="grimoire-summon-$platform.tar.gz"
-        binary_name="grimoire-summon"
-    fi
-    checksum="$asset.sha256"
-
-    binary_temp="$(mktemp -d "${TMPDIR:-/tmp}/grimoire-summon.XXXXXX")"
-    bin_dir="$binary_temp/bin"
-    mkdir -p "$bin_dir"
-
-    echo "  [INFO]  Trying release binary: $asset"
-    echo "  [INFO]  Release source: $download_base"
-    if ! download_release_file "$download_base/$asset" "$binary_temp/$asset" "$asset"; then
-        echo "  [INFO]  Release binary unavailable - falling back to Python source"
-        rm -rf "$binary_temp"
-        return 1
-    fi
-    echo "  [OK]    Downloaded $asset ($(file_size_bytes "$binary_temp/$asset") bytes)"
-
-    echo "  [INFO]  Downloading checksum: $checksum"
-    if download_file "$download_base/$checksum" "$binary_temp/$checksum"; then
-        echo "  [INFO]  Verifying checksum..."
-        if ! (cd "$binary_temp" && verify_checksum "$checksum"); then
-            echo "  [WARN]  Release binary checksum failed - falling back to Python source"
-            rm -rf "$binary_temp"
-            return 1
-        fi
-        echo "  [OK]    Checksum verified"
-    else
-        echo "  [WARN]  Release checksum unavailable - falling back to Python source"
-        rm -rf "$binary_temp"
-        return 1
-    fi
-
-    echo "  [INFO]  Extracting release binary..."
-    if ! extract_archive "$binary_temp/$asset" "$bin_dir"; then
-        echo "  [WARN]  Could not extract release binary - falling back to Python source"
-        rm -rf "$binary_temp"
-        return 1
-    fi
-
-    binary="$bin_dir/$binary_name"
-    if [[ ! -x "$binary" ]]; then
-        chmod +x "$binary" 2>/dev/null || true
-    fi
-    if [[ "$platform" == windows-* && ! -f "$binary" ]]; then
-        echo "  [WARN]  Release binary not found after extraction - falling back to Python source"
-        rm -rf "$binary_temp"
-        return 1
-    fi
-    if [[ "$platform" != windows-* && ! -x "$binary" ]]; then
-        echo "  [WARN]  Release binary is not executable - falling back to Python source"
-        rm -rf "$binary_temp"
-        return 1
-    fi
-
-    echo "  [OK]    Running release binary"
-    # Run as a subprocess, not exec, so a crash (e.g. SIGABRT from GLFW/GLX)
-    # returns a non-zero exit code here rather than killing the shell process
-    # and losing the Python fallback path.
-    if "$binary" "$@"; then
-        rm -rf "$binary_temp"
-        exit 0
-    fi
-    echo "  [WARN]  Release binary exited abnormally - falling back to Python source"
-    rm -rf "$binary_temp"
-    return 1
-}
+# ---------------------------------------------------------------------------
+# 1. Locate the dispatcher: local checkout, or fetch the companion scripts
+# ---------------------------------------------------------------------------
 
 if [[ -f "$SCRIPT_SOURCE" ]]; then
     SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" && pwd)"
-    if [[ "$GRIMOIRE_SUMMON_BINARY" == "always" ]]; then
-        try_release_binary "$@" || true
-    fi
 else
-    if should_try_binary "$@"; then
-        try_release_binary "$@" || true
-    fi
     TEMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/grimoire-summon.XXXXXX")"
     SCRIPT_DIR="$TEMP_DIR/rites"
     mkdir -p "$SCRIPT_DIR/templates" "$SCRIPT_DIR/data"
     echo "  [INFO]  Downloading summoning companion scripts..."
     # summon.py is the dispatcher and summon_core.py is the install engine.
-    # Agent-target and Grimoire routing block contracts must travel with source
-    # bootstrap installs. summon_gui.py is only needed when the GUI runs, so
-    # skip it for --cli/-h/--help to keep the source bootstrap minimal.
+    # The agent-target registry and the Grimoire routing block template must
+    # travel with a source bootstrap install.
     download_file "$ARCANA_RAW_BASE/rites/summon.py" "$SCRIPT_DIR/summon.py"
     download_file "$ARCANA_RAW_BASE/rites/summon_core.py" "$SCRIPT_DIR/summon_core.py"
     download_file "$ARCANA_RAW_BASE/rites/agent_targets.py" "$SCRIPT_DIR/agent_targets.py"
     download_file "$ARCANA_RAW_BASE/rites/data/agent_targets.json" "$SCRIPT_DIR/data/agent_targets.json"
     download_file "$ARCANA_RAW_BASE/rites/templates/grimoire_block.md" "$SCRIPT_DIR/templates/grimoire_block.md"
-    if should_download_gui_source "$@"; then
-        download_file "$ARCANA_RAW_BASE/rites/summon_gui.py" "$SCRIPT_DIR/summon_gui.py" || \
-            echo "  [WARN]  summon_gui.py download failed - GUI mode will fall back to CLI"
-    fi
 fi
 
 cleanup() {
@@ -438,7 +153,7 @@ cleanup() {
 trap cleanup EXIT
 
 # ---------------------------------------------------------------------------
-# Helpers
+# 2. Find or install Python 3 (install only with explicit consent)
 # ---------------------------------------------------------------------------
 
 find_python() {
@@ -446,8 +161,13 @@ find_python() {
         echo "python3"
         return 0
     elif command -v python &>/dev/null; then
-        if python -c "import sys; sys.exit(0 if sys.version_info >= (3, 7) else 1)" 2>/dev/null; then
+        if python -c "import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)" 2>/dev/null; then
             echo "python"
+            return 0
+        fi
+    elif command -v py &>/dev/null; then
+        if py -3 -c "import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)" 2>/dev/null; then
+            echo "py -3"
             return 0
         fi
     fi
@@ -490,41 +210,15 @@ prompt_yes() {
     [[ "$response" == [yY] ]]
 }
 
-pip_install_hint() {
-    local mgr="$1"
-    case "$mgr" in
-        apt)    echo "sudo apt-get install python3-pip" ;;
-        dnf)    echo "sudo dnf install python3-pip" ;;
-        pacman) echo "sudo pacman -S --needed python-pip" ;;
-        brew)   echo "brew install python" ;;
-        *)      echo "install pip for $($PYTHON --version 2>&1)" ;;
-    esac
-}
-
-python_can_import() {
-    local module="$1"
-    PYTHONPATH="$GRIMOIRE_SUMMON_PY_DEPS${PYTHONPATH:+:$PYTHONPATH}" \
-        "$PYTHON" -c "import $module" 2>/dev/null
-}
-
-should_prepare_gui_deps() {
-    arg_disables_gui "$@" && return 1
-    return 0
-}
-
-# ---------------------------------------------------------------------------
-# 1. Find or install Python 3
-# ---------------------------------------------------------------------------
-
 PYTHON=""
 if ! PYTHON=$(find_python); then
     echo ""
-    echo "  Python 3 is required but not found."
+    echo "  Python 3.10 or newer is required but not found."
     echo ""
 
     PKG_MGR=$(detect_pkg_manager)
     if [[ -z "$PKG_MGR" ]]; then
-        echo "  Could not detect package manager. Install Python 3 manually and re-run."
+        echo "  Could not detect a package manager. Install Python 3 from python.org and re-run."
         exit 1
     fi
 
@@ -534,9 +228,9 @@ if ! PYTHON=$(find_python); then
     fi
 
     case "$PKG_MGR" in
-        apt)    install_packages "$PKG_MGR" python3 python3-pip ;;
-        dnf)    install_packages "$PKG_MGR" python3 python3-pip ;;
-        pacman) install_packages "$PKG_MGR" python python-pip ;;
+        apt)    install_packages "$PKG_MGR" python3 ;;
+        dnf)    install_packages "$PKG_MGR" python3 ;;
+        pacman) install_packages "$PKG_MGR" python ;;
         brew)   install_packages "$PKG_MGR" python3 ;;
     esac
 
@@ -548,75 +242,11 @@ if ! PYTHON=$(find_python); then
 fi
 
 echo "  [OK]    Using $($PYTHON --version 2>&1)"
-
-# ---------------------------------------------------------------------------
-# 2. Ensure app dependencies are available when app mode is possible
-# ---------------------------------------------------------------------------
-
-if should_prepare_gui_deps "$@"; then
-    if ! python_can_import "dearpygui.dearpygui"; then
-        PKG_MGR=$(detect_pkg_manager)
-        echo "  [INFO]  Dear PyGui not found"
-        if ! "$PYTHON" -m pip --version &>/dev/null; then
-            echo "  [INFO]  pip not found"
-            if prompt_yes "  Install pip now? (may require sudo)"; then
-                case "$PKG_MGR" in
-                    apt) install_packages "$PKG_MGR" python3-pip 2>/dev/null || true ;;
-                    dnf) install_packages "$PKG_MGR" python3-pip 2>/dev/null || true ;;
-                    pacman) install_packages "$PKG_MGR" python-pip 2>/dev/null || true ;;
-                    brew) install_packages "$PKG_MGR" python 2>/dev/null || true ;;
-                esac
-                if ! "$PYTHON" -m pip --version &>/dev/null; then
-                    "$PYTHON" -m ensurepip --default-pip 2>/dev/null || true
-                fi
-                if "$PYTHON" -m pip --version &>/dev/null; then
-                    echo "  [OK]    pip installed"
-                else
-                    echo "  [WARN]  pip not available - GUI may fall back to CLI"
-                    echo "  [INFO]  To enable app mode manually, run: $(pip_install_hint "$PKG_MGR")"
-                fi
-            else
-                echo "  [WARN]  pip install skipped - GUI may fall back to CLI"
-                echo "  [INFO]  To enable app mode manually, run: $(pip_install_hint "$PKG_MGR")"
-            fi
-        fi
-
-        if "$PYTHON" -m pip --version &>/dev/null; then
-            if prompt_yes "  Install Dear PyGui into $GRIMOIRE_SUMMON_PY_DEPS now?"; then
-                mkdir -p "$GRIMOIRE_SUMMON_PY_DEPS"
-                if "$PYTHON" -m pip install --upgrade --target "$GRIMOIRE_SUMMON_PY_DEPS" dearpygui 2>/dev/null; then
-                    echo "  [OK]    Dear PyGui installed"
-                else
-                    echo "  [WARN]  Could not install Dear PyGui - GUI may fall back to CLI"
-                fi
-            else
-                echo "  [WARN]  Dear PyGui install skipped - GUI will fall back to CLI"
-            fi
-        else
-            echo "  [WARN]  pip unavailable - GUI may fall back to CLI"
-        fi
-    else
-        echo "  [OK]    Dear PyGui available"
-    fi
-else
-    echo "  [INFO]  Skipping app dependencies for CLI/help mode"
-fi
-
-export PYTHONPATH="$GRIMOIRE_SUMMON_PY_DEPS${PYTHONPATH:+:$PYTHONPATH}"
-
-# ---------------------------------------------------------------------------
-# 4. Wayland: prefer XWayland if no DISPLAY is set
-# ---------------------------------------------------------------------------
-
-# Display environment: DearPyGui requires X11/GLX (via XWayland on Wayland).
-# When XWayland is running the compositor exports DISPLAY automatically.
-# Setting DISPLAY=:0 blindly when only WAYLAND_DISPLAY is set causes GLFW
-# to attempt an X connection that doesn't exist, producing GLX init failures.
-# The Python bootstrap probes GL compatibility at runtime and falls back to
-# CLI automatically - no manual DISPLAY override needed here.
-if [[ -z "${DISPLAY:-}" && ( -n "${WAYLAND_DISPLAY:-}" || "${XDG_SESSION_TYPE:-}" == "wayland" ) ]]; then
-    echo "  [INFO]  Wayland session detected - display compatibility will be probed at runtime"
-fi
-
 echo ""
-exec "$PYTHON" "$SCRIPT_DIR/summon.py" "$@"
+
+# ---------------------------------------------------------------------------
+# 3. Hand off to the dispatcher (terminal install; no GUI, no binary)
+# ---------------------------------------------------------------------------
+
+# shellcheck disable=SC2086  # PYTHON may be "py -3"
+exec $PYTHON "$SCRIPT_DIR/summon.py" "$@"

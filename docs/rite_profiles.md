@@ -29,7 +29,6 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 |---|---|---|---|---|
 | `rites/adopt_grimoire.py` | `apply_only` | none | `python rites/adopt_grimoire.py <directory> --skill-prefix <prefix> --description "<description>"` | `<target grimoire>/grimoire.json` |
 | `rites/append_log.py` | `append_only` | none | `python rites/append_log.py --grimoire <path> --op <op> --title "<title>"` | `<grimoire>/log.md` |
-| `rites/build_summon_binary.py` | `apply_only` | none | `python rites/build_summon_binary.py` | build artifacts, release archives, checksum files |
 | `rites/clean_artifacts.py` | `plan_apply` | `python rites/clean_artifacts.py --dry-run` | `python rites/clean_artifacts.py` | `rites/.artifacts` directories |
 | `rites/inject_agent_file.py` | `plan_apply` | `python rites/inject_agent_file.py` | `python rites/inject_agent_file.py --apply` | supported agent instruction files under the user's home directory |
 | `rites/new_page.py` | `plan_apply` | `python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title "<title>"` | `python rites/new_page.py --grimoire <path> --path chapters/<chapter>/<slug>.md --type <type> --title "<title>" --apply` | a new `<grimoire>/chapters/<chapter>/<slug>.md` page |
@@ -38,7 +37,6 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 | `rites/restructure_grimoire.py` | `plan_apply` | `python rites/restructure_grimoire.py --grimoire <path> --move <src> <dst>` | `python rites/restructure_grimoire.py --grimoire <path> --move <src> <dst> --apply` | active-grimoire chapter pages/folders and the wikilinks that target them |
 | `rites/summon.sh` | `apply_only` | none | `bash rites/summon.sh` | install tree, selected grimoires, library, agent files |
 | `rites/summon_core.py` | `apply_only` | none | `python rites/summon.py` | install tree, selected grimoires, library, agent files |
-| `rites/summon_gui.py` | `apply_only` | none | `python rites/summon.py --gui` | GUI settings, install tree, selected grimoires, library, agent files |
 | `rites/sync_docs.py` | `plan_apply` | `python rites/sync_docs.py` | `python rites/sync_docs.py --apply` | `docs/skills.md` |
 | `rites/sync_library.py` | `plan_apply` | `python rites/sync_library.py` | `python rites/sync_library.py --apply` | `~/grimoires/library.json` |
 | `rites/update_grimoires.py` | `plan_apply` | `python rites/summon.py --update` | `python rites/summon.py --update --apply` | grimoire working trees (fast-forward-only pulls) and Arcana-owned managed scaffold during heal |

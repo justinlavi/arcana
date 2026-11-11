@@ -25,9 +25,6 @@ def test_summon_contract_is_valid():
         "shell_bootstrap",
         "python_dispatcher",
         "python_cli",
-        "python_gui",
-        "release_binary",
-        "release_workflow",
         "agent_reconcile",
     }
 
@@ -46,16 +43,15 @@ def test_summon_contract_names_required_pipeline():
         "sync_skills",
     ]
     for step in steps.values():
-        assert {"python_cli", "python_gui"} <= set(step["required_for"])
+        assert step["required_for"] == ["python_cli"]
 
 
-def test_summon_contract_release_assets_match_release_docs():
+def test_summon_contract_has_no_release_binaries():
     contract = json.loads((REPO_ROOT / CONTRACT_PATH).read_text(encoding="utf-8"))
-    release_docs = (REPO_ROOT / "docs" / "release.md").read_text(encoding="utf-8")
-
-    for asset in release_asset_entries(contract):
-        assert asset["archive"] in release_docs
-        assert asset["checksum"] in release_docs
+    assert release_asset_entries(contract) == []
+    assert not (REPO_ROOT / "rites" / "summon_gui.py").exists()
+    assert not (REPO_ROOT / "rites" / "build_summon_binary.py").exists()
+    assert not (REPO_ROOT / ".github" / "workflows" / "summon-release.yml").exists()
 
 
 def test_summon_contract_environment_controls_match_bootstrap():

@@ -24,7 +24,7 @@ classifiers = [
 ]
 
 # Runtime is intentionally pure-stdlib. Validators, library sync, skill
-# registration, and the CLI installer all run on a stock Python install.
+# registration, and the terminal installer all run on a stock Python install.
 dependencies = []
 
 [project.optional-dependencies]
@@ -33,22 +33,6 @@ dev = [
     "pytest>=7.0",
 ]
 
-# Optional GUI launcher used by the summoning rite. Headless installs (CI,
-# servers) can skip this group; the rite falls back to interactive CLI.
-gui = [
-    # Dear PyGui dropped Intel macOS wheels after 2.1.1; on that platform we
-    # accept the older line. Bootstrap already installs unpinned on Intel Mac,
-    # so the runtime path matches.
-    "dearpygui>=2.3,<3; platform_system != 'Darwin' or platform_machine != 'x86_64'",
-    "dearpygui>=2.1,<3; platform_system == 'Darwin' and platform_machine == 'x86_64'",
-]
-
-# Building release artifacts (binaries published to GitHub Releases).
-build = [
-    "dearpygui>=2.3,<3; platform_system != 'Darwin' or platform_machine != 'x86_64'",
-    "dearpygui>=2.1,<3; platform_system == 'Darwin' and platform_machine == 'x86_64'",
-    "pyinstaller>=6.15,<7",
-]
 
 [project.urls]
 Homepage = "https://github.com/justinlavi/arcana"
@@ -57,9 +41,8 @@ Issues = "https://github.com/justinlavi/arcana/issues"
 Changelog = "https://github.com/justinlavi/arcana/blob/main/CHANGELOG.md"
 
 # Arcana is a knowledge-base + scripts repository, not a pip-installable
-# library. The pyproject.toml exists to declare the dependency groups (`dev`,
-# `gui`, `build`) that release tooling and contributors install on top of a
-# stock Python - nobody is meant to `import arcana_grimoire`. Tell setuptools
+# library. The pyproject.toml exists to declare the `dev` dependency group
+# contributors install on top of a stock Python - nobody is meant to `import arcana_grimoire`. Tell setuptools
 # explicitly that there are no packages to ship so it doesn't try to
 # auto-discover and choke on rites/, skills/, sources/, etc.
 [tool.setuptools]

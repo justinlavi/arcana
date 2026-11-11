@@ -46,16 +46,14 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 
 The script installs from the public Arcana GitHub repository by default. When run from a cloned Arcana checkout, it detects the checkout's git origin automatically.
 
-When run from the public curl command, the summoning rite is release-first on
-every platform (Linux, macOS, Windows): it downloads the matching
-`grimoire-summon-*` asset from the latest GitHub Release, verifies its `.sha256`
-checksum, and runs the binary, falling back to the Python source bootstrap if any
-release step fails. The full release/source selection rules and the
-`GRIMOIRE_SUMMON_*` controls are canonical in
-[summoning contract](summoning_contract.md#release-and-source-selection).
+The summoning rite is terminal-only and runs from source: when run from the
+public curl command it downloads the dispatcher and its companion files into a
+temporary directory and runs them with your Python; from a local checkout it
+uses the working tree. The environment variables the bootstrap honors are
+canonical in [summoning contract](summoning_contract.md#bootstrap-environment-controls).
 
 **What the summoning rite always does:**
-1. Checks runtime dependencies (`git`; Python 3 and Dear PyGui only if source fallback is needed)
+1. Checks runtime dependencies (`git` and Python 3.10+; it offers to install Python only with your consent)
 2. Installs Arcana to `~/grimoires/arcana/` (clone or pull)
 3. Injects the Grimoire routing block into automatic agent instruction targets from [agent targets](agent_targets.md)
 4. Registers Arcana's `/arc-*` skills to agent skill targets from [agent targets](agent_targets.md)
@@ -68,15 +66,13 @@ release step fails. The full release/source selection rules and the
 
 After summoning, open a new Claude Code or Codex/ChatGPT session and run `/grm-create` to build your first grimoire. (Maintainers can run `/arc-help` for the full platform catalog.)
 
-Dear PyGui is bundled into release binaries. In source mode, Dear PyGui is imported from the system Python or from a Grimoire-managed Python dependency cache, not from the Arcana repository. If pip or Dear PyGui is missing, the bootstrap asks before installing anything; only an explicit `y` proceeds. On Arch-based systems, accepting the pip prompt may install `python-pip` with `pacman` first if the system Python does not include pip.
-
-GUI startup is probed before the source launcher opens a full Dear PyGui window. If OpenGL/GLX is unavailable or GUI dependencies are missing and not installed, the rite falls back to the CLI. When the one-line installer is run through `curl | bash`, prompts read from the controlling terminal instead of the curl pipe.
+The rite needs nothing beyond `git` and a stock Python; there is no GUI and nothing to pip-install. When the one-line installer is run through `curl | bash`, prompts read from the controlling terminal instead of the curl pipe.
 
 ---
 
 ## Cloning Existing Grimoires
 
-When you choose "Install Arcana and clone grimoires" in the GUI (or option 2 in the CLI), the rite can discover and clone grimoires by querying the git host API. Arcana does not ship a grimoire catalog; grimoires are discovered dynamically from the scope you provide.
+When you choose "Install Arcana and clone grimoires" (option 2 in the terminal menu), the rite can discover and clone grimoires by querying the git host API. Arcana does not ship a grimoire catalog; grimoires are discovered dynamically from the scope you provide.
 
 Arcana and grimoires don't need to live in the same place. Arcana might be installed from the public GitHub repo while your grimoires live in a private company GitLab or a different GitHub org. The rite asks where to look.
 
@@ -100,16 +96,15 @@ export GRIMOIRE_SCOPE="https://gitlab.company.com/my-team"
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash -s -- --scope https://github.com/my-org
 ```
 
-To pin a specific release asset instead of using GitHub's latest published release:
+To bootstrap from a branch or tag other than `main` (for example to try a
+release branch), point the companion-script downloads at that ref:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0 bash
+curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/release/1.8/rites/summon.sh | ARCANA_REF=release/1.8 bash
 ```
 
-Release asset downloads print progress and explicit retry attempts. If a
-network stalls, the bootstrap retries and then fails over to source mode after
-the configured attempt/stall window. The download and mode controls
-(`GRIMOIRE_SUMMON_*`) and the durable mode rules are canonical in
+Companion-script downloads retry and then fall back to a Python download. The
+controls (`GRIMOIRE_SUMMON_*`) are canonical in
 [summoning contract](summoning_contract.md#bootstrap-environment-controls).
 
 If no scope is provided, the rite prompts interactively:
@@ -265,11 +260,8 @@ The agent should follow hubs depth-first (root hub -> chapter hub -> ... -> leaf
 - Ensure git credentials are configured for the host
 - Try `git ls-remote <url>` to test access
 
-**GUI fails on Linux**
-- Run the installer with `--cli` to force terminal mode:
-  `curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash -s -- --cli`
-- On Wayland systems, ensure XWayland is installed and running.
-- On Arch-based systems, install Mesa and XWayland if needed: `sudo pacman -S --needed mesa xorg-xwayland`
+**Python not found**
+- The rite needs Python 3.10 or newer as `python3`, `python`, or the Windows `py` launcher. Install it from python.org (Windows: tick "Add to PATH") or your package manager, then re-run.
 
 **Skills not appearing after install**
 - Ask your agent to run `/grm-sync skills` to register skills (or `/grm-update` to bring everything current). (Maintainers can re-register every installed grimoire's skills with `/arc-sync skills`.)
