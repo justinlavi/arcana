@@ -149,7 +149,9 @@
   "validate_links": {
     "allowlist": {
       "LINK_DEPRECATED_PLACEHOLDER": "depends on the live DEPRECATED_TOKENS map; tentative",
-      "LINK_WIKILINK_PUBLIC_DOC": "fires only on Arcana public docs/ surface; not present in a grimoire"
+      "LINK_WIKILINK_PUBLIC_DOC": "fires only on Arcana public docs/ surface; not present in a grimoire",
+      "LINK_CASE_MISMATCH": "fires only on case-insensitive filesystems (the same link is LINK_WIKILINK_BROKEN on Linux); covered by tests/test_case_sensitivity.py",
+      "LINK_MARKDOWN_CASE_MISMATCH": "fires only on case-insensitive filesystems (the same link is LINK_MARKDOWN_BROKEN on Linux); covered by tests/test_case_sensitivity.py"
     },
     "expected_codes": [
       "LINK_LABEL_VERBOSE",

@@ -19,6 +19,7 @@ Usage: python3 rites/validate_links.py
 Exit codes: 0 = success, 1 = broken links found
 """
 
+import os
 import re
 import sys
 from pathlib import Path
@@ -32,6 +33,7 @@ from _lib import (
     public_document,
     resolve_grimoire_arg,
     resolve_wikilink_path,
+    spell_on_disk,
     strip_code_blocks,
     wikilink_target_body,
 )
@@ -83,6 +85,25 @@ def label_key(text):
 def rel_posix(path, root):
     """Return a repository-root relative path using POSIX separators."""
     return path.relative_to(root).as_posix()
+
+
+def expected_markdown_rel(target_path, source_path, root):
+    """Return the root-relative POSIX path a Markdown link spells, as written."""
+    normalized = target_path.replace("\\", "/")
+    if normalized.startswith("/"):
+        combined = normalized.lstrip("/")
+    else:
+        source_dir = source_path.parent.relative_to(root).as_posix()
+        combined = f"{source_dir}/{normalized}" if source_dir != "." else normalized
+    return os.path.normpath(combined).replace("\\", "/")
+
+
+def case_mismatch(expected_rel, root):
+    """Return the on-disk spelling when it differs from ``expected_rel`` only by case."""
+    actual = spell_on_disk(expected_rel, root)
+    if actual is None or actual == expected_rel:
+        return None
+    return actual
 
 
 def resolve_markdown_link(target_path, source_path, root):
@@ -210,17 +231,40 @@ def main():
                     print(f"          Markdown page link: {link}")
                     print("          Use a full-path wikilink in vault and AI-routing surfaces.")
 
+            expected_rel = expected_markdown_rel(target_path, path, grimoire_root)
             if not resolved.exists():
+                guess = spell_on_disk(expected_rel, grimoire_root) if internal else None
+                hint = f"Resolved to: {resolved}"
+                if guess:
+                    hint = f"Did you mean {guess}? Links must match on-disk casing exactly."
                 reporter.error(
                     "LINK_MARKDOWN_BROKEN",
                     f"markdown link does not resolve: {link}",
                     path=rel,
-                    hint=f"Resolved to: {resolved}",
+                    hint=hint,
                 )
                 if human:
                     print(f"  BROKEN  {rel}:")
                     print(f"          Link: {link}")
-                    print(f"          Resolved to: {resolved}")
+                    print(f"          {hint}")
+            elif internal:
+                actual = case_mismatch(expected_rel, grimoire_root)
+                if actual:
+                    reporter.error(
+                        "LINK_MARKDOWN_CASE_MISMATCH",
+                        f"markdown link casing differs from the file on disk: {link}",
+                        path=rel,
+                        line=line_number,
+                        hint=(
+                            f"On disk: {actual}. The link resolves here only because this "
+                            "filesystem ignores case; it breaks on Linux and in site builds."
+                        ),
+                        docs_reference="docs/obsidian.md",
+                    )
+                    if human:
+                        print(f"  CASE    {rel}:{line_number}:")
+                        print(f"          Link: {link}")
+                        print(f"          On disk: {actual}")
 
         # Wikilinks
         for wl_match in WIKILINK_RE.finditer(scanable):
@@ -229,6 +273,8 @@ def main():
             if any(tok in target for tok in PLACEHOLDER_TOKENS):
                 continue
             resolved = resolve_wikilink(target, grimoire_root)
+            body = wikilink_target_body(target).replace("\\", "/")
+            expected_rel = body if body.endswith(".md") else f"{body}.md"
             if public_page:
                 reporter.error(
                     "LINK_WIKILINK_PUBLIC_DOC",
@@ -244,16 +290,42 @@ def main():
                     print("          Use a relative Markdown link for public documentation.")
                 continue
             if resolved is None:
+                guess = spell_on_disk(expected_rel, grimoire_root)
+                hint = "Use a full-path wikilink target relative to the grimoire root."
+                if guess:
+                    hint = f"Did you mean [[{guess[:-3]}]]? Wikilinks must match on-disk casing exactly."
                 reporter.error(
                     "LINK_WIKILINK_BROKEN",
                     f"wikilink does not resolve as a repository path: [[{target}]]",
                     path=rel,
-                    hint="Use a full-path wikilink target relative to the grimoire root.",
+                    hint=hint,
                     docs_reference="docs/obsidian.md",
                 )
                 if human:
                     print(f"  BROKEN  {rel}:")
                     print(f"          Wikilink: [[{target}]] (must resolve as a repository path; aliases and filename-only targets are invalid)")
+                    if guess:
+                        print(f"          {hint}")
+                continue
+
+            actual = case_mismatch(expected_rel, grimoire_root)
+            if actual:
+                reporter.error(
+                    "LINK_CASE_MISMATCH",
+                    f"wikilink casing differs from the file on disk: [[{target}]]",
+                    path=rel,
+                    line=line_number,
+                    hint=(
+                        f"On disk: {actual}. The link resolves here only because this "
+                        "filesystem ignores case; it breaks on Linux, in Obsidian on Linux, "
+                        "and in site builds."
+                    ),
+                    docs_reference="docs/obsidian.md",
+                )
+                if human:
+                    print(f"  CASE    {rel}:{line_number}:")
+                    print(f"          Wikilink: [[{target}]]")
+                    print(f"          On disk: {actual}")
                 continue
 
             display = wikilink_display_text(target)

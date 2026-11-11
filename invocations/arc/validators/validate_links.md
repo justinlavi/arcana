@@ -100,7 +100,9 @@ Quickstart -> [[docs/quickstart|quickstart]]
 - `LINK_MARKDOWN_BROKEN`
 - `LINK_MARKDOWN_INTERNAL`
 - `LINK_WIKILINK_PUBLIC_DOC`
-- `LINK_WIKILINK_BROKEN`
+- `LINK_WIKILINK_BROKEN` (the hint names the on-disk spelling when only the case differs)
+- `LINK_CASE_MISMATCH` (case-insensitive filesystems only: the wikilink resolved but its casing differs from the file on disk)
+- `LINK_MARKDOWN_CASE_MISMATCH` (same, for Markdown links)
 - `LINK_LABEL_VERBOSE`
 
 ## Link Standards

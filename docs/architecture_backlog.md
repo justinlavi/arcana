@@ -109,8 +109,8 @@ that depend on it.
 | ID | Priority | Item | Primary owner | Why deferred |
 |---|---|---|---|---|
 | AB-17 | P0 | Resolved on `release/1.8` (2026-11-10): skills fail to load outside the grimoires directory; invocations are now rendered into generated skills at registration | `rites/sync_skills.py`, every `skills/**/SKILL.md`, `docs/skill_schema.md`, `docs/agent_configuration.md` | Verified 2026-11-10; changes the generated skill contract and the plugin build. Absorbs AB-14. |
-| AB-01 | P0 | Case-exact wikilinks and case-collision portability checks | `rites/validate_links.py`, `rites/validate_portability.py`, `rites/_lib.py` | Needs D3; changes validator contracts. |
-| AB-02 | P0 | Windows in the CI matrix | `.github/workflows/ci.yml` | Release-process change. |
+| AB-01 | P0 | Resolved on `release/1.8` (2026-11-10): case-exact wikilinks and case-collision portability checks | `rites/validate_links.py`, `rites/validate_portability.py`, `rites/_lib.py` | Needs D3; changes validator contracts. |
+| AB-02 | P0 | Resolved on `release/1.8` (2026-11-10): Windows in the CI matrix | `.github/workflows/ci.yml` | Release-process change. |
 | AB-03 | P1 | Casing freedom across invocations, docs, routing block, and rites | `invocations/grm/*`, `docs/operating_model.md`, `rites/templates/grimoire_block.md`, `rites/new_page.py`, `rites/restructure_grimoire.py` | Needs D3; touches many public surfaces. |
 | AB-04 | P1 | Retire `log.md`; derive activity from git | `formulae/grimoire/scaffold_contract.json`, `rites/validate_grimoire_structure.py`, `rites/append_log.py`, every `invocations/grm/*` that appends | Needs D2; scaffold contract and command surface change. |
 | AB-05 | P1 | Remove the GUI, the release binaries, and the binary release workflow | `rites/summon_gui.py`, `rites/build_summon_binary.py`, `.github/workflows/summon-release.yml`, `rites/data/summon_contract.json`, `pyproject.toml` | Needs D4; deletion and install-behavior change. |

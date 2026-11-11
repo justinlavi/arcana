@@ -2,6 +2,21 @@
 
 ## [1.8.0] - Unreleased
 
+### Added
+
+- **Case-exact link checks.** `validate_links` now reports a wikilink or
+  Markdown link whose casing differs from the file on disk
+  (`LINK_CASE_MISMATCH`, `LINK_MARKDOWN_CASE_MISMATCH`). Such links resolve
+  on Windows and macOS and break on Linux, in Obsidian on Linux, and in site
+  builds. Where the filesystem is case-sensitive the link is already broken,
+  and the broken-link hint now names the on-disk spelling.
+- **Case-collision portability check.** `validate_portability` reports two
+  entries in one directory that differ only by case
+  (`PORTABILITY_CASE_COLLISION`); such a tree cannot be checked out on Windows
+  or macOS.
+- **Windows in CI.** The fast gate runs on `windows-latest` as well as
+  `ubuntu-latest`, so Windows-only failures surface before release.
+
 ### Fixed
 
 - **Skills now load from any working directory.** Generated skills used to

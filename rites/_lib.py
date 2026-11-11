@@ -536,3 +536,51 @@ def public_document(path: Path, root: Path) -> bool:
         return True
     rel = path.relative_to(root)
     return bool(rel.parts and rel.parts[0] in PUBLIC_DOC_DIRS)
+
+
+# ----------------------------------------------------------------------------
+# On-disk spelling
+# ----------------------------------------------------------------------------
+
+_LISTDIR_CACHE: dict = {}
+
+
+def _listdir_cached(directory: Path) -> list:
+    key = str(directory)
+    if key not in _LISTDIR_CACHE:
+        try:
+            _LISTDIR_CACHE[key] = os.listdir(directory)
+        except OSError:
+            _LISTDIR_CACHE[key] = []
+    return _LISTDIR_CACHE[key]
+
+
+def spell_on_disk(rel: str, root: Path) -> Optional[str]:
+    """Return ``rel`` (a root-relative POSIX path) spelled as it is stored on disk.
+
+    Segments are matched case-insensitively, so one helper answers two
+    questions: on a case-insensitive filesystem (Windows, macOS), whether a link
+    that resolved really matches the on-disk casing; on a case-sensitive one
+    (Linux, CI, site builds), what the author probably meant when a link did not
+    resolve at all. Returns None when no case-insensitive match exists.
+    """
+    parts = [p for p in rel.replace("\\", "/").split("/") if p and p != "."]
+    current = root
+    spelled = []
+    for part in parts:
+        if part == "..":
+            current = current.parent
+            spelled.append("..")
+            continue
+        entries = _listdir_cached(current)
+        if part in entries:
+            actual = part
+        else:
+            folded = part.casefold()
+            matches = [entry for entry in entries if entry.casefold() == folded]
+            if not matches:
+                return None
+            actual = matches[0]
+        spelled.append(actual)
+        current = current / actual
+    return "/".join(spelled)
