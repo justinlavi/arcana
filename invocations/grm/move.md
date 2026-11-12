@@ -32,7 +32,7 @@ Take `$source` and `$destination` as grimoire-relative paths under `chapters/` (
 ### 2. Plan the move
 
 ```bash
-python3 ARCANA_HOME/rites/restructure_grimoire.py --grimoire GRIMOIRE_ROOT --move SRC DST
+ARCANA_HOME/bin/arcana restructure_grimoire --grimoire GRIMOIRE_ROOT --move SRC DST
 ```
 
 Review the planned file moves and wikilink rewrites. The rite refuses when the destination already exists, the target is outside `chapters/`, or the target is a chapter hub on its own (move the whole chapter folder instead). Moving a chapter folder also renames its folder-named hub so the convention holds.
@@ -40,7 +40,7 @@ Review the planned file moves and wikilink rewrites. The rite refuses when the d
 ### 3. Apply
 
 ```bash
-python3 ARCANA_HOME/rites/restructure_grimoire.py --grimoire GRIMOIRE_ROOT --move SRC DST --apply
+ARCANA_HOME/bin/arcana restructure_grimoire --grimoire GRIMOIRE_ROOT --move SRC DST --apply
 ```
 
 ### 4. Wire the hubs and labels (judgment)
@@ -56,7 +56,7 @@ The rite retargets link paths but does not edit hubs or display labels. After th
 Re-validate:
 
 ```bash
-python3 ARCANA_HOME/rites/validate.py --grimoire GRIMOIRE_ROOT links orphans structure
+ARCANA_HOME/bin/arcana validate --grimoire GRIMOIRE_ROOT links orphans structure
 ```
 
 ## Related

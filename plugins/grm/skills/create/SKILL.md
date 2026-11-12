@@ -209,7 +209,7 @@ If the new grimoire declares a `skill_prefix` in `grimoire.json`, register its
 skills so its `/<prefix>-*` commands become available:
 
 ```bash
-python3 ~/grimoires/arcana/rites/sync_skills.py --grimoire .
+~/grimoires/arcana/bin/arcana sync_skills --grimoire .
 ```
 
 Then tell the user to reopen their agent session - Claude Code and Codex cache
@@ -221,9 +221,9 @@ a restart.
 ## Step 8: Validate
 
 ```bash
-python3 ~/grimoires/arcana/rites/validate_grimoire_structure.py --grimoire .
-python3 ~/grimoires/arcana/rites/validate_frontmatter.py --grimoire .
-python3 ~/grimoires/arcana/rites/validate_links.py --grimoire .
+~/grimoires/arcana/bin/arcana validate_grimoire_structure --grimoire .
+~/grimoires/arcana/bin/arcana validate_frontmatter --grimoire .
+~/grimoires/arcana/bin/arcana validate_links --grimoire .
 ```
 
 Or invoke `/grm-check quick` for the full mechanical pass.

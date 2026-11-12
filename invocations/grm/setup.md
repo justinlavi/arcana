@@ -44,7 +44,7 @@ may appear and move on.
 ### 1. Look before asking
 
 ```bash
-python3 ARCANA_HOME/rites/summon.py --check --format json
+ARCANA_HOME/bin/arcana summon --check --format json
 ```
 
 Read the envelope. It tells you whether the library exists, which grimoires are
@@ -71,7 +71,7 @@ anything drifted. Do not ask the user for facts this envelope already holds.
 ### 3. Join: run the rite
 
 ```bash
-python3 ARCANA_HOME/rites/install_grimoire.py "<url>" --format json
+ARCANA_HOME/bin/arcana install_grimoire "<url>" --format json
 ```
 
 Accepts `https://...`, `git@host:path.git`, and local paths. The rite derives
@@ -105,9 +105,9 @@ gather, one question at a time:
   default or `preserve` when the material keeps its own casing.
 
 ```bash
-python3 ARCANA_HOME/rites/adopt_grimoire.py <directory> --skill-prefix <prefix> --description "<desc>" --naming <convention>
-python3 ARCANA_HOME/rites/sync_library.py --apply
-python3 ARCANA_HOME/rites/sync_skills.py
+ARCANA_HOME/bin/arcana adopt_grimoire <directory> --skill-prefix <prefix> --description "<desc>" --naming <convention>
+ARCANA_HOME/bin/arcana sync_library --apply
+ARCANA_HOME/bin/arcana sync_skills
 ```
 
 The adopt rite refuses to overwrite an existing `grimoire.json` and refuses a

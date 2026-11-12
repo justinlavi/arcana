@@ -27,7 +27,7 @@ been renamed, added, or removed without updating the doc.
 Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_doc_trees.py --grimoire GRIMOIRE_ROOT
+ARCANA_HOME/bin/arcana validate_doc_trees --grimoire GRIMOIRE_ROOT
 ```
 
 Exit code 0 means every diagram with a resolvable filesystem anchor matches

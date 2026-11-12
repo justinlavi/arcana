@@ -24,7 +24,7 @@ Detect authored grimoire pages that no other page links to.
 Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_orphans.py --grimoire GRIMOIRE_ROOT
+ARCANA_HOME/bin/arcana validate_orphans --grimoire GRIMOIRE_ROOT
 ```
 
 Orphans are candidates to wire into a hub, merge, or delete after review.

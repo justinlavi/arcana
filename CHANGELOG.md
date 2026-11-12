@@ -4,6 +4,12 @@
 
 ### Added
 
+- **The `arcana` launcher.** `bin/arcana` (POSIX sh) and `bin/arcana.cmd`
+  run `rites/<rite>.py` with whatever Python 3.10+ the machine has (`python3`,
+  `python`, or the Windows `py` launcher), beside the engine or from the `grm`
+  plugin's `bin/`, which Claude Code puts on the Bash tool's PATH. Every
+  invocation, skill, formula, and update instruction says
+  `ARCANA_HOME/bin/arcana <rite>` instead of naming an interpreter.
 - **Arcana as Claude Code plugins.** The repository is its own marketplace
   (`.claude-plugin/marketplace.json`) serving two plugins, `grm` and `arc`,
   rendered under `plugins/` by `rites/build_plugins.py` from the same skill

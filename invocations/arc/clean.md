@@ -28,10 +28,8 @@ artifact directories; use `--dry-run` when the user asks to preview removals.
 ### 1. Run the cleanup rite
 
 ```bash
-python3 ARCANA_HOME/rites/clean_artifacts.py
+ARCANA_HOME/bin/arcana clean_artifacts
 ```
-
-On Windows, use `python` instead of `python3`.
 
 ### 2. Report the result
 
@@ -42,7 +40,7 @@ Show what was cleaned.
 If the user wants to preview without deleting:
 
 ```bash
-python3 ARCANA_HOME/rites/clean_artifacts.py --dry-run
+ARCANA_HOME/bin/arcana clean_artifacts --dry-run
 ```
 
 ## Related

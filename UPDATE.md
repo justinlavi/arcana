@@ -6,8 +6,9 @@ when the installed `/arc-*` / `/grm-*` slash commands are missing, old, renamed,
 incorrectly prefixed, or otherwise untrustworthy — and, more generally, the way
 to self-update from the source tree when you cannot trust the skill layer.
 
-It needs only the pulled Arcana source and `python3`, and lives at the
-repository root. Start the update by running `/grm-update` (or `/arc-update`), or
+It needs only the pulled Arcana source and a Python 3.10 or newer, which
+the `bin/arcana` launcher finds (`python3`, `python`, or the Windows `py`
+launcher), and lives at the repository root. Start the update by running `/grm-update` (or `/arc-update`), or
 by following the Human Quick Start below.
 
 ## Human Quick Start
@@ -62,7 +63,7 @@ source.
 ### 2. Validate the Arcana source (gate)
 
 ```bash
-python3 "$ARCANA/rites/validate.py" --summary --format json
+"$ARCANA/bin/arcana" validate --summary --format json
 ```
 
 If status is not `ok` (exit non-zero), STOP and report the failing validators
@@ -71,7 +72,7 @@ before any skill or grimoire mutation.
 ### 3. Update everything — one command
 
 ```bash
-python3 "$ARCANA/rites/summon.py" --update --apply --format json
+"$ARCANA/bin/arcana" summon --update --apply --format json
 ```
 
 This is the deterministic core. In one pass it:
@@ -126,7 +127,7 @@ rite plus the judgment step.)
 ### 5. Final gate
 
 ```bash
-python3 "$ARCANA/rites/summon.py" --check --format json
+"$ARCANA/bin/arcana" summon --check --format json
 ```
 
 It must report no drift for the grimoires that were brought current. Report the

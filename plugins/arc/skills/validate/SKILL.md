@@ -32,16 +32,16 @@ workflows, not this skill.
 ## Run
 
 ```bash
-python3 ~/grimoires/arcana/rites/validate.py $selector
+~/grimoires/arcana/bin/arcana validate $selector
 ```
 
 Examples:
 
 ```bash
-python3 ~/grimoires/arcana/rites/validate.py
-python3 ~/grimoires/arcana/rites/validate.py links frontmatter
-python3 ~/grimoires/arcana/rites/validate.py smart
-python3 ~/grimoires/arcana/rites/validate.py parallel
+~/grimoires/arcana/bin/arcana validate
+~/grimoires/arcana/bin/arcana validate links frontmatter
+~/grimoires/arcana/bin/arcana validate smart
+~/grimoires/arcana/bin/arcana validate parallel
 ```
 
 ## Procedural Detail

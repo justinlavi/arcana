@@ -200,6 +200,16 @@ This routes through the same deterministic rites the one-line installer uses; on
 
 ---
 
+## The `arcana` launcher
+
+Every rite is run through `bin/arcana <rite> [arguments]`, which finds a Python
+3.10+ interpreter (`python3`, `python`, or the Windows `py` launcher) and runs
+`rites/<rite>.py` with it, so no instruction depends on what the interpreter
+is called on a given machine. From a checkout: `~/grimoires/arcana/bin/arcana
+validate --summary`. Inside Claude Code with the `grm` plugin installed the
+plugin's `bin/` is on the Bash tool's PATH, so plain `arcana validate --summary`
+works. `arcana --list` prints every rite.
+
 ## Manual Setup (terminal, step-by-step)
 
 For a no-terminal path, see [Install without a terminal](#install-without-a-terminal) above. The steps below are the explicit terminal alternative.
@@ -209,8 +219,8 @@ If you can't run the summoning rite (no network, restricted environment, etc.):
 1. Clone Arcana to `~/grimoires/arcana/`.
 2. Clone each grimoire to `~/grimoires/<grimoire-name>/`.
 3. Create `~/grimoires/library.json` with one entry per grimoire (see [reference](reference.md#local-library)).
-4. Add the Grimoire routing block to the instruction targets listed in [agent targets](agent_targets.md) — the canonical block lives at [grimoire block](../rites/templates/grimoire_block.md). The simplest way to (re)apply it is to ask your agent to run `/grm-update agentfile`, which creates a missing instruction file and refreshes a stale block. If you have no agent session yet, run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`. (Maintainer equivalent: `/arc-update agentfile`.)
-5. Register skills: the easy path is to ask your agent to run `/grm-update skills`. If you have no agent session yet, run it directly: `python3 ~/grimoires/arcana/rites/sync_skills.py`.
+4. Add the Grimoire routing block to the instruction targets listed in [agent targets](agent_targets.md) — the canonical block lives at [grimoire block](../rites/templates/grimoire_block.md). The simplest way to (re)apply it is to ask your agent to run `/grm-update agentfile`, which creates a missing instruction file and refreshes a stale block. If you have no agent session yet, run it directly: `~/grimoires/arcana/bin/arcana inject_agent_file --apply`. (Maintainer equivalent: `/arc-update agentfile`.)
+5. Register skills: the easy path is to ask your agent to run `/grm-update skills`. If you have no agent session yet, run it directly: `~/grimoires/arcana/bin/arcana sync_skills`.
 
 If an existing installation is far behind and its registered slash commands no
 longer match current Arcana, pull Arcana first, then read

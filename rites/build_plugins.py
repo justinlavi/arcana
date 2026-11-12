@@ -98,9 +98,12 @@ def render_family(family: dict) -> dict[str, str]:
         files[f"skills/{spec.command_slug}/SKILL.md"] = render_plugin_skill(spec)
     if family["skill_prefix"] == "grm":
         # The hook prints the routing block before the engine exists, so the
-        # plugin carries a copy of the canonical template.
+        # plugin carries a copy of the canonical template; the launcher goes on
+        # the agent's PATH through the plugin's bin/.
         template = ARCANA_PATH / "rites" / "templates" / "grimoire_block.md"
         files["scripts/grimoire_block.md"] = template.read_text(encoding="utf-8")
+        for name in ("arcana", "arcana.cmd", "arcana.py"):
+            files[f"bin/{name}"] = (ARCANA_PATH / "bin" / name).read_text(encoding="utf-8")
     return files
 
 
@@ -124,7 +127,7 @@ def current_render_targets() -> dict[str, str]:
             continue
         rel = path.relative_to(PLUGINS_DIR).as_posix()
         parts = rel.split("/")
-        if len(parts) >= 2 and parts[1] in {"skills", ".claude-plugin"}:
+        if len(parts) >= 2 and parts[1] in {"skills", ".claude-plugin", "bin"}:
             existing[rel] = path.read_text(encoding="utf-8")
         elif rel.endswith("/scripts/grimoire_block.md"):
             existing[rel] = path.read_text(encoding="utf-8")

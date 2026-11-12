@@ -25,7 +25,7 @@ and the actual filesystem of the Arcana repository.
 Run against the Arcana repository root:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_doc_trees.py
+ARCANA_HOME/bin/arcana validate_doc_trees
 ```
 
 Exit code 0 means every diagram with a resolvable filesystem anchor matches

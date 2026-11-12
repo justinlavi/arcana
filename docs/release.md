@@ -62,7 +62,7 @@ Many backward-compatible releases (`v1.0.0 -> v1.17.0`) do not become `v2.0.0`; 
 
    ```bash
    curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
-   python3 ~/grimoires/arcana/rites/summon.py --check
+   ~/grimoires/arcana/bin/arcana summon --check
    ```
 
 6. **Announce.** Existing installs pick the release up with `/grm-update`

@@ -106,12 +106,12 @@ active grimoire only.
 ## Mechanical validators
 
 ```bash
-python3 ~/grimoires/arcana/rites/validate.py --grimoire GRIMOIRE_ROOT            # quick: the full mechanical suite
-python3 ~/grimoires/arcana/rites/validate.py --grimoire GRIMOIRE_ROOT links frontmatter
-python3 ~/grimoires/arcana/rites/validate.py --grimoire GRIMOIRE_ROOT smart     # which validators the current git changes need
-python3 ~/grimoires/arcana/rites/validate.py --grimoire GRIMOIRE_ROOT auto      # run those
-python3 ~/grimoires/arcana/rites/validate.py --grimoire GRIMOIRE_ROOT summary
-python3 ~/grimoires/arcana/rites/validate.py --grimoire GRIMOIRE_ROOT parallel
+~/grimoires/arcana/bin/arcana validate --grimoire GRIMOIRE_ROOT            # quick: the full mechanical suite
+~/grimoires/arcana/bin/arcana validate --grimoire GRIMOIRE_ROOT links frontmatter
+~/grimoires/arcana/bin/arcana validate --grimoire GRIMOIRE_ROOT smart     # which validators the current git changes need
+~/grimoires/arcana/bin/arcana validate --grimoire GRIMOIRE_ROOT auto      # run those
+~/grimoires/arcana/bin/arcana validate --grimoire GRIMOIRE_ROOT summary
+~/grimoires/arcana/bin/arcana validate --grimoire GRIMOIRE_ROOT parallel
 ```
 
 | Selector | Rite | Checks |
@@ -202,7 +202,7 @@ Group findings by category and ask the user:
 ### Phase 7: Recent activity
 
 ```bash
-python3 ~/grimoires/arcana/rites/recent_changes.py --grimoire GRIMOIRE_ROOT --since 90d
+~/grimoires/arcana/bin/arcana recent_changes --grimoire GRIMOIRE_ROOT --since 90d
 ```
 
 Relate findings to recent edits. If the grimoire is not a git repository the
@@ -239,14 +239,14 @@ to canonical full-path form (`[[chapters/path/to/foo|foo]]`). The engine is
 and resolves ambiguities by reading context. The grimoire should be under
 version control so the change set can be reviewed as a diff.
 
-1. **Dry run.** `python3 ~/grimoires/arcana/rites/repair_links.py --grimoire GRIMOIRE_ROOT`
+1. **Dry run.** `~/grimoires/arcana/bin/arcana repair_links --grimoire GRIMOIRE_ROOT`
    reports four sections: repairs (unambiguous), ambiguous (several
    candidates; the rite never guesses), unresolvable (no file matches), and
    skipped (partial-path forms left alone).
 2. **Review.** Check bulk patterns resolve sensibly, sanity-check any
    `(via display-label fallback)` resolution, and look at ambiguous cases
    where neither candidate fits (the page may need splitting or moving first).
-3. **Apply.** `python3 ~/grimoires/arcana/rites/repair_links.py --grimoire GRIMOIRE_ROOT --apply`.
+3. **Apply.** `~/grimoires/arcana/bin/arcana repair_links --grimoire GRIMOIRE_ROOT --apply`.
    Edits are per-file and atomic; existing display labels are preserved and a
    stem label is added where none exists.
 4. **Resolve ambiguities by hand.** Open each `[AMBI]` source line, read the

@@ -61,12 +61,12 @@ whether a target receives full skill folders or pointer-only `SKILL.md` files.
 All registration targets are written by the same rite:
 
 ```bash
-python3 ~/grimoires/arcana/rites/sync_skills.py            # all targets
-python3 ~/grimoires/arcana/rites/sync_skills.py --agent claude
-python3 ~/grimoires/arcana/rites/sync_skills.py --agent codex
-python3 ~/grimoires/arcana/rites/sync_skills.py --grimoire . # Arcana + active grimoire
-python3 ~/grimoires/arcana/rites/sync_skills.py --reset-managed --dry-run
-python3 ~/grimoires/arcana/rites/sync_skills.py --reset-managed
+~/grimoires/arcana/bin/arcana sync_skills            # all targets
+~/grimoires/arcana/bin/arcana sync_skills --agent claude
+~/grimoires/arcana/bin/arcana sync_skills --agent codex
+~/grimoires/arcana/bin/arcana sync_skills --grimoire . # Arcana + active grimoire
+~/grimoires/arcana/bin/arcana sync_skills --reset-managed --dry-run
+~/grimoires/arcana/bin/arcana sync_skills --reset-managed
 ```
 
 The valid `--agent` values come from
@@ -101,7 +101,7 @@ grimoire skill sources block writes until the manifest prefixes are made unique.
 A skill is a **thin pointer**. It delegates to one of:
 
 - **Invocation-backed**: the source skill names a markdown guide via `` `!cat {{ARCANA_PATH}}/invocations/...` ``; the registration rite inlines that guide into the generated skill, so the AI receives the instructions with the skill and follows them. Nothing is read at load time.
-- **Rite-backed**: skill tells the AI to run a Python script via `python3 {{ARCANA_PATH}}/rites/...`. The script does the work.
+- **Rite-backed**: skill tells the AI to run a rite via `{{ARCANA_PATH}}/bin/arcana <rite>`. The script does the work.
 
 Skills must never embed implementation logic directly. This separation keeps them portable across agent platforms.
 

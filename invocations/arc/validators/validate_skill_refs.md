@@ -28,10 +28,8 @@ public commands missing from `rites/data/command_surface.json`.
 Mechanical equivalent:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_skill_refs.py
+ARCANA_HOME/bin/arcana validate_skill_refs
 ```
-
-On Windows, use `python` instead of `python3`.
 
 ## Workflow
 
@@ -45,7 +43,7 @@ On Windows, use `python` instead of `python3`.
    - Remove references to an intentionally retired skill.
 5. For each command-surface error, update the skill, invocation, guard, rite,
    or `rites/data/command_surface.json` entry until the contract is complete.
-6. After adding or removing a skill, run `python3 ARCANA_HOME/rites/sync_docs.py --apply`.
+6. After adding or removing a skill, run `ARCANA_HOME/bin/arcana sync_docs --apply`.
 
 ## Related
 

@@ -157,9 +157,9 @@ last_verified: YYYY-MM-DD
 Run from the grimoire root:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
-python3 ARCANA_HOME/rites/validate_links.py --grimoire .
-python3 ARCANA_HOME/rites/validate_provenance.py --grimoire .
+ARCANA_HOME/bin/arcana validate_frontmatter --grimoire .
+ARCANA_HOME/bin/arcana validate_links --grimoire .
+ARCANA_HOME/bin/arcana validate_provenance --grimoire .
 ```
 
 Confirm:

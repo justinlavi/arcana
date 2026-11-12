@@ -24,7 +24,7 @@ Mechanically check every authored page's YAML frontmatter against the canonical 
 Or directly:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_frontmatter.py
+ARCANA_HOME/bin/arcana validate_frontmatter
 ```
 
 For an active grimoire, use `/grm-check frontmatter`.

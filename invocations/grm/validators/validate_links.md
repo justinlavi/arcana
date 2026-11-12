@@ -24,7 +24,7 @@ Validate that internal references resolve inside the active grimoire and that in
 Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_links.py --grimoire GRIMOIRE_ROOT
+ARCANA_HOME/bin/arcana validate_links --grimoire GRIMOIRE_ROOT
 ```
 
 Report broken links and layer-specific style violations with file and line citations. Exit code 0 means all checked links resolve and internal page references use the right syntax for their layer.

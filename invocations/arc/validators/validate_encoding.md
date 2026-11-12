@@ -24,7 +24,7 @@ Arcana and grimoires may use Unicode for useful visual texture, but text files m
 Or directly:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_encoding.py
+ARCANA_HOME/bin/arcana validate_encoding
 ```
 
 The same standard applies to Arcana and to every grimoire. For an active grimoire, use `/grm-check encoding`.

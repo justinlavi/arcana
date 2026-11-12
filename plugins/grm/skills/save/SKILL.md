@@ -78,7 +78,7 @@ shared copy to save to yet and offer to set one up with the user's git host.
 ### 1. Plan
 
 ```bash
-python3 ~/grimoires/arcana/rites/save_grimoire.py --grimoire GRIMOIRE_ROOT --format json
+~/grimoires/arcana/bin/arcana save_grimoire --grimoire GRIMOIRE_ROOT --format json
 ```
 
 The plan lists every change (added, changed, removed, new), the branch, and
@@ -102,7 +102,7 @@ before saving. Keep it under 72 characters when you can.
 ### 3. Apply
 
 ```bash
-python3 ~/grimoires/arcana/rites/save_grimoire.py --grimoire GRIMOIRE_ROOT --apply --message "<line>" --format json
+~/grimoires/arcana/bin/arcana save_grimoire --grimoire GRIMOIRE_ROOT --apply --message "<line>" --format json
 ```
 
 Report from the envelope:

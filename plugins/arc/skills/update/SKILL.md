@@ -66,10 +66,10 @@ cat ~/grimoires/arcana/UPDATE.md
 Mutation profile: `plan_apply` via `rites/sync_skills.py`.
 
 ```bash
-python3 ~/grimoires/arcana/rites/sync_skills.py                          # Arcana + every library grimoire
-python3 ~/grimoires/arcana/rites/sync_skills.py --dry-run                # preview
-python3 ~/grimoires/arcana/rites/sync_skills.py --reset-managed          # replace the managed namespaces, register fresh
-python3 ~/grimoires/arcana/rites/sync_skills.py --agent claude|codex     # one target
+~/grimoires/arcana/bin/arcana sync_skills                          # Arcana + every library grimoire
+~/grimoires/arcana/bin/arcana sync_skills --dry-run                # preview
+~/grimoires/arcana/bin/arcana sync_skills --reset-managed          # replace the managed namespaces, register fresh
+~/grimoires/arcana/bin/arcana sync_skills --agent claude|codex     # one target
 ```
 
 Report the registered and cleaned counts, any collisions, and the targets
@@ -85,11 +85,11 @@ come from `~/grimoires/arcana/rites/data/agent_targets.json`.
 
 Mutation profile: `plan_apply` via `rites/sync_library.py`.
 
-1. Dry run: `python3 ~/grimoires/arcana/rites/sync_library.py`.
+1. Dry run: `~/grimoires/arcana/bin/arcana sync_library`.
 2. Call out missing, stale, or mismatched entries (fixable with `--apply`),
    unmanaged directories (`/grm-setup <folder>` registers one, or move it out
    of the home), and skill-prefix collisions.
-3. Apply on request: `python3 ~/grimoires/arcana/rites/sync_library.py --apply`,
+3. Apply on request: `~/grimoires/arcana/bin/arcana sync_library --apply`,
    then the `skills` scope. Arcana itself is excluded from the scan; unknown
    fields on existing entries are preserved; entries are sorted by key.
    `--home <path>` targets an alternate home for testing.
@@ -101,12 +101,12 @@ Mutation profile: `plan_apply` via `rites/sync_library.py`.
 Mutation profile: `plan_apply` via `rites/inject_agent_file.py`, with a
 judgment edit for the cases a rite cannot decide.
 
-1. Plan: `python3 ~/grimoires/arcana/rites/inject_agent_file.py`. Targets come from
+1. Plan: `~/grimoires/arcana/bin/arcana inject_agent_file`. Targets come from
    the `instruction_mode: auto` entries of
    `~/grimoires/arcana/rites/data/agent_targets.json`. A missing file is created
    with the block; one clean marked region is refreshed; anything else is
    reported for review.
-2. Apply: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`
+2. Apply: `~/grimoires/arcana/bin/arcana inject_agent_file --apply`
    (`--agent claude|codex`, `--format json`).
 3. Review targets and user-specified or project-level files (a repository
    `AGENTS.md`, `CLAUDE.md`, `.github/copilot_instructions.md`): replace any

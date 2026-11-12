@@ -326,7 +326,7 @@ Ask: "Does this require understanding context and meaning?"
 
 Every Arcana skill delegates to one of two backing implementations:
 
-- **Rite-backed**: `SKILL.md` body says `python3 {{ARCANA_PATH}}/rites/<name>.py`. The AI reads the skill, runs the rite, reports the rite's output. No judgment in between.
+- **Rite-backed**: `SKILL.md` body says `{{ARCANA_PATH}}/bin/arcana <name>`. The AI reads the skill, runs the rite, reports the rite's output. No judgment in between.
 - **Invocation-backed**: `SKILL.md` body says `` `!cat {{ARCANA_PATH}}/invocations/<area>/<name>.md` `` and the registration rite inlines that guide into the generated skill. The AI receives the invocation with the skill and follows its workflow, applying judgment.
 
 Pick by the same rule that applies to rites vs invocations themselves:

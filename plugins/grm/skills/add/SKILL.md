@@ -160,7 +160,7 @@ material opens a new routable area.
 2. **Stamp the page** so it never ships with a placeholder date:
 
    ```bash
-   python3 ~/grimoires/arcana/rites/new_page.py \
+   ~/grimoires/arcana/bin/arcana new_page \
      --grimoire GRIMOIRE_ROOT \
      --path chapters/<chapter>/<slug>.md \
      --type <concept|entity|playbook|reference> \
@@ -285,7 +285,7 @@ whether to create it or to point at a specific path.
 ## Step V: Validate
 
 ```bash
-python3 ~/grimoires/arcana/rites/validate.py --grimoire GRIMOIRE_ROOT structure frontmatter links provenance
+~/grimoires/arcana/bin/arcana validate --grimoire GRIMOIRE_ROOT structure frontmatter links provenance
 ```
 
 Fix and re-run until clean, or run `/grm-check quick` for the whole

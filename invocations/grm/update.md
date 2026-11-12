@@ -67,7 +67,7 @@ instruction to pull it by hand.
 Mutation profile: `plan_apply` via `rites/sync_skills.py`.
 
 ```bash
-python3 ARCANA_HOME/rites/sync_skills.py --grimoire GRIMOIRE_ROOT
+ARCANA_HOME/bin/arcana sync_skills --grimoire GRIMOIRE_ROOT
 ```
 
 Tell the user how many Arcana and active-grimoire skills were registered,
@@ -86,12 +86,12 @@ a fresh agent session afterwards; agents cache skill listings.
 Mutation profile: `plan_apply` via `rites/sync_library.py`. The fix when a
 grimoire folder was moved or renamed and the agent can no longer find it.
 
-1. Report the drift: `python3 ARCANA_HOME/rites/sync_library.py`.
+1. Report the drift: `ARCANA_HOME/bin/arcana sync_library`.
 2. Call out missing, stale, and mismatched entries (fixable with `--apply`)
    and any unmanaged directory. An unmanaged directory has no
    `grimoire.json`: `/grm-setup <folder>` makes it a grimoire, or move it out
    of `~/grimoires/` if it is not one.
-3. Apply on request: `python3 ARCANA_HOME/rites/sync_library.py --apply`,
+3. Apply on request: `ARCANA_HOME/bin/arcana sync_library --apply`,
    then run the `skills` scope so a newly resolved grimoire's skills register.
 
 ---
@@ -102,7 +102,7 @@ Mutation profile: `plan_apply` via `rites/inject_agent_file.py`. The fix when
 the agent stopped following the library because its routing block went stale
 or the file was deleted (a new machine, a removed `~/.codex/`).
 
-1. Plan: `python3 ARCANA_HOME/rites/inject_agent_file.py`. The routing block
+1. Plan: `ARCANA_HOME/bin/arcana inject_agent_file`. The routing block
    is the region between `<!-- BEGIN GRIMOIRE KNOWLEDGE BASE -->` and
    `<!-- END GRIMOIRE KNOWLEDGE BASE -->`; the markers are the whole
    contract. A missing file is **created** with the block; one clean marked
@@ -110,7 +110,7 @@ or the file was deleted (a new machine, a removed `~/.codex/`).
    block, duplicate or malformed markers) is reported for **review** and left
    untouched.
 2. Apply the deterministic actions:
-   `python3 ARCANA_HOME/rites/inject_agent_file.py --apply`
+   `ARCANA_HOME/bin/arcana inject_agent_file --apply`
    (`--agent claude|codex` for one target).
 3. Resolve `review` targets by judgment, caring only about the marked region:
    replace any existing routing block in any form with the canonical block

@@ -22,7 +22,7 @@ Detect pages no other page reaches through valid layer-specific links. Orphans a
 Or directly:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_orphans.py
+ARCANA_HOME/bin/arcana validate_orphans
 ```
 
 For an active grimoire, use `/grm-check orphans`.

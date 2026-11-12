@@ -22,7 +22,7 @@ Detect filesystem-portability violations in Arcana paths — specifically the ch
 Or directly:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_portability.py
+ARCANA_HOME/bin/arcana validate_portability
 ```
 
 For an active grimoire, use `/grm-check portability`.

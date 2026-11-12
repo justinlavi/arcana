@@ -74,7 +74,7 @@ Delete a page or chapter from the active grimoire without leaving the wiki point
 Take `$target` as a grimoire-relative path under `chapters/` (a page or a whole chapter folder). Plan first - this is destructive:
 
 ```bash
-python3 ~/grimoires/arcana/rites/restructure_grimoire.py --grimoire GRIMOIRE_ROOT --remove PATH
+~/grimoires/arcana/bin/arcana restructure_grimoire --grimoire GRIMOIRE_ROOT --remove PATH
 ```
 
 The plan lists what would be deleted and every inbound wikilink that would break. The rite refuses to remove a chapter hub on its own (remove the whole chapter folder instead) or anything outside `chapters/`.
@@ -86,7 +86,7 @@ Show the user what will be deleted and which inbound links will break. Removal i
 ### 3. Apply
 
 ```bash
-python3 ~/grimoires/arcana/rites/restructure_grimoire.py --grimoire GRIMOIRE_ROOT --remove PATH --apply
+~/grimoires/arcana/bin/arcana restructure_grimoire --grimoire GRIMOIRE_ROOT --remove PATH --apply
 ```
 
 ### 4. Heal the references (judgment)
@@ -99,7 +99,7 @@ For each inbound link the rite reported:
 ### 5. Validate
 
 ```bash
-python3 ~/grimoires/arcana/rites/validate.py --grimoire GRIMOIRE_ROOT links orphans structure
+~/grimoires/arcana/bin/arcana validate --grimoire GRIMOIRE_ROOT links orphans structure
 ```
 
 ## Related

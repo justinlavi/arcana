@@ -45,7 +45,7 @@ From the active grimoire context, cast:
 Mechanical equivalent:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT
+ARCANA_HOME/bin/arcana validate_grimoire_structure --grimoire GRIMOIRE_ROOT
 ```
 
 ## Validation Workflow

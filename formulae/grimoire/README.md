@@ -56,11 +56,11 @@ git clone https://github.com/justinlavi/arcana.git ~/grimoires/arcana
 git clone {{GRIMOIRE_REPO_URL}} ~/grimoires/{{GRIMOIRE_DIRECTORY}}
 
 # 3. Register the library entry and skills
-python3 ~/grimoires/arcana/rites/sync_library.py --apply
-python3 ~/grimoires/arcana/rites/sync_skills.py
+~/grimoires/arcana/bin/arcana sync_library --apply
+~/grimoires/arcana/bin/arcana sync_skills
 ```
 
-Add the canonical Grimoire routing block to your agent file by asking your agent to run `/grm-update agentfile` (it creates a missing instruction file and refreshes a stale block), or run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`.
+Add the canonical Grimoire routing block to your agent file by asking your agent to run `/grm-update agentfile` (it creates a missing instruction file and refreshes a stale block), or run it directly: `~/grimoires/arcana/bin/arcana inject_agent_file --apply`.
 
 ## Layout
 

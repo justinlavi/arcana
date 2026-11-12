@@ -79,7 +79,6 @@ Facts the open items are designed against:
 | ID | Priority | Item | Primary owner | Why queued |
 |---|---|---|---|---|
 | AB-11 | P1 | Generic publishing: stage and audit as rites, generator templates, CI templates for GitLab Pages, GitHub Pages, Cloudflare | new `rites/stage_publish.py`, `rites/audit_publish.py`, new `formulae/publish/`, new `invocations/grm/publish.md` | New contract; japan-grimoire migration proves it. |
-| AB-12 | P2 | One Python launcher for every platform | new `bin/arcana` (sh) and `bin/arcana.cmd`, every `SKILL.md` and invocation that says `python3` | The plugin `bin/` can carry it. |
 | AB-15 | P2 | Layperson documentation and product naming | `README.md`, `docs/installation.md`, new `docs/getting_started.md`, `formulae/grimoire/README.md` | The command surface and install path are settled. |
 | AB-16 | P3 | Grimoire skills auto-load by path | grimoire `skills/**/SKILL.md` via `paths:` frontmatter | Claude-only convenience. |
 
@@ -111,14 +110,6 @@ Validation profile: rite tests on the fixture grimoire, a CI job that stages
 and audits the fixture. Compatibility: MINOR; `publish/` stays excluded from
 validation.
 
-#### AB-12 One Python launcher (P2)
-
-`bin/arcana` (POSIX sh) and `bin/arcana.cmd` locate a Python 3.10+
-interpreter (`python3`, `python`, `py -3`) and run `rites/<name>.py` with the
-remaining arguments; skills and invocations say `arcana validate --summary`
-instead of naming an interpreter. The plugin's `bin/` is on the agent's
-PATH automatically.
-
 #### AB-15 Layperson documentation and product naming (P2)
 
 A reader who is not an engineer meets "Grimoire" as the product, sees one
@@ -137,9 +128,8 @@ under the grimoire directory. Convenience only; Claude-specific.
 
 ## Suggested Implementation Sequence
 
-1. 2. AB-12.
-3. AB-11, including the japan-grimoire migration.
-4. AB-15, AB-16.
+1. AB-11, including the japan-grimoire migration.
+2. AB-15, AB-16.
 
 ## Update Triggers
 

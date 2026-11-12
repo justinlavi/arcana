@@ -57,7 +57,7 @@ The auto-invocation policy and per-agent support matrix live in
 The body either runs a rite or loads an invocation, following the same boundary
 that separates rites from invocations:
 
-- **Rite-backed**: the body runs `python3 {{ARCANA_PATH}}/rites/<name>.py` and reports the result.
+- **Rite-backed**: the body runs `{{ARCANA_PATH}}/bin/arcana <name>` and reports the result.
 - **Invocation-backed**: the body names its invocation with a `cat` directive, and the registration rite inlines that file into the generated skill:
 
 ```text
