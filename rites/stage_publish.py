@@ -46,7 +46,7 @@ import shutil
 import sys
 from pathlib import Path
 
-from _lib import add_grimoire_arg, info, ok, resolve_grimoire_arg, warn
+from _lib import add_grimoire_arg, info, load_manifest, ok, resolve_grimoire_arg, warn
 from diagnostics import ResultReporter, add_output_format_arg
 
 ASSET_FOLDERS = {"templates", "snippets", "scripts", "configs", "assets", "media"}
@@ -90,11 +90,24 @@ def split_target(target: str) -> tuple[str, str, str]:
     return target, query, anchor
 
 
+def root_hub_stem(root: Path) -> str:
+    """The root hub's stem: the manifest name when it names an existing hub, else the directory name.
+
+    A CI runner checks the grimoire out under an arbitrary directory name
+    (Cloudflare uses `repo`), so the directory is the fallback, not the rule.
+    """
+    manifest, _errors = load_manifest(root)
+    name = str((manifest or {}).get("name") or "").strip()
+    if name and (root / f"{name}.md").is_file():
+        return name
+    return root.name
+
+
 class Rewriter:
     """Rewrites authoring paths into published paths for one grimoire."""
 
     def __init__(self, root: Path, content_dir: Path) -> None:
-        self.root_stem = root.name
+        self.root_stem = root_hub_stem(root)
         self.root_targets = {self.root_stem, f"{self.root_stem}.md"}
         self.content_dir = content_dir.resolve()
 
@@ -222,7 +235,7 @@ def excluded(rel_parts: tuple[str, ...], config: dict) -> bool:
 def plan_files(root: Path, config: dict) -> list[tuple[Path, Path]]:
     """(source, destination relative to content dir) for every file to stage."""
     chapters = root / "chapters"
-    pairs = [(root / f"{root.name}.md", Path("index.md"))]
+    pairs = [(root / f"{root_hub_stem(root)}.md", Path("index.md"))]
     for path in sorted(chapters.rglob("*")):
         if not path.is_file():
             continue
@@ -269,8 +282,9 @@ def main() -> int:
         content_dir.relative_to((root / "publish").resolve())
     except ValueError:
         return refuse(f"content_dir must sit under publish/: {config['content_dir']}")
-    if not (root / f"{root.name}.md").is_file():
-        return refuse(f"root hub not found: {root.name}.md")
+    hub = root_hub_stem(root)
+    if not (root / f"{hub}.md").is_file():
+        return refuse(f"root hub not found: {hub}.md (grimoire.json name or directory name)")
     if not (root / "chapters").is_dir():
         return refuse("chapters/ not found")
 

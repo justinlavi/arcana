@@ -133,3 +133,12 @@ def test_audit_missing_target_exits_two(tmp_path):
     root = _grimoire(tmp_path)
     out = _run("audit_publish.py", root, "--target", str(tmp_path / "nowhere"))
     assert out["returncode"] == 2
+
+
+def test_stage_resolves_the_root_hub_from_the_manifest_in_a_ci_checkout(tmp_path):
+    root = tmp_path / "repo"  # a CI runner's checkout name, not the grimoire's
+    shutil.copytree(GOOD, root)
+    out = _run("stage_publish.py", root, "--apply")
+    assert out["returncode"] == 0, out
+    index = (root / "publish" / "content" / "index.md").read_text(encoding="utf-8")
+    assert index.startswith("---")
