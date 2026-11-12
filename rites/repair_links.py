@@ -12,6 +12,10 @@ Resolution order, first hit wins:
   (c) unique descendant of the source file's chapter root
   (d) globally unique match anywhere under ``chapters/``
 
+Full-path wikilinks whose casing differs from the file on disk are rewritten
+to the on-disk spelling: such a link resolves only on a case-insensitive
+filesystem and breaks on Linux and in site builds.
+
 Ambiguous and unresolvable cases are reported and skipped - never guessed.
 
 Defaults to dry-run; pass ``--apply`` to write changes.
@@ -42,6 +46,7 @@ from _lib import (
     ok,
     resolve_grimoire_arg,
     resolve_wikilink_path,
+    spell_on_disk,
     warn,
     wikilink_target_body,
 )
@@ -138,6 +143,17 @@ def resolve_basename(
     return None, candidates
 
 
+def case_repair(body: str, grimoire_root: Path) -> Optional[str]:
+    """The on-disk spelling of a full-path wikilink body when it differs only by case, else None."""
+    if "/" not in body:
+        return None
+    expected = body if body.endswith(".md") else f"{body}.md"
+    actual = spell_on_disk(expected, grimoire_root)
+    if actual is None or actual == expected:
+        return None
+    return actual[:-3] if actual.endswith(".md") and not body.endswith(".md") else actual
+
+
 def is_placeholder(text: str) -> bool:
     return any(tok in text for tok in PLACEHOLDER_TOKENS)
 
@@ -182,10 +198,19 @@ def repair_line(
                 path=source_path,
             )
             continue
-        if resolve_wikilink_path(wikilink_target_body(target), grimoire_root) is not None:
+        body = wikilink_target_body(target)
+        respelled = case_repair(body, grimoire_root)
+        if respelled is not None:
+            display = wikilink_display(target)
+            new_wikilink = f"[[{respelled}|{display}]]" if display else f"[[{respelled}]]"
+            edits.append((match.start(), match.end(), new_wikilink))
+            fixes.append(f"  [CASE]  {rel}:{line_no}: [[{target}]] -> {new_wikilink}")
+            if apply:
+                reporter.mutation("repair", path=source_path, detail=f"[[{target}]] -> {new_wikilink} (casing)")
+            continue
+        if resolve_wikilink_path(body, grimoire_root) is not None:
             continue
 
-        body = wikilink_target_body(target)
         if "/" in body or not body:
             unresolvables.append(
                 f"  [SKIP]  {rel}:{line_no}: [[{target}]] - partial path or empty, not a simple basename"

@@ -139,6 +139,9 @@ seeds the ignore file, and re-registers the consolidated commands.
 
 ### Fixed
 
+- **`/grm-check fix` respells wikilinks to the on-disk casing.** A full-path
+  link that differs from the file only by case resolves on Windows and macOS
+  and breaks on Linux and in site builds; the repair rite now rewrites it.
 - **`ARCANA_REF` selects the engine the bootstrap clones.** `summon.sh` and
   `summon.py` clone that branch or tag instead of the default branch, so a
   one-liner pinned to a release installs that release.

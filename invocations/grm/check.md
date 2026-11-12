@@ -27,7 +27,7 @@ review, or to applying the mechanical repairs.
 /grm-check smart | auto | summary | parallel
 /grm-check naming            # judgment review of names, terminology, discoverability
 /grm-check boundaries        # judgment review of the magical/practical boundary
-/grm-check fix               # apply the mechanical repairs (wikilink promotion)
+/grm-check fix               # apply the mechanical repairs (wikilink promotion and casing)
 ```
 
 Flags: `--since <window>` for the stale window (default 90 days);
@@ -190,7 +190,8 @@ Every page touched in Phase 6 is listed.
 ## Mechanical repairs
 
 Promote filename-only wikilinks (`[[foo]]`, `[[parent_sibling|sibling]]`)
-to canonical full-path form (`[[chapters/path/to/foo|foo]]`). The engine is
+to canonical full-path form (`[[chapters/path/to/foo|foo]]`), and respell
+full-path wikilinks whose casing differs from the file on disk. The engine is
 `rites/repair_links.py`; the agent dry-runs, surfaces, gets approval, applies,
 and resolves ambiguities by reading context. The grimoire should be under
 version control so the change set can be reviewed as a diff.
