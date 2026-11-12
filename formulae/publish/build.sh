@@ -10,7 +10,7 @@
 #   bash publish/build.sh            # full build into publish/quartz/public
 #   bash publish/build.sh --check    # stage and audit only, no generator
 #
-# Environment: ARCANA_HOME, ARCANA_URL (engine clone source),
+# Environment: ARCANA_HOME, ARCANA_URL (engine clone source), ARCANA_REF (branch or tag, default main),
 # QUARTZ_REPO (default https://github.com/jackyzha0/quartz.git), QUARTZ_REF (default v5.1.0).
 
 set -euo pipefail
@@ -20,6 +20,7 @@ GRIMOIRE_ROOT="$(cd "$PUBLISH_ROOT/.." && pwd)"
 CHECK_ONLY="${1:-}"
 
 : "${ARCANA_URL:=https://github.com/justinlavi/arcana.git}"
+: "${ARCANA_REF:=main}"
 : "${QUARTZ_REPO:=https://github.com/jackyzha0/quartz.git}"
 : "${QUARTZ_REF:=v5.1.0}"
 
@@ -32,7 +33,7 @@ else
     ENGINE="$PUBLISH_ROOT/.engine"
     if [[ ! -d "$ENGINE/rites" ]]; then
         echo "  [INFO]  Cloning the Arcana engine into publish/.engine/"
-        git clone --quiet --depth 1 "$ARCANA_URL" "$ENGINE"
+        git clone --quiet --depth 1 --branch "$ARCANA_REF" "$ARCANA_URL" "$ENGINE"
     fi
 fi
 ARCANA="$ENGINE/bin/arcana"

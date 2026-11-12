@@ -21,7 +21,7 @@ it with Cloudflare Access before sharing the URL.
 | Deploy command | `cd publish && npx wrangler deploy` |
 | Build output directory | `publish/quartz/public` |
 | Root directory | repository root |
-| Environment variables | `ARCANA_URL` (your Arcana mirror, if any); `QUARTZ_REPO` / `QUARTZ_REF` to pin Quartz |
+| Environment variables | `NODE_VERSION=22`; `ARCANA_URL` (your Arcana mirror, if any) and `ARCANA_REF` (branch or tag, default `main`); `QUARTZ_REPO` / `QUARTZ_REF` to pin Quartz |
 
 `publish/wrangler.jsonc` names the Worker, the static asset directory, and
 any custom domains:
