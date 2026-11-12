@@ -21,6 +21,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 ## Documentation
 
 - Overview and architecture -> [[README|README]]
+- Start here for new users -> [[docs/getting_started|getting started]]
 - Update & skill-less self-update -> [[UPDATE|UPDATE]]
 - Contributing guide -> [[CONTRIBUTING|CONTRIBUTING]]
 - Installation and smoke test -> [[docs/installation|installation]]

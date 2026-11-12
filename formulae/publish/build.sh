@@ -73,7 +73,11 @@ fi
     cd "$QUARTZ"
     if [[ -f package-lock.json ]]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
     npx quartz plugin install
-    npx quartz build --directory "$CONTENT" --output "$QUARTZ/public"
+    # Quartz reads its own content/ folder; a directory outside the clone
+    # yields zero input files, so the staged copy is placed there.
+    rm -rf content
+    cp -R "$CONTENT" content
+    npx quartz build
 )
 
 # 4. Audit the generated site

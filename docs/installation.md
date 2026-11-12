@@ -9,6 +9,8 @@ last_verified: 2026-05-25
 
 # Arcana Installation
 
+New to Grimoire? [Getting Started](getting_started.md) is the short version of this page for people who are not engineers.
+
 One command installs Arcana - the framework that powers all your grimoires -
 configures your AI agents, and registers the `/arc-*` and `/grm-*` skill sets.
 Cloning existing grimoires is optional and handled interactively.

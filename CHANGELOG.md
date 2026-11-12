@@ -4,6 +4,11 @@
 
 ### Added
 
+- **Getting Started for non-engineers.** `docs/getting_started.md` is the
+  short path: install in two commands, `/grm-setup`, the day-to-day verbs in
+  plain words, saving and updating without git vocabulary, publishing, and
+  the three things that go wrong. The README and the installation page point
+  to it first.
 - **`/grm-publish`: the tenth grimoire verb, and a generic publishing
   pipeline.** `rites/stage_publish.py` flattens a grimoire into a generator
   content tree (root hub to `index.md`, `chapters/*` at the root, chapter-local

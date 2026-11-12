@@ -14,6 +14,12 @@ Most knowledge lives in scattered files that AI has to search through, interpola
 
 ---
 
+## Start here
+
+Not an engineer, or joining a team that already has a grimoire? Read [Getting Started](docs/getting_started.md): install in two commands, `/grm-setup`, and the handful of verbs you will use. The rest of this page is the engineering view.
+
+---
+
 ## What's a Grimoire?
 
 A grimoire is a structured knowledge base built around a single subject — personal recipes, a tabletop campaign's lore, research notes, project runbooks.

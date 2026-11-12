@@ -78,21 +78,9 @@ Facts the open items are designed against:
 
 | ID | Priority | Item | Primary owner | Why queued |
 |---|---|---|---|---|
-| AB-15 | P2 | Layperson documentation and product naming | `README.md`, `docs/installation.md`, new `docs/getting_started.md`, `formulae/grimoire/README.md` | The command surface and install path are settled. |
 | AB-16 | P3 | Grimoire skills auto-load by path | grimoire `skills/**/SKILL.md` via `paths:` frontmatter | Claude-only convenience. |
 
 ### Item Details
-
-#### AB-15 Layperson documentation and product naming (P2)
-
-A reader who is not an engineer meets "Grimoire" as the product, sees one
-install sentence per agent, and learns the day-to-day verbs. Arcana is
-mentioned once as the engine they never touch.
-
-First slice: `docs/getting_started.md` for the non-engineer personas;
-`README.md` restructured with that page first and the engineering material
-after; `formulae/grimoire/README.md` installation section reduced to the
-install line and `/grm-setup`.
 
 #### AB-16 Grimoire skills auto-load by path (P3)
 
@@ -101,7 +89,7 @@ under the grimoire directory. Convenience only; Claude-specific.
 
 ## Suggested Implementation Sequence
 
-1. AB-15, AB-16.
+1. AB-16.
 
 ## Update Triggers
 
