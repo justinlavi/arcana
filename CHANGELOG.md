@@ -4,6 +4,17 @@
 
 ### Added
 
+- **Arcana as Claude Code plugins.** The repository is its own marketplace
+  (`.claude-plugin/marketplace.json`) serving two plugins, `grm` and `arc`,
+  rendered under `plugins/` by `rites/build_plugins.py` from the same skill
+  sources the flat registration uses. Install with
+  `/plugin marketplace add justinlavi/arcana` and `/plugin install grm@arcana`;
+  a private mirror works by git URL; an administrator can force-install
+  through managed settings. The `grm` plugin's session-start hook clones or
+  fast-forwards the engine at `~/grimoires/arcana`, prints the routing block
+  when the instruction file lacks one, lists the installed grimoires with
+  their descriptions, and adds a drift note. With the plugins installed,
+  `sync_skills.py` registers only grimoire skills into `~/.claude/skills`.
 - **`/grm-setup`: the onboarding conversation.** Replaces the installer's
   menu. It reads `summon.py --check`, then joins a grimoire from a pasted
   repository link, hands off to `/grm-create` for a new one, or to

@@ -37,7 +37,7 @@ from _lib import (
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 EXEMPT_FILENAMES = {"README.md", "UPDATE.md", "CHANGELOG.md", "CONTRIBUTING.md", "log.md", "VERSION", "SKILL.md"}
-SKIP_DIRS = {"inbox", ".git", "publish", "skills", "tests"}
+SKIP_DIRS = {"inbox", ".git", "publish", "skills", "plugins", "tests"}
 
 
 def is_hub(path):

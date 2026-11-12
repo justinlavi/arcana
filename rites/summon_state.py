@@ -192,6 +192,7 @@ def inspect_install(
             "path": str(path),
             "exists": path.is_dir(),
             "arcana_managed_count": summon_core._registered_skill_count(path),
+            "plugin_families": sorted(target.get("plugin_families") or ()),
         })
 
     return {
@@ -213,8 +214,13 @@ def _library_has_fixable_drift(library: dict[str, Any]) -> bool:
 
 
 def _skills_absent(state: dict[str, Any]) -> bool:
-    """True when Arcana is installed but no managed skills are registered anywhere."""
+    """True when Arcana is installed but no managed skills are registered anywhere.
+
+    A target served by the Claude Code plugins counts as registered.
+    """
     if not state["arcana"]["working_tree_populated"]:
+        return False
+    if any(s.get("plugin_families") for s in state["skills"]):
         return False
     return sum(s["arcana_managed_count"] for s in state["skills"]) == 0
 

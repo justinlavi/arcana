@@ -247,6 +247,24 @@
         "tests/test_rite_profiles.py",
         "tests/test_save_grimoire.py"
       ]
+    },
+    {
+      "path": "rites/build_plugins.py",
+      "profile": "plan_apply",
+      "default_mode": "plan",
+      "plan_command": "python rites/build_plugins.py",
+      "apply_command": "python rites/build_plugins.py --apply",
+      "writes": [
+        "plugins/<family>/.claude-plugin/plugin.json",
+        "plugins/<family>/skills/<slug>/SKILL.md",
+        "plugins/grm/scripts/grimoire_block.md"
+      ],
+      "idempotency": "Rendering is a pure function of the skill sources, the routing block template, and VERSION; a second apply is a noop.",
+      "validation_profile": "python rites/build_plugins.py (exit 0 when the committed render matches the sources); python -m pytest tests/test_build_plugins.py",
+      "tests": [
+        "tests/test_rite_profiles.py",
+        "tests/test_build_plugins.py"
+      ]
     }
   ]
 }

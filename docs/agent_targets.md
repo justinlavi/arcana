@@ -21,7 +21,7 @@ configuration, and known limits.
 
 | Agent | Instruction target | Instruction mode | Skill target | Skill mode | Auto-configured | Auto-invocation |
 |---|---|---|---|---|---|---|
-| Claude Code | `~/.claude/CLAUDE.md` | auto | `~/.claude/skills` | full | yes | yes |
+| Claude Code | `~/.claude/CLAUDE.md` (plugin hook supplies the block when the `grm` plugin is installed) | auto | plugins `grm` and `arc` from the `arcana` marketplace; grimoire skills in `~/.claude/skills` | full | yes | yes |
 | Codex / ChatGPT CLI | `~/.codex/AGENTS.md` | auto | `~/.agents/skills` (former `~/.codex/skills` cleaned of managed skills) | pointer | yes | no |
 | ChatGPT (hosted) | Custom Instructions | manual | none | none | no | no |
 | GitHub Copilot | `.github/copilot_instructions.md` | manual | none | none | no | no |

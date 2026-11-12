@@ -64,6 +64,28 @@ def resolve_user_path(path_text: str | None) -> Path | None:
     return Path(path_text).expanduser()
 
 
+def plugin_install_record(home: Path | None = None) -> dict[str, Any]:
+    """Return the Claude Code plugin install record, or {} when none is readable."""
+    base = Path(home) if home else Path.home() / ".claude"
+    path = base / "plugins" / "installed_plugins.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    plugins = data.get("plugins", {})
+    return plugins if isinstance(plugins, dict) else {}
+
+
+def installed_arcana_plugins(home: Path | None = None) -> set[str]:
+    """Arcana command families installed as Claude Code plugins (`grm`, `arc`)."""
+    families = set()
+    for key in plugin_install_record(home):
+        name = key.split("@", 1)[0]
+        if name in {"grm", "arc"}:
+            families.add(name)
+    return families
+
+
 def skill_registration_targets(root: Path) -> dict[str, dict[str, Any]]:
     """Return sync_skills target configs keyed by agent id."""
     contract = load_agent_targets(root)
@@ -84,6 +106,7 @@ def skill_registration_targets(root: Path) -> dict[str, dict[str, Any]]:
             "path": skill_path,
             "pointer_only": entry["skill_mode"] == "pointer",
             "deprecated_paths": [path for path in deprecated if path is not None],
+            "plugin_families": installed_arcana_plugins() if entry.get("plugin_marketplace") else set(),
         }
     return targets
 

@@ -28,6 +28,7 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 | Rite | Profile | Plan command | Apply command | Writes |
 |---|---|---|---|---|
 | `rites/adopt_grimoire.py` | `apply_only` | none | `python rites/adopt_grimoire.py <directory> --skill-prefix <prefix> --description "<description>"` | `<target grimoire>/grimoire.json` |
+| `rites/build_plugins.py` | `plan_apply` | `python rites/build_plugins.py` | `python rites/build_plugins.py --apply` | `plugins/<family>/` (plugin manifests, rendered skills, routing block copy) |
 | `rites/clean_artifacts.py` | `plan_apply` | `python rites/clean_artifacts.py --dry-run` | `python rites/clean_artifacts.py` | `rites/.artifacts` directories |
 | `rites/install_grimoire.py` | `apply_only` | none | `python rites/install_grimoire.py <git-url> [--name <directory>]` | `<grimoire home>/<directory>`, `library.json`, agent skill directories |
 | `rites/inject_agent_file.py` | `plan_apply` | `python rites/inject_agent_file.py` | `python rites/inject_agent_file.py --apply` | supported agent instruction files under the user's home directory |

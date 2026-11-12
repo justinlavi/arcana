@@ -32,7 +32,22 @@ The installer (the *summoning rite*) writes only into `~/grimoires/` and asks be
 
 ---
 
-## Summoning Rite
+## Claude Code: install the plugin
+
+Claude Code installs Arcana as a plugin from the repository's own marketplace. In a Claude Code session (terminal, desktop app, or the VS Code extension):
+
+```text
+/plugin marketplace add justinlavi/arcana
+/plugin install grm@arcana
+```
+
+Then start a new session. The `grm` plugin's session-start hook clones the engine into `~/grimoires/arcana` (or fast-forwards it when it is already there and clean), prints the Grimoire routing context, and lists your grimoires. Run `/grm:setup` to join your team's grimoire from its link or start your first one. Maintainers add `/plugin install arc@arcana` for the `/arc:*` verbs. Turn on auto-update for the marketplace under **Marketplaces** in `/plugin`, or let an administrator set it in managed settings, and the engine and skills stay current without a manual step.
+
+For a private mirror (a company GitLab), add the marketplace by its git URL instead: `/plugin marketplace add https://gitlab.example.com/tools/arcana.git`. Access uses the credential git already stores for that host. An administrator can register the marketplace and enable the plugins for every machine with `extraKnownMarketplaces` and `enabledPlugins` in managed settings.
+
+The plugin needs `git` and Python 3.10+ on the machine; the hook says so at session start when either is missing.
+
+## Summoning Rite (Codex, and any agent without plugins)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash

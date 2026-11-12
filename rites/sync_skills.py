@@ -521,6 +521,7 @@ def build_registration_plan(
     skills_target: Path,
     specs: list[SkillSpec],
     reset_managed: bool = False,
+    extra_prefixes: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Build a complete create/update/cleanup/collision plan."""
     blocking = detect_prefix_collisions(specs) + detect_command_collisions(specs)
@@ -528,7 +529,7 @@ def build_registration_plan(
         return {"actions": [], "blocked": blocking}
 
     desired = {spec.command_name: spec for spec in specs}
-    prefixes = tuple(f"{prefix}-" for prefix in sorted({spec.skill_prefix for spec in specs}))
+    prefixes = tuple(f"{prefix}-" for prefix in sorted({spec.skill_prefix for spec in specs} | set(extra_prefixes)))
     actions: list[PlanAction] = []
 
     # Any directory under a managed prefix that is not in the desired set is a
@@ -779,6 +780,16 @@ def register_target(
         info("Pointer-only registration - copying SKILL.md files only")
 
     specs = collect_desired_skill_specs(grimoire_path)
+    # A family installed as a plugin is served by the plugin; its flat copies
+    # would duplicate /grm:* as /grm-*, so they are not desired here and any
+    # that exist are cleaned as stale.
+    plugin_families = set(config.get("plugin_families") or ())
+    if plugin_families:
+        specs = [
+            spec for spec in specs
+            if not (spec.source_kind == "arcana" and spec.source_key in plugin_families)
+        ]
+        info(f"Plugin mode: {', '.join(sorted(plugin_families))} served by the Claude Code plugin(s); grimoire skills only")
     blocking = detect_prefix_collisions(specs) + detect_command_collisions(specs)
     reset_count = 0
     if reset_managed and not blocking:
@@ -786,7 +797,11 @@ def register_target(
     plan = (
         {"actions": [], "blocked": blocking}
         if blocking
-        else build_registration_plan(skills_target, specs, reset_managed=dry_run and reset_managed)
+        else build_registration_plan(
+            skills_target, specs,
+            reset_managed=dry_run and reset_managed,
+            extra_prefixes=tuple(sorted(plugin_families)),
+        )
     )
     print_plan(plan, dry_run)
 

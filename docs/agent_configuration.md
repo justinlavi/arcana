@@ -29,6 +29,29 @@ The block never changes when grimoires are added or removed — those changes ha
 
 ---
 
+## Plugin Mode (Claude Code)
+
+Claude Code runs Arcana as two plugins, `grm` and `arc`, served from the
+repository's `.claude-plugin/marketplace.json`. Each plugin is a thin carrier
+rendered by `rites/build_plugins.py` from the same `skills/<family>/<slug>/SKILL.md`
+sources the flat registration uses, so `/grm:add` and `/grm-add` are the same
+instructions; the committed `plugins/` tree is the render, and
+`python3 rites/build_plugins.py` reports drift. The `grm` plugin's session-start
+hook (`plugins/grm/hooks/hooks.json`, `plugins/grm/scripts/session_context.py`)
+keeps the engine checkout at `~/grimoires/arcana` current (clone when absent,
+fast-forward when clean and on `main`, otherwise leave alone and say so),
+prints the Grimoire routing block when `~/.claude/CLAUDE.md` does not carry
+one, lists the installed grimoires, and adds a one-line drift note from
+`summon.py --check`.
+
+The registry marks Claude Code with `plugin_marketplace`. When the plugins are
+installed (`~/.claude/plugins/installed_plugins.json` lists `grm@...` or
+`arc@...`), `sync_skills.py` registers only grimoire-owned skills into
+`~/.claude/skills` and cleans the flat `grm-*` / `arc-*` copies, and
+`summon.py --check` treats the target as registered. Codex has no plugin
+support in its IDE extension and keeps the flat registration and the injected
+routing block.
+
 ## Skill Registration
 
 Skills are `SKILL.md` files registered into agent-specific skill directories

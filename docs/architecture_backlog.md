@@ -73,105 +73,17 @@ Facts the open items are designed against:
 | ID | Decision | Position |
 |---|---|---|
 | D1 | Distribution of the engine to agents | Claude Code: Arcana is a plugin (`grm` and `arc` command families), installed from a marketplace, with namespaced skill names (`/grm:add`). Codex, Cursor, Copilot: flat skill registration rendered from the same skill sources by the same rite. The engine checkout stays at `~/grimoires/arcana` for every agent; the plugin is a thin carrier. |
-| D6 | Consolidate the command surface | Proposed, awaiting maintainer sign-off; see [Command consolidation](#command-consolidation-d6). |
 
 ### Open Items
 
 | ID | Priority | Item | Primary owner | Why queued |
 |---|---|---|---|---|
-| AB-07 | P1 | Arcana as a Claude Code plugin | new `.claude-plugin/`, `rites/sync_skills.py`, `rites/data/agent_targets.json` | New contract; public command namespace (D1). |
-| AB-08 | P1 | Session-start context hook: routing block, installed grimoires, drift nudge | new `hooks/hooks.json`, new `rites/session_context.py`, `rites/summon_state.py` | Depends on AB-07 for Claude; Codex keeps file injection. |
 | AB-11 | P1 | Generic publishing: stage and audit as rites, generator templates, CI templates for GitLab Pages, GitHub Pages, Cloudflare | new `rites/stage_publish.py`, `rites/audit_publish.py`, new `formulae/publish/`, new `invocations/grm/publish.md` | New contract; japan-grimoire migration proves it. |
-| AB-12 | P2 | One Python launcher for every platform | new `bin/arcana` (sh) and `bin/arcana.cmd`, every `SKILL.md` and invocation that says `python3` | Sequence after AB-07 so the plugin `bin/` carries it. |
-| AB-15 | P2 | Layperson documentation and product naming | `README.md`, `docs/installation.md`, new `docs/getting_started.md`, `formulae/grimoire/README.md` | Write after AB-07 and D6 settle the real command surface. |
-| AB-16 | P3 | Grimoire skills auto-load by path | grimoire `skills/**/SKILL.md` via `paths:` frontmatter | Claude-only convenience; after AB-07. |
-
-### Command consolidation (D6)
-
-Goal: fewer verbs, each one a plain-language intent, no two commands whose
-names a newcomer has to tell apart ("update" versus "sync", "validate" versus
-"health-check", "add" versus "import").
-
-Proposed `/grm-*` surface, nine verbs:
-
-| Verb | Absorbs | What it does |
-|---|---|---|
-| `setup` | `adopt` | Join a grimoire by link, turn a folder into a grimoire, or route to `create`. `setup <url>` joins; `setup <folder>` adopts. |
-| `create` | - | Start a grimoire from scratch (conversational scaffold). |
-| `add` | `import` | Put knowledge in. A topic or pasted text is authored; a path to a file, a folder, or `inbox/` is filed as a source. One verb, polymorphic on its argument. |
-| `save` | - | Share what you changed: validate, commit, pull, push. |
-| `update` | `sync` | Bring everything current: pull Arcana and every grimoire, reconcile library, skills, and routing blocks, heal. `update skills`, `update library`, `update agentfile` reconcile one surface without pulling. |
-| `check` | `validate`, `health-check`, `audit-semantics`, `audit-boundaries`, `repair-links` | Evaluate the grimoire. `check` is the full health pass; `check quick` and `check <validator>` are the mechanical subset; `check naming` and `check boundaries` are the judgment audits; `check fix` applies the mechanical repairs (links). |
-| `move` | - | Rename or move a page or chapter and fix every link. |
-| `remove` | - | Delete a page or chapter and fix every link. |
-| `help` | - | The catalog. |
-
-Proposed `/arc-*` surface, five verbs: `update` (absorbs `sync`, with the same
-scoped forms), `validate`, `improve`, `clean`, `help`. `arc-adopt` goes;
-`/grm-setup <folder>` covers a maintainer adopting a directory.
-
-Consequences to confirm before implementation:
-
-- Public command removals: `grm-adopt`, `grm-import`, `grm-sync`,
-  `grm-validate`, `grm-health-check`, `grm-audit-semantics`,
-  `grm-audit-boundaries`, `grm-repair-links`, `arc-adopt`, `arc-sync`. The
-  registration rite removes stale managed skills on the next sync, so no user
-  keeps a dead command.
-- Invocations merge accordingly: `add` carries the authoring and filing
-  modes; `check` carries the health, audit, and repair phases; `update`
-  carries the sync sub-targets. Generated skills stay under 500 lines by
-  keeping phase detail in `references/` files beside each `SKILL.md`.
-- Command-surface, rite-profile, and routing-block contracts are updated in
-  the same change; `docs/skills.md` is regenerated.
-- japan-grimoire's own skills keep their names (`jpn-travel-*`); grimoire
-  skill naming is not part of this decision.
+| AB-12 | P2 | One Python launcher for every platform | new `bin/arcana` (sh) and `bin/arcana.cmd`, every `SKILL.md` and invocation that says `python3` | The plugin `bin/` can carry it. |
+| AB-15 | P2 | Layperson documentation and product naming | `README.md`, `docs/installation.md`, new `docs/getting_started.md`, `formulae/grimoire/README.md` | The command surface and install path are settled. |
+| AB-16 | P3 | Grimoire skills auto-load by path | grimoire `skills/**/SKILL.md` via `paths:` frontmatter | Claude-only convenience. |
 
 ### Item Details
-
-#### AB-07 Arcana as a Claude Code plugin (P1)
-
-Arcana's repository gains `.claude-plugin/marketplace.json` listing the `grm`
-and `arc` plugins from inside the same repository, each with a `plugin.json`
-whose `version` is `VERSION`. Skill sources keep `{{SKILL_PREFIX}}` and
-`{{ARCANA_PATH}}` as the rendering seam; one rite renders both the plugin
-layout (paths through `${CLAUDE_PLUGIN_ROOT}`) and the flat registration
-(absolute paths), so the two cannot drift. The plugin is a thin carrier
-(skills, hook, launcher); its session-start hook clones the engine into
-`~/grimoires/arcana` if absent and fast-forwards it when clean, pinned to the
-plugin's version tag, so every agent runs the same rites from the same
-checkout. `ARCANA_HOME` resolves in this order: the `grm` plugin root's
-engine path, the library, `~/grimoires/arcana`.
-
-Rollout at a company: an administrator sets `extraKnownMarketplaces` and
-`enabledPlugins` in managed settings once; every Claude Code user then has
-Grimoire with auto-update and no manual steps. Access to a private host uses
-the credential git already stores.
-
-Open questions for the first slice: whether `!cat` expands inside the Claude
-Code VS Code extension (plugins, hooks, and settings are shared with the CLI),
-and which built-in commands the extension hides.
-
-Validation profile: `claude plugin validate .` in CI, `summon.py --check`
-recognising plugin-mode installs, full suite. Compatibility: MINOR for
-grimoires; the public command namespace is the D1 position.
-
-#### AB-08 Session-start context hook (P1)
-
-A `SessionStart` command hook in the `grm` plugin prints the canonical routing
-block, so the text is always the installed version's, plus what a static block
-cannot carry: the installed grimoires with one-line descriptions, and a
-one-line drift or behind-upstream nudge from `summon.py --check` so the agent
-offers `/grm-update` at the right moment.
-
-First slice: `hooks/hooks.json` with one `SessionStart` command that runs
-`python rites/session_context.py` (read-only, fast; the git fetch for the
-behind-upstream check is time-boxed and skipped offline). Claude Code then
-needs no `inject_agent_file.py`; Codex keeps file injection. The block shrinks
-to routing essentials; schema detail moves to a skill the agent loads on
-demand.
-
-Validation profile: hook output under the 10,000-character cap, `summon.py
---check` parity. Compatibility: MINOR.
 
 #### AB-11 Generic publishing (P1)
 
@@ -191,8 +103,7 @@ First slice:
   The generator is installed in CI or in a gitignored `publish/quartz/`.
 - `invocations/grm/publish.md`: `grm-publish init <target>` scaffolds
   `publish/` from the formulae; `grm-publish build` runs stage, audit, build
-  locally; `grm-publish check` audits only. (Under D6 this becomes either
-  a tenth verb, `grm-publish`, or a scope of `save`.)
+  locally; `grm-publish check` audits only, as the tenth grimoire verb.
 - Migrate `japan-grimoire/publish/` to the generic shape as the proof, keeping
   its Cloudflare deployment working.
 
@@ -205,8 +116,8 @@ validation.
 `bin/arcana` (POSIX sh) and `bin/arcana.cmd` locate a Python 3.10+
 interpreter (`python3`, `python`, `py -3`) and run `rites/<name>.py` with the
 remaining arguments; skills and invocations say `arcana validate --summary`
-instead of naming an interpreter. With AB-07 the plugin's `bin/` is on the
-agent's PATH automatically.
+instead of naming an interpreter. The plugin's `bin/` is on the agent's
+PATH automatically.
 
 #### AB-15 Layperson documentation and product naming (P2)
 
@@ -226,9 +137,7 @@ under the grimoire directory. Convenience only; Claude-specific.
 
 ## Suggested Implementation Sequence
 
-1. D6 sign-off, then the consolidation (it reshapes the skill tree that AB-07
-   packages).
-2. AB-07, AB-08, AB-12.
+1. 2. AB-12.
 3. AB-11, including the japan-grimoire migration.
 4. AB-15, AB-16.
 

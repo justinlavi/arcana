@@ -127,7 +127,7 @@ The summoning rite installs **Arcana** — the framework — configures your AI 
 
 Detailed installer mode rules live in [summoning contract](docs/summoning_contract.md).
 
-Open a new session inside your AI agent (not a plain terminal) and run `/grm-setup` to join your team's grimoire from its link or start your first one. (Maintainers: `/arc-help` lists the full platform catalog.)
+Claude Code users can skip the terminal entirely: `/plugin marketplace add justinlavi/arcana`, then `/plugin install grm@arcana`, then a new session. Either way, open a new session inside your AI agent (not a plain terminal) and run `/grm-setup` (`/grm:setup` from the plugin) to join your team's grimoire from its link or start your first one. (Maintainers: `/arc-help` lists the full platform catalog.)
 
 **Out of date, or something seems wrong?** Update brings Arcana and every grimoire in the library back to a current, validated, synchronized state. Two ways to start it:
 
