@@ -50,6 +50,7 @@ Every source skill is a `SKILL.md` with YAML frontmatter and a Markdown body.
 | `user-invocable` | optional | `true` exposes the command for explicit user invocation. |
 | `disable-model-invocation` | optional | `true` stops an agent from auto-invoking the skill; only user-typed commands trigger it. Set it on destructive or maintainer-only skills and judgment audits that should not auto-trigger. |
 | `allowed-tools` | optional | Space-separated tools the skill may use, e.g. `Bash Read`. |
+| `paths` | optional | Glob patterns, relative to the session's working directory, that make Claude Code load the skill automatically when the user works on matching files (`chapters/travel/trips/**`). Scope it narrowly: a matching edit loads the whole skill into context. Grimoire skills declare it in their own `SKILL.md`; registration copies it through. |
 
 The auto-invocation policy and per-agent support matrix live in
 [agent configuration](agent_configuration.md).

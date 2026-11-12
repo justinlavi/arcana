@@ -123,6 +123,7 @@ Every `SKILL.md` declares its skill in YAML frontmatter. Required fields are min
 | `user-invocable` | No | Both | `true` = appears in the `/` picker. Default depends on agent. |
 | `when_to_use` | No | **Claude Code** | Helps Claude auto-invoke the skill without the user typing `/`. Phrase as natural-language scenarios ("User asks X", "User mentions Y"). Codex/ChatGPT ignores this field. |
 | `disable-model-invocation` | No | **Claude Code** | `true` prevents Claude from ever auto-invoking the skill — only user-typed slash commands trigger it. Use for destructive ops (deletions, irreversible changes). Codex/ChatGPT ignores this field. |
+| `paths` | No | **Claude Code** | Glob patterns relative to the working directory; Claude loads the skill on its own when the user works on matching files. Scope narrowly (`chapters/travel/trips/**`), because a match loads the whole skill. Codex/ChatGPT ignores this field. |
 
 Cross-agent safety: any field Codex/ChatGPT doesn't recognize is silently ignored. The same source `SKILL.md` works for both targets — no per-agent compilation needed.
 

@@ -78,18 +78,11 @@ Facts the open items are designed against:
 
 | ID | Priority | Item | Primary owner | Why queued |
 |---|---|---|---|---|
-| AB-16 | P3 | Grimoire skills auto-load by path | grimoire `skills/**/SKILL.md` via `paths:` frontmatter | Claude-only convenience. |
-
-### Item Details
-
-#### AB-16 Grimoire skills auto-load by path (P3)
-
-Grimoire skills can declare `paths:` so Claude loads them when the user works
-under the grimoire directory. Convenience only; Claude-specific.
+| _None_ | - | No open deferred architecture items. | - | - |
 
 ## Suggested Implementation Sequence
 
-1. AB-16.
+No open implementation items.
 
 ## Update Triggers
 

@@ -1,9 +1,16 @@
 # Changelog
 
-## [1.8.0] - Unreleased
+## [1.8.0] - 2026-11-12
+
+MINOR. Existing grimoires stay valid; the update heals the managed scaffold,
+seeds the ignore file, and re-registers the consolidated commands.
 
 ### Added
 
+- **`paths` on grimoire skills.** A grimoire skill may declare Claude Code's
+  `paths:` globs so it loads when the user works on matching files;
+  registration copies the field through, and the skill schema documents how
+  narrowly to scope it.
 - **Getting Started for non-engineers.** `docs/getting_started.md` is the
   short path: install in two commands, `/grm-setup`, the day-to-day verbs in
   plain words, saving and updating without git vocabulary, publishing, and
