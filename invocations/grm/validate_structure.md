@@ -31,7 +31,7 @@ Before executing, resolve `GRIMOIRE_ROOT` with the shared grimoire directory gua
 - After creating or editing chapters/pages
 - After pulling a newer Arcana version
 - During periodic grimoire quality reviews
-- Before running `/grm-health-check`
+- Before running `/grm-check`
 - Before publishing or handoff
 
 ## Invocation
@@ -39,7 +39,7 @@ Before executing, resolve `GRIMOIRE_ROOT` with the shared grimoire directory gua
 From the active grimoire context, cast:
 
 ```
-/grm-validate structure
+/grm-check structure
 ```
 
 Mechanical equivalent:

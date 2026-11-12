@@ -120,7 +120,7 @@ malformed markers. For each one, read `rites/templates/grimoire_block.md` and pl
 the canonical block caring only about the marked region — replace an existing
 routing block in any form, or insert one after the first heading — preserving every
 line outside the markers; if the file's intent is unclear, stop and ask the user.
-(`/grm-sync agentfile`, or the maintainer's `/arc-sync agentfile`, runs this same
+(`/grm-update agentfile`, or the maintainer's `/arc-update agentfile`, runs this same
 rite plus the judgment step.)
 
 ### 5. Final gate
@@ -153,5 +153,5 @@ or `grimoire.json`), ensure the README's update block matches
 - [Installation](docs/installation.md)
 - [Agent configuration](docs/agent_configuration.md)
 - [Summoning contract](docs/summoning_contract.md)
-- [Sync skills, library, and the agent file](invocations/arc/sync.md)
+- [Sync skills, library, and the agent file](invocations/arc/update.md)
 - [Update from a grimoire](invocations/grm/update.md)

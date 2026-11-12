@@ -77,7 +77,7 @@ grep -rln "ResultReporter" rites/ | grep -v diagnostics.py
 
 Today that is six rites: `repair_links`, `sync_library`, `adopt_grimoire`,
 `clean_artifacts`, `install_grimoire`, `save_grimoire`, each backing a public
-command (`/grm-repair-links`, `/arc-sync library`, `/arc-adopt`, `/arc-clean`,
+command (`/grm-check fix`, `/arc-update library`, `/grm-setup`, `/arc-clean`,
 `/grm-setup`, `/grm-save`). The validator family also
 accepts `--format`, but it emits `DiagnosticReporter` (a findings envelope), not
 the mutation envelope - so `--format` alone does **not** make a rite probeable

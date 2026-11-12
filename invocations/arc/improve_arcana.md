@@ -15,7 +15,7 @@ Maintainer-only orchestrator for Arcana itself. Combines mechanical
 validation with judgment-based architecture, rite, and documentation review;
 applies low-risk fixes; re-validates; and reports deferred design work.
 
-For grimoires use `/grm-health-check`. This invocation only audits Arcana.
+For grimoires use `/grm-check`. This invocation only audits Arcana.
 
 ## Invocation
 
@@ -192,7 +192,7 @@ In scope:
 - `.github/` release automation and `.obsidian/` shareable settings
 - `resources/`
 
-Out of scope: grimoires (use `/grm-health-check`).
+Out of scope: grimoires (use `/grm-check`).
 
 ## Deliverables
 
@@ -226,7 +226,7 @@ After:
 - [ ] Architecture review completed or explicitly skipped with reason
 - [ ] Contract coherence audited or explicitly skipped with reason
 - [ ] Generated docs synced (`rites/sync_docs.py --apply`)
-- [ ] Smoke-test key skills: `/grm-create`, `/arc-help`, `/grm-health-check`
+- [ ] Smoke-test key skills: `/grm-create`, `/arc-help`, `/grm-check`
 - [ ] `CHANGELOG.md` updated if changes are user-visible
 - [ ] Breaking changes announced to domain leads
 
@@ -239,4 +239,4 @@ After:
 - Contract coherence: [[invocations/arc/quality/audit_contract_coherence|audit contract coherence]]
 - Documentation quality: [[invocations/arc/quality/improve_documentation|improve documentation]]
 - Doc generator: `rites/sync_docs.py`
-- Grimoire equivalent: `/grm-health-check`
+- Grimoire equivalent: `/grm-check`

@@ -208,7 +208,7 @@ python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
 python3 ARCANA_HOME/rites/validate_links.py --grimoire .
 ```
 
-Or invoke `/grm-validate` for the full mechanical pass.
+Or invoke `/grm-check quick` for the full mechanical pass.
 
 If the relevant agent instruction file already includes the Grimoire routing block, also test routing by asking the agent: `"What chapters exist in {{grimoire_name}}?"`
 
@@ -219,6 +219,6 @@ If the relevant agent instruction file already includes the Grimoire routing blo
 - **Chapter creation**: [[invocations/grm/add|add]]
 - **Template formula**: `ARCANA_HOME/formulae/grimoire/`
 - **Page schema**: `ARCANA_HOME/docs/page_schema.md`
-- **Skill registration**: `/arc-sync skills` (reads each grimoire's `grimoire.json`)
-- **Structure validator**: `/grm-validate structure`
+- **Skill registration**: `/arc-update skills` (reads each grimoire's `grimoire.json`)
+- **Structure validator**: `/grm-check structure`
 - **Agent block**: `ARCANA_HOME/rites/templates/grimoire_block.md`

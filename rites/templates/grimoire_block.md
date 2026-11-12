@@ -5,7 +5,7 @@
 
 **Arcana key**: `ARCANA_HOME` - resolved from the library or defaults to `~/grimoires/arcana/`.
 
-**Skills**: Arcana ships `/arc-*` platform skills (e.g. `/arc-help`, `/arc-sync`) and `/grm-*` universal grimoire skills (e.g. `/grm-import`, `/grm-health-check`, `/grm-update`). Each grimoire ships its own `/<skill prefix>-*` skills declared in its `grimoire.json`.
+**Skills**: Arcana ships `/grm-*` grimoire verbs (`setup`, `create`, `add`, `save`, `update`, `check`, `move`, `remove`, `help`) and `/arc-*` maintainer verbs (`update`, `validate`, `improve`, `clean`, `help`). Each grimoire ships its own `/<skill prefix>-*` skills declared in its `grimoire.json`.
 
 ### Hub convention
 
@@ -14,7 +14,7 @@ For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. Th
 ### Storage layers
 
 - **`chapters/**/sources/`** - Immutable source artifacts and source wrappers (articles, transcripts, papers, screenshots) colocated with the chapter material they support. File during import, then read. Citation-stable: pages with `authority: external` cite paths under here.
-- **`inbox/`** - Optional transient drop zone for mixed content awaiting classification. Cleared by `/grm-import`. Pages must NOT cite `inbox/` paths (contents disappear once processed).
+- **`inbox/`** - Optional transient drop zone for mixed content awaiting classification. Cleared by `/grm-add`. Pages must NOT cite `inbox/` paths (contents disappear once processed).
 - **`chapters/`** - LLM-authored knowledge pages. Every page carries YAML frontmatter (`type`, `title`, `tags`, `authority`, `sources`, `last_verified`); see `ARCANA_HOME/docs/page_schema.md`.
 - **`publish/`** - Build/publishing-output layer (rendered site, exported bundle, generated artifacts); present in every grimoire, idle until you publish. Excluded from grimoire validation and from the knowledge graph; pages must NOT cite `publish/` paths. Build output under it is disposable and regenerable.
 
@@ -30,23 +30,21 @@ For any folder F that acts as a router, the hub file is `F/<basename(F)>.md`. Th
 
 ### Text file standard
 
-Arcana and grimoires use UTF-8 without BOM and LF line endings. Unicode is allowed when useful; mojibake and repair artifacts are not. Preserve this standard when editing files. In Arcana, run `/arc-validate encoding`; in a grimoire, run `/grm-validate encoding`.
+Arcana and grimoires use UTF-8 without BOM and LF line endings. Unicode is allowed when useful; mojibake and repair artifacts are not. Preserve this standard when editing files. In Arcana, run `/arc-validate encoding`; in a grimoire, run `/grm-check encoding`.
 
 ### Provenance
 
-Pages with `authority: external` or `hybrid` cite their `sources:` (paths under `chapters/**/sources/` or external URLs). The `validate_provenance` rite enforces this. Do not author external pages without filing the source first via `/grm-import`.
+Pages with `authority: external` or `hybrid` cite their `sources:` (paths under `chapters/**/sources/` or external URLs). The `validate_provenance` rite enforces this. Do not author external pages without filing the source first via `/grm-add`.
 
 ### Operations vocabulary
 
 | You want to | Skill |
 |---|---|
-| Import a single source | `/grm-import <path>` |
-| Sort a folder of mixed content (zip extract, drafts, etc.) | `/grm-import <folder>` (or drop into `inbox/` and run `/grm-import`) |
-| Add a page or chapter (or capture a chat answer) | `/grm-add` |
-| Health-check the grimoire | `/grm-health-check` |
-| Review naming and find-ability (advanced) | `/grm-audit-semantics` |
-| Share what you changed with your team (commit, pull, push) | `/grm-save` |
+| Join a grimoire your team has, turn a folder into one, or start your first one | `/grm-setup` |
+| Put knowledge in: write up a topic, save a chat answer, or file a document, folder, or `inbox/` as cited sources | `/grm-add` |
+| Share what you changed with your team (validate, commit, pull, push) | `/grm-save` |
 | Pick up everyone else's changes and bring everything current | `/grm-update` |
-| Join a grimoire your team has, or start your first one | `/grm-setup` |
+| Check the grimoire: full health pass, or `quick`, a validator, `naming`, `boundaries`, `fix` | `/grm-check` |
+| Rename, move, or delete a page or chapter and fix every link | `/grm-move`, `/grm-remove` |
 | See the grimoire commands you can run | `/grm-help` |
 <!-- END GRIMOIRE KNOWLEDGE BASE -->

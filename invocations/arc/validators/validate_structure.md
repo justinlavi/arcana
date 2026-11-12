@@ -19,7 +19,7 @@ Verify Arcana directory structure, required files, and organizational integrity.
 /arc-validate structure
 ```
 
-To validate a **grimoire's** structure instead, use `/grm-validate structure` - that one operates on the active grimoire directory rather than on Arcana.
+To validate a **grimoire's** structure instead, use `/grm-check structure` - that one operates on the active grimoire directory rather than on Arcana.
 
 ## When to Cast
 

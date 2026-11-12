@@ -66,4 +66,4 @@ was invalid.
 
 - Validator hub -> [[invocations/arc/validators/validators|validators]]
 - Arcana improvement -> [[invocations/arc/improve_arcana|improve arcana]]
-- Grimoire mechanical validation -> [[invocations/grm/validators/validate|validate]]
+- Grimoire mechanical validation -> [[invocations/grm/check|check]]

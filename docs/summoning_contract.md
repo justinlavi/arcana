@@ -109,7 +109,7 @@ Boundaries the surface keeps:
   a block inserted, and one clean marked region is refreshed in place. A
   block-like file that is not one clean region (duplicate or malformed markers, or
   a pre-marker heading-only block) is left untouched and reported for the
-  `/grm-sync agentfile` (maintainer: `/arc-sync agentfile`) judgment edit, so a
+  `/grm-update agentfile` (maintainer: `/arc-update agentfile`) judgment edit, so a
   second block is never appended.
 - **Network pull is out of scope** - updating Arcana itself stays the human step
   from [Update](../UPDATE.md).

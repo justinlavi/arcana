@@ -100,7 +100,7 @@ Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` and the r
 
 Arcana uses one local library: `~/grimoires/library.json`. It is a **pure registry**: it records *where* installed grimoires live, nothing else. Each grimoire's identity (name, skill prefix, description) lives in its own [manifest](#grimoire-manifest).
 
-`~/grimoires/library.json`, created by the summoning rite or `/arc-sync library`. Lists grimoires the user has cloned and where they live on disk.
+`~/grimoires/library.json`, created by the summoning rite or `/arc-update library`. Lists grimoires the user has cloned and where they live on disk.
 
 ```json
 {
@@ -121,7 +121,7 @@ Fields:
 - `local_path` — absolute filesystem path to the grimoire root (supports `$HOME`).
 - `online_path` — git clone URL; set to `null` if not applicable.
 
-To add a grimoire, run `/arc-sync library` after cloning into `~/grimoires/`. To detect drift (stale entries, missing grimoires, unmanaged directories), run the same skill in dry-run mode.
+To add a grimoire, run `/arc-update library` after cloning into `~/grimoires/`. To detect drift (stale entries, missing grimoires, unmanaged directories), run the same skill in dry-run mode.
 
 ---
 
@@ -228,6 +228,6 @@ Arcana and every grimoire use the same repository text standard:
 - Unicode is allowed when useful for readability, including emoji, em dashes, arrows, and box-drawing characters.
 - Mojibake and repair artifacts are not allowed.
 
-This is enforced by `.gitattributes`, `.editorconfig`, `/arc-validate encoding`, and `/grm-validate encoding`.
+This is enforced by `.gitattributes`, `.editorconfig`, `/arc-validate encoding`, and `/grm-check encoding`.
 
 ---

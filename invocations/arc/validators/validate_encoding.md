@@ -27,7 +27,7 @@ Or directly:
 python3 ARCANA_HOME/rites/validate_encoding.py
 ```
 
-The same standard applies to Arcana and to every grimoire. For an active grimoire, use `/grm-validate encoding`.
+The same standard applies to Arcana and to every grimoire. For an active grimoire, use `/grm-check encoding`.
 
 ## What it rejects
 

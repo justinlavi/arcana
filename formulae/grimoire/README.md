@@ -60,7 +60,7 @@ python3 ~/grimoires/arcana/rites/sync_library.py --apply
 python3 ~/grimoires/arcana/rites/sync_skills.py
 ```
 
-Add the canonical Grimoire routing block to your agent file by asking your agent to run `/grm-sync agentfile` (it creates a missing instruction file and refreshes a stale block), or run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`.
+Add the canonical Grimoire routing block to your agent file by asking your agent to run `/grm-update agentfile` (it creates a missing instruction file and refreshes a stale block), or run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`.
 
 ## Layout
 
@@ -87,12 +87,12 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 
 | Goal | Skill |
 |---|---|
-| Add a page or chapter (fresh, or capturing a chat answer) | `/grm-add` |
-| Import a new source beside the chapter material it supports and update affected pages | `/grm-import` |
-| Health-check the grimoire (orphans, stale, ghost refs) | `/grm-health-check` |
-| Review naming and find-ability (advanced) | `/grm-audit-semantics` |
+| Put knowledge in: write up a topic, save a chat answer, or file a document, folder, or `inbox/` as cited sources | `/grm-add` |
 | Share what you changed with your team | `/grm-save` |
 | Pick up everyone else's changes and bring everything current | `/grm-update` |
+| Check the grimoire: full health pass, or `quick`, a validator, `naming`, `boundaries`, `fix` | `/grm-check` |
+| Rename, move, or delete a page or chapter and fix every link | `/grm-move`, `/grm-remove` |
+| See every command | `/grm-help` |
 
 ## Layers (the LLM-wiki model)
 
@@ -108,7 +108,7 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 
 - Routers are pointer lists - no prose narrative inside a hub.
 - Pages declare their authority (`external` / `grimoire` / `hybrid`) and cite sources.
-- Stale claims (older than the stale window, default 90 days) are flagged by `/grm-health-check` and revisited.
+- Stale claims (older than the stale window, default 90 days) are flagged by `/grm-check` and revisited.
 - Names follow the convention recorded in `grimoire.json` (`naming`, default `snake_case`). Any casing is valid; consistency within the grimoire is the goal, and links must match on-disk spelling exactly.
 - History lives in git: `git log -- chapters/` (or `ARCANA_HOME/rites/recent_changes.py`) answers "what changed recently".
 - All paths are relative inside this grimoire; cross-grimoire references use `ARCANA_HOME/`-style placeholders.

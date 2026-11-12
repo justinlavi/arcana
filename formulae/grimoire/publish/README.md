@@ -7,7 +7,7 @@ Publishing is **optional**. A grimoire is fully usable as a local, AI-routed kno
 ## Contract
 
 - **Outside the knowledge graph.** `publish/` is not knowledge. Wiki pages must never set a `sources:` entry pointing at `publish/`, and nothing in `chapters/` should link into it.
-- **Excluded from validation.** The grimoire validators skip `publish/` for links, orphans, encoding, format, portability, and doc-tree checks. Generator config, vendored dependencies, and build artifacts under here will not trip `/grm-validate` or `/grm-health-check`.
+- **Excluded from validation.** The grimoire validators skip `publish/` for links, orphans, encoding, format, portability, and doc-tree checks. Generator config, vendored dependencies, and build artifacts under here will not trip `/grm-check quick` or `/grm-check`.
 - **Build artifacts are disposable.** Anything the build emits (rendered HTML, search indexes, vendored modules) is regenerable. It can be `.gitignore`d or deleted; only your generator config and scripts are worth keeping under version control.
 - **Tooling-shaped, not page-shaped.** No grimoire frontmatter, no naming convention, no hub - this folder follows the conventions of whatever site generator you choose.
 
@@ -47,4 +47,4 @@ A grimoire can hold private material - drafts, internal notes, source PDFs, rece
 
 ## If you never publish
 
-Nothing breaks. `publish/` stays idle - it holds only this README and is excluded from validation and the knowledge graph, so it never affects authoring, routing, or `/grm-validate`. When you are ready, drop your generator of choice in here and follow the stage-then-build pattern above. Anything the build later emits is disposable and regenerable; only your generator config and scripts are worth keeping under version control.
+Nothing breaks. `publish/` stays idle - it holds only this README and is excluded from validation and the knowledge graph, so it never affects authoring, routing, or `/grm-check quick`. When you are ready, drop your generator of choice in here and follow the stage-then-build pattern above. Anything the build later emits is disposable and regenerable; only your generator config and scripts are worth keeping under version control.

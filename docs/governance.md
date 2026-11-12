@@ -70,7 +70,7 @@ An agent may act **unattended** only when all four conditions hold:
 4. **Not on the human-sign-off list** below.
 
 If any condition fails, the change is **proposed**, not applied: surface it for
-one confirmation (the `/grm-health-check` model) or escalate to the
+one confirmation (the `/grm-check` model) or escalate to the
 human maintainer.
 
 ### Unattended
@@ -79,7 +79,7 @@ human maintainer.
 |---|---|---|
 | Run the validator suite | `/arc-validate` (`python3 rites/validate.py`) | exit 0 |
 | Apply mechanical fixes (broken links the rite located, format, frontmatter, encoding, snake_case) | an `/arc-validate` finding plus a direct edit | re-run the validator to exit 0 |
-| Repair unambiguous wikilinks | `/grm-repair-links --apply` | envelope `status` `ok`; ambiguous links are surfaced, never guessed |
+| Repair unambiguous wikilinks | `/grm-check fix` | envelope `status` `ok`; ambiguous links are surfaced, never guessed |
 | Regenerate generated indexes | `python3 rites/sync_docs.py --apply` | drift gate clean afterward |
 | Correct prose-wrong contract drift | the contract-coherence audit | the originating probe plus a validator pass |
 | Append the changelog | edit `CHANGELOG.md` under `[Unreleased]` | — |
@@ -91,8 +91,8 @@ Reversible but judgment-bearing, or writing outside the repo:
 - Orphan wiring, terminology standardization, page promotion, merging duplicates.
 - Any change touching more than ten files.
 - Reconciling the grimoire library or registering skills into agent directories
-  under the user's home (`/arc-sync library`, `/arc-sync skills`,
-  `/grm-sync`).
+  under the user's home (`/arc-update library`, `/arc-update skills`,
+  `/grm-update`).
 
 ### Human sign-off required
 
@@ -286,7 +286,7 @@ Arcana files must **not**:
 Each grimoire is responsible for:
 
 1. **Its own content**: chapters, skills, manifest. Use Arcana's `/grm-add` and the page formula for new pages.
-2. **Staying in step with Arcana**: pull updates periodically; run `/grm-validate` after pulling.
+2. **Staying in step with Arcana**: pull updates periodically; run `/grm-check quick` after pulling.
 3. **Reporting issues** in Arcana itself (broken invocations, formula bugs, validator false positives).
 
 Grimoires must **not**:
@@ -294,7 +294,7 @@ Grimoires must **not**:
 - ❌ Copy Arcana files into their own repo (reference instead).
 - ❌ Modify Arcana files directly. Propose changes to the maintainer of the Arcana fork they use.
 - ❌ Create chapters / formulae / rites in Arcana folder names (`invocations/`, `formulae/`, `rites/`) inside their own grimoire — those folder names are reserved for Arcana.
-- ❌ Ignore breaking-change announcements. Re-run `/grm-validate` after a major Arcana version bump.
+- ❌ Ignore breaking-change announcements. Re-run `/grm-check quick` after a major Arcana version bump.
 
 ---
 

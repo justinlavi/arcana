@@ -40,7 +40,7 @@ SOURCE_DIRNAME = "sources"
 
 # Naming convention a grimoire records in grimoire.json (`naming`). Any casing is
 # valid in page and folder names; the convention is what the AI applies to new
-# material and what /grm-audit-semantics reports deviations from. Absent means
+# material and what /grm-check naming reports deviations from. Absent means
 # the default.
 NAMING_DEFAULT = "snake_case"
 NAMING_MAX_LEN = 40

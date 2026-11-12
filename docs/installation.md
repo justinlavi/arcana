@@ -194,8 +194,8 @@ If you can't run the summoning rite (no network, restricted environment, etc.):
 1. Clone Arcana to `~/grimoires/arcana/`.
 2. Clone each grimoire to `~/grimoires/<grimoire-name>/`.
 3. Create `~/grimoires/library.json` with one entry per grimoire (see [reference](reference.md#local-library)).
-4. Add the Grimoire routing block to the instruction targets listed in [agent targets](agent_targets.md) — the canonical block lives at [grimoire block](../rites/templates/grimoire_block.md). The simplest way to (re)apply it is to ask your agent to run `/grm-sync agentfile`, which creates a missing instruction file and refreshes a stale block. If you have no agent session yet, run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`. (Maintainer equivalent: `/arc-sync agentfile`.)
-5. Register skills: the easy path is to ask your agent to run `/grm-sync skills`. If you have no agent session yet, run it directly: `python3 ~/grimoires/arcana/rites/sync_skills.py`.
+4. Add the Grimoire routing block to the instruction targets listed in [agent targets](agent_targets.md) — the canonical block lives at [grimoire block](../rites/templates/grimoire_block.md). The simplest way to (re)apply it is to ask your agent to run `/grm-update agentfile`, which creates a missing instruction file and refreshes a stale block. If you have no agent session yet, run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`. (Maintainer equivalent: `/arc-update agentfile`.)
+5. Register skills: the easy path is to ask your agent to run `/grm-update skills`. If you have no agent session yet, run it directly: `python3 ~/grimoires/arcana/rites/sync_skills.py`.
 
 If an existing installation is far behind and its registered slash commands no
 longer match current Arcana, pull Arcana first, then read
@@ -253,7 +253,7 @@ The agent should follow hubs depth-first (root hub -> chapter hub -> ... -> leaf
 **Agent can't find a grimoire**
 - Check that the grimoire key exists in `~/grimoires/library.json`
 - Verify `local_path` resolves correctly on the filesystem
-- Ask your agent to run `/grm-sync library` to reconcile `~/grimoires/library.json` against disk (the fix after you move or rename a grimoire folder), or `/grm-update` to bring everything current. (Maintainers can target the whole platform library with `/arc-sync library`.)
+- Ask your agent to run `/grm-update library` to reconcile `~/grimoires/library.json` against disk (the fix after you move or rename a grimoire folder), or `/grm-update` to bring everything current. (Maintainers can target the whole platform library with `/arc-update library`.)
 
 **Summoning fails to clone**
 - Ensure network access to your git host (VPN if required)
@@ -264,11 +264,11 @@ The agent should follow hubs depth-first (root hub -> chapter hub -> ... -> leaf
 - The rite needs Python 3.10 or newer as `python3`, `python`, or the Windows `py` launcher. Install it from python.org (Windows: tick "Add to PATH") or your package manager, then re-run.
 
 **Skills not appearing after install**
-- Ask your agent to run `/grm-sync skills` to register skills (or `/grm-update` to bring everything current). (Maintainers can re-register every installed grimoire's skills with `/arc-sync skills`.)
+- Ask your agent to run `/grm-update skills` to register skills (or `/grm-update` to bring everything current). (Maintainers can re-register every installed grimoire's skills with `/arc-update skills`.)
 - Open a new agent session (Claude Code / Codex caches skill listings)
 
 **Skill names appear as `{{SKILL_PREFIX}}-...`**
 - The grimoire is missing its `grimoire.json` manifest. Add one per [reference](reference.md#grimoire-manifest), then re-register.
 
 **Agent guesses instead of reading files**
-- The Grimoire routing block is missing or stale in the relevant target from [agent targets](agent_targets.md) — for example after you deleted `~/.codex/` or `~/.claude/`, or moved to a new machine. Ask your agent to run `/grm-sync agentfile`, which creates a missing instruction file and refreshes a stale routing block. See [agent configuration](agent_configuration.md#agent-instruction-files). (Maintainer equivalent: `/arc-sync agentfile`.)
+- The Grimoire routing block is missing or stale in the relevant target from [agent targets](agent_targets.md) — for example after you deleted `~/.codex/` or `~/.claude/`, or moved to a new machine. Ask your agent to run `/grm-update agentfile`, which creates a missing instruction file and refreshes a stale routing block. See [agent configuration](agent_configuration.md#agent-instruction-files). (Maintainer equivalent: `/arc-update agentfile`.)

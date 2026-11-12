@@ -1,18 +1,18 @@
 ---
 name: {{SKILL_PREFIX}}-add
-description: Write up new knowledge or save a chat answer as a page or chapter (text you author, not a file on disk) - for a file on disk use /grm-import
-when_to_use: User wants to add knowledge to an existing grimoire - "add a chapter for X", "document Y", "where should I put info about Z", "file this", "save this answer", "promote this to the wiki". The command sizes the material into a page or a chapter. To create a whole new grimoire use /grm-create; for external files or source artifacts use /grm-import. Operates on the resolved active grimoire.
-argument-hint: [topic or material]
-arguments: topic
+description: Put knowledge into the active grimoire - write up a topic or save a chat answer as a page or chapter, or hand it a file, a folder, or the inbox to file as cited sources and update the wiki
+when_to_use: User wants to add knowledge to an existing grimoire - "add a chapter for X", "document Y", "save this answer", "promote this to the wiki", "import this PDF", "file this article", "process the inbox", "sort this folder", or drops content into the grimoire's inbox/. A topic or pasted text is authored; a path on disk is filed as a source. To create a whole new grimoire use /grm-create. Operates on the resolved active grimoire.
+argument-hint: "[topic | \"this answer\" | file | folder | inbox]"
+arguments: material
 user-invocable: true
 allowed-tools: Bash Read Write Edit
 ---
 
-# Add Content
+# Add
 
-You are adding knowledge content to the active grimoire - a single page or a new chapter, sized to the material. Follow the invocation guide below exactly.
+You are putting knowledge into the active grimoire. What the user handed over decides the mode: a topic or a chat answer is authored into a page or chapter; a file, a folder, or the inbox is filed as sources and synthesized into the wiki. Follow the invocation below exactly.
 
-If the user provided a topic or material, use it: **$topic**
+If the user provided material or a path, it is: **$material**
 
 ## Precondition
 
@@ -21,8 +21,10 @@ If the user provided a topic or material, use it: **$topic**
 ## Context
 
 - **Arcana**: `{{ARCANA_PATH}}`
-- **Chapter formula**: `{{ARCANA_PATH}}/formulae/chapter_hub.formula.md`
 - **Page formula**: `{{ARCANA_PATH}}/formulae/page.formula.md`
+- **Source formula**: `{{ARCANA_PATH}}/formulae/source.formula.md`
+- **Chapter hub formula**: `{{ARCANA_PATH}}/formulae/chapter_hub.formula.md`
+- **Page stamping rite**: `{{ARCANA_PATH}}/rites/new_page.py`
 
 ## Invocation
 

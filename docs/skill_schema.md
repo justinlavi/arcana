@@ -21,7 +21,7 @@ The families are declared in `arcana.json`.
 
 | Family | Prefix | Use For | Example |
 |---|---|---|---|
-| `grm` | `grm` | Universal operations from the active grimoire context | `/grm-validate links` |
+| `grm` | `grm` | Universal operations from the active grimoire context | `/grm-check links` |
 | `arc` | `arc` | Arcana platform and maintainer operations: the engine, the home library, agent files, and agent skill directories | `/arc-validate links` |
 
 Each family maps to one source directory (`skills/grm/`, `skills/arc/`) and one slash-command prefix. Normal grimoires still declare exactly one `skill_prefix` in `grimoire.json`, such as `cook` or `dnd`. Arcana is special because it ships both platform commands (`arc`) and universal grimoire-context commands (`grm`).
@@ -34,7 +34,7 @@ Source skill files use the placeholder form:
 name: {{SKILL_PREFIX}}-<registered-slug>
 ```
 
-The registration rite substitutes `{{SKILL_PREFIX}}` with the command family's prefix. For example, `skills/grm/validate/SKILL.md` declares `{{SKILL_PREFIX}}-validate` and registers as `/grm-validate`.
+The registration rite substitutes `{{SKILL_PREFIX}}` with the command family's prefix. For example, `skills/grm/check/SKILL.md` declares `{{SKILL_PREFIX}}-check` and registers as `/grm-check`.
 
 Some `/grm-*` commands intentionally maintain Arcana from the active grimoire context. For example, `/grm-update` brings the active grimoire and its Arcana back to a current, validated, synchronized state. Keep these rare and name the external target explicitly. These commands may resolve the active grimoire from `~/grimoires/library.json`; they should not require terminal cwd when an unambiguous grimoire can be selected.
 
@@ -84,7 +84,7 @@ Good:
 
 ```text
 /arc-validate frontmatter
-/grm-validate frontmatter
+/grm-check frontmatter
 ```
 
 Avoid when the operation can target both Arcana and a grimoire:
@@ -101,9 +101,9 @@ Arcana skill source folders are grouped by command family, then flattened during
 
 ```text
 skills/arc/validate/SKILL.md            -> /arc-validate
-skills/arc/sync/SKILL.md                -> /arc-sync
-skills/grm/validate/SKILL.md            -> /grm-validate
-skills/grm/audit-semantics/SKILL.md     -> /grm-audit-semantics
+skills/arc/update/SKILL.md              -> /arc-update
+skills/grm/check/SKILL.md               -> /grm-check
+skills/grm/add/SKILL.md                 -> /grm-add
 ```
 
 The naming validator enforces folder/frontmatter agreement and rejects skill files outside the declared command families.

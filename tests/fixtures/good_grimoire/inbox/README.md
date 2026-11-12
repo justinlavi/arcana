@@ -16,7 +16,7 @@ This directory is the place to drop **mixed content that needs to be sorted**: z
 
 ## How content leaves here
 
-Run `/grm-import` (no argument sweeps `inbox/`). The skill walks the folder and, for each file, proposes a classification - confirmed in chat - then moves the file:
+Run `/grm-add` (no argument sweeps `inbox/`). The skill walks the folder and, for each file, proposes a classification - confirmed in chat - then moves the file:
 
 | Classification | Destination | Notes |
 |---|---|---|

@@ -4,7 +4,7 @@
 The grimoire's change history is its git history. This read-only rite renders
 the recent commits that touched knowledge content (``chapters/``, the root hub,
 ``README.md``, ``grimoire.json``) as a compact table an agent or a human can
-scan, so /grm-health-check and similar workflows can relate findings to recent
+scan, so /grm-check and similar workflows can relate findings to recent
 edits without a separate hand-maintained log.
 
 Usage:

@@ -61,4 +61,4 @@ python3 ARCANA_HOME/rites/validate.py --grimoire GRIMOIRE_ROOT links orphans str
 ## Related
 
 - Rename or move content: [[invocations/grm/move|move]]
-- Repair filename-only wikilinks: [[invocations/grm/repair_links|repair links]]
+- Repair filename-only wikilinks: [[invocations/grm/check|check]]

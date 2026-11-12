@@ -63,12 +63,12 @@ Knowledge and skills compound: the better your documentation, the smarter your s
 
 Arcana ships universal operations every grimoire inherits:
 
-- **`/grm-import <source>`** — file a source beside the chapter material it supports, scan existing chapters, propose page updates, apply them, append to `log.md`.
-- **`/grm-add`** — add knowledge to the grimoire as a page or a chapter, written fresh or distilled from the current chat session (so a good answer doesn't evaporate into chat history).
-- **`/grm-health-check`** — health-check the wiki: orphans, stale claims (>90 days unverified), ghost references (entities mentioned often but lacking a page), contradictions, missing cross-references.
-- **`/grm-validate [selector]`** — run the full deterministic validator profile for the active grimoire, or a targeted mechanical check.
-- **`/grm-update`** — bring Arcana and every grimoire in the library back to a current, validated, synchronized state.
-- **`/grm-sync`** — refresh Arcana skills plus the active grimoire's own skills.
+- **`/grm-setup`** — join a grimoire from its repository link, turn a folder of notes into one, or start your first one.
+- **`/grm-add`** — put knowledge in: write up a topic or save a chat answer as a page or chapter, or hand it a file, a folder, or the inbox to file as cited sources and fold into the wiki.
+- **`/grm-save`** — share what you changed: validate, record, bring in teammates' changes, send.
+- **`/grm-update`** — bring Arcana and every grimoire current; `skills`, `library`, or `agentfile` reconcile one surface.
+- **`/grm-check`** — the full health pass (orphans, stale claims, ghost references, contradictions, missing cross-references); `quick` or a validator name for the mechanical subset, `naming` and `boundaries` for the judgment reviews, `fix` to repair wikilinks.
+- **`/grm-move`**, **`/grm-remove`** — reshape the wiki and fix every link.
 - **`/grm-help`** — list every grimoire command you can run.
 
 Arcana command families are prefix-explicit: `/arc-*` acts on Arcana and platform surfaces (the engine, the home library `~/grimoires/library.json`, agent files, and agent skill directories); `/grm-*` acts on the active grimoire. Full rules live in [skill schema](docs/skill_schema.md).

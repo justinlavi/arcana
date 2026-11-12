@@ -132,7 +132,7 @@ def main() -> int:
                     "error",
                     f"{key} is on disk but is not a registered grimoire yet: "
                     + ("; ".join(errors) if errors else "no grimoire.json")
-                    + ". Run /grm-adopt to write its manifest, then /grm-sync library.",
+                    + ". Run /grm-setup <directory> to write its manifest and register it.",
                     path=target,
                 )
                 reporter.set_status("blocked")

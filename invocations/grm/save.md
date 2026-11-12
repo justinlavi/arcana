@@ -46,7 +46,7 @@ validators and stops with `status: blocked` if they fail.
 
 - **Nothing to save** (`noop`, no changes, not ahead): say so and stop.
 - **Validation failed**: show the failing validator(s) in plain words and
-  offer to fix them (`/grm-validate`, or the specific repair). Do not save
+  offer to fix them (`/grm-check quick`, or the specific repair). Do not save
   around a failure.
 - **Changes present**: summarise them for the user in one or two sentences
   ("you added two pages under travel and changed the food hub").
@@ -96,5 +96,5 @@ One line: what was shared, and that teammates receive it on their next
 
 - Save rite: `ARCANA_HOME/rites/save_grimoire.py`
 - Pick up teammates' changes and bring everything current: [[invocations/grm/update|update]]
-- Validate before saving: [[invocations/grm/validators/validate|validate]]
+- Validate before saving: [[invocations/grm/check|check]]
 - First-time setup: [[invocations/grm/setup|setup]]

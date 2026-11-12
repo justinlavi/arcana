@@ -50,6 +50,21 @@
 
 ### Changed
 
+- **Nine grimoire verbs, five maintainer verbs.** The command surface is
+  consolidated so each verb is one plain-language intent: `/grm-setup`
+  (absorbs `/grm-adopt`: a link joins, a folder adopts), `/grm-add` (absorbs
+  `/grm-import`: a topic or answer is authored, a file, folder, or the inbox
+  is filed), `/grm-update` (absorbs `/grm-sync`: bare brings everything
+  current, `skills`, `library`, and `agentfile` reconcile one surface), and
+  `/grm-check` (absorbs `/grm-validate`, `/grm-health-check`,
+  `/grm-audit-semantics`, `/grm-audit-boundaries`, `/grm-repair-links`:
+  bare is the full health pass, `quick` or a validator name is the mechanical
+  subset, `naming` and `boundaries` are the judgment reviews, `fix` applies
+  the wikilink repairs). `/arc-update` absorbs `/arc-sync` with the same
+  scopes, and `/arc-adopt` is covered by `/grm-setup <folder>`. Removed
+  commands disappear from agent skill directories on the next registration.
+  Unchanged: `/grm-create`, `/grm-save`, `/grm-move`, `/grm-remove`,
+  `/grm-help`, `/arc-validate`, `/arc-improve`, `/arc-clean`, `/arc-help`.
 - **`log.md` is retired.** No invocation reads the grimoire activity log;
   every mutating command only appended to it, and an append-only file at the
   grimoire root guarantees merge conflicts the moment two people share a

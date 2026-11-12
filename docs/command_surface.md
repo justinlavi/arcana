@@ -34,7 +34,7 @@ The "Command contract" section of `docs/skills.md` renders the same matrix as a 
 
 | Field | Meaning |
 |---|---|
-| `command` | Public slash command, such as `/grm-import`. |
+| `command` | Public slash command, such as `/grm-add`. |
 | `family` | Command family from `arcana.json`. |
 | `skill_source` | Source `SKILL.md` that registers the command. |
 | `invocation` | Primary workflow home. |

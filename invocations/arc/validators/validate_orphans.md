@@ -25,7 +25,7 @@ Or directly:
 python3 ARCANA_HOME/rites/validate_orphans.py
 ```
 
-For an active grimoire, use `/grm-validate orphans`.
+For an active grimoire, use `/grm-check orphans`.
 
 ## Exempt
 

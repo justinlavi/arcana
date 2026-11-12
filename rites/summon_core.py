@@ -695,7 +695,7 @@ def inject_agent_file(log, target_path, title):
     block: create an absent file, refresh one clean stale block, insert into a
     file with no block at all, skip a current block. A block-like file that is
     not one clean BEGIN..END region (duplicate or malformed markers, or a
-    pre-marker heading-only block) is left untouched for `/grm-sync agentfile`.
+    pre-marker heading-only block) is left untouched for `/grm-update agentfile`.
     """
     log.info(f"Configuring {target_path.name}...")
     target_path.parent.mkdir(parents=True, exist_ok=True)
@@ -725,7 +725,7 @@ def inject_agent_file(log, target_path, title):
     else:  # review
         log.warn(
             f"{target_path.name} has a routing block that is not one clean BEGIN/END region; "
-            "left unchanged - run /grm-sync agentfile to fix it"
+            "left unchanged - run /grm-update agentfile to fix it"
         )
 
 

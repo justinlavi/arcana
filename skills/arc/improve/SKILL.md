@@ -1,7 +1,7 @@
 ---
 name: {{SKILL_PREFIX}}-improve
 description: Improve Arcana itself - maintainer only
-when_to_use: The Arcana maintainer or fork owner wants to audit, normalize, and upgrade Arcana itself - its docs, invocations, formulae, rites, and skills; before cutting a release; after bulk changes. Maintainer-only; for a grimoire use /grm-update and /grm-health-check.
+when_to_use: The Arcana maintainer or fork owner wants to audit, normalize, and upgrade Arcana itself - its docs, invocations, formulae, rites, and skills; before cutting a release; after bulk changes. Maintainer-only; for a grimoire use /grm-update and /grm-check.
 user-invocable: true
 disable-model-invocation: true
 allowed-tools: Bash Read Write Edit

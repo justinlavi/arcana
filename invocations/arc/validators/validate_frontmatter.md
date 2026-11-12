@@ -27,7 +27,7 @@ Or directly:
 python3 ARCANA_HOME/rites/validate_frontmatter.py
 ```
 
-For an active grimoire, use `/grm-validate frontmatter`.
+For an active grimoire, use `/grm-check frontmatter`.
 
 ## What gets checked
 

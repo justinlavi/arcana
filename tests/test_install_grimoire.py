@@ -81,9 +81,9 @@ def test_join_without_manifest_is_blocked_with_adopt_hint(tmp_path):
     assert out["returncode"] == 1
     assert report["status"] == "blocked"
     assert report["summary"]["manifest"] == "missing"
-    assert (home / "notes").is_dir()  # the clone is kept for /grm-adopt
+    assert (home / "notes").is_dir()  # the clone is kept for /grm-setup <folder>
     assert not (home / "library.json").exists()
-    assert any("/grm-adopt" in m["message"] for m in report["messages"])
+    assert any("/grm-setup" in m["message"] for m in report["messages"])
 
 
 def test_bad_url_is_an_error_not_a_crash(tmp_path):

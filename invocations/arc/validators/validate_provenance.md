@@ -33,7 +33,7 @@ Or directly:
 python3 ARCANA_HOME/rites/validate_provenance.py
 ```
 
-For an active grimoire, use `/grm-validate provenance`.
+For an active grimoire, use `/grm-check provenance`.
 
 ## When to run
 

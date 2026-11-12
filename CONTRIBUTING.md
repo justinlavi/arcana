@@ -65,7 +65,7 @@ Every validator should:
 3. Exit `0` on clean, `1` on violations. Use `info` / `ok` / `warn` / `err` from `_lib` for output.
 4. Ship as a `validate_<aspect>.py` file under `rites/`.
 5. Be added to the validator selector registry in [rites/validate.py](rites/validate.py) / [validators.json](rites/data/validators.json) if it is part of a mechanical validation suite.
-6. Use the existing `/arc-validate` or `/grm-validate` public skill; create a new skill only when the workflow is not mechanical validation (see [skill schema](docs/skill_schema.md)).
+6. Use the existing `/arc-validate` or `/grm-check quick` public skill; create a new skill only when the workflow is not mechanical validation (see [skill schema](docs/skill_schema.md)).
 7. Get a covering test under `tests/test_validate_<aspect>.py` using the fixture grimoires under `tests/fixtures/`.
 
 The minimal skeleton:

@@ -18,7 +18,7 @@ reserved for source wrappers under `chapters/**/sources/`.
 ## Invocation
 
 ```
-/grm-validate frontmatter
+/grm-check frontmatter
 ```
 
 ## Workflow

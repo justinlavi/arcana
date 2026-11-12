@@ -25,7 +25,7 @@ Or directly:
 python3 ARCANA_HOME/rites/validate_portability.py
 ```
 
-For an active grimoire, use `/grm-validate portability`.
+For an active grimoire, use `/grm-check portability`.
 
 ## What it rejects
 

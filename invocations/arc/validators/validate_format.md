@@ -36,7 +36,7 @@ Execute the validation rite:
 python3 rites/validate_format.py
 ```
 
-For an active grimoire, use `/grm-validate format`.
+For an active grimoire, use `/grm-check format`.
 
 ### Step 2: Review Invocation Format
 

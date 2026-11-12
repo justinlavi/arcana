@@ -16,7 +16,7 @@ Validate portable Markdown formatting in the active grimoire: table delimiters, 
 ## Invocation
 
 ```
-/grm-validate format
+/grm-check format
 ```
 
 ## Workflow
