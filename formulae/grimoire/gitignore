@@ -17,8 +17,9 @@ desktop.ini
 *~
 *.swp
 
-# Publish layer: build output is disposable and regenerable. Add your
-# generator's output and dependency directories here once you publish,
-# for example:
-# publish/quartz/public/
-# publish/quartz/node_modules/
+# Publish layer: everything the build fetches or generates is disposable.
+# Only publish.json, build.sh, quartz.config.yaml, the CI file, and any
+# wrangler.jsonc are worth committing.
+publish/content/
+publish/quartz/
+publish/.engine/

@@ -11,6 +11,7 @@ Templates the LLM copies when scaffolding new content. Each `*.formula.md` carri
 | [Source.Formula](source.formula.md) | A `type: source` wrapper under `chapters/**/sources/` with capture metadata, source body, or a pointer to a sibling raw artifact. | `/grm-add` |
 | [Invocation.Formula](invocation.formula.md) | A new Arcana invocation (workflow doc referenced by a skill). Maintainer-only. | manual authoring |
 | [README](grimoire/README.md) | Full grimoire scaffold - root hub, manifest, README, `inbox/`, `chapters/`, `publish/` (build-output layer, present in every grimoire, excluded from validation and the graph), `.obsidian/`. Used to bootstrap a brand-new grimoire from scratch. | `/grm-create` |
+| [`publish/`](publish/build.sh) | Publishing formulae: `publish.json`, `build.sh` (stage, audit, Quartz build, audit), `quartz.config.yaml`, and CI templates for GitLab Pages, GitHub Pages, and [Cloudflare](publish/ci/cloudflare_pages.md). Copied into a grimoire's `publish/` by `/grm-publish init`. | `/grm-publish` |
 | [`grimoire/scaffold_contract.json`](grimoire/scaffold_contract.json) | Machine-readable inventory for grimoire scaffold directories, copied files, managed files, and scaffold JSON requirements. | `/grm-create`, `/grm-check`, `/grm-check structure`, tests |
 
 ## Conventions

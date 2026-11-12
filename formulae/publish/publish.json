@@ -1,0 +1,10 @@
+{
+  "generator": "quartz",
+  "content_dir": "publish/content",
+  "exclude": [],
+  "include_asset_folders": false,
+  "audit": {
+    "warning_patterns": {},
+    "known_identifier_patterns": []
+  }
+}

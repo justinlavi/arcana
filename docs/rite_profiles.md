@@ -39,6 +39,7 @@ artifacts, the mode it uses, what it writes, and how to validate it.
 | `rites/summon.sh` | `apply_only` | none | `bash rites/summon.sh` | install tree, selected grimoires, library, agent files |
 | `rites/summon_core.py` | `apply_only` | none | `python rites/summon.py` | install tree, selected grimoires, library, agent files |
 | `rites/save_grimoire.py` | `plan_apply` | `python rites/save_grimoire.py --grimoire <path>` | `python rites/save_grimoire.py --grimoire <path> --apply --message "<text>"` | `<grimoire>/.git` (commit, rebase, push) |
+| `rites/stage_publish.py` | `plan_apply` | `python rites/stage_publish.py --grimoire <path>` | `python rites/stage_publish.py --grimoire <path> --apply` | `<grimoire>/publish/content/` |
 | `rites/sync_docs.py` | `plan_apply` | `python rites/sync_docs.py` | `python rites/sync_docs.py --apply` | `docs/skills.md` |
 | `rites/sync_library.py` | `plan_apply` | `python rites/sync_library.py` | `python rites/sync_library.py --apply` | `~/grimoires/library.json` |
 | `rites/update_grimoires.py` | `plan_apply` | `python rites/summon.py --update` | `python rites/summon.py --update --apply` | grimoire working trees (fast-forward-only pulls) and Arcana-owned managed scaffold during heal |

@@ -1,0 +1,54 @@
+# GitHub Pages: build the grimoire site on every push to the default branch.
+# Copy to <grimoire>/.github/workflows/pages.yml and set the repository's
+# Pages source to "GitHub Actions". A private repository on a paid plan can
+# keep the site restricted to people who can see the repository (Pages
+# visibility: private); on a free plan the site is public, so audit before
+# enabling it.
+
+name: Publish grimoire site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  ARCANA_URL: https://github.com/justinlavi/arcana.git
+  QUARTZ_REPO: https://github.com/jackyzha0/quartz.git
+  QUARTZ_REF: v5
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Build the site
+        run: bash publish/build.sh
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: publish/quartz/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

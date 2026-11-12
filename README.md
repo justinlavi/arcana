@@ -69,6 +69,7 @@ Arcana ships universal operations every grimoire inherits:
 - **`/grm-update`** — bring Arcana and every grimoire current; `skills`, `library`, or `agentfile` reconcile one surface.
 - **`/grm-check`** — the full health pass (orphans, stale claims, ghost references, contradictions, missing cross-references); `quick` or a validator name for the mechanical subset, `naming` and `boundaries` for the judgment reviews, `fix` to repair wikilinks.
 - **`/grm-move`**, **`/grm-remove`** — reshape the wiki and fix every link.
+- **`/grm-publish`** — turn the grimoire into a website (GitLab Pages, GitHub Pages, or Cloudflare), audited before anything is exposed.
 - **`/grm-help`** — list every grimoire command you can run.
 
 Arcana command families are prefix-explicit: `/arc-*` acts on Arcana and platform surfaces (the engine, the home library `~/grimoires/library.json`, agent files, and agent skill directories); `/grm-*` acts on the active grimoire. Full rules live in [skill schema](docs/skill_schema.md).

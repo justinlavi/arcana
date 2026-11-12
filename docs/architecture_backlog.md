@@ -78,37 +78,10 @@ Facts the open items are designed against:
 
 | ID | Priority | Item | Primary owner | Why queued |
 |---|---|---|---|---|
-| AB-11 | P1 | Generic publishing: stage and audit as rites, generator templates, CI templates for GitLab Pages, GitHub Pages, Cloudflare | new `rites/stage_publish.py`, `rites/audit_publish.py`, new `formulae/publish/`, new `invocations/grm/publish.md` | New contract; japan-grimoire migration proves it. |
 | AB-15 | P2 | Layperson documentation and product naming | `README.md`, `docs/installation.md`, new `docs/getting_started.md`, `formulae/grimoire/README.md` | The command surface and install path are settled. |
 | AB-16 | P3 | Grimoire skills auto-load by path | grimoire `skills/**/SKILL.md` via `paths:` frontmatter | Claude-only convenience. |
 
 ### Item Details
-
-#### AB-11 Generic publishing (P1)
-
-A company with a self-hosted GitLab publishes a grimoire to GitLab Pages behind
-project membership, built by CI on every push, with no vendored generator.
-
-First slice:
-
-- `rites/stage_publish.py` (flatten `chapters/`, rewrite full-path wikilinks
-  and `sources:` paths, carry chapter-local sources, preserve casing) and
-  `rites/audit_publish.py` (secret audit with BLOCKER/WARNING and an allowlist
-  file): deterministic, cross-platform, JSON envelopes.
-- `formulae/publish/quartz/` with `quartz.config.ts` and layout templates that
-  read the staged content directory, and `formulae/publish/ci/` with
-  `gitlab-pages.yml`, `github-pages.yml`, and `cloudflare-pages.md` that run
-  stage, audit, `npx quartz build` at a pinned version, and publish `public/`.
-  The generator is installed in CI or in a gitignored `publish/quartz/`.
-- `invocations/grm/publish.md`: `grm-publish init <target>` scaffolds
-  `publish/` from the formulae; `grm-publish build` runs stage, audit, build
-  locally; `grm-publish check` audits only, as the tenth grimoire verb.
-- Migrate `japan-grimoire/publish/` to the generic shape as the proof, keeping
-  its Cloudflare deployment working.
-
-Validation profile: rite tests on the fixture grimoire, a CI job that stages
-and audits the fixture. Compatibility: MINOR; `publish/` stays excluded from
-validation.
 
 #### AB-15 Layperson documentation and product naming (P2)
 
@@ -128,8 +101,7 @@ under the grimoire directory. Convenience only; Claude-specific.
 
 ## Suggested Implementation Sequence
 
-1. AB-11, including the japan-grimoire migration.
-2. AB-15, AB-16.
+1. AB-15, AB-16.
 
 ## Update Triggers
 

@@ -265,6 +265,22 @@
         "tests/test_rite_profiles.py",
         "tests/test_build_plugins.py"
       ]
+    },
+    {
+      "path": "rites/stage_publish.py",
+      "profile": "plan_apply",
+      "default_mode": "plan",
+      "plan_command": "python rites/stage_publish.py --grimoire <path>",
+      "apply_command": "python rites/stage_publish.py --grimoire <path> --apply",
+      "writes": [
+        "<grimoire>/publish/content/ (emptied and rewritten; must sit under publish/)"
+      ],
+      "idempotency": "Staging is a pure function of the grimoire content and publish.json; a second apply produces the same tree.",
+      "validation_profile": "python rites/audit_publish.py --grimoire <path> --mode content",
+      "tests": [
+        "tests/test_rite_profiles.py",
+        "tests/test_publish_rites.py"
+      ]
     }
   ]
 }

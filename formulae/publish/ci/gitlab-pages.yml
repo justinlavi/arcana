@@ -1,0 +1,47 @@
+# GitLab Pages: build the grimoire site on every push to the default branch.
+# Copy to <grimoire>/.gitlab-ci.yml. The site is served at the project's Pages
+# URL; keep "Pages access control" set to project members so only people who
+# can see the repository can see the site.
+#
+# The job clones the Arcana engine and Quartz itself, so the runner needs
+# outbound access to the Arcana repository (set ARCANA_URL to your mirror)
+# and to github.com for Quartz (or mirror Quartz and set QUARTZ_REPO).
+
+stages:
+  - build
+  - deploy
+
+image: node:22
+
+variables:
+  ARCANA_URL: "https://github.com/justinlavi/arcana.git"
+  QUARTZ_REPO: "https://github.com/jackyzha0/quartz.git"
+  QUARTZ_REF: "v5"
+
+cache:
+  key: quartz-$CI_COMMIT_REF_SLUG
+  paths:
+    - publish/quartz/node_modules/
+    - publish/quartz/.quartz/
+
+build:
+  stage: build
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq python3 git >/dev/null
+  script:
+    - bash publish/build.sh
+    - rm -rf public && mv publish/quartz/public public
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 week
+
+pages:
+  stage: deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  script:
+    - echo "Publishing to GitLab Pages"
+  artifacts:
+    paths:
+      - public

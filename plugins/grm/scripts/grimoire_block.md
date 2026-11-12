@@ -5,7 +5,7 @@
 
 **Arcana key**: `ARCANA_HOME` - resolved from the library or defaults to `~/grimoires/arcana/`.
 
-**Skills**: Arcana ships `/grm-*` grimoire verbs (`setup`, `create`, `add`, `save`, `update`, `check`, `move`, `remove`, `help`) and `/arc-*` maintainer verbs (`update`, `validate`, `improve`, `clean`, `help`). Each grimoire ships its own `/<skill prefix>-*` skills declared in its `grimoire.json`.
+**Skills**: Arcana ships `/grm-*` grimoire verbs (`setup`, `create`, `add`, `save`, `update`, `check`, `publish`, `move`, `remove`, `help`) and `/arc-*` maintainer verbs (`update`, `validate`, `improve`, `clean`, `help`). Each grimoire ships its own `/<skill prefix>-*` skills declared in its `grimoire.json`.
 
 ### Hub convention
 
@@ -46,5 +46,6 @@ Pages with `authority: external` or `hybrid` cite their `sources:` (paths under 
 | Pick up everyone else's changes and bring everything current | `/grm-update` |
 | Check the grimoire: full health pass, or `quick`, a validator, `naming`, `boundaries`, `fix` | `/grm-check` |
 | Rename, move, or delete a page or chapter and fix every link | `/grm-move`, `/grm-remove` |
+| Turn the grimoire into a website, or check what would be published | `/grm-publish` |
 | See the grimoire commands you can run | `/grm-help` |
 <!-- END GRIMOIRE KNOWLEDGE BASE -->

@@ -242,6 +242,23 @@
       "mutation_behavior": "Read-only by default: the full health pass or a mechanical validator selection surfaces findings; naming and boundaries are judgment reviews reported in chat. Writes only under the fix scope (repair_links.py --apply after a dry run) or when the user approves a specific fix in the health pass.",
       "log_behavior": "Writes no log; a grimoire's history is its git history (rites/recent_changes.py renders it).",
       "validation_profile": "python rites/validate.py --grimoire GRIMOIRE_ROOT; python rites/repair_links.py --grimoire GRIMOIRE_ROOT (dry run)"
+    },
+    {
+      "command": "/grm-publish",
+      "family": "grm",
+      "skill_source": "skills/grm/publish/SKILL.md",
+      "invocation": "invocations/grm/publish.md",
+      "guard": "invocations/meta/grimoire_directory_guard.md",
+      "owner_type": "hybrid",
+      "rite_owner": "rites/stage_publish.py",
+      "preconditions": [
+        "Registered active grimoire",
+        "git and Python 3.10+; Node.js 22+ for build"
+      ],
+      "mutation_profile": "plan_apply",
+      "mutation_behavior": "init copies the publishing formulae (publish.json, build.sh, quartz.config.yaml, the CI file for the target) into the grimoire; build and check stage the content into publish/content/ (disposable) and run the audit; build also clones Quartz into publish/quartz/ and writes publish/quartz/public/. Nothing under chapters/ is touched.",
+      "log_behavior": "Writes no log; a grimoire's history is its git history (rites/recent_changes.py renders it).",
+      "validation_profile": "python rites/stage_publish.py --grimoire GRIMOIRE_ROOT --apply; python rites/audit_publish.py --grimoire GRIMOIRE_ROOT --mode content"
     }
   ]
 }

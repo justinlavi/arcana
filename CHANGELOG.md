@@ -4,6 +4,19 @@
 
 ### Added
 
+- **`/grm-publish`: the tenth grimoire verb, and a generic publishing
+  pipeline.** `rites/stage_publish.py` flattens a grimoire into a generator
+  content tree (root hub to `index.md`, `chapters/*` at the root, chapter-local
+  sources carried, asset folders and `publish.json` exclusions left out, links
+  and frontmatter sources rewritten, self-aliases dropped);
+  `rites/audit_publish.py` refuses blockers (credentials, card numbers,
+  identity documents, authoring roots, unresolved sources) and reports
+  warnings, with per-grimoire extensions in `publish/publish.json`.
+  `formulae/publish/` carries `build.sh` (stage, audit, Quartz 5 build, audit
+  the output; clones the engine and Quartz when absent, so one script serves
+  local builds and CI), the Quartz configuration, and CI templates for GitLab
+  Pages, GitHub Pages, and Cloudflare. `init <target>` copies them in; the
+  seeded scaffold ignore file keeps generated output out of git.
 - **The `arcana` launcher.** `bin/arcana` (POSIX sh) and `bin/arcana.cmd`
   run `rites/<rite>.py` with whatever Python 3.10+ the machine has (`python3`,
   `python`, or the Windows `py` launcher), beside the engine or from the `grm`

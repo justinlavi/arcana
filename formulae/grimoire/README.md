@@ -92,6 +92,7 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 | Pick up everyone else's changes and bring everything current | `/grm-update` |
 | Check the grimoire: full health pass, or `quick`, a validator, `naming`, `boundaries`, `fix` | `/grm-check` |
 | Rename, move, or delete a page or chapter and fix every link | `/grm-move`, `/grm-remove` |
+| Turn the grimoire into a website, or check what would be published | `/grm-publish` |
 | See every command | `/grm-help` |
 
 ## Layers (the LLM-wiki model)
