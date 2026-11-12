@@ -7,6 +7,9 @@ ARCANA_EVAL_MODEL is set, so the mechanical CI gate never reaches a model. Run
 the tier explicitly:
 
     ARCANA_EVAL_MODEL=1 python -m pytest -m eval
+
+When `claude` is not on PATH (the VS Code extension keeps its binary under
+resources/native-binary/), point ARCANA_EVAL_CLAUDE at the executable.
 """
 
 import os

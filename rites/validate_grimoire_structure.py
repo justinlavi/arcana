@@ -5,7 +5,6 @@ Required at the grimoire root:
     <grimoire-name>.md   (root hub; folder-name convention)
     README.md
     grimoire.json
-    log.md
     chapters/             (LLM-authored knowledge)
 
 For each chapter folder F, the hub file F/F.md must exist (folder-name
@@ -236,7 +235,7 @@ def main():
 
     # 6. Managed scaffold files should match the current Arcana formulae.
     # These files are operational support files, not grimoire-specific content.
-    # Root README, root hub, grimoire.json, and log.md are intentionally not
+    # Root README, root hub, and grimoire.json are intentionally not
     # compared because they are customized during grimoire creation.
     if formula_root.is_dir():
         if human:

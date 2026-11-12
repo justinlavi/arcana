@@ -139,6 +139,15 @@ seeds the ignore file, and re-registers the consolidated commands.
 
 ### Fixed
 
+- **`ARCANA_REF` selects the engine the bootstrap clones.** `summon.sh` and
+  `summon.py` clone that branch or tag instead of the default branch, so a
+  one-liner pinned to a release installs that release.
+- **Grimoire discovery skips the engine and sees private repositories.** A
+  scope listing never offers `arcana` itself as a grimoire, and a personal
+  GitHub scope with a token also lists the token holder's private repositories.
+- **The eval tier runs on Windows and may edit its scenario.** The `claude`
+  seam resolves the binary (`ARCANA_EVAL_CLAUDE` or PATH), feeds the prompt on
+  stdin, and grants edit and rite permissions inside the throwaway grimoire.
 - **Skills now load from any working directory.** Generated skills used to
   pull their invocation in at load time with a `cat` directive, which agents
   only honour for files inside the session's working directories. Every

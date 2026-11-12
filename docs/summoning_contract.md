@@ -58,7 +58,7 @@ links here rather than restating these.
 | Variable | Purpose |
 |---|---|
 | `ARCANA_URL` | Override the Arcana repository URL. |
-| `ARCANA_REF` | Override the raw-source ref for companion-script downloads. |
+| `ARCANA_REF` | Branch or tag of Arcana to bootstrap: the companion-script downloads and the engine clone both use it. |
 | `GRIMOIRE_SUMMON_DOWNLOAD_ATTEMPTS` | Companion-script download retry count. |
 | `GRIMOIRE_SUMMON_RETRY_DELAY` | Delay (seconds) between download attempts. |
 | `GRIMOIRE_SUMMON_CONNECT_TIMEOUT` | Connection timeout (seconds) for downloads. |

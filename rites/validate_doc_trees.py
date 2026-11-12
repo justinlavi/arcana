@@ -9,7 +9,7 @@ using the box-drawing characters:
     ├── chapters/
     │   ├── glossary/
     │   └── standards/
-    └── log.md
+    └── grimoire.json
 
 These diagrams drift when folders are renamed, added, or removed and the doc
 isn't updated to match. This validator parses every such diagram in the

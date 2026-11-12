@@ -114,10 +114,11 @@ curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon
 ```
 
 To bootstrap from a branch or tag other than `main` (for example to try a
-release branch), point the companion-script downloads at that ref:
+release branch), name the ref in both places; the companion-script downloads
+and the engine clone follow it:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/release/1.8/rites/summon.sh | ARCANA_REF=release/1.8 bash
+curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/<ref>/rites/summon.sh | ARCANA_REF=<ref> bash
 ```
 
 Companion-script downloads retry and then fall back to a Python download. The

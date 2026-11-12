@@ -321,11 +321,16 @@ def _api_get(url, token_header=None, token_value=None):
         return None, str(e)
 
 
+ENGINE_REPO_NAME = "arcana"
+
+
 def _metadata_marks_grimoire(name, description="", topics=None):
     topics = topics or []
     normalized = {str(t).lower() for t in topics}
     name_l = (name or "").lower()
     desc_l = (description or "").lower()
+    if name_l == ENGINE_REPO_NAME:
+        return False  # the engine describes grimoires; it is not one
     return (
         name_l.endswith("-grimoire")
         or "grimoire" in normalized
@@ -470,6 +475,8 @@ def try_github_discovery(host, scope, token, log):
     if not isinstance(data, list):
         log.warn(f"GitHub API returned unexpected response type: {type(data).__name__}")
         return {}
+    if token:
+        data = _with_own_private_repos(api_base, owner, data, auth_h, auth_v, log)
 
     entries = {}
     for repo in data:
@@ -480,6 +487,30 @@ def try_github_discovery(host, scope, token, log):
             continue
         entries[name] = _github_entry(repo)
     return entries
+
+
+def _with_own_private_repos(api_base, owner, public_repos, auth_h, auth_v, log):
+    """Merge the token holder's private repositories under `owner` into a public listing.
+
+    `/users/{owner}/repos` and `/orgs/{owner}/repos` list what the public sees;
+    `/user/repos` lists what the token sees, including private repositories.
+    """
+    url = f"{api_base}/user/repos?per_page=100&affiliation=owner,organization_member"
+    data, err = _api_get(url, token_header=auth_h, token_value=auth_v)
+    if err or not isinstance(data, list):
+        return public_repos
+    seen = {repo.get("name", "") for repo in public_repos}
+    merged = list(public_repos)
+    for repo in data:
+        login = str((repo.get("owner") or {}).get("login", "")).lower()
+        if login != owner.lower() or repo.get("name", "") in seen:
+            continue
+        merged.append(repo)
+        seen.add(repo.get("name", ""))
+    added = len(merged) - len(public_repos)
+    if added:
+        log.info(f"Added {added} private repositor{'y' if added == 1 else 'ies'} visible to the token")
+    return merged
 
 
 def discover_grimoires(scope_url, log, explicit_token=""):
@@ -586,8 +617,10 @@ def install_arcana(arcana_url, log, git_fn=git, cancel_event=None):
             if not attempt_working_tree_recovery(ARCANA_DIR, "Arcana", log, git_fn):
                 return False
     elif arcana_url:
-        log.info(f"Cloning Arcana from {arcana_url}...")
-        ok, _ = git_fn("clone", arcana_url, str(ARCANA_DIR), log=log)
+        ref = os.environ.get("ARCANA_REF", "").strip()
+        log.info(f"Cloning Arcana from {arcana_url}" + (f" at {ref}" if ref else "") + "...")
+        ref_args = ["--branch", ref] if ref else []
+        ok, _ = git_fn("clone", *ref_args, arcana_url, str(ARCANA_DIR), log=log)
         if not ok:
             log.err("Failed to clone Arcana - check network and git credentials")
             if (ARCANA_DIR / ".git").is_dir() and not working_tree_populated(ARCANA_DIR):

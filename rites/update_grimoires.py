@@ -328,7 +328,7 @@ def default_heal(local_path: Path, arcana_root: Path) -> dict[str, Any]:
     }
 
     # 1. Managed scaffold: copy Arcana formula over the grimoire's copy (safe -
-    #    managed_scaffold_files excludes README/hub/grimoire.json/log.md).
+    #    managed_scaffold_files excludes README/hub/grimoire.json).
     try:
         contract = load_scaffold_contract(arcana_root)
         formula_dir = arcana_root / "formulae" / "grimoire"

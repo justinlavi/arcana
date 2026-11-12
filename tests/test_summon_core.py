@@ -265,3 +265,78 @@ def test_dispatcher_parses_install_flags():
 def test_core_spawns_sister_scripts_with_the_running_interpreter():
     assert summon_core._subprocess_env() is None
     assert summon_core.system_python() == sys.executable
+
+
+def test_install_arcana_clones_the_ref_named_by_arcana_ref(tmp_path, monkeypatch):
+    arcana_dir = tmp_path / "arcana"
+    monkeypatch.setattr(summon_core, "ARCANA_DIR", arcana_dir)
+    monkeypatch.setenv("ARCANA_REF", "v1.8.0")
+    calls = []
+
+    def fake_git(*args, log=None, **_kwargs):
+        calls.append(args)
+        if args[0] == "clone":
+            (arcana_dir / ".git").mkdir(parents=True)
+            (arcana_dir / "arcana.json").write_text("{}", encoding="utf-8")
+        return True, ""
+
+    assert summon_core.install_arcana("https://example.com/arcana.git", _FullLog(), git_fn=fake_git) is True
+    assert calls[0][:3] == ("clone", "--branch", "v1.8.0")
+
+
+def test_install_arcana_clones_the_default_branch_without_arcana_ref(tmp_path, monkeypatch):
+    arcana_dir = tmp_path / "arcana"
+    monkeypatch.setattr(summon_core, "ARCANA_DIR", arcana_dir)
+    monkeypatch.delenv("ARCANA_REF", raising=False)
+    calls = []
+
+    def fake_git(*args, log=None, **_kwargs):
+        calls.append(args)
+        (arcana_dir / ".git").mkdir(parents=True, exist_ok=True)
+        (arcana_dir / "arcana.json").write_text("{}", encoding="utf-8")
+        return True, ""
+
+    summon_core.install_arcana("https://example.com/arcana.git", _FullLog(), git_fn=fake_git)
+    assert calls[0] == ("clone", "https://example.com/arcana.git", str(arcana_dir))
+
+
+def test_discovery_never_lists_the_engine_as_a_grimoire():
+    assert summon_core._metadata_marks_grimoire("arcana", "A framework for building grimoires") is False
+    assert summon_core._metadata_marks_grimoire("japan-grimoire", "") is True
+    assert summon_core._metadata_marks_grimoire("notes", "team grimoire", []) is True
+
+
+def test_github_user_discovery_adds_private_repos_the_token_can_see(monkeypatch):
+    responses = {
+        "https://api.github.com/orgs/jlavi/repos?per_page=100": (None, "404"),
+        "https://api.github.com/users/jlavi/repos?per_page=100": (
+            [{"name": "arcana", "description": "A framework for building grimoires", "clone_url": "u1"}], None,
+        ),
+        "https://api.github.com/user/repos?per_page=100&affiliation=owner,organization_member": (
+            [
+                {"name": "japan-grimoire", "owner": {"login": "jlavi"}, "clone_url": "u2", "private": True},
+                {"name": "other-grimoire", "owner": {"login": "someone-else"}, "clone_url": "u3"},
+            ],
+            None,
+        ),
+    }
+    monkeypatch.setattr(summon_core, "_api_get", lambda url, **_k: responses[url])
+
+    entries = summon_core.try_github_discovery("github.com", "jlavi", "token", _FullLog())
+    assert set(entries) == {"japan-grimoire"}
+    assert entries["japan-grimoire"]["online_path"] == "u2"
+
+
+def test_github_user_discovery_without_a_token_stays_public(monkeypatch):
+    calls = []
+
+    def fake_get(url, **_k):
+        calls.append(url)
+        if "/orgs/" in url:
+            return None, "404"
+        return [{"name": "japan-grimoire", "clone_url": "u2"}], None
+
+    monkeypatch.setattr(summon_core, "_api_get", fake_get)
+    entries = summon_core.try_github_discovery("github.com", "jlavi", "", _FullLog())
+    assert set(entries) == {"japan-grimoire"}
+    assert not any("/user/repos" in c for c in calls)

@@ -11,7 +11,7 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-AI-guided conversational setup that scaffolds a complete grimoire from the scaffold contract, registers it in the local library, and validates the result. Output is a working grimoire directory with customized root hub, README, manifest, `log.md`, `inbox/`, and initial chapter skeletons (each with its own folder-named hub and frontmatter). Source artifacts live in chapter-local `sources/` folders as chapters absorb external material.
+AI-guided conversational setup that scaffolds a complete grimoire from the scaffold contract, registers it in the local library, and validates the result. Output is a working grimoire directory with customized root hub, README, manifest, `inbox/`, `publish/`, and initial chapter skeletons (each with its own folder-named hub and frontmatter). Source artifacts live in chapter-local `sources/` folders as chapters absorb external material.
 
 ## Invocation
 

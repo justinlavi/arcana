@@ -24,6 +24,7 @@ import base64
 import json
 import os
 import re
+import shutil
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -33,6 +34,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SPECS_PATH = REPO_ROOT / "tests" / "fixtures" / "invocation_eval_specs.json"
 SCHEMA_VERSION = 1
 ARCANA_EVAL_MODEL = "ARCANA_EVAL_MODEL"
+ARCANA_EVAL_CLAUDE = "ARCANA_EVAL_CLAUDE"
 
 # A model seam takes the assembled prompt and the grimoire working directory and
 # returns the agent's raw stdout (expected to contain a fenced json decision).
@@ -270,11 +272,35 @@ def claude_cli_seam(prompt: str, cwd: str, *, timeout: int = 600) -> str:
         )
     env = dict(os.environ)
     env.setdefault("ARCANA_HOME", str(REPO_ROOT))
+    binary = claude_binary()
+    if binary is None:
+        return (
+            f"seam error: no `claude` executable on PATH; set {ARCANA_EVAL_CLAUDE} "
+            "to the Claude Code binary (the VS Code extension ships one under "
+            "resources/native-binary/)."
+        )
+    # The prompt travels on stdin: it carries a whole playbook, longer than a
+    # Windows command line allows, and a leading `/` would be rewritten by MSYS.
+    # The scenario grimoire is a throwaway copy, so the agent may edit it and
+    # run the rites; everything else stays behind the default permission gate.
     result = subprocess.run(
-        ["claude", "-p", prompt, "--output-format", "text"],
+        [
+            binary, "-p", "--output-format", "text",
+            "--permission-mode", "acceptEdits",
+            "--allowedTools", "Read,Write,Edit,Glob,Grep,Bash(python:*),Bash(python3:*)",
+        ],
         cwd=cwd, capture_output=True, text=True, timeout=timeout, env=env,
+        input=prompt, encoding="utf-8", errors="replace",
     )
     return (result.stdout or "") + (result.stderr or "")
+
+
+def claude_binary() -> str | None:
+    """Path of the Claude Code executable: ARCANA_EVAL_CLAUDE, else `claude` on PATH."""
+    override = os.environ.get(ARCANA_EVAL_CLAUDE)
+    if override:
+        return override
+    return shutil.which("claude")
 
 
 def fake_seam(stdout: str) -> ModelFn:
