@@ -11,7 +11,7 @@
 #   bash publish/build.sh --check    # stage and audit only, no generator
 #
 # Environment: ARCANA_HOME, ARCANA_URL (engine clone source),
-# QUARTZ_REPO (default https://github.com/jackyzha0/quartz.git), QUARTZ_REF (default v5).
+# QUARTZ_REPO (default https://github.com/jackyzha0/quartz.git), QUARTZ_REF (default v5.1.0).
 
 set -euo pipefail
 
@@ -21,7 +21,7 @@ CHECK_ONLY="${1:-}"
 
 : "${ARCANA_URL:=https://github.com/justinlavi/arcana.git}"
 : "${QUARTZ_REPO:=https://github.com/jackyzha0/quartz.git}"
-: "${QUARTZ_REF:=v5}"
+: "${QUARTZ_REF:=v5.1.0}"
 
 # 1. Engine
 if [[ -n "${ARCANA_HOME:-}" && -d "${ARCANA_HOME}/rites" ]]; then
@@ -63,6 +63,11 @@ cp "$PUBLISH_ROOT/quartz.config.yaml" "$QUARTZ/quartz.config.yaml"
 
 command -v node >/dev/null 2>&1 || { echo "  [ERROR] Node.js 22 or later is required for Quartz" >&2; exit 1; }
 command -v npm >/dev/null 2>&1 || { echo "  [ERROR] npm is required for Quartz" >&2; exit 1; }
+NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
+if [[ "$NODE_MAJOR" -lt 22 ]]; then
+    echo "  [ERROR] Node.js $(node -v) found; Quartz 5 needs Node.js 22 or later (nvm/fnm: install 22, then re-run)" >&2
+    exit 1
+fi
 
 (
     cd "$QUARTZ"

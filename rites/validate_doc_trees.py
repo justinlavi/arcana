@@ -49,7 +49,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Iterator
 
-from _lib import default_arcana_root
+from _lib import default_arcana_root, walk_files
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 
@@ -428,7 +428,7 @@ def validate_diagram(
 
 
 def collect_markdown_files(root: Path) -> Iterable[Path]:
-    for path in sorted(root.rglob("*.md")):
+    for path in walk_files(root, "*.md"):
         try:
             rel_parts = path.relative_to(root).parts
         except ValueError:

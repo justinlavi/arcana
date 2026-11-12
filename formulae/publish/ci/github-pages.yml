@@ -24,7 +24,7 @@ concurrency:
 env:
   ARCANA_URL: https://github.com/justinlavi/arcana.git
   QUARTZ_REPO: https://github.com/jackyzha0/quartz.git
-  QUARTZ_REF: v5
+  QUARTZ_REF: v5.1.0
 
 jobs:
   build:

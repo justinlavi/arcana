@@ -620,3 +620,31 @@ def spell_on_disk(rel: str, root: Path) -> Optional[str]:
         spelled.append(actual)
         current = current / actual
     return "/".join(spelled)
+
+
+# ----------------------------------------------------------------------------
+# Tree walking that never descends into generated or foreign trees
+# ----------------------------------------------------------------------------
+
+PRUNED_DIRS = {"publish", ".git", "node_modules"}
+
+
+def walk_files(root: Path, pattern: str = "*", prune: Iterable[str] = PRUNED_DIRS):
+    """Yield files under ``root`` matching ``pattern`` (fnmatch on the name),
+    sorted, without descending into pruned directory names.
+
+    ``rglob`` walks everything and filters afterwards; a grimoire that has
+    built its site carries thousands of generator files under ``publish/``,
+    so validators prune at the directory level instead.
+    """
+    import fnmatch
+    import os
+
+    pruned = set(prune)
+    results = []
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = sorted(d for d in dirnames if d not in pruned)
+        for name in filenames:
+            if fnmatch.fnmatch(name, pattern):
+                results.append(Path(dirpath) / name)
+    return sorted(results)

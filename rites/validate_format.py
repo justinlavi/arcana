@@ -17,7 +17,7 @@ import re
 import sys
 from pathlib import Path
 
-from _lib import add_grimoire_arg, is_inside_colocated_source_dir, ok, resolve_grimoire_arg, warn
+from _lib import add_grimoire_arg, is_inside_colocated_source_dir, ok, resolve_grimoire_arg, warn, walk_files
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 ROOT = None
@@ -51,7 +51,7 @@ def under_skip_dir(path):
 
 def markdown_files(root):
     """Yield Markdown files that should be validated."""
-    for path in sorted(root.rglob("*.md")):
+    for path in walk_files(root, "*.md"):
         if not under_skip_dir(path):
             yield path
 

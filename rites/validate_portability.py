@@ -19,7 +19,7 @@ Exit codes: 0 = success, 1 = violations found
 import argparse
 import sys
 
-from _lib import add_grimoire_arg, err, ok, resolve_grimoire_arg
+from _lib import add_grimoire_arg, err, ok, resolve_grimoire_arg, walk_files
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 # Windows-reserved characters in filenames (path separators / and \ excluded
@@ -95,7 +95,7 @@ def main():
     checked = 0
     children = {}
 
-    for p in sorted(root.rglob("*")):
+    for p in walk_files(root):
         rel = p.relative_to(root)
         if rel.parts and rel.parts[0] in SKIP_TOP_LEVEL:
             continue

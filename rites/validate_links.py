@@ -25,6 +25,7 @@ import sys
 from pathlib import Path
 
 from _lib import (
+    walk_files,
     LINK_RE,
     WIKILINK_RE,
     add_grimoire_arg,
@@ -154,7 +155,7 @@ def main():
 
         print("Scanning markdown files for broken links and layer-specific link styles...")
 
-    for path in sorted(grimoire_root.rglob("*.md")):
+    for path in walk_files(grimoire_root, "*.md"):
         rel = rel_posix(path, grimoire_root)
 
         if path.name in SKIP_FILES:
