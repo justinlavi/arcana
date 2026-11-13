@@ -11,7 +11,7 @@ last_verified: 2026-05-12
 
 ## Purpose
 
-AI-guided conversational setup that scaffolds a complete grimoire from the scaffold contract, registers it in the local library, and validates the result. Output is a working grimoire directory with customized root hub, README, manifest, `log.md`, `inbox/`, and initial chapter skeletons (each with its own folder-named hub and frontmatter). Source artifacts live in chapter-local `sources/` folders as chapters absorb external material.
+AI-guided conversational setup that scaffolds a complete grimoire from the scaffold contract, registers it in the local library, and validates the result. Output is a working grimoire directory with customized root hub, README, manifest, `inbox/`, `publish/`, and initial chapter skeletons (each with its own folder-named hub and frontmatter). Source artifacts live in chapter-local `sources/` folders as chapters absorb external material.
 
 ## Invocation
 
@@ -41,8 +41,9 @@ Have a conversation, not a form. Ask one question at a time and probe for specif
 - What documents, processes, or knowledge does it cover?
 - Who are the primary users — just you, a team, public?
 - What 2-4 letter slug should prefix this grimoire's skills? Must match `^[a-z][a-z0-9]*$` (e.g. `cook` for a cooking grimoire yields `/cook-recipe-add`; `dnd` for a D&D grimoire yields `/dnd-session-log`).
+- How should files and folders be named? Offer `snake_case` as the preselected default (greppable, stable in links). Accept another named style (`kebab-case`, `PascalCase`, `Title Case`) or `preserve` when the grimoire will absorb existing material that keeps its own casing. Any casing is valid; consistency within the grimoire is what matters.
 
-Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `token` (all-caps), `skill_prefix`, `purpose` (one sentence), `purpose_detailed`, `owner` (whoever maintains it — a person, team, or "personal"), `creation_date` (today as `YYYY-MM-DD`), `repo_url` (the canonical git URL you intend to push this grimoire to — public GitHub, private GitLab, internal Gitea, etc. If you don't know it yet, accept the placeholder `<set this when you push to a git host>` and fix it later).
+Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `token` (all-caps), `skill_prefix`, `naming` (the convention chosen above; `snake_case` by default), `purpose` (one sentence), `purpose_detailed`, `owner` (whoever maintains it — a person, team, or "personal"), `creation_date` (today as `YYYY-MM-DD`), `repo_url` (the canonical git URL you intend to push this grimoire to — public GitHub, private GitLab, internal Gitea, etc. If you don't know it yet, accept the placeholder `<set this when you push to a git host>` and fix it later).
 
 ---
 
@@ -51,7 +52,7 @@ Capture: `name`, `directory` (snake_case, conventionally `<topic>-grimoire`), `t
 Propose 5-10 chapters grounded in what the user described. Recommend they start with 3-5.
 
 Chapter naming:
-- `snake_case`, lowercase
+- In the grimoire's naming convention (`naming`; the examples below assume the `snake_case` default)
 - Specific (`sourdough` not `breads_stuff`; `pto_policies` not `hr_stuff`)
 - Topic or action — typically nouns
 
@@ -82,7 +83,7 @@ Create the grimoire by applying the contract:
    substituting scaffold placeholders in target paths.
 5. Replace placeholders in copied file contents during Step 4.
 
-The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, skill prefix, description). Chapter-local `sources/` folders are the immutable source layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `publish/` (with a managed `publish/README.md`) is the build/publishing-output layer present in every grimoire, excluded from validation and the knowledge graph; it stays idle until you publish, and build output under it is disposable; `.obsidian/app.json` and `.obsidian/graph.json` are managed scaffold files that preserve safe full-path wikilink behavior and Arcana's graph-view color groups; `log.md` is the append-only activity log.
+The root hub file is named after the grimoire directory (folder-name convention). `grimoire.json` is the grimoire's self-declared identity (name, skill prefix, description). Chapter-local `sources/` folders are the immutable source layer; `inbox/` is the transient drop zone for mixed content awaiting classification; `publish/` (with a managed `publish/README.md`) is the build/publishing-output layer present in every grimoire, excluded from validation and the knowledge graph; it stays idle until you publish, and build output under it is disposable; `.obsidian/app.json` and `.obsidian/graph.json` are managed scaffold files that preserve safe full-path wikilink behavior and Arcana's graph-view color groups.
 
 ---
 
@@ -104,6 +105,7 @@ Do not re-paste the long form into the manifest, the root hub, the log, or any s
 - `{{GRIMOIRE_DIRECTORY}}`
 - `{{SKILL_PREFIX}}` (must match `^[a-z][a-z0-9]*$`)
 - `{{GRIMOIRE_PURPOSE}}` (used as the manifest's `description` — short tagline, a few words; e.g. "personal cooking knowledge")
+- `{{NAMING}}` (the naming convention captured in Step 1; `snake_case` unless the user chose otherwise)
 
 **`{{grimoire_directory}}.md`** (root hub):
 - `{{GRIMOIRE_NAME}}`, `{{GRIMOIRE_NAME_LOWER}}`, `{{GRIMOIRE_DIRECTORY}}`, `{{GRIMOIRE_PURPOSE}}` (italic subtitle), `{{GRIMOIRE_DOMAIN}}`, `{{SKILL_PREFIX}}`
@@ -120,13 +122,10 @@ Do not re-paste the long form into the manifest, the root hub, the log, or any s
 - `{{CHAPTER_LIST}}` — bulleted `**name** - description` per chapter
 - `{{CHAPTER_TREE}}` — ASCII tree of `chapters/<name>/<name>.md`
 
-**`log.md`**:
-- `{{GRIMOIRE_NAME}}`, `{{CREATION_DATE}}`, `{{GRIMOIRE_DIRECTORY}}`
-
 Verify no `{{` placeholders remain:
 
 ```bash
-grep -r "{{" {{grimoire_directory}}/{{grimoire_directory}}.md {{grimoire_directory}}/README.md {{grimoire_directory}}/grimoire.json {{grimoire_directory}}/log.md
+grep -r "{{" {{grimoire_directory}}/{{grimoire_directory}}.md {{grimoire_directory}}/README.md {{grimoire_directory}}/grimoire.json
 ```
 
 Remove any leftover `.gitkeep` files in chapter folders that get populated:
@@ -192,7 +191,7 @@ If the new grimoire declares a `skill_prefix` in `grimoire.json`, register its
 skills so its `/<prefix>-*` commands become available:
 
 ```bash
-python3 ARCANA_HOME/rites/sync_skills.py --grimoire .
+ARCANA_HOME/bin/arcana sync_skills --grimoire .
 ```
 
 Then tell the user to reopen their agent session - Claude Code and Codex cache
@@ -204,12 +203,12 @@ a restart.
 ## Step 8: Validate
 
 ```bash
-python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire .
-python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire .
-python3 ARCANA_HOME/rites/validate_links.py --grimoire .
+ARCANA_HOME/bin/arcana validate_grimoire_structure --grimoire .
+ARCANA_HOME/bin/arcana validate_frontmatter --grimoire .
+ARCANA_HOME/bin/arcana validate_links --grimoire .
 ```
 
-Or invoke `/grm-validate` for the full mechanical pass.
+Or invoke `/grm-check quick` for the full mechanical pass.
 
 If the relevant agent instruction file already includes the Grimoire routing block, also test routing by asking the agent: `"What chapters exist in {{grimoire_name}}?"`
 
@@ -220,6 +219,6 @@ If the relevant agent instruction file already includes the Grimoire routing blo
 - **Chapter creation**: [[invocations/grm/add|add]]
 - **Template formula**: `ARCANA_HOME/formulae/grimoire/`
 - **Page schema**: `ARCANA_HOME/docs/page_schema.md`
-- **Skill registration**: `/arc-sync skills` (reads each grimoire's `grimoire.json`)
-- **Structure validator**: `/grm-validate structure`
+- **Skill registration**: `/arc-update skills` (reads each grimoire's `grimoire.json`)
+- **Structure validator**: `/grm-check structure`
 - **Agent block**: `ARCANA_HOME/rites/templates/grimoire_block.md`

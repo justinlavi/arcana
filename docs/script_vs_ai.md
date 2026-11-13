@@ -147,7 +147,7 @@ done
 sed -n '/^## Core Concepts/,/^---$/p' docs/reference.md > /tmp/terminology.txt
 
 # ✅ GOOD: AI analyzes using that data
-/grm-audit-semantics
+/grm-check naming
 # AI reads reference, understands context, suggests improvements intelligently
 ```
 
@@ -326,15 +326,15 @@ Ask: "Does this require understanding context and meaning?"
 
 Every Arcana skill delegates to one of two backing implementations:
 
-- **Rite-backed**: `SKILL.md` body says `python3 {{ARCANA_PATH}}/rites/<name>.py`. The AI reads the skill, runs the rite, reports the rite's output. No judgment in between.
-- **Invocation-backed**: `SKILL.md` body says `` `!cat {{ARCANA_PATH}}/invocations/<area>/<name>.md` ``. The AI loads the invocation guide and follows its workflow, applying judgment.
+- **Rite-backed**: `SKILL.md` body says `{{ARCANA_PATH}}/bin/arcana <name>`. The AI reads the skill, runs the rite, reports the rite's output. No judgment in between.
+- **Invocation-backed**: `SKILL.md` body says `` `!cat {{ARCANA_PATH}}/invocations/<area>/<name>.md` `` and the registration rite inlines that guide into the generated skill. The AI receives the invocation with the skill and follows its workflow, applying judgment.
 
 Pick by the same rule that applies to rites vs invocations themselves:
 
 | If the skill's job is | Pick this backing | Examples |
 |---|---|---|
-| Mechanical, deterministic, no judgment required | Rite-backed | `/arc-sync skills`, `/arc-sync library`, `/arc-clean`, `/arc-validate` selectors |
-| Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/grm-create`, `/grm-health-check`, `/arc-improve`, `/arc-help` |
+| Mechanical, deterministic, no judgment required | Rite-backed | `/arc-update skills`, `/arc-update library`, `/arc-clean`, `/arc-validate` selectors |
+| Conversational, judgment-driven, or multi-step exploratory | Invocation-backed | `/grm-create`, `/grm-check`, `/arc-improve`, `/arc-help` |
 | Both — the rite gathers data, the AI interprets | **Both, in that order**: skill body runs the rite first, then loads an invocation that reads the rite's output | `/arc-validate semantics` could evolve into this if/when the analysis judgment grows beyond the rite's pattern check |
 
 Two anti-patterns to avoid:

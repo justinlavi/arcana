@@ -28,7 +28,7 @@ cd arcana
 python3 -m pip install -e '.[dev]'
 ```
 
-Arcana's runtime is pure Python stdlib - no install-time dependencies. The `[dev]` extra pulls in `pytest` for the test suite. The `[gui]` and `[build]` extras are only needed for the summoning rite's GUI launcher and PyInstaller release builds respectively.
+Arcana's runtime is pure Python stdlib - no install-time dependencies. The `[dev]` extra pulls in `pytest` for the test suite; there are no other extras. The installer is terminal-only and runs from source.
 
 ---
 
@@ -65,7 +65,7 @@ Every validator should:
 3. Exit `0` on clean, `1` on violations. Use `info` / `ok` / `warn` / `err` from `_lib` for output.
 4. Ship as a `validate_<aspect>.py` file under `rites/`.
 5. Be added to the validator selector registry in [rites/validate.py](rites/validate.py) / [validators.json](rites/data/validators.json) if it is part of a mechanical validation suite.
-6. Use the existing `/arc-validate` or `/grm-validate` public skill; create a new skill only when the workflow is not mechanical validation (see [skill schema](docs/skill_schema.md)).
+6. Use the existing `/arc-validate` or `/grm-check quick` public skill; create a new skill only when the workflow is not mechanical validation (see [skill schema](docs/skill_schema.md)).
 7. Get a covering test under `tests/test_validate_<aspect>.py` using the fixture grimoires under `tests/fixtures/`.
 
 The minimal skeleton:
@@ -86,7 +86,7 @@ def main():
 
 ## Adding a new skill
 
-Skills are pointer files. The skill itself contains no logic - it dispatches to an invocation or rite.
+Skills are pointer files. The skill source contains no logic - it dispatches to an invocation or rite. Registration inlines the invocation into the generated copy, so a source `!`cat ...`` line is a build-time include, not a runtime read.
 
 1. Choose the command family first: `arcana`, `grimoire`, `library`, `agent`, `workspace`, or `help`. See [skill schema](docs/skill_schema.md).
 2. Create `skills/<family>/<slug>/SKILL.md`. The folder name is the command suffix after that family's prefix.

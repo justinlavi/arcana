@@ -21,7 +21,7 @@ The families are declared in `arcana.json`.
 
 | Family | Prefix | Use For | Example |
 |---|---|---|---|
-| `grm` | `grm` | Universal operations from the active grimoire context | `/grm-validate links` |
+| `grm` | `grm` | Universal operations from the active grimoire context | `/grm-check links` |
 | `arc` | `arc` | Arcana platform and maintainer operations: the engine, the home library, agent files, and agent skill directories | `/arc-validate links` |
 
 Each family maps to one source directory (`skills/grm/`, `skills/arc/`) and one slash-command prefix. Normal grimoires still declare exactly one `skill_prefix` in `grimoire.json`, such as `cook` or `dnd`. Arcana is special because it ships both platform commands (`arc`) and universal grimoire-context commands (`grm`).
@@ -34,7 +34,7 @@ Source skill files use the placeholder form:
 name: {{SKILL_PREFIX}}-<registered-slug>
 ```
 
-The registration rite substitutes `{{SKILL_PREFIX}}` with the command family's prefix. For example, `skills/grm/validate/SKILL.md` declares `{{SKILL_PREFIX}}-validate` and registers as `/grm-validate`.
+The registration rite substitutes `{{SKILL_PREFIX}}` with the command family's prefix. For example, `skills/grm/check/SKILL.md` declares `{{SKILL_PREFIX}}-check` and registers as `/grm-check`.
 
 Some `/grm-*` commands intentionally maintain Arcana from the active grimoire context. For example, `/grm-update` brings the active grimoire and its Arcana back to a current, validated, synchronized state. Keep these rare and name the external target explicitly. These commands may resolve the active grimoire from `~/grimoires/library.json`; they should not require terminal cwd when an unambiguous grimoire can be selected.
 
@@ -50,6 +50,7 @@ Every source skill is a `SKILL.md` with YAML frontmatter and a Markdown body.
 | `user-invocable` | optional | `true` exposes the command for explicit user invocation. |
 | `disable-model-invocation` | optional | `true` stops an agent from auto-invoking the skill; only user-typed commands trigger it. Set it on destructive or maintainer-only skills and judgment audits that should not auto-trigger. |
 | `allowed-tools` | optional | Space-separated tools the skill may use, e.g. `Bash Read`. |
+| `paths` | optional | Glob patterns, relative to the session's working directory, that make Claude Code load the skill automatically when the user works on matching files (`chapters/travel/trips/**`). Scope it narrowly: a matching edit loads the whole skill into context. Grimoire skills declare it in their own `SKILL.md`; registration copies it through. |
 
 The auto-invocation policy and per-agent support matrix live in
 [agent configuration](agent_configuration.md).
@@ -57,14 +58,24 @@ The auto-invocation policy and per-agent support matrix live in
 The body either runs a rite or loads an invocation, following the same boundary
 that separates rites from invocations:
 
-- **Rite-backed**: the body runs `python3 {{ARCANA_PATH}}/rites/<name>.py` and reports the result.
-- **Invocation-backed**: the body inlines its invocation at runtime with a `!cat` directive so the agent reads and follows it:
+- **Rite-backed**: the body runs `{{ARCANA_PATH}}/bin/arcana <name>` and reports the result.
+- **Invocation-backed**: the body names its invocation with a `cat` directive, and the registration rite inlines that file into the generated skill:
 
 ```text
 !`cat {{ARCANA_PATH}}/invocations/<area>/<name>.md`
 ```
 
-`{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` are resolved by the registration rite.
+The directive is a build-time instruction, not a runtime one. `sync_skills.py`
+replaces it with the invocation's body (frontmatter dropped, wrapped in
+`BEGIN INLINED` / `END INLINED` comments naming the file), substitutes
+`{{ARCANA_PATH}}`, `{{GRIMOIRE_PATH}}`, and `ARCANA_HOME/`, and repeats the
+expansion for directives inside the inlined text. A generated skill is therefore
+self-contained: no shell command runs when it loads, so it works from any
+working directory and under an agent policy that disables skill shell
+execution. Agents only honour a runtime `cat` for files inside the session's
+working directories, which the engine almost never is; that is why the rite
+inlines rather than defers. Keep each generated skill under 500 lines, the
+Agent Skills guidance; the rite's tests enforce it for the shipped catalog.
 
 ## Reusable Rites
 
@@ -74,7 +85,7 @@ Good:
 
 ```text
 /arc-validate frontmatter
-/grm-validate frontmatter
+/grm-check frontmatter
 ```
 
 Avoid when the operation can target both Arcana and a grimoire:
@@ -91,9 +102,9 @@ Arcana skill source folders are grouped by command family, then flattened during
 
 ```text
 skills/arc/validate/SKILL.md            -> /arc-validate
-skills/arc/sync/SKILL.md                -> /arc-sync
-skills/grm/validate/SKILL.md            -> /grm-validate
-skills/grm/audit-semantics/SKILL.md     -> /grm-audit-semantics
+skills/arc/update/SKILL.md              -> /arc-update
+skills/grm/check/SKILL.md               -> /grm-check
+skills/grm/add/SKILL.md                 -> /grm-add
 ```
 
 The naming validator enforces folder/frontmatter agreement and rejects skill files outside the declared command families.

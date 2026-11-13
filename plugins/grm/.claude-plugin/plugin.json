@@ -1,0 +1,12 @@
+{
+  "name": "grm",
+  "version": "1.8.0",
+  "description": "Grimoire: the nine grimoire verbs (setup, create, add, save, update, check, move, remove, help) plus the session-start routing hook.",
+  "author": {
+    "name": "Justin Lavi",
+    "url": "https://github.com/justinlavi/arcana"
+  },
+  "homepage": "https://github.com/justinlavi/arcana",
+  "repository": "https://github.com/justinlavi/arcana",
+  "license": "MIT"
+}

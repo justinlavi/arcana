@@ -148,8 +148,10 @@ def test_json_envelope_in_sync_is_noop(tmp_path):
 
 def test_compare_and_swap_write_detects_conflict(tmp_path):
     libpath = tmp_path / "library.json"
-    libpath.write_text("A\n", encoding="utf-8")
     expected = b"A\n"
+    # write_bytes, not write_text: no newline translation, so the on-disk bytes
+    # match the snapshot on Windows as well as POSIX.
+    libpath.write_bytes(expected)
 
     # On-disk bytes match what we read: the write goes through.
     assert sync_library.compare_and_swap_write(libpath, expected, {"grimoires": {}}) is True

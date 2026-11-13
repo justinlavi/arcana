@@ -29,18 +29,15 @@ def test_skill_catalog_renders_command_surface_metadata():
         "| Command | Workflow | Owner | Mutation | Rite | Guard | Validation |"
         in content
     )
-    assert "[`/grm-validate`](../skills/grm/validate/SKILL.md)" in content
-    assert (
-        "[`validate.md`](../invocations/grm/validators/validate.md)"
-        in content
-    )
-    assert "[`validate.py`](../rites/validate.py)" in content
+    assert "[`/grm-check`](../skills/grm/check/SKILL.md)" in content
+    assert "[`check.md`](../invocations/grm/check.md)" in content
+    assert "[`repair_links.py`](../rites/repair_links.py)" in content
     assert (
         "[`grimoire_directory_guard.md`](../invocations/meta/grimoire_directory_guard.md)"
         in content
     )
     assert (
-        "`python rites/validate.py --grimoire GRIMOIRE_ROOT [all"
+        "`python rites/validate.py --grimoire GRIMOIRE_ROOT; python rites/repair_links.py --grimoire GRIMOIRE_ROOT (dry run)`"
         in content
     )
 

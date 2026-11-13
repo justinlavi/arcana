@@ -31,7 +31,7 @@ Before executing, resolve `GRIMOIRE_ROOT` with the shared grimoire directory gua
 - After creating or editing chapters/pages
 - After pulling a newer Arcana version
 - During periodic grimoire quality reviews
-- Before running `/grm-health-check`
+- Before running `/grm-check`
 - Before publishing or handoff
 
 ## Invocation
@@ -39,13 +39,13 @@ Before executing, resolve `GRIMOIRE_ROOT` with the shared grimoire directory gua
 From the active grimoire context, cast:
 
 ```
-/grm-validate structure
+/grm-check structure
 ```
 
 Mechanical equivalent:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROOT
+ARCANA_HOME/bin/arcana validate_grimoire_structure --grimoire GRIMOIRE_ROOT
 ```
 
 ## Validation Workflow
@@ -53,7 +53,7 @@ python3 ARCANA_HOME/rites/validate_grimoire_structure.py --grimoire GRIMOIRE_ROO
 ### Phase 1: Root Structure
 
 - Parse `grimoire.json`
-- Confirm `README.md`, `log.md`, and `<grimoire-name>.md`
+- Confirm `README.md` and `<grimoire-name>.md`
 - Confirm `chapters/`, `inbox/`, and `publish/` (the build/publishing-output layer; its contents are excluded from validation and the knowledge graph, and pages never cite it)
 - Confirm source artifacts live in chapter-local `sources/` folders
 
@@ -67,6 +67,8 @@ The following files are operational support files, not grimoire-specific authore
 - `.obsidian/graph.json`
 - `inbox/README.md`
 - `publish/README.md`
+
+One scaffold file is **seeded, not managed**: `.gitignore`. Arcana copies it in when it is absent (at create and at every heal) and never overwrites it, so a grimoire may customise it freely. Its absence is a warning (`GRIMOIRE_STRUCTURE_MISSING_SEEDED`), never an error.
 
 If any are missing or stale, copy the current version from Arcana unless the user explicitly wants a custom local variant. Custom local variants should be rare because they create cross-platform and agent-behavior drift.
 

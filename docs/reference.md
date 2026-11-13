@@ -100,7 +100,7 @@ Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` and the r
 
 Arcana uses one local library: `~/grimoires/library.json`. It is a **pure registry**: it records *where* installed grimoires live, nothing else. Each grimoire's identity (name, skill prefix, description) lives in its own [manifest](#grimoire-manifest).
 
-`~/grimoires/library.json`, created by the summoning rite or `/arc-sync library`. Lists grimoires the user has cloned and where they live on disk.
+`~/grimoires/library.json`, created by the summoning rite or `/arc-update library`. Lists grimoires the user has cloned and where they live on disk.
 
 ```json
 {
@@ -121,7 +121,7 @@ Fields:
 - `local_path` — absolute filesystem path to the grimoire root (supports `$HOME`).
 - `online_path` — git clone URL; set to `null` if not applicable.
 
-To add a grimoire, run `/arc-sync library` after cloning into `~/grimoires/`. To detect drift (stale entries, missing grimoires, unmanaged directories), run the same skill in dry-run mode.
+To add a grimoire, run `/arc-update library` after cloning into `~/grimoires/`. To detect drift (stale entries, missing grimoires, unmanaged directories), run the same skill in dry-run mode.
 
 ---
 
@@ -133,7 +133,8 @@ Every grimoire declares its identity in a `grimoire.json` file at its repository
 {
   "name": "cooking-grimoire",
   "skill_prefix": "cook",
-  "description": "Personal cooking knowledge: recipes, techniques, equipment"
+  "description": "Personal cooking knowledge: recipes, techniques, equipment",
+  "naming": "snake_case"
 }
 ```
 
@@ -141,6 +142,7 @@ Fields:
 - `name` — canonical grimoire name; should match the library key.
 - `skill_prefix` — short lowercase slug (`^[a-z][a-z0-9]*$`) used as the skill prefix. Required if the grimoire has a `skills/` directory.
 - `description` — one-line description.
+- `naming` — optional; the file and folder naming convention agents apply to new material (`snake_case` when absent, `preserve` to keep imported material's own casing, or another named style such as `kebab-case`). Any casing is valid; see [operating model](operating_model.md#naming-and-depth-conventions).
 
 Arcana is not a grimoire and uses `arcana.json` instead:
 
@@ -199,13 +201,13 @@ When creating new grimoires, use these placeholders in formula templates:
 | `{{GRIMOIRE_DIRECTORY}}` | Filesystem name | `cooking-grimoire`, `dnd-grimoire` |
 | `{{GRIMOIRE_REPO_URL}}` | Canonical git URL for installing this grimoire | `https://git.example.com/you/cooking-grimoire.git` |
 | `{{SKILL_PREFIX}}` | Short slug for skill prefix | `cook`, `dnd` |
+| `{{NAMING}}` | File and folder naming convention recorded in the manifest | `snake_case` (default), `preserve`, `kebab-case` |
 | `{{CHAPTER_ROUTES}}` | Generated routing pointers (filled by create_grimoire) | - |
 | `{{CHAPTER_LIST}}` | List of chapters with descriptions | - |
 | `{{CHAPTER_TREE}}` | Directory tree of chapters | - |
 | `{{CHAPTER_TITLE}}` | Chapter hub display title (H1 and frontmatter title) | `Recipes`, `Onboarding` |
 | `{{CHAPTER_NAME}}` | Chapter folder slug used in tags and routing paths | `recipes`, `onboarding` |
 | `{{EXAMPLE_CHAPTER}}` | One example chapter name | `recipes`, `onboarding` |
-| `{{CREATION_DATE}}` | ISO date the grimoire was created | `2026-05-13` |
 
 **Description-duplication policy.** Three description-shaped placeholders, each with a single canonical home:
 
@@ -226,6 +228,6 @@ Arcana and every grimoire use the same repository text standard:
 - Unicode is allowed when useful for readability, including emoji, em dashes, arrows, and box-drawing characters.
 - Mojibake and repair artifacts are not allowed.
 
-This is enforced by `.gitattributes`, `.editorconfig`, `/arc-validate encoding`, and `/grm-validate encoding`.
+This is enforced by `.gitattributes`, `.editorconfig`, `/arc-validate encoding`, and `/grm-check encoding`.
 
 ---

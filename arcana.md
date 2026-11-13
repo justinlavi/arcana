@@ -16,11 +16,12 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Routing: hub-per-folder, open-ended depth -> [[docs/operating_model|operating model]]
 - Frontmatter: type / authority / sources / last_verified -> [[docs/page_schema|page schema]]
 - Engine layers: `docs/`, `invocations/`, `formulae/`, `rites/`, `skills/`, and `resources/`
-- Grimoire scaffold layers (`chapters/`, chapter-local `sources/`, `inbox/`, `log.md`; `publish/` build-output layer present in every grimoire, excluded from validation and the graph) -> [[formulae/grimoire/README|README]]
+- Grimoire scaffold layers (`chapters/`, chapter-local `sources/`, `inbox/`; `publish/` build-output layer present in every grimoire, excluded from validation and the graph) -> [[formulae/grimoire/README|README]]
 
 ## Documentation
 
 - Overview and architecture -> [[README|README]]
+- Start here for new users -> [[docs/getting_started|getting started]]
 - Update & skill-less self-update -> [[UPDATE|UPDATE]]
 - Contributing guide -> [[CONTRIBUTING|CONTRIBUTING]]
 - Installation and smoke test -> [[docs/installation|installation]]
@@ -50,21 +51,21 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Create a grimoire -> [[invocations/grm/create_grimoire|create grimoire]]
 - Add a page or chapter -> [[invocations/grm/add|add]]
 - Update the grimoire and its Arcana -> [[invocations/grm/update|update]]
-- Sync active-grimoire agent skills -> [[invocations/grm/sync|sync]]
-- Import a source -> [[invocations/grm/import|import]]
-- Health-check a grimoire -> [[invocations/grm/health_check|health check]]
-- Audit grimoire semantics -> [[invocations/grm/audit_semantics|audit semantics]]
-- Validate a grimoire -> [[invocations/grm/validators/validate|validate]]
+- Sync active-grimoire agent skills -> [[invocations/grm/update|update]]
+- Import a source -> [[invocations/grm/add|add]]
+- Health-check a grimoire -> [[invocations/grm/check|check]]
+- Audit grimoire semantics -> [[invocations/grm/check|check]]
+- Validate a grimoire -> [[invocations/grm/check|check]]
 - Validate grimoire structure -> [[invocations/grm/validate_structure|validate structure]]
-- Audit grimoire boundaries -> [[invocations/grm/audit_boundaries|audit boundaries]]
+- Audit grimoire boundaries -> [[invocations/grm/check|check]]
 - Grimoire validator hub -> [[invocations/grm/validators/validators|validators]]
 
 **Arcana maintenance** -> [[invocations/arc/arc|arc]]
 
 - Improve Arcana -> [[invocations/arc/improve_arcana|improve arcana]]
 - Update Arcana and grimoires -> [[invocations/arc/update|update]]
-- Sync skills, library, or agent file -> [[invocations/arc/sync|sync]]
-- Adopt an unmanaged grimoire -> [[invocations/arc/adopt|adopt]]
+- Sync skills, library, or agent file -> [[invocations/arc/update|update]]
+- Adopt an unmanaged grimoire -> [[invocations/grm/setup|setup]]
 - Clean workspace artifacts -> [[invocations/arc/clean|clean]]
 - Show the skill catalog -> [[invocations/arc/help|help]]
 - Arcana validator hub -> [[invocations/arc/validators/validators|validators]]
@@ -82,7 +83,6 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Chapter hub template -> [[formulae/chapter_hub.formula|chapter hub.formula]]
 - Knowledge page template -> [[formulae/page.formula|page.formula]]
 - Custom invocation template -> [[formulae/invocation.formula|invocation.formula]]
-- Log entry shape -> [[formulae/log_entry.formula|log entry.formula]]
 - Source artifact template -> [[formulae/source.formula|source.formula]]
 - Scaffold contract: `formulae/grimoire/scaffold_contract.json`
 
@@ -100,7 +100,7 @@ Arcana is the engine. Every grimoire references it; nothing copies it.
 - Library reconciliation: `rites/sync_library.py`
 - Generated docs sync: `rites/sync_docs.py`
 - Manifest writer for unmanaged dirs: `rites/adopt_grimoire.py`
-- Grimoire log appender: `rites/append_log.py`
+- Recent content history from git: `rites/recent_changes.py`
 - Full validator orchestrator: `rites/validate.py`
 - Validators: `rites/validate_<aspect>.py`
 

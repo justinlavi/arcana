@@ -30,10 +30,10 @@ self-citation.
 Or directly:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_provenance.py
+ARCANA_HOME/bin/arcana validate_provenance
 ```
 
-For an active grimoire, use `/grm-validate provenance`.
+For an active grimoire, use `/grm-check provenance`.
 
 ## When to run
 

@@ -1,0 +1,25 @@
+# Seeded by Arcana when the grimoire is created or healed; edit freely.
+# Arcana copies this file only when it is absent and never overwrites it.
+
+# Obsidian: track the shared graph and app config, ignore per-user state
+.obsidian/*
+!.obsidian/app.json
+!.obsidian/graph.json
+!.obsidian/core-plugins.json
+!.obsidian/community-plugins.json
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor scratch files
+*~
+*.swp
+
+# Publish layer: everything the build fetches or generates is disposable.
+# Only publish.json, build.sh, quartz.config.yaml, the CI file, and any
+# wrangler.jsonc are worth committing.
+publish/content/
+publish/quartz/
+publish/.engine/

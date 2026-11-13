@@ -14,6 +14,12 @@ Most knowledge lives in scattered files that AI has to search through, interpola
 
 ---
 
+## Start here
+
+Not an engineer, or joining a team that already has a grimoire? Read [Getting Started](docs/getting_started.md): install in two commands, `/grm-setup`, and the handful of verbs you will use. The rest of this page is the engineering view.
+
+---
+
 ## What's a Grimoire?
 
 A grimoire is a structured knowledge base built around a single subject — personal recipes, a tabletop campaign's lore, research notes, project runbooks.
@@ -37,8 +43,8 @@ Both paths are deterministic. The structure stays only as deep as the topic warr
 A grimoire keeps its wiki and evidence together. **`chapters/`** holds the
 LLM-authored wiki; chapter-local **`sources/`** folders hold immutable artifacts
 and wrappers beside the material they support; **`inbox/`** is a transient drop
-zone for things waiting to be classified; **`log.md`** is an append-only record
-of every mutation. A **`publish/`** layer (present in every grimoire) holds build or publishing
+zone for things waiting to be classified; the change history is the git history.
+A **`publish/`** layer (present in every grimoire) holds build or publishing
 output (a rendered site or exported bundle); it is excluded from grimoire
 validation and from the knowledge graph, and pages never cite it. See
 [operating model](docs/operating_model.md) for ownership rules and the
@@ -63,12 +69,13 @@ Knowledge and skills compound: the better your documentation, the smarter your s
 
 Arcana ships universal operations every grimoire inherits:
 
-- **`/grm-import <source>`** — file a source beside the chapter material it supports, scan existing chapters, propose page updates, apply them, append to `log.md`.
-- **`/grm-add`** — add knowledge to the grimoire as a page or a chapter, written fresh or distilled from the current chat session (so a good answer doesn't evaporate into chat history).
-- **`/grm-health-check`** — health-check the wiki: orphans, stale claims (>90 days unverified), ghost references (entities mentioned often but lacking a page), contradictions, missing cross-references.
-- **`/grm-validate [selector]`** — run the full deterministic validator profile for the active grimoire, or a targeted mechanical check.
-- **`/grm-update`** — bring Arcana and every grimoire in the library back to a current, validated, synchronized state.
-- **`/grm-sync`** — refresh Arcana skills plus the active grimoire's own skills.
+- **`/grm-setup`** — join a grimoire from its repository link, turn a folder of notes into one, or start your first one.
+- **`/grm-add`** — put knowledge in: write up a topic or save a chat answer as a page or chapter, or hand it a file, a folder, or the inbox to file as cited sources and fold into the wiki.
+- **`/grm-save`** — share what you changed: validate, record, bring in teammates' changes, send.
+- **`/grm-update`** — bring Arcana and every grimoire current; `skills`, `library`, or `agentfile` reconcile one surface.
+- **`/grm-check`** — the full health pass (orphans, stale claims, ghost references, contradictions, missing cross-references); `quick` or a validator name for the mechanical subset, `naming` and `boundaries` for the judgment reviews, `fix` to repair wikilinks.
+- **`/grm-move`**, **`/grm-remove`** — reshape the wiki and fix every link.
+- **`/grm-publish`** — turn the grimoire into a website (GitLab Pages, GitHub Pages, or Cloudflare), audited before anything is exposed.
 - **`/grm-help`** — list every grimoire command you can run.
 
 Arcana command families are prefix-explicit: `/arc-*` acts on Arcana and platform surfaces (the engine, the home library `~/grimoires/library.json`, agent files, and agent skill directories); `/grm-*` acts on the active grimoire. Full rules live in [skill schema](docs/skill_schema.md).
@@ -93,7 +100,6 @@ Arcana is the engine that powers all your grimoires. You install it once; your g
 - Their `chapters/` (LLM-authored content plus colocated immutable sources)
 - Their own `/<skill prefix>-*` skills — actionable, domain-specific commands
 - Their `grimoire.json` manifest declaring their identity and skill prefix
-- Their `log.md` — the append-only activity record
 
 When you update Arcana, all your grimoires benefit — because they reference it rather than copy from it.
 
@@ -128,7 +134,7 @@ The summoning rite installs **Arcana** — the framework — configures your AI 
 
 Detailed installer mode rules live in [summoning contract](docs/summoning_contract.md).
 
-Open a new session inside your AI agent (not a plain terminal) and run `/grm-create` to start your first grimoire. (Maintainers: `/arc-help` lists the full platform catalog.)
+Claude Code users can skip the terminal entirely: `/plugin marketplace add justinlavi/arcana`, then `/plugin install grm@arcana`, then a new session. Either way, open a new session inside your AI agent (not a plain terminal) and run `/grm-setup` (`/grm:setup` from the plugin) to join your team's grimoire from its link or start your first one. (Maintainers: `/arc-help` lists the full platform catalog.)
 
 **Out of date, or something seems wrong?** Update brings Arcana and every grimoire in the library back to a current, validated, synchronized state. Two ways to start it:
 
@@ -162,7 +168,6 @@ Both paths use [UPDATE.md](UPDATE.md) as the canonical source of truth.
 |-- cooking-grimoire/             # A personal grimoire
 |   |-- cooking-grimoire.md       # Root hub
 |   |-- grimoire.json             # skill_prefix: cook -> /cook-* skills
-|   |-- log.md                    # Activity log
 |   |-- inbox/                    # Drop zone for content awaiting classification
 |   |-- chapters/                 # recipes/, techniques/, equipment/, ...
 |   |   |-- recipes/recipes.md    # Chapter hub (folder-name convention)
@@ -181,7 +186,6 @@ Both paths use [UPDATE.md](UPDATE.md) as the canonical source of truth.
 |-- dnd-grimoire/                 # A tabletop-campaign grimoire
 |   |-- dnd-grimoire.md           # Root hub
 |   |-- grimoire.json             # skill_prefix: dnd -> /dnd-* skills
-|   |-- log.md
 |   |-- inbox/
 |   |-- chapters/                 # campaigns/, characters/, lore/, rules/, ...
 |   |-- publish/

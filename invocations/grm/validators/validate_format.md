@@ -16,7 +16,7 @@ Validate portable Markdown formatting in the active grimoire: table delimiters, 
 ## Invocation
 
 ```
-/grm-validate format
+/grm-check format
 ```
 
 ## Workflow
@@ -24,7 +24,7 @@ Validate portable Markdown formatting in the active grimoire: table delimiters, 
 Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_format.py --grimoire GRIMOIRE_ROOT
+ARCANA_HOME/bin/arcana validate_format --grimoire GRIMOIRE_ROOT
 ```
 
 The grimoire mode uses the shared format rite but only applies checks that make sense for grimoire content. Arcana-specific invocation and formula checks remain under `/arc-validate format`.

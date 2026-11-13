@@ -6,8 +6,9 @@ when the installed `/arc-*` / `/grm-*` slash commands are missing, old, renamed,
 incorrectly prefixed, or otherwise untrustworthy — and, more generally, the way
 to self-update from the source tree when you cannot trust the skill layer.
 
-It needs only the pulled Arcana source and `python3`, and lives at the
-repository root. Start the update by running `/grm-update` (or `/arc-update`), or
+It needs only the pulled Arcana source and a Python 3.10 or newer, which
+the `bin/arcana` launcher finds (`python3`, `python`, or the Windows `py`
+launcher), and lives at the repository root. Start the update by running `/grm-update` (or `/arc-update`), or
 by following the Human Quick Start below.
 
 ## Human Quick Start
@@ -62,7 +63,7 @@ source.
 ### 2. Validate the Arcana source (gate)
 
 ```bash
-python3 "$ARCANA/rites/validate.py" --summary --format json
+"$ARCANA/bin/arcana" validate --summary --format json
 ```
 
 If status is not `ok` (exit non-zero), STOP and report the failing validators
@@ -71,7 +72,7 @@ before any skill or grimoire mutation.
 ### 3. Update everything — one command
 
 ```bash
-python3 "$ARCANA/rites/summon.py" --update --apply --format json
+"$ARCANA/bin/arcana" summon --update --apply --format json
 ```
 
 This is the deterministic core. In one pass it:
@@ -120,13 +121,13 @@ malformed markers. For each one, read `rites/templates/grimoire_block.md` and pl
 the canonical block caring only about the marked region — replace an existing
 routing block in any form, or insert one after the first heading — preserving every
 line outside the markers; if the file's intent is unclear, stop and ask the user.
-(`/grm-sync agentfile`, or the maintainer's `/arc-sync agentfile`, runs this same
+(`/grm-update agentfile`, or the maintainer's `/arc-update agentfile`, runs this same
 rite plus the judgment step.)
 
 ### 5. Final gate
 
 ```bash
-python3 "$ARCANA/rites/summon.py" --check --format json
+"$ARCANA/bin/arcana" summon --check --format json
 ```
 
 It must report no drift for the grimoires that were brought current. Report the
@@ -140,7 +141,7 @@ same work runs as individual rites: `sync_library.py --apply`, then per grimoire
 `validate.py --grimoire <root> --summary`, copy each
 `GRIMOIRE_STRUCTURE_STALE_MANAGED` / `_MISSING_MANAGED` formula file over the
 grimoire's copy (managed scaffold only — never the customized README, root hub,
-`grimoire.json`, or `log.md`), ensure the README's update block matches
+or `grimoire.json`), ensure the README's update block matches
 `formulae/grimoire/README.md`, place cited source artifacts under the
 `chapters/**/sources/` folder for the chapter package that cites them,
 `repair_links.py --grimoire <root> --apply`, re-validate, then
@@ -153,5 +154,5 @@ grimoire's copy (managed scaffold only — never the customized README, root hub
 - [Installation](docs/installation.md)
 - [Agent configuration](docs/agent_configuration.md)
 - [Summoning contract](docs/summoning_contract.md)
-- [Sync skills, library, and the agent file](invocations/arc/sync.md)
+- [Sync skills, library, and the agent file](invocations/arc/update.md)
 - [Update from a grimoire](invocations/grm/update.md)

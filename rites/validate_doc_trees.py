@@ -9,7 +9,7 @@ using the box-drawing characters:
     ├── chapters/
     │   ├── glossary/
     │   └── standards/
-    └── log.md
+    └── grimoire.json
 
 These diagrams drift when folders are renamed, added, or removed and the doc
 isn't updated to match. This validator parses every such diagram in the
@@ -49,7 +49,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Iterator
 
-from _lib import default_arcana_root
+from _lib import default_arcana_root, walk_files
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 
@@ -292,9 +292,9 @@ def doc_is_illustrative(path: Path, root: Path) -> bool:
     except ValueError:
         return False
     for part in rel_parts:
-        if part in ILLUSTRATIVE_PARENT_DIRS:
+        if part.casefold() in ILLUSTRATIVE_PARENT_DIRS:
             return True
-        if part in {"sources", "inbox"}:
+        if part.casefold() in {"sources", "inbox"}:
             return True
         if "<" in part or "{" in part or "[" in part:
             return True
@@ -428,7 +428,7 @@ def validate_diagram(
 
 
 def collect_markdown_files(root: Path) -> Iterable[Path]:
-    for path in sorted(root.rglob("*.md")):
+    for path in walk_files(root, "*.md"):
         try:
             rel_parts = path.relative_to(root).parts
         except ValueError:

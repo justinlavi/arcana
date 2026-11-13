@@ -17,8 +17,8 @@ rite does only what is unambiguous from those markers:
 
 `review` covers every delicate case: a file with no block, a block with
 duplicate or malformed markers, or a pre-marker block from an old install. These
-are not mechanical decisions - the agentfile judgment edit (in the /grm-sync and
-/arc-sync invocations) reads the file, finds or upgrades the block caring only
+are not mechanical decisions - the agentfile judgment edit (in the /grm-update and
+/arc-update invocations) reads the file, finds or upgrades the block caring only
 about the marked region, and preserves all user content outside it. The rite
 never guesses and never duplicates.
 
@@ -220,7 +220,7 @@ def main() -> int:
               f"refresh {counts['refresh']}, present {counts['present']}, review {counts['review']}.")
         if counts["review"]:
             print("  Review targets keep their content unchanged; resolve them with the "
-                  "agentfile judgment edit (/grm-sync agentfile).")
+                  "agentfile judgment edit (/grm-update agentfile).")
         print()
     else:
         reporter.emit(args.format, summary=summary)

@@ -7,7 +7,6 @@ from pathlib import Path
 
 import summon_core
 import summon
-import summon_gui
 
 
 class _NonInteractiveStdin(io.StringIO):
@@ -56,26 +55,6 @@ def test_grimoire_block_comes_from_canonical_template():
     assert summon_core.GRIMOIRE_BLOCK == "\n" + template.read_text(encoding="utf-8")
 
 
-def test_dispatcher_mode_selection_respects_overrides_and_display(monkeypatch):
-    assert summon._detect_gui_mode(SimpleNamespace(gui=True, cli=False)) == (True, "")
-    assert summon._detect_gui_mode(SimpleNamespace(gui=False, cli=True)) == (False, "")
-
-    monkeypatch.setattr(sys, "platform", "win32")
-    assert summon._detect_gui_mode(SimpleNamespace(gui=False, cli=False)) == (True, "")
-
-    monkeypatch.setattr(sys, "platform", "linux")
-    monkeypatch.delenv("DISPLAY", raising=False)
-    monkeypatch.delenv("WAYLAND_DISPLAY", raising=False)
-    monkeypatch.delenv("XDG_SESSION_TYPE", raising=False)
-    assert summon._detect_gui_mode(SimpleNamespace(gui=False, cli=False)) == (
-        False,
-        "no display server detected",
-    )
-
-    monkeypatch.setenv("DISPLAY", ":0")
-    assert summon._detect_gui_mode(SimpleNamespace(gui=False, cli=False)) == (True, "")
-
-
 def test_finalize_install_preserves_core_post_install_order(monkeypatch):
     calls = []
 
@@ -103,54 +82,6 @@ def test_finalize_install_preserves_core_post_install_order(monkeypatch):
 
     assert result is True
     assert [call[0] for call in calls] == ["library", "agents", "skills"]
-
-
-def test_gui_default_post_install_matches_core_shape(monkeypatch):
-    calls = []
-
-    monkeypatch.setattr(
-        summon_gui,
-        "update_local_library",
-        lambda installed_keys, library, log: calls.append(("library", installed_keys, library)),
-    )
-    monkeypatch.setattr(
-        summon_gui,
-        "inject_agent_file",
-        lambda log, target_path, title: calls.append(("agent", target_path, title)),
-    )
-    monkeypatch.setattr(
-        summon_gui,
-        "sync_skills",
-        lambda log: calls.append(("skills",)) or True,
-    )
-
-    result = summon_gui.finalize_install_with_settings(
-        ["cooking-grimoire"],
-        {"grimoires": {"cooking-grimoire": {"online_path": "https://example.test/repo.git"}}},
-        log=object(),
-        settings={"agent_targets": ["claude", "codex"], "skip_skill_registration": False},
-    )
-
-    assert result is True
-    assert [call[0] for call in calls] == ["library", "agent", "agent", "skills"]
-
-
-def test_gui_settings_can_skip_skill_registration(monkeypatch):
-    calls = []
-
-    monkeypatch.setattr(summon_gui, "update_local_library", lambda *_args: calls.append("library"))
-    monkeypatch.setattr(summon_gui, "inject_agent_file", lambda *_args: calls.append("agent"))
-    monkeypatch.setattr(summon_gui, "sync_skills", lambda *_args: calls.append("skills") or True)
-
-    result = summon_gui.finalize_install_with_settings(
-        [],
-        {"grimoires": {}},
-        log=_Log(),
-        settings={"agent_targets": ["codex"], "skip_skill_registration": True},
-    )
-
-    assert result is True
-    assert calls == ["agent"]
 
 
 class _FullLog:
@@ -262,26 +193,6 @@ def test_host_detection_is_anchored():
     assert not summon_core._is_github_host("gitlab.github.io")
 
 
-def test_gui_install_arcana_cancellable_delegates_to_core(monkeypatch):
-    recorded = {}
-
-    def fake_install_arcana(arcana_url, log, git_fn=None, cancel_event=None):
-        recorded["url"] = arcana_url
-        recorded["git_fn"] = git_fn
-        recorded["cancel_event"] = cancel_event
-        return True
-
-    monkeypatch.setattr(summon_gui, "install_arcana", fake_install_arcana)
-
-    cancel_sentinel = object()
-    result = summon_gui.install_arcana_cancellable("u", _FullLog(), cancel_sentinel, object())
-
-    assert result is True
-    assert recorded["url"] == "u"
-    assert recorded["cancel_event"] is cancel_sentinel
-    assert callable(recorded["git_fn"])  # proc-slot-bound cancellable git
-
-
 def test_inject_agent_file_is_idempotent_on_rerun(tmp_path):
     target = tmp_path / "AGENTS.md"
     summon_core.inject_agent_file(_FullLog(), target, "AGENTS")
@@ -344,105 +255,88 @@ def test_inject_agent_file_never_duplicates_a_legacy_heading_block(tmp_path):
     assert after.count(summon_core.BEGIN_SENTINEL) == 0
 
 
-# ---------------------------------------------------------------------------
-# GUI OpenGL probe: must run in the interpreter that owns Dear PyGui
-# ---------------------------------------------------------------------------
+def test_dispatcher_parses_install_flags():
+    parser = summon.build_parser()
+    args = parser.parse_args(["--scope", "https://example.com/org"])
+    assert args.scope == "https://example.com/org"
+    assert args.arcana_url is None
 
 
-def _capture_probe_run(monkeypatch):
-    """Stub summon_gui.subprocess.run to capture (cmd, env) and report success."""
-    captured = {}
-
-    def fake_run(cmd, **kwargs):
-        captured["cmd"] = cmd
-        captured["env"] = kwargs.get("env")
-        return SimpleNamespace(returncode=0, stderr=b"")
-
-    monkeypatch.setattr(summon_gui.subprocess, "run", fake_run)
-    return captured
+def test_core_spawns_sister_scripts_with_the_running_interpreter():
+    assert summon_core._subprocess_env() is None
+    assert summon_core.system_python() == sys.executable
 
 
-def test_probe_gui_frozen_reinvokes_self(monkeypatch):
-    # A frozen binary must probe by re-invoking itself, not a system python
-    # that lacks the bundled Dear PyGui.
-    monkeypatch.setattr(sys, "frozen", True, raising=False)
-    captured = _capture_probe_run(monkeypatch)
-
-    ok, _ = summon_gui._probe_gui(mode="import")
-
-    assert ok is True
-    assert captured["cmd"] == [sys.executable]
-    assert "-c" not in captured["cmd"]
-    assert captured["env"]["GRIMOIRE_SUMMON_GL_PROBE"] == "import"
-
-
-def test_probe_gui_source_uses_system_python(monkeypatch):
-    # A source run probes with system_python() against the dependency cache.
-    monkeypatch.delattr(sys, "frozen", raising=False)
-    monkeypatch.setattr(summon_gui, "system_python", lambda: "py-under-test")
-    captured = _capture_probe_run(monkeypatch)
-
-    ok, _ = summon_gui._probe_gui()
-
-    assert ok is True
-    assert captured["cmd"] == ["py-under-test", "-c", summon_gui._PROBE_BOOTSTRAP]
-    assert captured["env"]["GRIMOIRE_SUMMON_GL_PROBE"] == "viewport"
-    assert captured["env"]["GRIMOIRE_SUMMON_PROBE_DIR"]
-
-
-def test_select_gui_env_reports_missing_dpg_distinctly(monkeypatch):
-    # A missing-module failure must not be reported as a GL/Wayland problem.
-    monkeypatch.setattr(
-        summon_gui, "_probe_gui",
-        lambda *a, **k: (False, "ModuleNotFoundError: No module named 'dearpygui'"),
-    )
-    env, msg = summon_gui._select_gui_env()
-    assert env is None
-    assert "Dear PyGui is not available" in msg
-    assert "OpenGL/GLX" not in msg
-
-
-def test_select_gui_env_reports_gl_failure(monkeypatch):
-    # A real GL failure keeps the OpenGL/GLX guidance.
-    monkeypatch.setattr(
-        summon_gui, "_probe_gui",
-        lambda *a, **k: (False, "GLX: failed to create context"),
-    )
-    env, msg = summon_gui._select_gui_env()
-    assert env is None
-    assert "no usable OpenGL/GLX context" in msg
-    assert "Dear PyGui is not available" not in msg
-
-
-def _install_fake_dearpygui(monkeypatch):
-    """Put a recording fake dearpygui.dearpygui in sys.modules; return the call log."""
-    import types
+def test_install_arcana_clones_the_ref_named_by_arcana_ref(tmp_path, monkeypatch):
+    arcana_dir = tmp_path / "arcana"
+    monkeypatch.setattr(summon_core, "ARCANA_DIR", arcana_dir)
+    monkeypatch.setenv("ARCANA_REF", "v1.8.0")
     calls = []
 
-    def rec(name):
-        return lambda *a, **k: calls.append(name)
+    def fake_git(*args, log=None, **_kwargs):
+        calls.append(args)
+        if args[0] == "clone":
+            (arcana_dir / ".git").mkdir(parents=True)
+            (arcana_dir / "arcana.json").write_text("{}", encoding="utf-8")
+        return True, ""
 
-    fake = types.ModuleType("dearpygui.dearpygui")
-    for fn in ("create_context", "create_viewport", "setup_dearpygui",
-               "show_viewport", "render_dearpygui_frame", "destroy_context"):
-        setattr(fake, fn, rec(fn))
-    pkg = types.ModuleType("dearpygui")
-    pkg.dearpygui = fake
-    monkeypatch.setitem(sys.modules, "dearpygui", pkg)
-    monkeypatch.setitem(sys.modules, "dearpygui.dearpygui", fake)
-    return calls
+    assert summon_core.install_arcana("https://example.com/arcana.git", _FullLog(), git_fn=fake_git) is True
+    assert calls[0][:3] == ("clone", "--branch", "v1.8.0")
 
 
-def test_run_gl_probe_import_mode_does_not_touch_gl(monkeypatch):
-    calls = _install_fake_dearpygui(monkeypatch)
-    assert summon_gui.run_gl_probe("import") == 0
-    assert calls == []
+def test_install_arcana_clones_the_default_branch_without_arcana_ref(tmp_path, monkeypatch):
+    arcana_dir = tmp_path / "arcana"
+    monkeypatch.setattr(summon_core, "ARCANA_DIR", arcana_dir)
+    monkeypatch.delenv("ARCANA_REF", raising=False)
+    calls = []
+
+    def fake_git(*args, log=None, **_kwargs):
+        calls.append(args)
+        (arcana_dir / ".git").mkdir(parents=True, exist_ok=True)
+        (arcana_dir / "arcana.json").write_text("{}", encoding="utf-8")
+        return True, ""
+
+    summon_core.install_arcana("https://example.com/arcana.git", _FullLog(), git_fn=fake_git)
+    assert calls[0] == ("clone", "https://example.com/arcana.git", str(arcana_dir))
 
 
-def test_run_gl_probe_viewport_mode_renders_one_frame(monkeypatch):
-    calls = _install_fake_dearpygui(monkeypatch)
-    assert summon_gui.run_gl_probe("viewport") == 0
-    assert calls == [
-        "create_context", "create_viewport", "setup_dearpygui",
-        "show_viewport", "render_dearpygui_frame", "destroy_context",
-    ]
+def test_discovery_never_lists_the_engine_as_a_grimoire():
+    assert summon_core._metadata_marks_grimoire("arcana", "A framework for building grimoires") is False
+    assert summon_core._metadata_marks_grimoire("japan-grimoire", "") is True
+    assert summon_core._metadata_marks_grimoire("notes", "team grimoire", []) is True
+
+
+def test_github_user_discovery_adds_private_repos_the_token_can_see(monkeypatch):
+    responses = {
+        "https://api.github.com/orgs/jlavi/repos?per_page=100": (None, "404"),
+        "https://api.github.com/users/jlavi/repos?per_page=100": (
+            [{"name": "arcana", "description": "A framework for building grimoires", "clone_url": "u1"}], None,
+        ),
+        "https://api.github.com/user/repos?per_page=100&affiliation=owner,organization_member": (
+            [
+                {"name": "japan-grimoire", "owner": {"login": "jlavi"}, "clone_url": "u2", "private": True},
+                {"name": "other-grimoire", "owner": {"login": "someone-else"}, "clone_url": "u3"},
+            ],
+            None,
+        ),
+    }
+    monkeypatch.setattr(summon_core, "_api_get", lambda url, **_k: responses[url])
+
+    entries = summon_core.try_github_discovery("github.com", "jlavi", "token", _FullLog())
+    assert set(entries) == {"japan-grimoire"}
+    assert entries["japan-grimoire"]["online_path"] == "u2"
+
+
+def test_github_user_discovery_without_a_token_stays_public(monkeypatch):
+    calls = []
+
+    def fake_get(url, **_k):
+        calls.append(url)
+        if "/orgs/" in url:
+            return None, "404"
+        return [{"name": "japan-grimoire", "clone_url": "u2"}], None
+
+    monkeypatch.setattr(summon_core, "_api_get", fake_get)
+    entries = summon_core.try_github_discovery("github.com", "jlavi", "", _FullLog())
+    assert set(entries) == {"japan-grimoire"}
+    assert not any("/user/repos" in c for c in calls)

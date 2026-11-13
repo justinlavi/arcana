@@ -16,7 +16,7 @@ Validate that the active grimoire uses UTF-8 without BOM, LF line endings, and n
 ## Invocation
 
 ```
-/grm-validate encoding
+/grm-check encoding
 ```
 
 ## Workflow
@@ -24,7 +24,7 @@ Validate that the active grimoire uses UTF-8 without BOM, LF line endings, and n
 Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_encoding.py --grimoire GRIMOIRE_ROOT
+ARCANA_HOME/bin/arcana validate_encoding --grimoire GRIMOIRE_ROOT
 ```
 
 Report every violation with the path and line number. Exit code 0 means the grimoire is encoding-clean.

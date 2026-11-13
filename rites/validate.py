@@ -301,7 +301,7 @@ def determine_smart_grimoire_rites(changes, target_root):
             continue
 
         if (
-            f in {"grimoire.json", "README.md", "log.md"}
+            f in {"grimoire.json", "README.md"}
             or f.startswith((".obsidian/", "chapters/", "inbox/"))
         ):
             needed.add("validate_grimoire_structure.py")

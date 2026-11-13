@@ -1,0 +1,28 @@
+#!/bin/sh
+# arcana - run an Arcana rite with whatever Python 3.10+ this machine has.
+#
+#   arcana <rite> [arguments...]      e.g.  arcana validate --summary
+#   arcana --list
+#
+# Finds python3, python, or the Windows py launcher and hands off to
+# arcana.py beside this file, which resolves the engine (the checkout this
+# launcher sits in, or $ARCANA_HOME, default ~/grimoires/arcana) and runs
+# rites/<rite>.py.
+
+here="$(cd "$(dirname "$0")" && pwd)"
+
+for candidate in python3 python; do
+    if command -v "$candidate" >/dev/null 2>&1; then
+        if "$candidate" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)' >/dev/null 2>&1; then
+            exec "$candidate" "$here/arcana.py" "$@"
+        fi
+    fi
+done
+if command -v py >/dev/null 2>&1; then
+    if py -3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)' >/dev/null 2>&1; then
+        exec py -3 "$here/arcana.py" "$@"
+    fi
+fi
+
+echo "arcana: Python 3.10 or newer is required but was not found (tried python3, python, py -3)" >&2
+exit 127

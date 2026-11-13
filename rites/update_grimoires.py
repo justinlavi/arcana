@@ -34,7 +34,7 @@ import sync_library
 from diagnostics import ResultReporter, add_output_format_arg
 from _lib import parse_frontmatter
 from sync_skills import resolve_grimoire_path
-from scaffold_contract import load_scaffold_contract, managed_scaffold_files
+from scaffold_contract import load_scaffold_contract, managed_scaffold_files, seeded_scaffold_files
 
 # A grimoire is eligible for healing only when it is confirmed current with its
 # upstream. Everything else is reported and skipped untouched.
@@ -328,7 +328,7 @@ def default_heal(local_path: Path, arcana_root: Path) -> dict[str, Any]:
     }
 
     # 1. Managed scaffold: copy Arcana formula over the grimoire's copy (safe -
-    #    managed_scaffold_files excludes README/hub/grimoire.json/log.md).
+    #    managed_scaffold_files excludes README/hub/grimoire.json).
     try:
         contract = load_scaffold_contract(arcana_root)
         formula_dir = arcana_root / "formulae" / "grimoire"
@@ -341,6 +341,17 @@ def default_heal(local_path: Path, arcana_root: Path) -> dict[str, Any]:
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(src, dst)
                 result["scaffold_synced"].append(rel)
+        # Seeded files are copied in only when absent; a grimoire that has
+        # customised its copy keeps it.
+        for entry in contract.get("files", []):
+            if not entry.get("seed_if_absent") or entry.get("managed"):
+                continue
+            src = formula_dir / entry["source"]
+            dst = local_path / entry["target"]
+            if src.is_file() and not dst.exists():
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(src, dst)
+                result["scaffold_synced"].append(entry["target"])
     except Exception as exc:  # contract load / IO
         result["status"] = "error"
         result["messages"].append(f"scaffold sync failed: {exc}")

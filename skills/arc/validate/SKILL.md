@@ -30,16 +30,16 @@ workflows, not this skill.
 ## Run
 
 ```bash
-python3 {{ARCANA_PATH}}/rites/validate.py $selector
+{{ARCANA_PATH}}/bin/arcana validate $selector
 ```
 
 Examples:
 
 ```bash
-python3 {{ARCANA_PATH}}/rites/validate.py
-python3 {{ARCANA_PATH}}/rites/validate.py links frontmatter
-python3 {{ARCANA_PATH}}/rites/validate.py smart
-python3 {{ARCANA_PATH}}/rites/validate.py parallel
+{{ARCANA_PATH}}/bin/arcana validate
+{{ARCANA_PATH}}/bin/arcana validate links frontmatter
+{{ARCANA_PATH}}/bin/arcana validate smart
+{{ARCANA_PATH}}/bin/arcana validate parallel
 ```
 
 ## Procedural Detail

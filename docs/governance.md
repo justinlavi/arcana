@@ -50,8 +50,8 @@ maintenance safe.
 
 "Autonomous" means *no prior approval is needed*, never *invisible*: every
 unattended action is recorded (an Arcana-visible change in `CHANGELOG.md` under
-`[Unreleased]`; a grimoire operation in `log.md`), and the rite envelopes leave a
-machine-readable trail.
+`[Unreleased]`; a grimoire operation in the grimoire's git history), and the rite
+envelopes leave a machine-readable trail.
 
 ### The unattended-safe gate
 
@@ -70,7 +70,7 @@ An agent may act **unattended** only when all four conditions hold:
 4. **Not on the human-sign-off list** below.
 
 If any condition fails, the change is **proposed**, not applied: surface it for
-one confirmation (the `/grm-health-check` model) or escalate to the
+one confirmation (the `/grm-check` model) or escalate to the
 human maintainer.
 
 ### Unattended
@@ -79,11 +79,10 @@ human maintainer.
 |---|---|---|
 | Run the validator suite | `/arc-validate` (`python3 rites/validate.py`) | exit 0 |
 | Apply mechanical fixes (broken links the rite located, format, frontmatter, encoding, snake_case) | an `/arc-validate` finding plus a direct edit | re-run the validator to exit 0 |
-| Repair unambiguous wikilinks | `/grm-repair-links --apply` | envelope `status` `ok`; ambiguous links are surfaced, never guessed |
+| Repair unambiguous wikilinks | `/grm-check fix` | envelope `status` `ok`; ambiguous links are surfaced, never guessed |
 | Regenerate generated indexes | `python3 rites/sync_docs.py --apply` | drift gate clean afterward |
 | Correct prose-wrong contract drift | the contract-coherence audit | the originating probe plus a validator pass |
 | Append the changelog | edit `CHANGELOG.md` under `[Unreleased]` | — |
-| Append a grimoire log entry | `append_log` | envelope: one `append` mutation |
 
 ### Propose, then apply on one confirmation
 
@@ -92,8 +91,8 @@ Reversible but judgment-bearing, or writing outside the repo:
 - Orphan wiring, terminology standardization, page promotion, merging duplicates.
 - Any change touching more than ten files.
 - Reconciling the grimoire library or registering skills into agent directories
-  under the user's home (`/arc-sync library`, `/arc-sync skills`,
-  `/grm-sync`).
+  under the user's home (`/arc-update library`, `/arc-update skills`,
+  `/grm-update`).
 
 ### Human sign-off required
 
@@ -151,7 +150,7 @@ Do **not** include in Arcana:
 - Skills specific to one domain (those live under `<grimoire>/skills/`, prefixed by the grimoire's manifest).
 - Custom rites only one grimoire uses.
 - Real-world data: company names, project names, employee data, customer data, credentials.
-- Grimoire storage layers (`chapters/`, chapter-local `sources/`, `inbox/`, `log.md`, and the `publish/` build-output layer present in every grimoire, excluded from validation and the knowledge graph). Arcana keeps their templates under `formulae/grimoire/`.
+- Grimoire storage layers (`chapters/`, chapter-local `sources/`, `inbox/`, and the `publish/` build-output layer present in every grimoire, excluded from validation and the knowledge graph). Arcana keeps their templates under `formulae/grimoire/`.
 
 **Where these belong**: in the relevant `<grimoire>-grimoire/chapters/` or `<grimoire>-grimoire/skills/`.
 
@@ -287,7 +286,7 @@ Arcana files must **not**:
 Each grimoire is responsible for:
 
 1. **Its own content**: chapters, skills, manifest. Use Arcana's `/grm-add` and the page formula for new pages.
-2. **Staying in step with Arcana**: pull updates periodically; run `/grm-validate` after pulling.
+2. **Staying in step with Arcana**: pull updates periodically; run `/grm-check quick` after pulling.
 3. **Reporting issues** in Arcana itself (broken invocations, formula bugs, validator false positives).
 
 Grimoires must **not**:
@@ -295,7 +294,7 @@ Grimoires must **not**:
 - ❌ Copy Arcana files into their own repo (reference instead).
 - ❌ Modify Arcana files directly. Propose changes to the maintainer of the Arcana fork they use.
 - ❌ Create chapters / formulae / rites in Arcana folder names (`invocations/`, `formulae/`, `rites/`) inside their own grimoire — those folder names are reserved for Arcana.
-- ❌ Ignore breaking-change announcements. Re-run `/grm-validate` after a major Arcana version bump.
+- ❌ Ignore breaking-change announcements. Re-run `/grm-check quick` after a major Arcana version bump.
 
 ---
 

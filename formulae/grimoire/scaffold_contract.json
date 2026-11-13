@@ -60,13 +60,13 @@
       "placeholder_required": true
     },
     {
-      "source": "log.md",
-      "target": "log.md",
+      "source": "gitignore",
+      "target": ".gitignore",
       "create": true,
-      "required": true,
+      "required": false,
       "managed": false,
-      "role": "customized",
-      "placeholder_required": true
+      "seed_if_absent": true,
+      "role": "seeded_support"
     },
     {
       "source": ".editorconfig",

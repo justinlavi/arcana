@@ -2,69 +2,36 @@
 """Arcana Summoning Rite - installs Arcana and optionally clones grimoires.
 
 Usage:
-    python3 summon.py [--arcana-url URL] [--scope URL] [--cli] [--gui]
+    python3 summon.py [--arcana-url URL] [--scope URL]
+    python3 summon.py --check | --reconcile [--apply] | --update [--apply]
 
 One-liner entry point:
     curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
 
-This file is the dispatcher. The actual install logic lives in
-`summon_core.py` (CLI + git/HTTP/discovery, pure stdlib) and the optional
-GUI front end lives in `summon_gui.py` (lazy-imported, requires DearPyGui).
+This file is the dispatcher. The install logic lives in `summon_core.py`
+(terminal install: git, discovery, library, agent files, skills; pure stdlib)
+and the agent-legible state surface lives in `summon_state.py`.
 
 Options:
     --arcana-url URL   URL of the Arcana git repository to install
     --scope URL        URL of the group/org containing your grimoires
-    --cli              Force terminal mode (no GUI)
-    --gui              Force GUI mode (DearPyGui)
     -h, --help         Show this help message
 
 Environment variables:
-    ARCANA_URL  Same as --arcana-url (flag takes precedence)
-    GRIMOIRE_SCOPE       Same as --scope (flag takes precedence)
-    GITLAB_TOKEN         GitLab personal access token for private instances
-    GITHUB_TOKEN         GitHub token for private orgs
-    GRIMOIRE_GUI_SCALE   Override DPI scale (e.g. 1.5 for HiDPI)
+    ARCANA_URL      Same as --arcana-url (flag takes precedence)
+    GRIMOIRE_SCOPE  Same as --scope (flag takes precedence)
+    GITLAB_TOKEN    GitLab personal access token for private instances
+    GITHUB_TOKEN    GitHub token for private orgs
 """
 
 import argparse
-import os
 import sys
 
 from summon_core import run_cli
 
 
-def _detect_gui_mode(args):
-    """Decide GUI vs CLI. Returns (use_gui: bool, skip_reason: str)."""
-    if args.gui:
-        return True, ""
-    if args.cli:
-        return False, ""
-    if sys.platform == "win32":
-        return True, ""
-    session_type = os.environ.get("XDG_SESSION_TYPE", "")
-    has_display = bool(
-        os.environ.get("DISPLAY")
-        or os.environ.get("WAYLAND_DISPLAY")
-        or session_type in ("x11", "wayland")
-    )
-    if not has_display:
-        return False, "no display server detected"
-    return True, ""
-
-
-def main():
-    # GL-probe re-entry: the GUI probe re-invokes this interpreter (a frozen
-    # binary re-invokes itself) so the probe tests the Dear PyGui it will
-    # actually use. Handle it before argparse and exit with the probe's code.
-    probe_mode = os.environ.get("GRIMOIRE_SUMMON_GL_PROBE")
-    if probe_mode:
-        from summon_gui import run_gl_probe
-        try:
-            sys.exit(run_gl_probe(probe_mode))
-        except Exception as e:
-            print(repr(e), file=sys.stderr)
-            sys.exit(1)
-
+def build_parser():
+    """Build the dispatcher's argument parser (install flags plus the state surface)."""
     parser = argparse.ArgumentParser(
         description="Arcana Summoning Rite - install Arcana and optionally clone grimoires"
     )
@@ -76,14 +43,17 @@ def main():
         "--scope",
         help="URL of the group/org containing your grimoires (e.g., https://github.com/my-org)",
     )
-    parser.add_argument("--cli", action="store_true", help="Force terminal mode (no GUI)")
-    parser.add_argument("--gui", action="store_true", help="Force GUI mode (Dear PyGui)")
+    return parser
 
-    # Agent-legibility surface: --check / --reconcile route to summon_state
-    # instead of the interactive installer (see rites/summon_state.py). It is only
-    # available on a full Arcana checkout; the piped bootstrap and release binary
-    # ship the install-only subset, so a missing summon_state degrades to the
-    # installer path rather than failing the install.
+
+def main():
+    parser = build_parser()
+
+    # Agent-legibility surface: --check / --reconcile / --update route to
+    # summon_state instead of the interactive installer (see
+    # rites/summon_state.py). It is only available on a full Arcana checkout;
+    # the piped bootstrap ships the install-only subset, so a missing
+    # summon_state degrades to the installer path rather than failing.
     try:
         from summon_state import add_state_args, is_state_invocation, run_state_command
         state_surface = True
@@ -97,20 +67,7 @@ def main():
     if state_surface and is_state_invocation(args):
         sys.exit(run_state_command(args))
 
-    use_gui, skip_reason = _detect_gui_mode(args)
-
-    if use_gui:
-        try:
-            # Lazy import keeps headless installs from needing DearPyGui at all.
-            from summon_gui import run_gui
-            run_gui(args)
-        except Exception as e:
-            print(f"  [WARN]  GUI failed ({e}), falling back to CLI")
-            run_cli(args)
-    else:
-        if skip_reason and not args.cli:
-            print(f"  [INFO]  Using CLI mode: {skip_reason}")
-        run_cli(args)
+    run_cli(args)
 
 
 if __name__ == "__main__":

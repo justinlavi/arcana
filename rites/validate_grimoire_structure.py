@@ -5,7 +5,6 @@ Required at the grimoire root:
     <grimoire-name>.md   (root hub; folder-name convention)
     README.md
     grimoire.json
-    log.md
     chapters/             (LLM-authored knowledge)
 
 For each chapter folder F, the hub file F/F.md must exist (folder-name
@@ -36,6 +35,7 @@ from scaffold_contract import (
     load_scaffold_contract,
     managed_scaffold_files,
     required_customized_files,
+    seeded_scaffold_files,
     required_directories,
     validate_contract_against_formula,
 )
@@ -171,7 +171,7 @@ def main():
         if is_inside_colocated_source_dir(rel):
             return True
         for part in rel.parts:
-            if part in ASSET_FOLDERS:
+            if part.casefold() in ASSET_FOLDERS:
                 return True
             if "<" in part or ">" in part:
                 return True
@@ -235,7 +235,7 @@ def main():
 
     # 6. Managed scaffold files should match the current Arcana formulae.
     # These files are operational support files, not grimoire-specific content.
-    # Root README, root hub, grimoire.json, and log.md are intentionally not
+    # Root README, root hub, and grimoire.json are intentionally not
     # compared because they are customized during grimoire creation.
     if formula_root.is_dir():
         if human:
@@ -272,6 +272,22 @@ def main():
         reporter.error("GRIMOIRE_STRUCTURE_FORMULA_ROOT_MISSING", f"Arcana formula root missing: {formula_root}")
         if human:
             print(f"  WARN     Arcana formula root missing: {formula_root}")
+
+    # 6b. Seeded scaffold files: copied in when absent, owned by the grimoire
+    #     after that, so absence is a warning the next heal fixes and presence
+    #     is never compared against the formula.
+    for rel in seeded_scaffold_files(scaffold_contract):
+        if not (root / rel).is_file():
+            reporter.warning(
+                "GRIMOIRE_STRUCTURE_MISSING_SEEDED",
+                f"missing seeded scaffold: {rel}",
+                path=rel,
+                hint="Run /grm-update to seed it, or copy ARCANA_HOME/formulae/grimoire/ yourself.",
+            )
+            if human:
+                print(f"  WARN     missing seeded scaffold: {rel} (heal seeds it)")
+        elif human:
+            print(f"  OK       {rel} (seeded, grimoire-owned)")
 
     # 7. JSON requirements from the scaffold contract.
     for requirement in json_requirements(scaffold_contract):

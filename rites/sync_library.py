@@ -307,7 +307,7 @@ def apply_synced_library(scan, library_path, home, retries=5):
     """Reconcile the library against disk and write it under compare-and-swap.
 
     Reading and writing library.json is a read-modify-write: a concurrent
-    `/arc-sync library` or `/arc-adopt` could otherwise be clobbered.
+    `/arc-update library` or `/grm-setup` could otherwise be clobbered.
     Each attempt re-reads the current file, rebuilds from it plus the disk scan,
     and writes only if the file is unchanged; a conflict re-reads and retries so
     the concurrent change is incorporated rather than lost.
@@ -326,7 +326,7 @@ def apply_synced_library(scan, library_path, home, retries=5):
             return True
     raise LibraryWriteConflict(
         f"{library_path} kept changing during {retries} sync attempts; "
-        "re-run /arc-sync library"
+        "re-run /arc-update library"
     )
 
 
@@ -359,11 +359,11 @@ def print_report(scan, diff, home, library_path, apply_mode, human=True, reporte
             print("  Unmanaged directories (no grimoire.json - won't be added):")
         for path in scan["unmanaged"]:
             if human:
-                info(f"{path.name}/  -> register with /grm-adopt {path.name}, or move it out of {home}")
+                info(f"{path.name}/  -> register with /grm-setup {path.name}, or move it out of {home}")
             if reporter is not None:
                 reporter.message(
                     "warning",
-                    f"unmanaged: {path.name}/ (no grimoire.json - register with /grm-adopt {path.name})",
+                    f"unmanaged: {path.name}/ (no grimoire.json - register with /grm-setup {path.name})",
                     path=path,
                 )
         if human:
@@ -490,7 +490,7 @@ def main():
                 ok(f"Library written: {library_path}")
                 print()
                 print("  Sync skills to pick up any new grimoires:")
-                print("    /grm-sync skills")
+                print("    /grm-update skills")
                 print()
         elif not conflict and human:
             ok("Library already reconciled by a concurrent process; nothing to write.")

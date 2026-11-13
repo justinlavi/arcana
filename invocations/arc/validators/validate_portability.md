@@ -22,16 +22,17 @@ Detect filesystem-portability violations in Arcana paths — specifically the ch
 Or directly:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_portability.py
+ARCANA_HOME/bin/arcana validate_portability
 ```
 
-For an active grimoire, use `/grm-validate portability`.
+For an active grimoire, use `/grm-check portability`.
 
 ## What it rejects
 
 1. **Windows-reserved characters in any path segment**: `<`, `>`, `:`, `"`, `|`, `?`, `*`. These are filename-illegal on Windows (the OS rejects them at the filesystem layer). Forward slash `/` and backslash `\` are also reserved but are path separators, not filename characters, so they're not flagged.
 2. **Windows reserved basenames** (case-insensitive, with or without extension): `CON`, `PRN`, `AUX`, `NUL`, `COM1`-`COM9`, `LPT1`-`LPT9`. These map to historical device handles and cannot be used as file or directory names on Windows.
 3. **Trailing dot or space** in a path segment. Windows silently strips trailing dots and spaces from filenames, causing checkout mismatches.
+4. **Two entries in one directory that differ only by case** (`Notes.md` beside `notes.md`). Such a tree checks out on Linux but cannot be materialized on Windows or macOS, where one file silently overwrites the other. Diagnostic: `PORTABILITY_CASE_COLLISION`.
 
 The scan walks every path under the Arcana root, skipping `.git/` (which is not part of the working-tree distribution).
 

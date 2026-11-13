@@ -25,9 +25,32 @@ Each agent reads a "system instructions" file. Grimoire needs a small block in t
 
 **Canonical block**: [grimoire block](../rites/templates/grimoire_block.md) — single source of truth for the instructions text. Copy this into manual targets listed in [agent targets](agent_targets.md). Do not duplicate the block in any other file — edit the canonical and the change propagates wherever it's referenced.
 
-The block never changes when grimoires are added or removed — those changes happen in the library, not the agent file. When Arcana itself changes the block, use `/arc-sync agentfile` to refresh automatic registry targets or explicitly supplied agent instruction files while preserving unrelated user instructions.
+The block never changes when grimoires are added or removed — those changes happen in the library, not the agent file. When Arcana itself changes the block, use `/arc-update agentfile` to refresh automatic registry targets or explicitly supplied agent instruction files while preserving unrelated user instructions.
 
 ---
+
+## Plugin Mode (Claude Code)
+
+Claude Code runs Arcana as two plugins, `grm` and `arc`, served from the
+repository's `.claude-plugin/marketplace.json`. Each plugin is a thin carrier
+rendered by `rites/build_plugins.py` from the same `skills/<family>/<slug>/SKILL.md`
+sources the flat registration uses, so `/grm:add` and `/grm-add` are the same
+instructions; the committed `plugins/` tree is the render, and
+`python3 rites/build_plugins.py` reports drift. The `grm` plugin's session-start
+hook (`plugins/grm/hooks/hooks.json`, `plugins/grm/scripts/session_context.py`)
+keeps the engine checkout at `~/grimoires/arcana` current (clone when absent,
+fast-forward when clean and on `main`, otherwise leave alone and say so),
+prints the Grimoire routing block when `~/.claude/CLAUDE.md` does not carry
+one, lists the installed grimoires, and adds a one-line drift note from
+`summon.py --check`.
+
+The registry marks Claude Code with `plugin_marketplace`. When the plugins are
+installed (`~/.claude/plugins/installed_plugins.json` lists `grm@...` or
+`arc@...`), `sync_skills.py` registers only grimoire-owned skills into
+`~/.claude/skills` and cleans the flat `grm-*` / `arc-*` copies, and
+`summon.py --check` treats the target as registered. Codex has no plugin
+support in its IDE extension and keeps the flat registration and the injected
+routing block.
 
 ## Skill Registration
 
@@ -38,18 +61,18 @@ whether a target receives full skill folders or pointer-only `SKILL.md` files.
 All registration targets are written by the same rite:
 
 ```bash
-python3 ~/grimoires/arcana/rites/sync_skills.py            # all targets
-python3 ~/grimoires/arcana/rites/sync_skills.py --agent claude
-python3 ~/grimoires/arcana/rites/sync_skills.py --agent codex
-python3 ~/grimoires/arcana/rites/sync_skills.py --grimoire . # Arcana + active grimoire
-python3 ~/grimoires/arcana/rites/sync_skills.py --reset-managed --dry-run
-python3 ~/grimoires/arcana/rites/sync_skills.py --reset-managed
+~/grimoires/arcana/bin/arcana sync_skills            # all targets
+~/grimoires/arcana/bin/arcana sync_skills --agent claude
+~/grimoires/arcana/bin/arcana sync_skills --agent codex
+~/grimoires/arcana/bin/arcana sync_skills --grimoire . # Arcana + active grimoire
+~/grimoires/arcana/bin/arcana sync_skills --reset-managed --dry-run
+~/grimoires/arcana/bin/arcana sync_skills --reset-managed
 ```
 
 The valid `--agent` values come from
 [`rites/data/agent_targets.json`](../rites/data/agent_targets.json).
 
-Invoke `/arc-sync skills` for a global refresh of Arcana plus every installed grimoire. Invoke `/grm-sync` from inside one grimoire to refresh Arcana plus that active grimoire only. The summoning rite runs the global registration for you on install.
+Invoke `/arc-update skills` for a global refresh of Arcana plus every installed grimoire. Invoke `/grm-update` from inside one grimoire to refresh Arcana plus that active grimoire only. The summoning rite runs the global registration for you on install.
 
 Use `--reset-managed` after major Arcana command-family changes or when old
 registered skill directories block a refresh. Dry-run first to preview the
@@ -57,7 +80,7 @@ directories that would be replaced.
 
 For the normal "bring this machine up to date" workflow, run `/grm-update`. It can run from any directory. It pulls Arcana, validates it, refreshes the local library, pulls every grimoire in the library (branch-aware, with a manual-pull fallback for private hosts), updates agent integration when needed, re-registers skills, and heals each grimoire it confirmed current against the structure rules.
 
-For Codex/ChatGPT, the registered directory must contain only `SKILL.md` — never bundle scripts, references, or copies of invocation content. The skill remains a thin pointer to Arcana invocations or rites.
+For Codex/ChatGPT, the registered directory must contain only `SKILL.md` — never bundle scripts or references. The generated `SKILL.md` carries its invocation inlined by the registration rite (see [skill schema](skill_schema.md#skillmd-structure)); the source skill stays a thin pointer.
 
 The `arc-`, `grm-`, and grimoire prefixes are Arcana-owned namespaces: every
 skill in them is generated by the rite from a `SKILL.md` source. Registration
@@ -77,8 +100,8 @@ grimoire skill sources block writes until the manifest prefixes are made unique.
 
 A skill is a **thin pointer**. It delegates to one of:
 
-- **Invocation-backed**: skill loads a markdown guide via `` `!cat {{ARCANA_PATH}}/invocations/...` ``. The AI follows the instructions.
-- **Rite-backed**: skill tells the AI to run a Python script via `python3 {{ARCANA_PATH}}/rites/...`. The script does the work.
+- **Invocation-backed**: the source skill names a markdown guide via `` `!cat {{ARCANA_PATH}}/invocations/...` ``; the registration rite inlines that guide into the generated skill, so the AI receives the instructions with the skill and follows them. Nothing is read at load time.
+- **Rite-backed**: skill tells the AI to run a rite via `{{ARCANA_PATH}}/bin/arcana <rite>`. The script does the work.
 
 Skills must never embed implementation logic directly. This separation keeps them portable across agent platforms.
 
@@ -100,6 +123,7 @@ Every `SKILL.md` declares its skill in YAML frontmatter. Required fields are min
 | `user-invocable` | No | Both | `true` = appears in the `/` picker. Default depends on agent. |
 | `when_to_use` | No | **Claude Code** | Helps Claude auto-invoke the skill without the user typing `/`. Phrase as natural-language scenarios ("User asks X", "User mentions Y"). Codex/ChatGPT ignores this field. |
 | `disable-model-invocation` | No | **Claude Code** | `true` prevents Claude from ever auto-invoking the skill — only user-typed slash commands trigger it. Use for destructive ops (deletions, irreversible changes). Codex/ChatGPT ignores this field. |
+| `paths` | No | **Claude Code** | Glob patterns relative to the working directory; Claude loads the skill on its own when the user works on matching files. Scope narrowly (`chapters/travel/trips/**`), because a match loads the whole skill. Codex/ChatGPT ignores this field. |
 
 Cross-agent safety: any field Codex/ChatGPT doesn't recognize is silently ignored. The same source `SKILL.md` works for both targets — no per-agent compilation needed.
 
@@ -107,9 +131,9 @@ Cross-agent safety: any field Codex/ChatGPT doesn't recognize is silently ignore
 
 Adding `when_to_use` makes a skill discoverable by intent in Claude Code (the user describes a problem; Claude routes to the right skill). The current Arcana settings:
 
-- **Most user-facing operations** (`/grm-*` and `/arc-*`, such as `/arc-sync`, `/arc-adopt`, `/arc-help`, `/arc-validate`) declare `when_to_use` so Claude can auto-suggest them.
-- **One destructive skill** (`/arc-clean`) declares `disable-model-invocation: true` because it deletes artifacts; users must invoke it explicitly. The two grimoire judgment audits (`/grm-audit-semantics`, `/grm-audit-boundaries`) do the same so they never auto-trigger.
-- **Mechanical validation** lives behind `/arc-validate` and `/grm-validate` selector arguments. Keep those entry points model-invocable; put judgment-heavy checks such as `/grm-audit-boundaries` behind explicit audit skills when they should not auto-trigger.
+- **Most user-facing operations** (`/grm-*` and `/arc-*`, such as `/arc-update`, `/grm-setup`, `/arc-help`, `/arc-validate`) declare `when_to_use` so Claude can auto-suggest them.
+- **One destructive skill** (`/arc-clean`) declares `disable-model-invocation: true` because it deletes artifacts; users must invoke it explicitly.
+- **Evaluation** lives behind `/arc-validate` and `/grm-check` with their scope arguments. Both stay model-invocable; the judgment reviews (`/grm-check naming`, `/grm-check boundaries`) report in chat and write nothing, so auto-invocation is safe.
 
 When adding a new skill, decide: does the user describe a *problem* that maps to this skill? If yes, give it a `when_to_use`. If the skill is destructive or maintainer-only, set `disable-model-invocation: true`.
 
@@ -127,14 +151,14 @@ Source `SKILL.md` files use `name: {{SKILL_PREFIX}}-<registered-slug>` in their 
 
 Grimoires contribute skills via their own `skills/` directory. Place each skill at `<grimoire>/skills/<area>-<verb>-<object>/SKILL.md`. The folder name is the subcommand after the skill prefix. Use `{{ARCANA_PATH}}` and `{{GRIMOIRE_PATH}}` as path placeholders — the registration rite resolves both to absolute paths at install time.
 
-To register new or updated skills in the active grimoire, run `/grm-sync`. To refresh all installed grimoires, run `/arc-sync skills`.
+To register new or updated skills in the active grimoire, run `/grm-update`. To refresh all installed grimoires, run `/arc-update skills`.
 
 ---
 
 ## Troubleshooting
 
 **Agent doesn't see new skills**
-- Run `/grm-sync skills` from the active grimoire. Then open a new agent session (Claude Code / Codex caches skill listings). (Maintainers can refresh every installed grimoire at once with `/arc-sync skills`.)
+- Run `/grm-update skills` from the active grimoire. Then open a new agent session (Claude Code / Codex caches skill listings). (Maintainers can refresh every installed grimoire at once with `/arc-update skills`.)
 
 **Agent skills are badly stale or have old prefixes**
 - Pull Arcana, then read [`arcana/UPDATE.md`](../UPDATE.md) from that checkout and follow its instructions exactly. It is the stable path for cases where the installed slash-command layer cannot repair itself.
@@ -143,10 +167,10 @@ To register new or updated skills in the active grimoire, run `/grm-sync`. To re
 - Run `/grm-update`. It updates Arcana and every grimoire in `~/grimoires/library.json`; the current directory does not need to be a grimoire.
 
 **Agent has stale or missing Grimoire routing instructions**
-- Ask your agent to run `/grm-sync agentfile`. It creates a missing instruction file and refreshes a stale Grimoire routing block, preserving your other content. (Maintainer equivalent: `/arc-sync agentfile`.)
+- Ask your agent to run `/grm-update agentfile`. It creates a missing instruction file and refreshes a stale Grimoire routing block, preserving your other content. (Maintainer equivalent: `/arc-update agentfile`.)
 
 **Agent can't find a grimoire**
-- Verify the grimoire is in `~/grimoires/library.json` and the `local_path` resolves. Ask your agent to run `/grm-sync library` to reconcile the library against disk (the fix after moving or renaming a grimoire folder). (Maintainer equivalent: `/arc-sync library`.)
+- Verify the grimoire is in `~/grimoires/library.json` and the `local_path` resolves. Ask your agent to run `/grm-update library` to reconcile the library against disk (the fix after moving or renaming a grimoire folder). (Maintainer equivalent: `/arc-update library`.)
 
 **Skill names look wrong (`{{SKILL_PREFIX}}-...`)**
 - The grimoire is missing a `grimoire.json` or its `skill_prefix` field. See [reference](reference.md#grimoire-manifest).

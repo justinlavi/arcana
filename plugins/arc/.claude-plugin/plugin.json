@@ -1,0 +1,12 @@
+{
+  "name": "arc",
+  "version": "1.8.0",
+  "description": "Arcana maintainer verbs (update, validate, improve, clean, help) for people who maintain the engine itself.",
+  "author": {
+    "name": "Justin Lavi",
+    "url": "https://github.com/justinlavi/arcana"
+  },
+  "homepage": "https://github.com/justinlavi/arcana",
+  "repository": "https://github.com/justinlavi/arcana",
+  "license": "MIT"
+}

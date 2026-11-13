@@ -28,15 +28,7 @@ REQUIRED_FIELDS = {
 
 def contract_path_candidates(root: Path) -> list[Path]:
     """Return candidate locations for the agent target registry."""
-    candidates = [root / CONTRACT_PATH]
-    meipass = getattr(sys, "_MEIPASS", None)
-    if meipass:
-        bundle_root = Path(meipass)
-        candidates.extend([
-            bundle_root / CONTRACT_PATH,
-            bundle_root / "data" / "agent_targets.json",
-        ])
-    return candidates
+    return [root / CONTRACT_PATH]
 
 
 def load_agent_targets(root: Path) -> dict[str, Any]:
@@ -72,6 +64,28 @@ def resolve_user_path(path_text: str | None) -> Path | None:
     return Path(path_text).expanduser()
 
 
+def plugin_install_record(home: Path | None = None) -> dict[str, Any]:
+    """Return the Claude Code plugin install record, or {} when none is readable."""
+    base = Path(home) if home else Path.home() / ".claude"
+    path = base / "plugins" / "installed_plugins.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    plugins = data.get("plugins", {})
+    return plugins if isinstance(plugins, dict) else {}
+
+
+def installed_arcana_plugins(home: Path | None = None) -> set[str]:
+    """Arcana command families installed as Claude Code plugins (`grm`, `arc`)."""
+    families = set()
+    for key in plugin_install_record(home):
+        name = key.split("@", 1)[0]
+        if name in {"grm", "arc"}:
+            families.add(name)
+    return families
+
+
 def skill_registration_targets(root: Path) -> dict[str, dict[str, Any]]:
     """Return sync_skills target configs keyed by agent id."""
     contract = load_agent_targets(root)
@@ -82,10 +96,17 @@ def skill_registration_targets(root: Path) -> dict[str, dict[str, Any]]:
         skill_path = resolve_user_path(entry.get("skill_target"))
         if skill_path is None:
             continue
+        deprecated = [
+            resolve_user_path(item)
+            for item in entry.get("deprecated_skill_targets", [])
+            if isinstance(item, str) and item
+        ]
         targets[entry["id"]] = {
             "label": entry["label"],
             "path": skill_path,
             "pointer_only": entry["skill_mode"] == "pointer",
+            "deprecated_paths": [path for path in deprecated if path is not None],
+            "plugin_families": installed_arcana_plugins() if entry.get("plugin_marketplace") else set(),
         }
     return targets
 
@@ -236,6 +257,17 @@ def validate_agent_targets(root: Path) -> tuple[dict[str, Any] | None, list[dict
                 f"{target_id} uses unsupported skill_mode {skill_mode}",
                 path,
                 f"Use one of: {', '.join(sorted(SKILL_MODES))}.",
+            ))
+
+        deprecated_targets = entry.get("deprecated_skill_targets", [])
+        if not isinstance(deprecated_targets, list) or not all(
+            isinstance(item, str) and item.startswith("~/") for item in deprecated_targets
+        ):
+            errors.append(_error(
+                "AGENT_TARGETS_FIELD",
+                f"{target_id} deprecated_skill_targets must be a list of ~/... paths",
+                path,
+                "List former skill directories as user-relative paths, or omit the field.",
             ))
 
         skill_target = entry.get("skill_target")

@@ -7,7 +7,7 @@ tags: [arcana/invocations, type/hub, scope/arcana, hub/chapter]
 
 # Arcana Invocations
 
-Maintainer and platform operations: invocations that modify Arcana itself, the local grimoire library, user agent files, and agent skill directories.
+Maintainer and platform operations: invocations that modify Arcana itself, the local grimoire library, user agent files, and agent skill directories. Five `/arc-*` verbs.
 
 For grimoire operations, route to [[invocations/grm/grm|grm]]. For the canonical skill catalog, see [[docs/skills|skills]].
 
@@ -17,16 +17,12 @@ For grimoire operations, route to [[invocations/grm/grm|grm]]. For the canonical
 
 - Arcana improvement -> [[invocations/arc/improve_arcana|improve arcana]]
 
-Boundary enforcement lives in the grimoire layer: [[invocations/grm/audit_boundaries|audit boundaries]]. It can scan Arcana itself with the `--arcana` flag.
+Boundary enforcement lives in the grimoire layer: `/grm-check boundaries --arcana` runs it against Arcana itself ([[invocations/grm/check|check]]).
 
 ### Update
 
-- Update Arcana and grimoires to a current, validated, synchronized state -> [[invocations/arc/update|update]]. Mirror of `/grm-update`; the canonical, skill-less procedure is [[UPDATE|UPDATE]].
-
-### Sync and environment
-
-- Sync skills, the library, or the agent file -> [[invocations/arc/sync|sync]]. One command with a positional sub-target: `/arc-sync skills`, `/arc-sync library`, `/arc-sync agentfile`. Active-grimoire-only skill sync is `/grm-sync`.
-- Adopt an unmanaged grimoire directory -> [[invocations/arc/adopt|adopt]]
+- Bring Arcana and every grimoire current, or reconcile one surface (`skills`, `library`, `agentfile`) at platform scope -> [[invocations/arc/update|update]]. Mirror of `/grm-update`; the canonical, skill-less procedure is [[UPDATE|UPDATE]].
+- Register an unmanaged directory as a grimoire -> `/grm-setup <folder>` ([[invocations/grm/setup|setup]]).
 - Clean transient workspace artifacts -> [[invocations/arc/clean|clean]]
 
 ### Validators

@@ -38,6 +38,35 @@ DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 SOURCE_DIRNAME = "sources"
 
+# Naming convention a grimoire records in grimoire.json (`naming`). Any casing is
+# valid in page and folder names; the convention is what the AI applies to new
+# material and what /grm-check naming reports deviations from. Absent means
+# the default.
+NAMING_DEFAULT = "snake_case"
+NAMING_MAX_LEN = 40
+
+
+def naming_convention(manifest) -> str:
+    """Return the grimoire's recorded naming convention, or the default."""
+    if isinstance(manifest, dict):
+        value = manifest.get("naming")
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return NAMING_DEFAULT
+
+
+def _source_index(parts, start: int):
+    """Index of the first chapter-local sources segment at or after ``start``.
+
+    The folder is recognised case-insensitively (``sources``, ``Sources``), so a
+    grimoire that keeps its own casing is still read correctly; new folders are
+    always created as ``sources``.
+    """
+    for index in range(start, len(parts)):
+        if parts[index].casefold() == SOURCE_DIRNAME:
+            return index
+    raise ValueError(SOURCE_DIRNAME)
+
 
 def _path_parts(rel) -> tuple[str, ...]:
     if isinstance(rel, Path):
@@ -57,7 +86,7 @@ def is_colocated_source_path(rel) -> bool:
     if len(parts) < 4 or parts[0] != "chapters":
         return False
     try:
-        source_index = parts.index(SOURCE_DIRNAME, 2)
+        source_index = _source_index(parts, 2)
     except ValueError:
         return False
     return source_index < len(parts) - 1
@@ -69,7 +98,7 @@ def is_inside_colocated_source_dir(rel) -> bool:
     if len(parts) < 3 or parts[0] != "chapters":
         return False
     try:
-        parts.index(SOURCE_DIRNAME, 2)
+        _source_index(parts, 2)
     except ValueError:
         return False
     return True
@@ -347,6 +376,12 @@ def load_manifest(directory: Path) -> tuple[Optional[dict], list]:
         errors.append(
             f"invalid skill_prefix '{skill_prefix}' (must match {SKILL_PREFIX_RE.pattern})"
         )
+    if "naming" in metadata:
+        naming = metadata.get("naming")
+        if not isinstance(naming, str) or not naming.strip():
+            errors.append("grimoire.json 'naming' must be a non-empty string (for example snake_case)")
+        elif len(naming.strip()) > NAMING_MAX_LEN:
+            errors.append(f"grimoire.json 'naming' must be at most {NAMING_MAX_LEN} characters")
 
     return metadata, errors
 
@@ -518,9 +553,10 @@ def is_skipped(rel, skip_dirs: Iterable[str]) -> bool:
         parts = rel.parts
     else:
         parts = tuple(p for p in str(rel).replace("\\", "/").split("/") if p)
+    folded = tuple(p.casefold() for p in parts)
     for sd in skip_dirs:
-        sd_parts = tuple(p for p in str(sd).replace("\\", "/").split("/") if p)
-        if sd_parts and parts[: len(sd_parts)] == sd_parts:
+        sd_parts = tuple(p.casefold() for p in str(sd).replace("\\", "/").split("/") if p)
+        if sd_parts and folded[: len(sd_parts)] == sd_parts:
             return True
     return False
 
@@ -536,3 +572,79 @@ def public_document(path: Path, root: Path) -> bool:
         return True
     rel = path.relative_to(root)
     return bool(rel.parts and rel.parts[0] in PUBLIC_DOC_DIRS)
+
+
+# ----------------------------------------------------------------------------
+# On-disk spelling
+# ----------------------------------------------------------------------------
+
+_LISTDIR_CACHE: dict = {}
+
+
+def _listdir_cached(directory: Path) -> list:
+    key = str(directory)
+    if key not in _LISTDIR_CACHE:
+        try:
+            _LISTDIR_CACHE[key] = os.listdir(directory)
+        except OSError:
+            _LISTDIR_CACHE[key] = []
+    return _LISTDIR_CACHE[key]
+
+
+def spell_on_disk(rel: str, root: Path) -> Optional[str]:
+    """Return ``rel`` (a root-relative POSIX path) spelled as it is stored on disk.
+
+    Segments are matched case-insensitively, so one helper answers two
+    questions: on a case-insensitive filesystem (Windows, macOS), whether a link
+    that resolved really matches the on-disk casing; on a case-sensitive one
+    (Linux, CI, site builds), what the author probably meant when a link did not
+    resolve at all. Returns None when no case-insensitive match exists.
+    """
+    parts = [p for p in rel.replace("\\", "/").split("/") if p and p != "."]
+    current = root
+    spelled = []
+    for part in parts:
+        if part == "..":
+            current = current.parent
+            spelled.append("..")
+            continue
+        entries = _listdir_cached(current)
+        if part in entries:
+            actual = part
+        else:
+            folded = part.casefold()
+            matches = [entry for entry in entries if entry.casefold() == folded]
+            if not matches:
+                return None
+            actual = matches[0]
+        spelled.append(actual)
+        current = current / actual
+    return "/".join(spelled)
+
+
+# ----------------------------------------------------------------------------
+# Tree walking that never descends into generated or foreign trees
+# ----------------------------------------------------------------------------
+
+PRUNED_DIRS = {"publish", ".git", "node_modules"}
+
+
+def walk_files(root: Path, pattern: str = "*", prune: Iterable[str] = PRUNED_DIRS):
+    """Yield files under ``root`` matching ``pattern`` (fnmatch on the name),
+    sorted, without descending into pruned directory names.
+
+    ``rglob`` walks everything and filters afterwards; a grimoire that has
+    built its site carries thousands of generator files under ``publish/``,
+    so validators prune at the directory level instead.
+    """
+    import fnmatch
+    import os
+
+    pruned = set(prune)
+    results = []
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = sorted(d for d in dirnames if d not in pruned)
+        for name in filenames:
+            if fnmatch.fnmatch(name, pattern):
+                results.append(Path(dirpath) / name)
+    return sorted(results)

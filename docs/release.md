@@ -1,15 +1,18 @@
 ---
 type: reference
 title: "Release Workflow"
-aliases: ["release", "binary-release"]
+aliases: ["release", "tag-release"]
 tags: [type/reference, arcana/docs]
 authority: grimoire
-last_verified: 2026-05-25
+last_verified: 2026-11-11
 ---
 
 # Arcana Release Guide
 
-How to build and publish Summoning Rite binaries for GitHub Releases.
+How to cut an Arcana release. Arcana ships as source: a release is a tag on
+the repository, and every install path (the summoning rite, `/grm-update`,
+manual clone) reads that source directly. There are no built binaries and no
+packaged artifacts to publish.
 
 The canonical installer behavior contract lives in
 [summoning contract](summoning_contract.md), backed by
@@ -19,110 +22,59 @@ The canonical installer behavior contract lives in
 
 ## Choosing the Version
 
-Decide the new `vMAJOR.MINOR.PATCH` number with the [Compatibility Rule](governance.md#the-compatibility-rule) **before** tagging — the bump is determined by compatibility, not by how big the release feels:
+Decide the new `vMAJOR.MINOR.PATCH` number with the [Compatibility Rule](governance.md#the-compatibility-rule) **before** tagging - the bump is determined by compatibility, not by how big the release feels:
 
-- **PATCH** — fixes and wording only; no behavior change.
-- **MINOR** — existing grimoires stay valid (no migration), but Arcana now generates, validates, or guides future grimoires differently.
-- **MAJOR** — a compatibility break: prior grimoires become invalid or must be migrated.
+- **PATCH** - fixes and wording only; no behavior change.
+- **MINOR** - existing grimoires stay valid (no migration), but Arcana now generates, validates, or guides future grimoires differently.
+- **MAJOR** - a compatibility break: prior grimoires become invalid or must be migrated.
 
-Many backward-compatible releases (`v1.0.0 → v1.17.0`) do not become `v2.0.0`; only a compatibility break does. The full policy and the agent decision procedure live in [governance → Versioning](governance.md#versioning).
-
----
-
-## Release Assets
-
-Arcana does not commit built binaries to the repository. The release workflow builds platform-specific Summoning Rite binaries and uploads them as GitHub Release assets.
-
-Expected assets:
-- `grimoire-summon-linux-x86_64.tar.gz`
-- `grimoire-summon-linux-x86_64.tar.gz.sha256`
-- `grimoire-summon-macos-x86_64.tar.gz`
-- `grimoire-summon-macos-x86_64.tar.gz.sha256`
-- `grimoire-summon-macos-arm64.tar.gz`
-- `grimoire-summon-macos-arm64.tar.gz.sha256`
-- `grimoire-summon-windows-x86_64.zip`
-- `grimoire-summon-windows-x86_64.zip.sha256`
-
-Actual architecture labels are produced by the build runner.
-
-`rites/summon.sh` is the single bootstrap entry point. Windows users can run it from Git Bash; the bootstrap detects Git Bash's `MINGW*` / `MSYS*` / `CYGWIN*` platform names, downloads the Windows `.zip` asset, and runs `grimoire-summon.exe`. WSL is treated as Linux and uses the Linux assets.
+Many backward-compatible releases (`v1.0.0 -> v1.17.0`) do not become `v2.0.0`; only a compatibility break does. The full policy and the agent decision procedure live in [governance -> Versioning](governance.md#versioning).
 
 ---
 
-## Local Build
+## Release Steps
 
-Build from a clean virtual environment:
+1. **Gate.** On the release branch run the fast test gate and the validator
+   orchestrator; both must be green on Linux and Windows (CI runs both):
 
-```bash
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install '.[build]'
-python rites/build_summon_binary.py --clean
-```
+   ```bash
+   python -m pytest -q
+   python rites/validate.py --summary
+   ```
 
-The `[build]` extra (declared in `pyproject.toml`) pins the same DearPyGui + PyInstaller versions the release pipeline expects.
+2. **Changelog.** Turn the `[X.Y.Z] - Unreleased` heading in `CHANGELOG.md`
+   into the release date and make sure every user-visible change is listed
+   under Added / Changed / Fixed / Removed.
 
-Artifacts are written to `dist/summon/`.
+3. **Version.** Set `VERSION` and the `version` field in `pyproject.toml` to
+   the new number. `/grm-update` and `summon.py --check` report this value.
 
----
+4. **Merge and tag.** Merge the release branch into `main`, then tag:
 
-## GitHub Actions
+   ```bash
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push origin main vX.Y.Z
+   ```
 
-Workflow: `.github/workflows/summon-release.yml`
+5. **Verify the install path.** From a machine or a scratch home directory
+   without Arcana, run the public one-liner and confirm it installs the tagged
+   source, injects the routing block, and registers skills:
 
-The workflow uses GitHub-maintained Node 24-backed action majors (`checkout@v6`, `setup-python@v6`, `upload-artifact@v6`, `download-artifact@v7`) to avoid the GitHub Actions Node 20 deprecation warnings. The Windows build uses the explicit `windows-2025-vs2026` runner label so the Visual Studio 2026 image migration is intentional rather than an implicit `windows-latest` redirect.
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | bash
+   ~/grimoires/arcana/bin/arcana summon --check
+   ```
 
-Manual test build:
-1. Open **Actions** in GitHub.
-2. Run **Build Summoning Rite Releases**.
-3. Leave `publish` disabled.
-4. Confirm generated asset names match the platform matrix in
-   `rites/data/summon_contract.json`.
-5. Download the workflow artifacts and test them locally.
-6. Run bootstrap smoke checks for `GRIMOIRE_SUMMON_BINARY=auto`,
-   `GRIMOIRE_SUMMON_BINARY=always`, and `GRIMOIRE_SUMMON_BINARY=never`.
-7. Confirm auto mode uses the release binary on every platform, with source
-   fallback when a release step fails.
-8. Confirm Windows Git Bash downloads the `.zip` asset and runs
-   `grimoire-summon.exe`.
-9. Confirm a missing or checksum-failed release binary falls back to source.
-
-Publish a draft release:
-1. Push a tag such as `v1.2.3`.
-2. The workflow builds Linux, macOS, and Windows artifacts.
-3. The publish job creates a draft GitHub Release if needed.
-4. The publish job uploads archives and checksums.
-5. Review the draft release, edit notes if needed, then publish.
-
-Manual publish is also available from the workflow form by setting `publish` to true and providing a tag.
-
-During active development, you may repeatedly publish the same test tag, such as `v1.0.0`, without creating new version numbers:
-1. Run the workflow manually.
-2. Set `publish` to true.
-3. Set `tag` to `v1.0.0`.
-4. Leave `move_tag` enabled to point the tag at the workflow commit.
-5. Choose whether the release should be `draft` or `prerelease`.
-
-The workflow uploads assets with clobbering enabled, so new archives replace old archives on the same release. Use this only while the tag is still pre-final; once a release is public and trusted by users, avoid moving its tag.
-
-Draft releases are useful for private review, but they are not useful for unauthenticated curl testing. For public bootstrap testing, publish `v1.0.0` as a prerelease, then repeatedly rerun the workflow with the same tag and clobbered assets. When the release is final, edit the release in GitHub and clear the prerelease flag.
+6. **Announce.** Existing installs pick the release up with `/grm-update`
+   (or `/arc-update`), which pulls `main`, validates, re-registers skills,
+   refreshes routing blocks, and heals every grimoire it confirmed current.
 
 ---
 
-## Bootstrap Behavior
+## Forks and Private Mirrors
 
-The release/source selection logic and the full `GRIMOIRE_SUMMON_*` environment
-matrix are canonical in the summoning contract - do not restate them here:
-
-- [Release and source selection](summoning_contract.md#release-and-source-selection)
-- [Bootstrap environment controls](summoning_contract.md#bootstrap-environment-controls)
-
-This section covers only release-publishing specifics.
-
-GitHub's `latest` release URL resolves only to a non-draft, non-prerelease
-release. For prerelease testing, set `GRIMOIRE_SUMMON_RELEASE_TAG` to the exact
-tag so the bootstrap pulls that asset instead of `latest`:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/justinlavi/arcana/main/rites/summon.sh | GRIMOIRE_SUMMON_RELEASE_TAG=v1.0.0 bash
-```
+A company that mirrors Arcana into a private host releases the same way: tag
+the mirror and point installs at it with `ARCANA_URL`. See
+[installation](installation.md#summoning-rite) for the one-liner form and
+[summoning contract](summoning_contract.md#bootstrap-environment-controls)
+for the environment variables the bootstrap honors.

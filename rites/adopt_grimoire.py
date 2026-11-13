@@ -5,8 +5,8 @@ Writes a `grimoire.json` manifest into the target directory so the
 registration and library rites recognize it. Validates the skill_prefix
 isn't already used by another grimoire.
 
-After adopting, run `/grm-sync library` to register the grimoire in the
-local library, then `/grm-sync skills` if it ships skills.
+After adopting, run `/grm-update library` to register the grimoire in the
+local library, then `/grm-update skills` if it ships skills.
 
 Usage:
     python3 adopt_grimoire.py <directory> --skill-prefix <prefix> [--description "<desc>"]
@@ -66,6 +66,11 @@ def main():
     )
     parser.add_argument("--description", default="", help="One-line description")
     parser.add_argument("--name", default="", help="Canonical name (defaults to directory name)")
+    parser.add_argument(
+        "--naming",
+        default="snake_case",
+        help="Naming convention the grimoire records (default: snake_case; use preserve for material that keeps its own casing)",
+    )
     parser.add_argument("--home", type=Path, default=DEFAULT_HOME, help=f"Grimoire home (default: {DEFAULT_HOME})")
     add_output_format_arg(parser)
     args = parser.parse_args()
@@ -146,6 +151,7 @@ def main():
         "name": name,
         "skill_prefix": args.skill_prefix,
         "description": description,
+        "naming": (args.naming or "snake_case").strip(),
     }
 
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
@@ -155,8 +161,8 @@ def main():
         print()
 
         print("  Next steps:")
-        print("    1. Run /grm-sync library to register it in the local library.")
-        print("    2. If this grimoire ships skills, run /grm-sync skills.")
+        print("    1. Run /grm-update library to register it in the local library.")
+        print("    2. If this grimoire ships skills, run /grm-update skills.")
         print()
     else:
         reporter.emit(args.format, summary={"name": name, "skill_prefix": args.skill_prefix})

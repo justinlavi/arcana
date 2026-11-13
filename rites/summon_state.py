@@ -24,7 +24,7 @@ Design rules (mirrors the deferred-fragility and autonomy boundaries):
   creating an absent file, inserting into a block-less file, or refreshing one
   clean BEGIN..END region in place. A file that is block-like but not one clean
   region (a stray or duplicate marker, or a pre-marker heading-only block) is
-  left untouched and reported for the `/grm-sync agentfile` judgment edit. It
+  left untouched and reported for the `/grm-update agentfile` judgment edit. It
   refuses on a base that fails `validate.py` (no repair on a broken tree) and
   never deletes a library entry unless `--prune` is given.
 * `--check` and `--reconcile` stay offline; the network-aware `--update` (in
@@ -192,6 +192,7 @@ def inspect_install(
             "path": str(path),
             "exists": path.is_dir(),
             "arcana_managed_count": summon_core._registered_skill_count(path),
+            "plugin_families": sorted(target.get("plugin_families") or ()),
         })
 
     return {
@@ -213,8 +214,13 @@ def _library_has_fixable_drift(library: dict[str, Any]) -> bool:
 
 
 def _skills_absent(state: dict[str, Any]) -> bool:
-    """True when Arcana is installed but no managed skills are registered anywhere."""
+    """True when Arcana is installed but no managed skills are registered anywhere.
+
+    A target served by the Claude Code plugins counts as registered.
+    """
     if not state["arcana"]["working_tree_populated"]:
+        return False
+    if any(s.get("plugin_families") for s in state["skills"]):
         return False
     return sum(s["arcana_managed_count"] for s in state["skills"]) == 0
 
@@ -269,7 +275,7 @@ def next_actions(state: dict[str, Any], arcana_root: Path) -> list[dict[str, Any
         actions.append({
             "kind": "agent_block_update",
             "tier": "amber",
-            "command": "/grm-sync agentfile",
+            "command": "/grm-update agentfile",
             "reason": f"agent routing block missing or not one clean region for: {', '.join(missing_blocks)}",
         })
     if _skills_absent(state):
@@ -307,7 +313,7 @@ def residual(state: dict[str, Any], *, prune: bool) -> list[dict[str, Any]]:
         items.append({
             "kind": "agent_block",
             "tier": "amber",
-            "reason": f"agent routing block must be refreshed via /grm-sync agentfile for: {', '.join(missing_blocks)}",
+            "reason": f"agent routing block must be refreshed via /grm-update agentfile for: {', '.join(missing_blocks)}",
         })
     if not state["arcana"]["working_tree_populated"]:
         items.append({
@@ -527,8 +533,8 @@ def _reconcile_agent_blocks(
     Deterministic for the common cases - an absent file is created with the
     canonical block, a block-less file gets one inserted, and a single clean
     marked region is refreshed in place. A file with duplicate or malformed
-    markers is left untouched and reported for the `/grm-sync agentfile` (or
-    `/arc-sync agentfile`) judgment edit, since its boundaries are ambiguous.
+    markers is left untouched and reported for the `/grm-update agentfile` (or
+    `/arc-update agentfile`) judgment edit, since its boundaries are ambiguous.
     Plan mode writes nothing and reports what `--apply` would do.
     """
     injector = injector or _default_agent_injector
@@ -557,7 +563,7 @@ def _reconcile_agent_blocks(
         elif action == "review":
             text = (
                 f"agent_blocks: {tid} - {result.get('reason', 'needs review')}; resolve with "
-                "/grm-sync agentfile (or /arc-sync agentfile). Not auto-written: there is no "
+                "/grm-update agentfile (or /arc-update agentfile). Not auto-written: there is no "
                 "clean routing block to create or refresh mechanically."
             )
             reporter.message("warning", text)

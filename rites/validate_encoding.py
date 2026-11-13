@@ -15,7 +15,7 @@ import re
 import sys
 from pathlib import Path
 
-from _lib import add_grimoire_arg, err, ok, resolve_grimoire_arg
+from _lib import add_grimoire_arg, err, ok, resolve_grimoire_arg, walk_files
 from diagnostics import Diagnostic, DiagnosticReporter, add_output_format_arg
 
 TEXT_SUFFIXES = {
@@ -62,7 +62,7 @@ def is_text_candidate(path: Path) -> bool:
 
 
 def iter_text_files(root: Path):
-    for path in sorted(root.rglob("*")):
+    for path in walk_files(root):
         if not path.is_file():
             continue
         rel_parts = path.relative_to(root).parts

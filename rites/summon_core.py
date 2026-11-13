@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Core install logic for the Arcana Summoning Rite.
 
-Sister module to `summon.py` (the dispatcher) and `summon_gui.py` (the
-DearPyGui front end). This module is the install engine: constants, the
-Logger, git/HTTP helpers, GitHub/GitLab discovery, the install pipeline,
-and the interactive CLI flow.
+Sister module to `summon.py` (the dispatcher). This module is the install
+engine: constants, the Logger, git/HTTP helpers, GitHub/GitLab discovery, the
+install pipeline, and the interactive terminal flow.
 
-It depends only on the Python standard library so it stays usable in
-headless environments where DearPyGui isn't installable.
+It depends only on the Python standard library so it runs on a stock Python
+anywhere, including headless environments.
 """
 
 import json
@@ -53,23 +52,11 @@ SETTINGS_DEFAULTS = {
 
 def _load_grimoire_block():
     """Load the canonical Grimoire routing block from the markdown template."""
-    candidates = []
-    meipass = getattr(sys, "_MEIPASS", None)
-    if meipass:
-        bundle_root = Path(meipass)
-        candidates.extend(
-            [
-                bundle_root / "rites" / "templates" / "grimoire_block.md",
-                bundle_root / "templates" / "grimoire_block.md",
-            ]
-        )
-    candidates.extend(
-        [
-            RITE_DIR / "templates" / "grimoire_block.md",
-            REPO_ROOT / "rites" / "templates" / "grimoire_block.md",
-            ARCANA_DIR / "rites" / "templates" / "grimoire_block.md",
-        ]
-    )
+    candidates = [
+        RITE_DIR / "templates" / "grimoire_block.md",
+        REPO_ROOT / "rites" / "templates" / "grimoire_block.md",
+        ARCANA_DIR / "rites" / "templates" / "grimoire_block.md",
+    ]
 
     for template_path in candidates:
         if template_path.is_file():
@@ -138,9 +125,9 @@ def classify_routing_block(content):
 class Logger:
     """Terminal logger with prefixed output.
 
-    Both this terminal logger and the GUI's GuiLogger expose the same surface
-    info/ok/warn/err for tagged messages, plus `line()` for raw subprocess
-    output that should appear in the user-visible log without a tag prefix.
+    Exposes info/ok/warn/err for tagged messages, plus `line()` for raw
+    subprocess output that should appear in the user-visible log without a tag
+    prefix. Any object with the same surface can stand in (tests, orchestrators).
     """
     def info(self, msg):  print(f"  [INFO]  {msg}")
     def ok(self, msg):    print(f"  [OK]    {msg}")
@@ -155,46 +142,12 @@ class Logger:
 
 
 def _subprocess_env():
-    """Return a clean env dict for spawning subprocesses from a frozen binary.
-
-    PyInstaller sets LD_LIBRARY_PATH to its extracted temp dir so its bundled
-    C extensions can find their dependencies. When the binary spawns system
-    tools like git, those tools' helpers (git-remote-https, etc.) also search
-    LD_LIBRARY_PATH and pick up the bundled libssl / libcurl instead of the
-    system versions, causing symbol-version mismatches on distros with newer
-    OpenSSL (e.g. Arch / CachyOS). Stripping the key fixes this without
-    affecting the binary's own Python extension loading.
-    """
-    if not getattr(sys, "frozen", False):
-        return None
-    env = dict(os.environ)
-    env.pop("LD_LIBRARY_PATH", None)
-    return env
+    """Environment for spawned subprocesses; None inherits the current one."""
+    return None
 
 
 def system_python():
-    """Return a usable Python executable for spawning sister scripts.
-
-    In a frozen PyInstaller binary, `sys.executable` points at the binary
-    itself (e.g. `grimoire-summon`) - invoking it as a Python interpreter
-    just makes the binary's argparse choke on the script path. Probe the
-    PATH for a real `python3` / `python` interpreter and prefer that;
-    fall back to `sys.executable` only when not frozen.
-    """
-    if not getattr(sys, "frozen", False):
-        return sys.executable
-    for candidate in ("python3", "python"):
-        try:
-            r = subprocess.run(
-                [candidate, "--version"],
-                capture_output=True,
-                timeout=3,
-                env=_subprocess_env(),
-            )
-            if r.returncode == 0:
-                return candidate
-        except Exception:
-            pass
+    """Return the Python executable to use for spawning sister scripts."""
     return sys.executable
 
 
@@ -368,11 +321,16 @@ def _api_get(url, token_header=None, token_value=None):
         return None, str(e)
 
 
+ENGINE_REPO_NAME = "arcana"
+
+
 def _metadata_marks_grimoire(name, description="", topics=None):
     topics = topics or []
     normalized = {str(t).lower() for t in topics}
     name_l = (name or "").lower()
     desc_l = (description or "").lower()
+    if name_l == ENGINE_REPO_NAME:
+        return False  # the engine describes grimoires; it is not one
     return (
         name_l.endswith("-grimoire")
         or "grimoire" in normalized
@@ -517,6 +475,8 @@ def try_github_discovery(host, scope, token, log):
     if not isinstance(data, list):
         log.warn(f"GitHub API returned unexpected response type: {type(data).__name__}")
         return {}
+    if token:
+        data = _with_own_private_repos(api_base, owner, data, auth_h, auth_v, log)
 
     entries = {}
     for repo in data:
@@ -527,6 +487,30 @@ def try_github_discovery(host, scope, token, log):
             continue
         entries[name] = _github_entry(repo)
     return entries
+
+
+def _with_own_private_repos(api_base, owner, public_repos, auth_h, auth_v, log):
+    """Merge the token holder's private repositories under `owner` into a public listing.
+
+    `/users/{owner}/repos` and `/orgs/{owner}/repos` list what the public sees;
+    `/user/repos` lists what the token sees, including private repositories.
+    """
+    url = f"{api_base}/user/repos?per_page=100&affiliation=owner,organization_member"
+    data, err = _api_get(url, token_header=auth_h, token_value=auth_v)
+    if err or not isinstance(data, list):
+        return public_repos
+    seen = {repo.get("name", "") for repo in public_repos}
+    merged = list(public_repos)
+    for repo in data:
+        login = str((repo.get("owner") or {}).get("login", "")).lower()
+        if login != owner.lower() or repo.get("name", "") in seen:
+            continue
+        merged.append(repo)
+        seen.add(repo.get("name", ""))
+    added = len(merged) - len(public_repos)
+    if added:
+        log.info(f"Added {added} private repositor{'y' if added == 1 else 'ies'} visible to the token")
+    return merged
 
 
 def discover_grimoires(scope_url, log, explicit_token=""):
@@ -633,8 +617,10 @@ def install_arcana(arcana_url, log, git_fn=git, cancel_event=None):
             if not attempt_working_tree_recovery(ARCANA_DIR, "Arcana", log, git_fn):
                 return False
     elif arcana_url:
-        log.info(f"Cloning Arcana from {arcana_url}...")
-        ok, _ = git_fn("clone", arcana_url, str(ARCANA_DIR), log=log)
+        ref = os.environ.get("ARCANA_REF", "").strip()
+        log.info(f"Cloning Arcana from {arcana_url}" + (f" at {ref}" if ref else "") + "...")
+        ref_args = ["--branch", ref] if ref else []
+        ok, _ = git_fn("clone", *ref_args, arcana_url, str(ARCANA_DIR), log=log)
         if not ok:
             log.err("Failed to clone Arcana - check network and git credentials")
             if (ARCANA_DIR / ".git").is_dir() and not working_tree_populated(ARCANA_DIR):
@@ -742,7 +728,7 @@ def inject_agent_file(log, target_path, title):
     block: create an absent file, refresh one clean stale block, insert into a
     file with no block at all, skip a current block. A block-like file that is
     not one clean BEGIN..END region (duplicate or malformed markers, or a
-    pre-marker heading-only block) is left untouched for `/grm-sync agentfile`.
+    pre-marker heading-only block) is left untouched for `/grm-update agentfile`.
     """
     log.info(f"Configuring {target_path.name}...")
     target_path.parent.mkdir(parents=True, exist_ok=True)
@@ -772,7 +758,7 @@ def inject_agent_file(log, target_path, title):
     else:  # review
         log.warn(
             f"{target_path.name} has a routing block that is not one clean BEGIN/END region; "
-            "left unchanged - run /grm-sync agentfile to fix it"
+            "left unchanged - run /grm-update agentfile to fix it"
         )
 
 
@@ -855,7 +841,7 @@ def sync_skills(log):
 
 
 def finalize_install(installed_keys, library, log):
-    """Run the post-Arcana install steps shared by both CLI and GUI modes."""
+    """Run the post-Arcana install steps: library, agent blocks, skills."""
     if installed_keys:
         update_local_library(installed_keys, library, log)
     inject_agent_configs(log)

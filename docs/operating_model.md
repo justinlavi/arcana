@@ -20,12 +20,13 @@ A grimoire's content is organized into layers that work together:
 | Layer | Directory | Owner | Purpose |
 |---|---|---|---|
 | Sources | `chapters/**/sources/` | LLM files during import, then reads | Immutable artifacts and source wrappers colocated with the chapter material they support: articles, transcripts, papers, screenshots, datasets. Citation-stable. |
-| Inbox | `inbox/` | LLM and user both write | Transient drop zone for mixed content awaiting classification. Cleared on `/grm-import`. |
+| Inbox | `inbox/` | LLM and user both write | Transient drop zone for mixed content awaiting classification. Cleared on `/grm-add`. |
 | Wiki | `chapters/`, root hub | LLM authors and maintains | Synthesized knowledge with frontmatter (`type`, `authority`, `sources`, `last_verified`) |
 | Schema | `grimoire.json` + injected agent block | User co-evolves | Tells the agent how to operate this grimoire |
 | Publish | `publish/` | Build tooling writes; LLM never authors | Build/publishing-output layer (rendered site, exported bundle, generated artifacts); present in every grimoire, idle until you publish. Excluded from validation and the knowledge graph; never cited by pages. Build output under it is disposable and regenerable. |
 
-Plus the per-grimoire `log.md` (append-only activity record). The `publish/`
+A grimoire's change history is its git history; `rites/recent_changes.py`
+renders the recent content commits for agents and health checks. The `publish/`
 build/publishing-output layer (see the table above) is present in every grimoire
 and is excluded from all grimoire validation and from the knowledge graph
 (orphan, link, frontmatter, provenance, format, portability, and encoding rites
@@ -88,7 +89,7 @@ Internal page link style is layer-aware:
 
 Two structural choices are deliberate and mechanically enforced, not incidental:
 
-- **snake_case names.** Page and folder names are lowercase `snake_case`, enforced by `validate_naming` (with conventional uppercase exceptions such as `README.md`, `CHANGELOG.md`, and `VERSION`). snake_case is greppable as whole-word tokens, stable under full-path wikilinks, and unambiguous for lexical lookup; `kebab-case` is reserved for skill slugs. Do not rename pages to other casings.
+- **One naming convention per grimoire, snake_case by default.** Any casing is valid in page and folder names; what matters is consistency within a grimoire and links that match on-disk spelling exactly. Each grimoire records its convention in `grimoire.json` as `naming` (`snake_case` when absent; `preserve` for material that keeps its own casing; any other named style is allowed). `/grm-create` asks for it with snake_case preselected; `/grm-add` and `/grm-add` apply it to new material, recommend it for imported material, and never rename imported files or folders without asking; `/grm-check naming` reports deviations as advisory findings. snake_case is the default because it is greppable as whole-word tokens and stable under full-path wikilinks. The machine-enforced rules are the ones that break builds: `validate_links` rejects a link whose casing differs from the file on disk, and `validate_portability` rejects two names in one directory that differ only by case. Folder roles (`sources/`, `templates/`, and the other asset folders) are recognised case-insensitively. Arcana's own tree stays lowercase snake_case through `validate_naming`, with conventional exceptions such as `README.md`; `kebab-case` is reserved for skill slugs.
 - **Open-ended depth, no global cap.** The hub tree is as deep as the topic warrants - bounded by topic structure, never by a fixed hop limit. A flat topic stays shallow (root -> leaf); a layered one nests as far as it needs. Per the minimal-read invariant, each hop must narrow the search, so collapse a hub only when it adds a hop without narrowing it (a single-leaf pass-through) - never to hit a uniform depth target.
 
 ## What Grimoire Is

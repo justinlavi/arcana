@@ -18,7 +18,7 @@ reserved for source wrappers under `chapters/**/sources/`.
 ## Invocation
 
 ```
-/grm-validate frontmatter
+/grm-check frontmatter
 ```
 
 ## Workflow
@@ -26,7 +26,7 @@ reserved for source wrappers under `chapters/**/sources/`.
 Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_frontmatter.py --grimoire GRIMOIRE_ROOT
+ARCANA_HOME/bin/arcana validate_frontmatter --grimoire GRIMOIRE_ROOT
 ```
 
 Use this when pages were added, imported, or edited. For Arcana itself, use `/arc-validate frontmatter`.

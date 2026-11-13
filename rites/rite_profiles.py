@@ -30,10 +30,44 @@ _OS_MUTATORS = {
 }
 _SHUTIL_MUTATORS = {"move", "copy", "copy2", "copyfile", "copytree", "rmtree"}
 _PATH_MOVE_ATTRS = {"replace", "rename"}
+# A rite that drives git mutates the repository even though it never opens a
+# file itself. Calls to a git helper (`git(...)`, `git_fn(...)`, `git_capture(...)`)
+# or a subprocess list that spells out `git <verb>` count as writes when the verb
+# changes the working tree, the index, history, or the remote.
+_GIT_HELPER_NAMES = {"git", "git_fn", "git_capture"}
+_GIT_MUTATORS = {
+    "add", "commit", "push", "pull", "rebase", "merge", "clone", "checkout",
+    "reset", "rm", "mv", "tag", "init", "stash", "cherry-pick", "revert", "am",
+}
+
+
+def _string_constants(node: ast.Call) -> list[str]:
+    """Positional string constants of a call, flattening one level of list literals."""
+    values: list[str] = []
+    for arg in node.args:
+        if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+            values.append(arg.value)
+        elif isinstance(arg, (ast.List, ast.Tuple)):
+            for item in arg.elts:
+                if isinstance(item, ast.Constant) and isinstance(item.value, str):
+                    values.append(item.value)
+    return values
+
+
+def _git_call_mutates(func: ast.expr, node: ast.Call) -> bool:
+    """True for `git("push", ...)`-style helper calls and `subprocess.run(["git", "push", ...])`."""
+    name = func.id if isinstance(func, ast.Name) else func.attr if isinstance(func, ast.Attribute) else ""
+    constants = _string_constants(node)
+    if name in _GIT_HELPER_NAMES:
+        return any(value in _GIT_MUTATORS for value in constants)
+    if "git" in constants:
+        after_git = constants[constants.index("git") + 1:]
+        return any(value in _GIT_MUTATORS for value in after_git)
+    return False
 
 
 class _WriteVisitor(ast.NodeVisitor):
-    """Detect obvious file-system writes in a Python rite."""
+    """Detect obvious file-system and git writes in a Python rite."""
 
     mutates = False
 
@@ -52,8 +86,12 @@ class _WriteVisitor(ast.NodeVisitor):
             elif attr in _PATH_MOVE_ATTRS and _is_single_positional(node):
                 # Path.replace(target) / Path.rename(target); str.replace takes 2 args.
                 self.mutates = True
+            elif _git_call_mutates(func, node):
+                self.mutates = True
         elif isinstance(func, ast.Name):
             if func.id == "open" and _mode_arg_writes(node):
+                self.mutates = True
+            elif _git_call_mutates(func, node):
                 self.mutates = True
         self.generic_visit(node)
 

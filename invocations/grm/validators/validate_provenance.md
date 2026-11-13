@@ -20,7 +20,7 @@ artifact, and avoid self-citation.
 ## Invocation
 
 ```
-/grm-validate provenance
+/grm-check provenance
 ```
 
 ## Workflow
@@ -28,7 +28,7 @@ artifact, and avoid self-citation.
 Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_provenance.py --grimoire GRIMOIRE_ROOT
+ARCANA_HOME/bin/arcana validate_provenance --grimoire GRIMOIRE_ROOT
 ```
 
 Pages must not cite transient `inbox/` paths. Stable source artifacts and

@@ -19,7 +19,7 @@ been renamed, added, or removed without updating the doc.
 ## Invocation
 
 ```
-/grm-validate doc-trees
+/grm-check doc-trees
 ```
 
 ## Workflow
@@ -27,7 +27,7 @@ been renamed, added, or removed without updating the doc.
 Run against the resolved active grimoire:
 
 ```bash
-python3 ARCANA_HOME/rites/validate_doc_trees.py --grimoire GRIMOIRE_ROOT
+ARCANA_HOME/bin/arcana validate_doc_trees --grimoire GRIMOIRE_ROOT
 ```
 
 Exit code 0 means every diagram with a resolvable filesystem anchor matches
@@ -73,10 +73,10 @@ When the validator reports drift:
 3. Update the diagram (preferred for routine drift) OR update the filesystem
    (when the diagram describes the intended layout and the filesystem has
    drifted from it).
-4. Re-run `/grm-validate doc-trees` to confirm.
+4. Re-run `/grm-check doc-trees` to confirm.
 
 ## Related
 
 - Validators hub: [[invocations/grm/validators/validators|validators]]
-- Health-check playbook: [[invocations/grm/health_check|health check]]
+- Health-check playbook: [[invocations/grm/check|check]]
 - Format validator (tree branch-marker style): [[invocations/grm/validators/validate_format|validate format]]

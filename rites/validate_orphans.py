@@ -23,6 +23,7 @@ import sys
 from pathlib import Path
 
 from _lib import (
+    walk_files,
     LINK_RE,
     WIKILINK_RE,
     add_grimoire_arg,
@@ -37,7 +38,7 @@ from _lib import (
 from diagnostics import DiagnosticReporter, add_output_format_arg
 
 EXEMPT_FILENAMES = {"README.md", "UPDATE.md", "CHANGELOG.md", "CONTRIBUTING.md", "log.md", "VERSION", "SKILL.md"}
-SKIP_DIRS = {"inbox", ".git", "publish", "skills", "tests"}
+SKIP_DIRS = {"inbox", ".git", "publish", "skills", "plugins", "tests"}
 
 
 def is_hub(path):
@@ -46,7 +47,7 @@ def is_hub(path):
 
 def collect_pages(root):
     pages = []
-    for path in sorted(root.rglob("*.md")):
+    for path in walk_files(root, "*.md"):
         rel = path.relative_to(root)
         if is_skipped(rel, SKIP_DIRS) or is_inside_colocated_source_dir(rel):
             continue

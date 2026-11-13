@@ -12,21 +12,25 @@
       "skill_mode": "full",
       "auto_configured": true,
       "supports_model_invocation": true,
-      "summary": "Arcana injects the Grimoire routing block and registers full skill folders.",
-      "limitations": []
+      "summary": "Arcana installs as the grm and arc plugins from the repository's own marketplace; the grm plugin's session-start hook keeps the engine checkout current and prints the routing context. Without the plugins, Arcana injects the Grimoire routing block and registers full skill folders. Grimoire skills register as full skill folders either way.",
+      "limitations": [],
+      "plugin_marketplace": "arcana"
     },
     {
       "id": "codex",
       "label": "Codex / ChatGPT CLI",
       "instruction_target": "~/.codex/AGENTS.md",
       "instruction_mode": "auto",
-      "skill_target": "~/.codex/skills",
+      "skill_target": "~/.agents/skills",
       "skill_mode": "pointer",
       "auto_configured": true,
       "supports_model_invocation": false,
-      "summary": "Arcana injects the Grimoire routing block and registers pointer-only SKILL.md folders.",
+      "summary": "Arcana injects the Grimoire routing block and registers pointer-only SKILL.md folders in ~/.agents/skills; Codex also reads ~/.codex/skills, so registration keeps managed skills out of it.",
       "limitations": [
         "Registered skill directories contain SKILL.md only."
+      ],
+      "deprecated_skill_targets": [
+        "~/.codex/skills"
       ]
     },
     {

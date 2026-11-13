@@ -133,3 +133,20 @@ def test_repair_links_json_clean_grimoire_is_noop(tmp_path):
     assert report["status"] == "noop"
     assert report["summary"]["repairs"] == 0
     assert report["mutations"] == []
+
+
+def test_repair_links_respells_a_wikilink_to_the_on_disk_casing(tmp_path):
+    g = _grimoire(tmp_path / "g")
+    page = g / "chapters" / "recipes" / "recipes.md"
+    _append(page, "See [[chapters/Recipes/Sourdough|Sourdough]] and [[chapters/recipes/sourdough]].\n")
+
+    plan = _run(g)
+    assert plan.returncode == 1  # actionable work
+    assert "[CASE]" in plan.stdout
+
+    result = _run(g, "--apply")
+    assert result.returncode == 0
+    text = page.read_text(encoding="utf-8")
+    assert "[[chapters/recipes/sourdough|Sourdough]]" in text
+    assert "Recipes/Sourdough" not in text
+    assert _run(g).returncode == 0  # clean afterwards

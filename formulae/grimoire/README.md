@@ -42,7 +42,7 @@ export GITLAB_TOKEN=<your token>     # GitLab
 export GITHUB_TOKEN=<your token>     # GitHub
 ```
 
-Open a new agent session and try `/grm-help` from inside this grimoire to confirm its skills are available. Full reference for scope shapes, auth, and troubleshooting: [github.com/justinlavi/arcana - docs/installation.md](https://github.com/justinlavi/arcana/blob/main/docs/installation.md).
+Prefer the conversational path: open your AI agent and run `/grm-setup` with this grimoire's repository link; it clones, registers, and explains the day-to-day verbs. Open a new agent session afterwards and try `/grm-help` from inside this grimoire to confirm its skills are available. Full reference for scope shapes, auth, and troubleshooting: [github.com/justinlavi/arcana - docs/installation.md](https://github.com/justinlavi/arcana/blob/main/docs/installation.md).
 
 ### Manual install
 
@@ -56,11 +56,11 @@ git clone https://github.com/justinlavi/arcana.git ~/grimoires/arcana
 git clone {{GRIMOIRE_REPO_URL}} ~/grimoires/{{GRIMOIRE_DIRECTORY}}
 
 # 3. Register the library entry and skills
-python3 ~/grimoires/arcana/rites/sync_library.py --apply
-python3 ~/grimoires/arcana/rites/sync_skills.py
+~/grimoires/arcana/bin/arcana sync_library --apply
+~/grimoires/arcana/bin/arcana sync_skills
 ```
 
-Add the canonical Grimoire routing block to your agent file by asking your agent to run `/grm-sync agentfile` (it creates a missing instruction file and refreshes a stale block), or run it directly: `python3 ~/grimoires/arcana/rites/inject_agent_file.py --apply`.
+Add the canonical Grimoire routing block to your agent file by asking your agent to run `/grm-update agentfile` (it creates a missing instruction file and refreshes a stale block), or run it directly: `~/grimoires/arcana/bin/arcana inject_agent_file --apply`.
 
 ## Layout
 
@@ -69,7 +69,6 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 ├── {{GRIMOIRE_DIRECTORY}}.md     # Root hub (start here for routing)
 ├── README.md                     # This file (human-facing project README)
 ├── grimoire.json                 # Manifest: name, skill prefix, description
-├── log.md                        # Append-only content-change history (not a VCS log)
 ├── inbox/                        # Transient drop zone (mixed content awaiting classification)
 ├── chapters/                     # Knowledge pages with chapter-local sources folders
 {{CHAPTER_TREE}}
@@ -88,10 +87,13 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 
 | Goal | Skill |
 |---|---|
-| Add a page or chapter (fresh, or capturing a chat answer) | `/grm-add` |
-| Import a new source beside the chapter material it supports and update affected pages | `/grm-import` |
-| Health-check the grimoire (orphans, stale, ghost refs) | `/grm-health-check` |
-| Review naming and find-ability (advanced) | `/grm-audit-semantics` |
+| Put knowledge in: write up a topic, save a chat answer, or file a document, folder, or `inbox/` as cited sources | `/grm-add` |
+| Share what you changed with your team | `/grm-save` |
+| Pick up everyone else's changes and bring everything current | `/grm-update` |
+| Check the grimoire: full health pass, or `quick`, a validator, `naming`, `boundaries`, `fix` | `/grm-check` |
+| Rename, move, or delete a page or chapter and fix every link | `/grm-move`, `/grm-remove` |
+| Turn the grimoire into a website, or check what would be published | `/grm-publish` |
+| See every command | `/grm-help` |
 
 ## Layers (the LLM-wiki model)
 
@@ -107,8 +109,9 @@ Add the canonical Grimoire routing block to your agent file by asking your agent
 
 - Routers are pointer lists - no prose narrative inside a hub.
 - Pages declare their authority (`external` / `grimoire` / `hybrid`) and cite sources.
-- Stale claims (older than the stale window, default 90 days) are flagged by `/grm-health-check` and revisited.
-- The activity log is append-only and records content changes (pages/sources added, removed, changed), not version-control mechanics; never delete entries.
+- Stale claims (older than the stale window, default 90 days) are flagged by `/grm-check` and revisited.
+- Names follow the convention recorded in `grimoire.json` (`naming`, default `snake_case`). Any casing is valid; consistency within the grimoire is the goal, and links must match on-disk spelling exactly.
+- History lives in git: `git log -- chapters/` (or `ARCANA_HOME/rites/recent_changes.py`) answers "what changed recently".
 - All paths are relative inside this grimoire; cross-grimoire references use `ARCANA_HOME/`-style placeholders.
 - Text files use UTF-8 without BOM and LF line endings. Unicode is allowed; mojibake and repair artifacts are not.
 
@@ -120,9 +123,12 @@ Manifest at `grimoire.json`:
 {
   "name": "{{GRIMOIRE_DIRECTORY}}",
   "skill_prefix": "{{SKILL_PREFIX}}",
-  "description": "{{GRIMOIRE_PURPOSE}}"
+  "description": "{{GRIMOIRE_PURPOSE}}",
+  "naming": "{{NAMING}}"
 }
 ```
+
+`naming` records the file and folder naming convention this grimoire follows (`snake_case` by default; `preserve` keeps imported material's own casing). Agents apply it to new pages and folders and ask before renaming anything imported.
 
 (The manifest description is a short tagline - a few words like "personal cooking knowledge" or "a D&D campaign's lore". The long-form description lives in this README; do not paste the long form into the manifest or hub.)
 
